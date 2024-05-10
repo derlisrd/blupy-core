@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BlupyApp;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Models\Cliente;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +20,7 @@ class AuthController extends Controller
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);
         }
-
+        Cliente::create([]);
         $user = new User();
         $user->name = request()->name;
         $user->email = request()->email;

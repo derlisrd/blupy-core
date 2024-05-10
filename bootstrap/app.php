@@ -7,7 +7,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Illuminate\Auth\AuthenticationException;
-
+use App\Http\Middleware\XapiKeyTokenIsValid;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -24,10 +24,16 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     )
     ->withMiddleware(function (Middleware $middleware) {
-
-        $middleware->use([
-            \App\Http\Middleware\XapiKeyTokenIsValid::class
+        $middleware->api(append: [
+            XapiKeyTokenIsValid::class,
         ]);
+        $middleware->alias([
+            'x-api-key' => XapiKeyTokenIsValid::class
+        ]);
+        //$middleware->append(\App\Http\Middleware\XapiKeyTokenIsValid::class);
+        /* $middleware->use([
+            \App\Http\Middleware\XapiKeyTokenIsValid::class
+        ]); */
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->renderable(function (AuthenticationException $e){

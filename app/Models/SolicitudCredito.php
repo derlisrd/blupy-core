@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Cliente extends Model
+class SolicitudCredito extends Model
 {
     use HasFactory;
-    protected $table = 'clientes';
-    protected $fillable = [];
+    protected $table = 'solicitud_creditos';
+    protected $fillable = [
+
+    ];
 }
