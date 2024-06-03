@@ -21,7 +21,8 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'active',
         'notitoken',
-        'version_app'
+        'version_app',
+        'rol'
     ];
 
     public function getJWTIdentifier()

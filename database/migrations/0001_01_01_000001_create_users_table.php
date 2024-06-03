@@ -20,8 +20,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->text('password');
             $table->boolean('active')->default(1);
-            $table->text('notitoken')->nullable();
-            $table->text('version_app')->nullable();
+            $table->tinyInteger('rol')->default(0);
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
