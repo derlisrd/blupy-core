@@ -94,7 +94,7 @@ class AuthController extends Controller
 
 
 
-    public function check(){
+    public function checkToken(){
         try {
             JWTAuth::check(JWTAuth::getToken());
             return response()->json([
@@ -133,7 +133,7 @@ class AuthController extends Controller
 
 
 
-    protected function userInfo($cliente,$token){
+    private function userInfo($cliente,$token){
         return [
             'name'=>$cliente->user->name,
             'nombres'=>trim($cliente->nombre_primero . ' ' . $cliente->nombre_segundo),

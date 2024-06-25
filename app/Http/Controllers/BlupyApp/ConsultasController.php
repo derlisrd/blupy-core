@@ -9,7 +9,7 @@ use App\Services\FarmaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\RateLimiter;
-use Aws\Rekognition\RekognitionClient;
+
 
 class ConsultasController extends Controller
 {
@@ -23,7 +23,7 @@ class ConsultasController extends Controller
     }
 
 
-    public function verificarDocumento(Request $req){
+    public function verificarExisteDocumento(Request $req){
         $validator = Validator::make($req->all(),trans('validation.verify.documento'),trans('validation.verify.documento.messages'));
 
         if($validator->fails()) return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
@@ -39,25 +39,21 @@ class ConsultasController extends Controller
         return response()->json(['success'=>false,'message'=>'El cliente no existe.'],404);
     }
 
-
-
-
-
-    public function scanearDocumento(Request $req){
-        $validator = Validator::make($req->all(),trans('validation.verify.scan'),trans('validation.verify.scan.messages'));
-
-        if($validator->fails()) return response()->json(['success' => false, 'message' => $validator->errors()->first()],400);
-
-        $amazon = new RekognitionClient([
-            'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
-            'version' => 'latest',
-        ]);
+    public function sucursalesCercanas(){
 
     }
 
+    public function lugarDeTrabajo(){
 
+    }
 
+    public function buscarCiudad(Request $req){
 
+    }
+
+    public function buscarBarrioPorCiudad(Request $req){
+
+    }
 
     public function ciudades(){
 
