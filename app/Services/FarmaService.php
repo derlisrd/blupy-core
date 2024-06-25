@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-class PuntoFarmaService
+class FarmaService
 {
     /**
      * Create a new class instance.

@@ -20,9 +20,9 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'active',
-        'notitoken',
-        'version_app',
-        'rol'
+        'rol',
+        'ultimatum',
+        'intentos'
     ];
 
     public function getJWTIdentifier()
@@ -38,7 +38,15 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password',
         'remember_token',
+        'email_verified_at'
     ];
+
+    public function cliente(){
+        return $this->belongsTo(Cliente::class, 'cliente_id','id');
+    }
+    public function devices(){
+        return $this->hasMany(Device::class,'user_id');
+    }
 
     protected function casts(): array
     {

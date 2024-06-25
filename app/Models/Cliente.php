@@ -10,4 +10,9 @@ class Cliente extends Model
     use HasFactory;
     protected $table = 'clientes';
     protected $fillable = [];
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'cliente_id');
+    }
 }

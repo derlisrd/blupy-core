@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id')->unsigned()->nullable();
             $table->string('device');
-            $table->text('description')->nullable();
+            $table->string('model')->nullable();
             $table->text('notitoken')->nullable();
+            $table->text('ip')->nullable();
             $table->text('version')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');

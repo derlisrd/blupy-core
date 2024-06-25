@@ -30,5 +30,17 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'infinita' => [
+        'url'      => env('INFINITA_URL'),
+        'token' => env('INFINITA_TOKEN')
+    ],
+    'farma' => [
+        'url'      => env('FARMA_URL'),
+        'token' => env('FARMA_TOKEN')
+    ],
+    'blupyqr' => [
+        'url'      => env('BLUPYQR_URL'),
+        'xapikey' => env('BLUPYQR_XAPIKEY'),
+    ],
 
 ];
