@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Services;
+
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Facades\Log;
 
 class InfinitaService
 {
@@ -21,10 +22,114 @@ class InfinitaService
         ];
     }
 
+    public function movimientosPorFecha(String $cuenta, String $periodo){
+        return $this->get('TarjMovimPorFecha',['Maectaid'=>$cuenta,'Periodo'=>$periodo,'Mtnume'=>"1"]);
+    }
 
+    public function ListarTarjetasPorDoc($cedula)
+    {
+        return $this->get('ListarTarjetasPorDoc',['Mtdocu' => $cedula]);
+    }
 
     public function TraerPorDocumento(String $cedula) {
         return $this->get('TraerPorDocumento',['Clidocu' => $cedula]);
+    }
+
+    public function ListarSolicitudes(String $cedula, String $fechaDesde, String $fechaHasta)
+    {
+        return $this->get('ListarSolicitudes', [
+            'Solced' => $cedula,
+            'Fecdes' => $fechaDesde,
+            'Fechas' => $fechaHasta
+        ]);
+    }
+
+    public function solicitudLineaDeCredito($cliente)
+    {
+        $data = (object)[
+            "wSolicitud" => (object)[
+                "AfinId" => 1,
+                "BancaId"=> 1,
+                "DesCreId"=> 0,
+                "LugTrabId"=> 0,
+                "MarcaId"=> 1,
+                "MedioId"=> 0,
+                "OficialId"=> 0,
+                "Sol1Vto"=> "2023-03-20",
+                "SolApe1"=> $cliente->apellido_primero,
+                "SolApe2"=> $cliente->apellido_segundo ?? "",
+                "SolAsoId"=> 0,
+                "SolAsoOrd"=> "123",
+                "SolAuxId"=> 0,
+                "SolCanPer"=> 1,
+                "SolCargo"=> "CARGO",
+                "SolCed"=> $cliente->cedula,
+                "SolCel"=> $cliente->celular,
+                "SolCond"=> "TAR",
+                "SolConsol"=> 0,
+                "SolCuoC"=> 1,
+                "SolCygSala"=> 0,
+                "SolDir"=> $cliente->calle . $cliente->numero_casa ?? '',
+                "SolDepId" => (int)$cliente->departamento_id ?? 0,
+                "SolCiuId" => (int)$cliente->ciudad_id ?? 0,
+                "SolBarId" => (int)$cliente->barrio_id ?? 0,
+                "SolEsCiv"=> 1,
+                "SolDirLat" => $cliente->latitud_direccion ?? '',
+                "SolDirLon" => $cliente->longitud_direccion ?? '',
+                "SolLabDirLat" => $cliente->latitud_empresa ?? '',
+                "SolLabDirLon" => $cliente->longitud_empresa ?? '',
+                "SolFNa"=> $cliente->fecha_nacimiento,
+                "SolFec"=> Carbon::now()->format('Y-m-d'),
+                "SolFijVto"=> false,
+                "SolGarBarId"=> 0,
+                "SolGarCiuId"=> 0,
+                "SolGarCySala"=> 0,
+                "SolGarDepId"=> 0,
+                "SolGarEsCiv"=> 0,
+                "SolGarFNa"=> "0001-01-01",
+                "SolGarLabAntA"=> 0,
+                "SolGarLabAntM"=> 0,
+                "SolGarNacId"=> 0,
+                "SolGarProfId"=> 0,
+                "SolGarSala"=> 0,
+                "SolId"=> 0,
+                "SolImpSol"=> 300000,
+                "SolImpor"=> 300000,
+                "SolLabEmp" => $cliente->empresa ?? '',
+                "SolLabAntA"=> (int)$cliente->antiguedad_laboral ?? 0,
+                "SolLabAntM" => (int)$cliente->antiguedad_laboral_mes ?? 0,
+                "SolLabDir"=> $cliente->empresa_direccion ?? '',
+                "SolLabFecIn"=> "",
+                "SolLabSal"=> $cliente->salario ?? '',
+                "SolLabTel"=> $cliente->empresa_telefono . $cliente->empresa_celular ?? '',
+                "SolLabTipId"=> $cliente->tipo_empresa_id ?? 0,
+                "SolLinea"=> isset($sol_linea ) ? $sol_linea : 300000,
+                "SolMaeCta"=> 0,
+                "SolMail"=> $cliente->user->email,
+                "SolMonId"=> 6900,
+                "Adicional" => [],
+                "SolNacId"=> 172,
+                "SolNom1"=> $cliente->nombre_primero,
+                "SolNom2"=> $cliente->nombre_segundo ?? "",
+                "SolObs"=> "",
+                "SolProdId"=> 172,
+                "SolProfId"=> $cliente->profesion_id ?? 0,
+                "SolRUC"=> "0000000",
+                "SolSepBi"=> "N",
+                "SolSexo"=> "M",
+                "SolSucNro"=> 1,
+                "SolTcEmb"=> "D",
+                "SolTcTip"=> "P",
+                "SolTel"=> "",
+                "SolTipCal"=> 5,
+                "SolTipViv"=> "P",
+                "SolTipVto"=> 1,
+                "SolVendId"=> 0,
+                "SolicGarId"=> 0
+            ],
+            "Proceso"=> 2
+        ];
+        return $this->post('IngresarSolicitud',$data);
     }
 
 
@@ -44,7 +149,7 @@ class InfinitaService
         }
     }
 
-    private function post($body, $endpoint) {
+    private function post(String $endpoint,Object $body) {
         try {
             $response = Http::withHeaders($this->header)
             ->post($this->url . '/'.$endpoint, $body);

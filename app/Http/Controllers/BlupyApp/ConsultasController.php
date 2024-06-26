@@ -34,9 +34,9 @@ class ConsultasController extends Controller
 
 
         $cliente = Cliente::where('cedula',$req->cedula)->first();
-        if($cliente) return response()->json(['success'=>true,'message'=>'El cliente ya existe.'],403);
+        if($cliente) return response()->json(['success'=>false,'message'=>'El cliente ya existe.'],403);
 
-        return response()->json(['success'=>false,'message'=>'El cliente no existe.'],404);
+        return response()->json(['success'=>true,'message'=>'El cliente no existe.'],404);
     }
 
     public function sucursalesCercanas(){

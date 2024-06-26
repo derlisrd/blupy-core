@@ -19,11 +19,11 @@ class UserController extends Controller
 
     }
 
-    public function codigoRecuperarContrasenaPorEmail(Request $req){
+    public function recuperarContrasenaPorEmail(Request $req){
 
     }
 
-    public function codigoRecuperarContrasenaPorCelularSms(Request $req){
+    public function recuperarContrasenaPorCelularSms(Request $req){
 
     }
 

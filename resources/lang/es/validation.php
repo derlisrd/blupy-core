@@ -13,7 +13,7 @@ return [
         "register"=>[
             'nombres' => 'required',
             'apellidos' => 'required',
-            'cedula'=>'required',
+            'cedula'=>'required|unique:clientes,cedula',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed|min:8',
             'cedulafrente'=>'required',
@@ -22,6 +22,9 @@ return [
             'celular'=>'required',
             'messages'=>[
                 'cedula.required'=>'La cédula es requerida.',
+                'cedula.unique'=>'La cédula ya existe',
+                'email.unique'=>'Email ya existe',
+                'email.email'=>'Email debe tener formato ejemplo@ejemplo.com',
                 ]
             ]
         ],
@@ -48,6 +51,15 @@ return [
                 'nacimiento.required'=>'La fecha de nacimiento es requerida.',
             ]
         ]
-    ]
-
+    ],
+    "solicitudes"=>[
+        "listar"=>[
+            'fechaDesde'=>'required',
+            'fechaHasta'=>'required',
+            'messages'=>[
+                'fechaDesde.required'=>'La fechaDesde es requerida (YYYY-MM-DD)',
+                'fechaHasta.required'=>'La fechaHasta es requerida (YYYY-MM-DD)',
+            ]
+        ]
+    ],
 ];

@@ -4,7 +4,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\RequestException;
 
-class BlupyQRCore
+class BlupyQrService
 {
     private $url;
     private $xapikey;
@@ -21,7 +21,7 @@ class BlupyQRCore
     }
 
     public function consultarQR($codigo_id_qr){
-        return $this->get('cliente/consultar-qr/'.$codigo_id_qr);
+        return $this->get('cliente/consultar-qr/'.$codigo_id_qr,[]);
     }
 
     public function autorizarQR($codigo_id_qr,$numerocuenta,$tel,$ip,$loc){
@@ -32,11 +32,11 @@ class BlupyQRCore
             'ip'=>$ip,
             'localizacion'=>$loc
         ];
-        return $this->post($data,'cliente/autorizar-qr');
+        return $this->post('cliente/autorizar-qr',$data);
     }
 
 
-    private function post($body, $endpoint) {
+    private function post(String $endpoint, Object $body) {
         try {
             $response = Http::withHeaders($this->header)
             ->post($this->url . '/'.$endpoint, $body);
@@ -56,10 +56,10 @@ class BlupyQRCore
     }
 
 
-    private function get($endpoint) {
+    private function get($endpoint,Array $query) {
         try {
             $response = Http::withHeaders($this->header)
-                ->get($this->url . '/'.$endpoint);
+                ->get($this->url . '/'.$endpoint,$query);
             $json = $response->json();
 
             return [
