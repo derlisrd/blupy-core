@@ -3,44 +3,78 @@
 namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
+use App\Models\SolicitudCredito;
 use App\Models\User;
+use App\Services\FarmaService;
+use App\Services\InfinitaService;
+use App\Traits\Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 
 
 class AuthController extends Controller
 {
+    use Helpers;
     public function register(Request $req) {
-        $validator = Validator::make($req->all(),trans('validation.auth.register'), trans('validation.auth.register.messages'));
 
-        if($validator->fails()){
-            return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
-        }
+        $validator = Validator::make($req->all(),trans('validation.auth.register'), trans('validation.auth.register.messages'));
+        if($validator->fails())return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+
         $fotoCiFrente = null; $fotoCiDorso = null;
+
+
         try {
+
             DB::beginTransaction();
-            $cliente = Cliente::create([
+            $nombres = $this->separarNombres( $req->nombres );
+            $apellidos = $this->separarNombres( $req->apellidos );
+            $datosCliente = [
                 'cedula'=>$req->cedula,
-                'nombre_primero'=>$req->nombrePrimero,
-                'nombre_segundo'=>$req->nombreSegundo,
-                'apellido_primero'=>$req->apellidoPrimero,
-                'apellido_segundo'=>$req->apellidoSegundo,
-                'fecha_nacimiento'=>$req->fechaNacimiento,
+                'nombre_primero'=>$nombres[0],
+                'nombre_segundo'=>$nombres[1],
+                'apellido_primero'=>$apellidos[0],
+                'apellido_segundo'=>$apellidos[1],
+                'fecha_nacimiento'=>$req->fecha_nacimiento,
+                'cedula'=>$req->cedula,
                 'celular'=>$req->celular,
                 'foto_ci_frente'=>$fotoCiFrente,
                 'foto_ci_dorso'=>$fotoCiDorso,
-            ]);
+                'email'=>$req->email
+            ];
+
+
+            $registrarEnInfinita = (object) $this->registrarInfinita((object) $datosCliente);
+
+            if(!$registrarEnInfinita->register){
+                return response()->json(['success'=>false,'message'=>'Intente mas adelante'],500);
+            }
+
+            return response()->json(['results'=>$registrarEnInfinita]);
+
+            $cliente = Cliente::create($datosCliente);
             $user = User::create([
                 'cliente_id'=>$cliente->id,
-                'name'=>$req->name,
+                'name'=>$req->nombres . ' '.$req->apellidos,
                 'email'=>$req->email,
                 'password'=> bcrypt($req->password)
             ]);
+
             DB::commit();
-            return response()->json(['success'=>true,], 201);
+            $token = JWTAuth::fromUser($user);
+            return response()->json([
+                'success'=>true,
+                'results'=>[
+                    'token'=>$token,
+                    'cedula'=>$cliente->cedula,
+                    'nombre'=>$user->name,
+                    'email'=>$user->email,
+                    'fecha_nacimiento'=>$cliente->fecha_nacimiento
+                ]
+            ], 201);
 
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -51,11 +85,6 @@ class AuthController extends Controller
 
 
 
-
-
-
-
-
     public function login(Request $req){
         try {
             $validator = Validator::make($req->all(),trans('validation.auth.login'), trans('validation.auth.login.messages'));
@@ -63,6 +92,9 @@ class AuthController extends Controller
             if($validator->fails()){
                 return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
             }
+            $ip = $req->ip();
+            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 5,function() {});
+            if (!$executed) return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
             $cedula = $req->cedula; $password = $req->password;
 
             $cliente = Cliente::where('cedula',$cedula)->first();
@@ -148,6 +180,19 @@ class AuthController extends Controller
             'aso'=>$cliente->asofarma,
             'token'=>$token
         ];
+    }
+
+
+    private function separarNombres(String $cadena) : Array{
+        $nombresArray = explode(' ', $cadena);
+        if (count($nombresArray) >= 2) {
+            $nombre1 = $nombresArray[0];
+            $nombre2 = implode(' ', array_slice($nombresArray, 1));
+        } else {
+            $nombre1 = $cadena;
+            $nombre2 = '';
+        }
+        return [$nombre1,$nombre2];
     }
 
 

@@ -18,17 +18,38 @@ return [
             'password' => 'required|confirmed|min:8',
             'cedulafrente'=>'required',
             'ceduladorso'=>'required',
-            'nacimiento'=>'required',
+            'fecha_nacimiento' => 'required|date_format:Y-m-d',
             'celular'=>'required',
             'messages'=>[
-                'cedula.required'=>'La cédula es requerida.',
+                'nombres.required'=>'Los nombres son requeridos.',
+                'apellidos.required'=>'Los apellidos son requeridos.',
+                'apellidos.required'=>'La cédula es requerida.',
                 'cedula.unique'=>'La cédula ya existe',
+                'email.required'=>'Email es requerido',
                 'email.unique'=>'Email ya existe',
                 'email.email'=>'Email debe tener formato ejemplo@ejemplo.com',
+                'cedulafrente.required'=>'La foto de cedula(frente) es requerida.',
+                'ceduladorso.required'=>'La Foto de cedula(dorso) es requerida.',
+                'password.required'=>'Contraseña es requerida.',
+                'password.min'=>'Contraseña debe tener al menos 8 caracteres.',
+                'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+                'fecha_nacimiento.required'=>'La fecha_nacimiento es requerida.',
+                'fecha_nacimiento.required' => 'El campo fecha de nacimiento es obligatorio.',
+                'fecha_nacimiento.date_format' => 'El campo fecha de nacimiento debe tener el formato YYYY-MM-DD.',
+                'celular.required'=>'Celular es requerido.',
                 ]
             ]
         ],
     "verify"=>[
+        "olvide"=>[
+            'cedula'=>'required',
+            'forma'=>'required|numeric',
+            'messages'=>[
+                'cedula.required'=>'La cedula es requerida',
+                'forma.required'=>'La forma es requerida',
+                'forma.numeric'=>'La forma es debe ser 0 o 1',
+            ]
+        ],
         "documento"=>[
             'cedula'=>'required',
             'messages'=>[

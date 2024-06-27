@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('password');
             $table->boolean('active')->default(1);
             $table->tinyInteger('rol')->default(0);
-            $table->dateTimeTz('ultimatum')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->dateTimeTz('ultimo_ingreso')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->tinyInteger('intentos')->default(0);
             $table->rememberToken();
             $table->softDeletes();

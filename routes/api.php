@@ -6,6 +6,7 @@ use App\Http\Controllers\BlupyApp\CuentasController;
 use App\Http\Controllers\BlupyApp\MovimientosController;
 use App\Http\Controllers\BlupyApp\QRController;
 use App\Http\Controllers\BlupyApp\SolicitudesController;
+use App\Http\Controllers\BlupyApp\UserController;
 use App\Http\Controllers\BlupyApp\ValidacionesController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Auth\Middleware\Authenticate;
@@ -13,6 +14,7 @@ use Illuminate\Auth\Middleware\Authenticate;
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/register',[AuthController::class,'register']);
 
+Route::post('/olvide-contrasena',[UserController::class,'olvideContrasena']);
 
 
 Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDocumento']);

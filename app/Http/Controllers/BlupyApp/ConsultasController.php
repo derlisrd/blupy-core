@@ -29,14 +29,14 @@ class ConsultasController extends Controller
         if($validator->fails()) return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
         $ip = $req->ip();
-        $executed = RateLimiter::attempt($ip,5,function() {});
+        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});
         if (!$executed) return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
 
         $cliente = Cliente::where('cedula',$req->cedula)->first();
         if($cliente) return response()->json(['success'=>false,'message'=>'El cliente ya existe.'],403);
 
-        return response()->json(['success'=>true,'message'=>'El cliente no existe.'],404);
+        return response()->json(['success'=>true,'message'=>'El cliente no existe.']);
     }
 
     public function sucursalesCercanas(){
@@ -60,6 +60,10 @@ class ConsultasController extends Controller
     }
 
     public function barrios(){
+
+    }
+
+    public function verificarVersion(Request $req){
 
     }
 
