@@ -4,7 +4,7 @@ namespace App\Traits;
 
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
-use Illuminate\Support\Facades\Log;
+//use Illuminate\Support\Facades\Log;
 
 trait Helpers
 {
