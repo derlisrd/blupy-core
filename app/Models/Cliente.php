@@ -59,7 +59,8 @@ class Cliente extends Model
         'asofarma',
         'funcionario',
         'solicitud_credito',
-        'linea_farma'
+        'linea_farma',
+        'importe_credito_farma'
     ];
 
     public function user()

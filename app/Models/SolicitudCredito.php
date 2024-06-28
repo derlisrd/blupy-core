@@ -10,6 +10,10 @@ class SolicitudCredito extends Model
     use HasFactory;
     protected $table = 'solicitud_creditos';
     protected $fillable = [
-
+        'cliente_id',
+        'estado_id',
+        'codigo',
+        'tipo',
+        'importe'
     ];
 }

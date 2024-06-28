@@ -5,8 +5,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use App\Models\SolicitudCredito;
 use App\Models\User;
-use App\Services\FarmaService;
-use App\Services\InfinitaService;
 use App\Traits\Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +17,7 @@ use Illuminate\Support\Facades\RateLimiter;
 class AuthController extends Controller
 {
     use Helpers;
+
     public function register(Request $req) {
 
         $validator = Validator::make($req->all(),trans('validation.auth.register'), trans('validation.auth.register.messages'));
@@ -28,6 +27,7 @@ class AuthController extends Controller
 
 
         try {
+            $clienteFarma = $this->clienteFarma($req->cedula);
 
             DB::beginTransaction();
             $nombres = $this->separarNombres( $req->nombres );
@@ -41,21 +41,38 @@ class AuthController extends Controller
                 'fecha_nacimiento'=>$req->fecha_nacimiento,
                 'cedula'=>$req->cedula,
                 'celular'=>$req->celular,
-                'foto_ci_frente'=>$fotoCiFrente,
-                'foto_ci_dorso'=>$fotoCiDorso,
-                'email'=>$req->email
+                'email'=>$req->email,
+                'funcionario'=>$clienteFarma->funcionario,
+                'linea_farma'=>$clienteFarma->lineaFarma,
+                'asofarma'=>$clienteFarma->asofarma,
+                'importe_credito_farma'=>$clienteFarma->credito,
+                'direccion_completado'=>$clienteFarma->completado,
+                'cliid'=>0,
+                'solicitud_credito'=>0
             ];
 
+            $verificarRegistro = $this->verificarSiTieneInfinita($req->cedula);
+            $cliId = $verificarRegistro->cliid;
+            $codigoSolicitud = 0;
+            if(!$verificarRegistro->tieneRegistro){
 
-            $registrarEnInfinita = (object) $this->registrarInfinita((object) $datosCliente);
+                $resRegistrarInfinita =  $this->registrarInfinita((object) $datosCliente);
+                $datosRegistrarEnInfita = (object) $resRegistrarInfinita;
 
-            if(!$registrarEnInfinita->register){
-                return response()->json(['success'=>false,'message'=>'Intente mas adelante'],500);
+                if(!$datosRegistrarEnInfita->register){
+                    return response()->json(['success'=>false,'message'=>'Intente mas adelante. Error infinita.'],500);
+                }
+                $cliId = $datosRegistrarEnInfita->cliId;
+                $codigoSolicitud = $datosRegistrarEnInfita->solicitudId;
             }
 
-            return response()->json(['results'=>$registrarEnInfinita]);
 
+
+            $datosCliente['cliid'] = $cliId;
+
+            unset($datosCliente['email']);
             $cliente = Cliente::create($datosCliente);
+
             $user = User::create([
                 'cliente_id'=>$cliente->id,
                 'name'=>$req->nombres . ' '.$req->apellidos,
@@ -63,17 +80,21 @@ class AuthController extends Controller
                 'password'=> bcrypt($req->password)
             ]);
 
+            SolicitudCredito::create([
+                'codigo' => $codigoSolicitud,
+                'estado' => 'Vigente',
+                'cliente_id' => $cliente->id,
+                'estado_id'=>7,
+                'tipo' => 0
+            ]);
+
             DB::commit();
+
             $token = JWTAuth::fromUser($user);
+
             return response()->json([
                 'success'=>true,
-                'results'=>[
-                    'token'=>$token,
-                    'cedula'=>$cliente->cedula,
-                    'nombre'=>$user->name,
-                    'email'=>$user->email,
-                    'fecha_nacimiento'=>$cliente->fecha_nacimiento
-                ]
+                'results'=>$this->userInfo($cliente,$token)
             ], 201);
 
         } catch (\Throwable $th) {
@@ -159,40 +180,6 @@ class AuthController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['success'=>false,'message'=>'Error de servidor'],500);
         }
-    }
-
-
-
-
-
-    private function userInfo($cliente,$token){
-        return [
-            'name'=>$cliente->user->name,
-            'nombres'=>trim($cliente->nombre_primero . ' ' . $cliente->nombre_segundo),
-            'apellidos'=>trim($cliente->apellido_primero . ' ' . $cliente->apellido_segundo),
-            'cedula'=>$cliente->cedula,
-            'fechaNacimiento'=>$cliente->fecha_nacimiento,
-            'email'=>$cliente->user->email,
-            'telefono'=>$cliente->celular,
-            'celular'=>$cliente->celular,
-            'solicitudCredito'=>$cliente->solicitud_credito,
-            'funcionario'=>$cliente->funcionario,
-            'aso'=>$cliente->asofarma,
-            'token'=>$token
-        ];
-    }
-
-
-    private function separarNombres(String $cadena) : Array{
-        $nombresArray = explode(' ', $cadena);
-        if (count($nombresArray) >= 2) {
-            $nombre1 = $nombresArray[0];
-            $nombre2 = implode(' ', array_slice($nombresArray, 1));
-        } else {
-            $nombre1 = $cadena;
-            $nombre2 = '';
-        }
-        return [$nombre1,$nombre2];
     }
 
 
