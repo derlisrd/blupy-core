@@ -29,6 +29,8 @@ class CuentasController extends Controller
                 array_push($results, [
                     'descripcion'=>'Blupy crédito digital',
                     'otorgadoPor'=>'Mi crédito S.A.',
+                    'tipo'=>1,
+                    'condicion'=>'Contado',
                     'cuenta' => $val['MaeCtaId'],
                     'linea' => (int)$val['MTLinea'],
                     'deuda' => (int) $val['MTSaldo'],
@@ -45,6 +47,8 @@ class CuentasController extends Controller
                 array_push($results, [
                     'descripcion'=>'Blupy crédito 1 día',
                     'otorgadoPor'=>'Farma S.A.',
+                    'tipo'=>0,
+                    'condicion'=>'credito',
                     'cuenta' => null,
                     'linea' => $val['limiteCreditoTotal'],
                     'deuda' => $val['pendiente'],

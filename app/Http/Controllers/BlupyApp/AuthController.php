@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use App\Models\SolicitudCredito;
 use App\Models\User;
-use App\Traits\Helpers;
+use App\Traits\RegisterTraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
@@ -16,24 +16,35 @@ use Illuminate\Support\Facades\RateLimiter;
 
 class AuthController extends Controller
 {
-    use Helpers;
+    use RegisterTraits;
 
+    /* ----------------------------
+    REGISTRO
+    ----------------------------*/
     public function register(Request $req) {
 
         $validator = Validator::make($req->all(),trans('validation.auth.register'), trans('validation.auth.register.messages'));
         if($validator->fails())return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
-        $fotoCiFrente = null; $fotoCiDorso = null;
-
-
         try {
+            // consulta si tiene ficha en farma
             $clienteFarma = $this->clienteFarma($req->cedula);
+
+            // guardar cedula en nuestros servidores las fotos estan en base64
+            $fotoCiFrente = $this->guardarCedulaImagenBase64($req->fotocedulafrente, $req->cedula . '_frente');
+            $fotoCiDorso = $this->guardarCedulaImagenBase64($req->fotocedulafrente, $req->cedula . '_dorso');
+
+            if($fotoCiDorso == null || $fotoCiFrente == null){
+                return response()->json(['success'=>false,'message'=>'Hay un error con la imagen de la cedula'],400);
+            }
 
             DB::beginTransaction();
             $nombres = $this->separarNombres( $req->nombres );
             $apellidos = $this->separarNombres( $req->apellidos );
             $datosCliente = [
                 'cedula'=>$req->cedula,
+                'foto_ci_frente'=>$fotoCiFrente,
+                'foto_ci_dorso'=>$fotoCiDorso,
                 'nombre_primero'=>$nombres[0],
                 'nombre_segundo'=>$nombres[1],
                 'apellido_primero'=>$apellidos[0],
@@ -51,24 +62,19 @@ class AuthController extends Controller
                 'solicitud_credito'=>0
             ];
 
-            $verificarRegistro = $this->verificarSiTieneInfinita($req->cedula);
-            $cliId = $verificarRegistro->cliid;
-            $codigoSolicitud = 0;
-            if(!$verificarRegistro->tieneRegistro){
+            // ver si tiene ficha en infinita, sino lo crea
+            $resRegistrarInfinita = (object)  $this->registrarInfinita((object) $datosCliente);
 
-                $resRegistrarInfinita =  $this->registrarInfinita((object) $datosCliente);
-                $datosRegistrarEnInfita = (object) $resRegistrarInfinita;
-
-                if(!$datosRegistrarEnInfita->register){
-                    return response()->json(['success'=>false,'message'=>'Intente mas adelante. Error infinita.'],500);
-                }
-                $cliId = $datosRegistrarEnInfita->cliId;
-                $codigoSolicitud = $datosRegistrarEnInfita->solicitudId;
+            if(!$resRegistrarInfinita->register){
+                return response()->json(['success'=>false,'message'=>'Intente mas adelante. Error infinita.'],500);
             }
 
+            $codigoSolicitud = $resRegistrarInfinita->solicitudId;
 
+            // enviar foto de cedula a infinita
+            $this->enviarFotoCedulaInfinita($req->cedula,$req->fotocedulafrente,$req->fotoceduladorso);
 
-            $datosCliente['cliid'] = $cliId;
+            $datosCliente['cliid'] = $resRegistrarInfinita->cliId;
 
             unset($datosCliente['email']);
             $cliente = Cliente::create($datosCliente);
@@ -89,6 +95,7 @@ class AuthController extends Controller
             ]);
 
             DB::commit();
+            $this->enviarEmailRegistro($req->email,$nombres[0]);
 
             $token = JWTAuth::fromUser($user);
 
@@ -104,7 +111,9 @@ class AuthController extends Controller
         }
     }
 
-
+    /* ----------------------------
+    INGRESO O LOGIN
+    ----------------------------*/
 
     public function login(Request $req){
         try {
@@ -116,6 +125,7 @@ class AuthController extends Controller
             $ip = $req->ip();
             $executed = RateLimiter::attempt($ip,$perTwoMinutes = 5,function() {});
             if (!$executed) return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+
             $cedula = $req->cedula; $password = $req->password;
 
             $cliente = Cliente::where('cedula',$cedula)->first();

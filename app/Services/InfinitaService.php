@@ -124,6 +124,28 @@ class InfinitaService
         return $this->post('IngresarSolicitud',$data);
     }
 
+    public function enviarFotoCedula($cedula, $frontCi, $backCi)
+    {
+        $data = (object)[
+            "CliAdj" => (object)[
+                "CliDocu" => $cedula,
+                "adjunto" => array(
+                    (object)[
+                        "titulo" => "CEDULA FRENTE",
+                        "detalle" => "CEDULA FRENTE",
+                        "imagen" => $frontCi
+                    ],
+                    (object)[
+                        "titulo" => "CEDULA DORSO",
+                        "detalle" => "CEDULA DORSO",
+                        "imagen" => $backCi
+                    ]
+                )
+            ]
+        ];
+        return $this->post('IngresarAdj',$data);
+    }
+
 
     public function ListarSolicitudes(String $cedula, String $fechaDesde, String $fechaHasta)
     {
