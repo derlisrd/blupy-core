@@ -27,6 +27,7 @@ class CuentasController extends Controller
         if(property_exists( $infinita,'Tarjetas')){
             foreach ($infinita->Tarjetas as $val) {
                 array_push($results, [
+                    'id'=>2,
                     'descripcion'=>'Blupy crédito digital',
                     'otorgadoPor'=>'Mi crédito S.A.',
                     'tipo'=>1,
@@ -45,6 +46,7 @@ class CuentasController extends Controller
         if(property_exists( $farma,'result')){
             foreach ($farma->result as $val) {
                 array_push($results, [
+                    'id'=>1,
                     'descripcion'=>'Blupy crédito 1 día',
                     'otorgadoPor'=>'Farma S.A.',
                     'tipo'=>0,
