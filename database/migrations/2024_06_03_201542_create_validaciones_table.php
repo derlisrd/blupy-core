@@ -16,9 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('cliente_id')->nullable();
             $table->string('email')->nullable();
             $table->string('celular')->nullable();
-            $table->string('codigo_celular')->nullable();
-            $table->string('codigo_email')->nullable();
-            $table->boolean('valido')->default(1);
+            $table->string('codigo')->nullable();
+            $table->tinyInteger('forma')->default(0);
+            $table->boolean('validado')->default(0);
             $table->timestamps();
             $table->foreign('cliente_id')->references('id')->on('clientes');
         });

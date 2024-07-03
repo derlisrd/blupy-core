@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 
 class NotificacionesController extends Controller
 {
-    public function enviarNotificacionConMensaje(string $token, string $titulo, string $descripcion){
+    public function enviarNotificacionConMensaje(string $token, string $titulo, string $descripcion, array $datas){
+
 
 
     }

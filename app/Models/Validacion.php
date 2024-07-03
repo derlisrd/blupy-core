@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Validacion extends Model
 {
     use HasFactory;
+    protected $table = 'validaciones';
+    protected $fillable = [
+        'cliente_id',
+        'email',
+        'celular',
+        'codigo',
+        'forma',
+        'valido'
+    ];
 }

@@ -1,13 +1,39 @@
 <?php
 
 return [
+    "user"=>[
+        "newpassword"=>[
+            'old_password'=>'required',
+            'password'=>'required|string|min:8|confirmed',
+            'password_confirmation' => 'required',
+            'messages'=>[
+                'old_password'=>'Contraseña anterior es obligatoria.',
+                'password.min'=>'Contraseña debe tener al menos 8 caracteres.',
+                'password.required'=>'Contraseña es obligatorio.',
+                'password.confirmed'=>'La confirmación y contraseña debe ser iguales',
+                'password_confirmation.required'=>'Confirmación de contraseña es obligatorio.',
+            ]
+        ],
+        "resetpassword"=>[
+            'password'=>'required|string|min:8|confirmed',
+            'password_confirmation' => 'required',
+            'token'=>'required',
+            'messages'=>[
+                'password.min'=>'Contraseña debe tener al menos 8 caracteres.',
+                'password.required'=>'Contraseña es obligatorio.',
+                'password.confirmed'=>'La confirmación y contraseña debe ser iguales',
+                'password_confirmation.required'=>'Confirmación de contraseña es obligatorio.',
+                'token.required'=>'Token es obligatorio'
+            ]
+        ],
+    ],
     "auth"=>[
         "login"=>[
             "cedula"=> 'required',
             'password'=>'required',
             'messages'=>[
-                'cedula.required'=>'La cédula es requerida.',
-                "password.required"=>"La contraseña es requerida."
+                'cedula.required'=>'Cédula es requerida.',
+                "password.required"=>"Contraseña es requerida."
                 ]
             ],
         "register"=>[
@@ -48,6 +74,14 @@ return [
                 'cedula.required'=>'La cedula es requerida',
                 'forma.required'=>'La forma es requerida',
                 'forma.numeric'=>'La forma es debe ser 0 o 1',
+            ]
+        ],
+        "codigo"=>[
+            'id'=>'required',
+            'codigo'=>'required',
+            'messages'=>[
+                'id.required'=>'El id es obligatorio',
+                'codigo.required'=>'El código es obligatorio'
             ]
         ],
         "documento"=>[

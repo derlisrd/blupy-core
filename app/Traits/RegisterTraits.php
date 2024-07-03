@@ -108,6 +108,7 @@ trait RegisterTraits
 
     public function userInfo($cliente,$token){
         return [
+            'cliid'=>$cliente->cliid,
             'name'=>$cliente->user->name,
             'nombres'=>trim($cliente->nombre_primero . ' ' . $cliente->nombre_segundo),
             'apellidos'=>trim($cliente->apellido_primero . ' ' . $cliente->apellido_segundo),
@@ -119,7 +120,8 @@ trait RegisterTraits
             'solicitudCredito'=>$cliente->solicitud_credito,
             'funcionario'=>$cliente->funcionario,
             'aso'=>$cliente->asofarma,
-            'token'=>$token
+            'token'=>$token,
+
         ];
     }
 
