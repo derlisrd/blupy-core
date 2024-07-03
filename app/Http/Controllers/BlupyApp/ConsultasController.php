@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
+use App\Models\Version;
 use App\Services\InfinitaService;
 use App\Services\FarmaService;
 use Illuminate\Http\Request;
@@ -64,6 +65,13 @@ class ConsultasController extends Controller
     }
 
     public function verificarVersion(Request $req){
+
+        $results = Version::where('dispositivo',$req->dispositivo)->first();
+
+        return response()->json([
+            'success'=>true,
+            'results'=>$results
+        ]);
 
     }
 

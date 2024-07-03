@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('cliente_id')->unsigned();
             $table->tinyInteger('estado_id');
+            $table->string('estado')->nullable();
             $table->string('codigo');
             $table->tinyInteger('tipo');
             $table->float('importe')->nullable();

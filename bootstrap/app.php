@@ -8,6 +8,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Illuminate\Auth\AuthenticationException;
 use App\Http\Middleware\XapiKeyTokenIsValid;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -61,7 +62,13 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->json([
                 'success'=>false,
                 'message'=> $e->getMessage(),
-            ],400);
+            ],404);
+        });
+        $exceptions->renderable(function (MethodNotAllowedHttpException $e){
+            return response()->json([
+                'success'=>false,
+                'message'=> $e->getMessage(),
+            ],405);
         });
 
 

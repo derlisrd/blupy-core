@@ -34,7 +34,7 @@ class UserController extends Controller
         }
         $randomNumber = random_int(100000, 999999);
         if($req->forma == 0){
-            $this->enviarEmail($user->email,$randomNumber);
+            $this->enviarEmailRecuperacion($user->email,$randomNumber);
         }
         return response()->json([
             'success'=>true,
@@ -80,7 +80,7 @@ class UserController extends Controller
 
     }
 
-    private function enviarEmail(String $email, int $code){
+    private function enviarEmailRecuperacion(String $email, int $code){
         try {
             Mail::send('email.recuperarcontrasena', ['code'=>$code], function ($message) use($email) {
                 $message->subject('Blupy: recuperar contraseña');

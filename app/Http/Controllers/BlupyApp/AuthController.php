@@ -135,12 +135,15 @@ class AuthController extends Controller
                 $token = JWTAuth::attempt($credentials);
 
                 if($token){
+                    $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s') ]);
                     return response()->json([
+
                         'success'=>true,
                         'results'=>$this->userInfo($cliente,$token)
                         ]
                     );
                 }
+                $user->update(['intentos'=> $user->intentos + 1]);
             }
 
             return response()->json([
@@ -191,6 +194,8 @@ class AuthController extends Controller
             return response()->json(['success'=>false,'message'=>'Error de servidor'],500);
         }
     }
+
+
 
 
 

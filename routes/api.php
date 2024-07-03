@@ -9,7 +9,7 @@ use App\Http\Controllers\BlupyApp\SolicitudesController;
 use App\Http\Controllers\BlupyApp\UserController;
 use App\Http\Controllers\BlupyApp\ValidacionesController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Auth\Middleware\Authenticate;
+//use Illuminate\Auth\Middleware\Authenticate;
 
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/register',[AuthController::class,'register']);
@@ -24,17 +24,20 @@ Route::get('/barrios',[ConsultasController::class,'barrios']);
 Route::post('/scan',[ValidacionesController::class,'scanearDocumento']);
 
 
-Route::middleware(Authenticate::using('api'))->group(function(){
+//Route::middleware(Authenticate::using('api'))->group(function(){
+Route::middleware('auth:api')->group(function(){
 
     Route::post('/check-token',[AuthController::class,'checkToken']);
     Route::post('/refresh-token',[AuthController::class,'refreshToken']);
     Route::post('/logout',[AuthController::class,'logout']);
 
     Route::get('/tarjetas',[CuentasController::class,'tarjetas']);
-
-    Route::get('/movimientos',[MovimientosController::class,'movimientos']);
+    Route::get('/movimientos',[CuentasController::class,'movimientos']);
 
     Route::get('/solicitudes',[SolicitudesController::class,'solicitudes']);
+    Route::post('/solicitar-credito',[SolicitudesController::class,'solicitarCredito']);
+    Route::post('/solicitar-ampliacion',[SolicitudesController::class,'solicitarAmpliacion']);
+    Route::post('/solicitar-adicional',[SolicitudesController::class,'solicitarAdicional']);
 
     Route::get('/consultar-qr',[QRController::class,'consultar']);
     Route::post('/autorizar-qr',[QRController::class,'autorizar']);

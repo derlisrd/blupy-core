@@ -12,6 +12,7 @@ class SolicitudCredito extends Model
     protected $fillable = [
         'cliente_id',
         'estado_id',
+        'estado',
         'codigo',
         'tipo',
         'importe'
