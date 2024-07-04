@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
+use App\Models\Device;
 use App\Models\SolicitudCredito;
 use App\Models\User;
 use App\Traits\RegisterTraits;
@@ -84,6 +85,14 @@ class AuthController extends Controller
                 'name'=>$req->nombres . ' '.$req->apellidos,
                 'email'=>$req->email,
                 'password'=> bcrypt($req->password)
+            ]);
+            Device::create([
+                'user_id'=>$user->id,
+                'notitoken'=>$req->notitoken,
+                'version'=>$req->version,
+                'device'=>$req->device,
+                'model'=>$req->model,
+                'version'=>$req->version
             ]);
 
             SolicitudCredito::create([

@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Device extends Model
 {
     use HasFactory;
+    protected $table = 'devices';
+    protected $fillable = [
+        'user_id',
+        'device',
+        'model',
+        'notitoken',
+        'ip',
+        'version'
+    ];
 }

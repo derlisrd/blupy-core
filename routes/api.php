@@ -3,6 +3,7 @@
 use App\Http\Controllers\BlupyApp\AuthController;
 use App\Http\Controllers\BlupyApp\ConsultasController;
 use App\Http\Controllers\BlupyApp\CuentasController;
+use App\Http\Controllers\BlupyApp\DatosController;
 use App\Http\Controllers\BlupyApp\QRController;
 use App\Http\Controllers\BlupyApp\SolicitudesController;
 use App\Http\Controllers\BlupyApp\UserController as UserPrivate;
@@ -42,8 +43,9 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/solicitar-adicional',[SolicitudesController::class,'solicitarAdicional']);
 
     Route::post('/cambiar-contrasena',[UserPrivate::class,'cambiarContrasena']);
-    Route::post('/cambiar-celular',[UserPrivate::class,'cambiarCelular']);
-    Route::post('/cambiar-email',[UserPrivate::class,'cambiarEmail']);
+
+    Route::post('/cambiar-celular',[DatosController::class,'cambiarCelular']);
+    Route::post('/cambiar-email',[DatosController::class,'cambiarEmail']);
 
     Route::get('/consultar-qr',[QRController::class,'consultar']);
     Route::post('/autorizar-qr',[QRController::class,'autorizar']);

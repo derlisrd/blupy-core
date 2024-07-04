@@ -47,14 +47,6 @@ class UserController extends Controller
         return response()->json(['success' => true,'message' => 'Contraseña actualizada!']);
     }
 
-    public function cambiarEmail(Request $req){
-
-    }
-
-    // cambiar celular o telefono
-    public function cambiarCelular(){
-
-    }
 
 
     private function enviarEmailRecuperacion(String $email, int $code){
@@ -77,9 +69,6 @@ class UserController extends Controller
         }
     }
 
-    private function cambiosEnInfinita(){
-
-    }
 
 
 }

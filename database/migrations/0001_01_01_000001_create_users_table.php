@@ -24,7 +24,6 @@ return new class extends Migration
             $table->tinyInteger('rol')->default(0);
             $table->dateTimeTz('ultimo_ingreso')->default(DB::raw('CURRENT_TIMESTAMP'))->nullable();
             $table->tinyInteger('intentos')->default(0);
-            $table->text('notitoken')->nullable();
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
