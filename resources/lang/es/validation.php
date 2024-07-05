@@ -1,6 +1,41 @@
 <?php
 
 return [
+    'validaciones'=>[
+        'email'=>[
+            'email'=>'required|email',
+            'messages'=>[
+                'email.required'=>'Email es obligatorio.',
+                'email.email'=>'Email debe tener formato ejemplo@email.com',
+            ]
+        ],
+        'confirmar'=>[
+            'id'=>'required|numeric',
+            'codigo'=>'required',
+            'messages'=>[
+                'id.required'=>'El id es obligatorio.',
+                'id.numeric'=>'El id debe ser numerico.',
+                'codigo.required'=>'Codigo es obligatorio.'
+            ],
+        ],
+        'sms'=>[
+            'telefono'=>'required',
+            'messages'=>[
+                'telefono.required'=>'Telefono es obligatorio.',
+            ]
+        ],
+    ],
+    'rest'=>[
+        'login'=>[
+            'email'=>'required|email',
+            'password'=>'required',
+            'messages'=>[
+                'email.required'=>'Email es obligatorio.',
+                'email.email'=>'Email debe tener formato ejemplo@email.com',
+                'password.required'=>'Contraseña es obligatoria.'
+            ],
+        ],
+    ],
     "user"=>[
         "newpassword"=>[
             'old_password'=>'required',

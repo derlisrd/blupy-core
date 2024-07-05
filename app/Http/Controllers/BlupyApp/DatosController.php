@@ -11,9 +11,15 @@ class DatosController extends Controller
 
     }
 
+    public function confirmaCambiarEmail(Request $req){
 
-    // cambiar celular o telefono
+    }
+
     public function cambiarCelular(Request $req){
+
+    }
+
+    public function confirmaCambiarCelular(Request $req){
 
     }
 

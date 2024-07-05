@@ -25,7 +25,8 @@ class AuthController extends Controller
     public function register(Request $req) {
 
         $validator = Validator::make($req->all(),trans('validation.auth.register'), trans('validation.auth.register.messages'));
-        if($validator->fails())return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+        if($validator->fails())
+            return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
         try {
             // consulta si tiene ficha en farma
@@ -35,9 +36,9 @@ class AuthController extends Controller
             $fotoCiFrente = $this->guardarCedulaImagenBase64($req->fotocedulafrente, $req->cedula . '_frente');
             $fotoCiDorso = $this->guardarCedulaImagenBase64($req->fotocedulafrente, $req->cedula . '_dorso');
 
-            if($fotoCiDorso == null || $fotoCiFrente == null){
+            if($fotoCiDorso == null || $fotoCiFrente == null)
                 return response()->json(['success'=>false,'message'=>'Hay un error con la imagen de la cedula'],400);
-            }
+
 
             DB::beginTransaction();
             $nombres = $this->separarNombres( $req->nombres );
@@ -128,12 +129,13 @@ class AuthController extends Controller
         try {
             $validator = Validator::make($req->all(),trans('validation.auth.login'), trans('validation.auth.login.messages'));
 
-            if($validator->fails()){
+            if($validator->fails())
                 return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
-            }
+
             $ip = $req->ip();
             $executed = RateLimiter::attempt($ip,$perTwoMinutes = 5,function() {});
-            if (!$executed) return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+            if (!$executed)
+                return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
             $cedula = $req->cedula; $password = $req->password;
 
@@ -146,7 +148,6 @@ class AuthController extends Controller
                 if($token){
                     $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s') ]);
                     return response()->json([
-
                         'success'=>true,
                         'results'=>$this->userInfo($cliente,$token)
                         ]
@@ -161,9 +162,7 @@ class AuthController extends Controller
 
         } catch (\Throwable $th) {
             Log::error($th);
-            return response()->json([
-                'success'=>false,'message'=>"Error de servidor"
-            ],500);
+            return response()->json(['success'=>false,'message'=>"Error de servidor"],500);
         }
     }
 

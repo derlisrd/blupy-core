@@ -112,8 +112,6 @@ class UserController extends Controller
         if($validator->fails())
             return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
-
-
         $reset = DB::table('password_reset_tokens')->where([
             ['token', $req->token]
         ])->first();

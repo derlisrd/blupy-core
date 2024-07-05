@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BlupyApp\AuthController;
+use App\Http\Controllers\BlupyApp\AWSController;
 use App\Http\Controllers\BlupyApp\ConsultasController;
 use App\Http\Controllers\BlupyApp\CuentasController;
 use App\Http\Controllers\BlupyApp\DatosController;
@@ -23,7 +24,12 @@ Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDo
 Route::get('/ciudades',[ConsultasController::class,'ciudades']);
 Route::get('/barrios',[ConsultasController::class,'barrios']);
 
-Route::post('/scan',[ValidacionesController::class,'scanearDocumento']);
+Route::post('/scan',[AWSController::class,'scanearDocumento']);
+
+Route::post('/validar-email',[ValidacionesController::class,'validarEmail']);
+Route::post('/confirmar-email',[ValidacionesController::class,'confirmarEmail']);
+Route::post('/validar-telefono',[ValidacionesController::class,'validarTelefono']);
+Route::post('/confirmar-telefono',[ValidacionesController::class,'confirmarTelefono']);
 
 
 //Route::middleware(Authenticate::using('api'))->group(function(){
@@ -45,7 +51,9 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/cambiar-contrasena',[UserPrivate::class,'cambiarContrasena']);
 
     Route::post('/cambiar-celular',[DatosController::class,'cambiarCelular']);
+    Route::post('/confirma-cambiar-celular',[DatosController::class,'confirmaCambiarCelular']);
     Route::post('/cambiar-email',[DatosController::class,'cambiarEmail']);
+    Route::post('/confirma-cambiar-email',[DatosController::class,'confirmaCambiarEmail']);
 
     Route::get('/consultar-qr',[QRController::class,'consultar']);
     Route::post('/autorizar-qr',[QRController::class,'autorizar']);
