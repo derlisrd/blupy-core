@@ -1,7 +1,26 @@
 <?php
 
 return [
-    'validaciones'=>[
+    'cambio'=>[
+        'email'=>[
+            'email'=>'required|email',
+            'password'=>'required',
+            'messages'=>[
+                'email.required'=>'Email nuevo es obligatorio.',
+                'email.email'=>'Email debe tener formato ejemplo@email.com',
+                'password.required'=>'Contraseña es obligatoria.'
+            ]
+        ],
+        'telefono'=>[
+            'telefono'=>'required',
+            'password'=>'required',
+            'messages'=>[
+                'telefono.required'=>'Telefono es obligatorio.',
+                'password.required'=>'Contraseña es obligatoria.'
+            ]
+        ],
+    ],
+    'verificaciones'=>[
         'email'=>[
             'email'=>'required|email',
             'messages'=>[

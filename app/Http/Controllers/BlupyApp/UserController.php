@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cliente;
-use App\Models\Validacion;
 use App\Services\InfinitaService;
 use App\Services\TigoSmsService;
 use Illuminate\Http\Request;
@@ -12,7 +10,6 @@ use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 
 class UserController extends Controller
@@ -34,6 +31,10 @@ class UserController extends Controller
         if($validator->fails())
             return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
+        $ip = $req->ip();
+        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});
+        if (!$executed)
+            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
         if(!$cliente)
             return response()->json(['success'=>false,'message'=>'No existe cliente'],404);

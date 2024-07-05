@@ -16,9 +16,11 @@ class ValidacionesController extends Controller
 {
 
 
+
+
     public function validarEmail(Request $req){
         try {
-            $validator = Validator::make($req->all(),trans('validation.validaciones.email'), trans('validation.validaciones.email.messages'));
+            $validator = Validator::make($req->all(),trans('validation.verificaciones.email'), trans('validation.verificaciones.email.messages'));
             if($validator->fails())
                 return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
@@ -39,8 +41,15 @@ class ValidacionesController extends Controller
         }
     }
 
+
+
+
+
+
+
+
     public function confirmarEmail(Request $req){
-        $validator = Validator::make($req->all(),trans('validation.validaciones.confirmar'), trans('validation.validaciones.confirmar.messages'));
+        $validator = Validator::make($req->all(),trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
         if($validator->fails())
                 return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
@@ -51,7 +60,7 @@ class ValidacionesController extends Controller
 
         $validacion = Validacion::where('id',$req->id)->where('validado',0)->where('codigo',$req->codigo)->first();
         if(!$validacion)
-            return response()->json(['success'=>false,'message'=>'Codigo invalido'],400);
+            return response()->json(['success'=>false,'message'=>'Codigo invalido'],403);
 
         $fechaCreado = Carbon::parse($validacion->created_at);
         $fechaActual = Carbon::now();
@@ -69,9 +78,12 @@ class ValidacionesController extends Controller
 
 
 
+
+
+
     public function validarTelefono(Request $req){
         try {
-            $validator = Validator::make($req->all(),trans('validation.validaciones.sms'), trans('validation.validaciones.sms.messages'));
+            $validator = Validator::make($req->all(),trans('validation.verificaciones.sms'), trans('validation.verificaciones.sms.messages'));
             if($validator->fails())
                 return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
@@ -84,7 +96,7 @@ class ValidacionesController extends Controller
             $this->enviarMensajeDeTexto($req->telefono,$randomNumber);
             $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->telefono]);
 
-            return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Email enviado']);
+            return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Mensaje enviado']);
         } catch (\Throwable $th) {
             Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error en el servidor'],500);
@@ -92,14 +104,18 @@ class ValidacionesController extends Controller
 
     }
 
+
+
+
+
     public function confirmarTelefono(Request $req){
-        $validator = Validator::make($req->all(),trans('validation.validaciones.confirmar'), trans('validation.validaciones.confirmar.messages'));
+        $validator = Validator::make($req->all(),trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
         if($validator->fails())
                 return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
         $validacion = Validacion::where('id',$req->id)->where('validado',0)->where('codigo',$req->codigo)->first();
         if(!$validacion)
-            return response()->json(['success'=>false,'message'=>'Codigo invalido'],400);
+            return response()->json(['success'=>false,'message'=>'Codigo invalido'],401);
 
         $fechaCreado = Carbon::parse($validacion->created_at);
         $fechaActual = Carbon::now();

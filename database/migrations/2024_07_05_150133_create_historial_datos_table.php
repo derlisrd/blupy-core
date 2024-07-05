@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('devices', function (Blueprint $table) {
+        Schema::create('historial_datos', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->unsigned()->nullable();
-            $table->string('device')->nullable();
-            $table->string('model')->nullable();
-            $table->text('notitoken')->nullable();
-            $table->text('ip')->nullable();
-            $table->text('version')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('email')->nullable();
+            $table->string('celular')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
         });
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('devices');
+        Schema::dropIfExists('historial_datos');
     }
 };
