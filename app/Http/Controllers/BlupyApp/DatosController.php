@@ -24,7 +24,7 @@ class DatosController extends Controller
             return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
         $ip = $req->ip();
-        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 1,function() {});
+        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 2,function() {});
         if (!$executed)
             return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
@@ -75,7 +75,7 @@ class DatosController extends Controller
         ]);
         $user->email = $validacion->email;
         $user->save();
-        $this->cambiosEmailInfinita($user->cliente->cliid,$req->email);
+        $this->cambiosEnInfinita($user->cliente->cliid,$req->email,null);
         return response()->json(['success'=>true,'message'=>'Email ha cambiado.']);
     }
 
@@ -113,13 +113,24 @@ class DatosController extends Controller
         }
     }
 
-    private function cambiosEmailInfinita($cliid, $email){
+    private function cambiosEnInfinita($cliid, $email,$telefono){
 
         $webserviceInfinita = new InfinitaService();
 
         $cliente = (object) $webserviceInfinita->TraerDatosCliente($cliid);
         $clienteDatos = (object) $cliente->data;
+
         $cliObj = (object)$clienteDatos->wCliente;
+
+        $telefonoNuevo = [
+            (object)[
+                'CliTelId'=>$cliObj->Tel[0]['CliTelId'],
+                'CliTelNot'=>$cliObj->Tel[0]['CliTelNot'],
+                'CliTelUb'=>$cliObj->Tel[0]['CliTelUb'],
+                'CliTelef'=> $telefono ?  $telefono : $cliObj->Tel[0]['CliTelef']
+            ]
+        ];
+
         $clienteModificado = [
             'ActComId'=>0,
             'CliApe'=>$cliObj->CliApe,
@@ -168,7 +179,7 @@ class DatosController extends Controller
             'LugTrabDir'=>$cliObj->LugTrabDir,
             'LugTrabId'=>$cliObj->LugTrabId,
             'LugTrabTel'=>$cliObj->LugTrabTel,
-            'Tel'=>$cliObj->Tel,
+            'Tel'=> $telefono ? $telefonoNuevo : $cliObj->Tel,
             'TipDocId'=>$cliObj->TipDocId
         ];
          $modificarCliente = $webserviceInfinita->ModificarCliente($cliid,$clienteModificado);
