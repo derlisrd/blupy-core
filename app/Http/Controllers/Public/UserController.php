@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Cliente;
 use App\Models\User;
 use App\Models\Validacion;
+use App\Services\EmailService;
 use App\Services\TigoSmsService;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
@@ -46,7 +47,8 @@ class UserController extends Controller
             $randomNumber = random_int(100000, 999999);
             $forma = 'email.';
             if($req->forma == 0){
-                $this->enviarEmailRecuperacion($user->email,$randomNumber);
+                $emailService = new EmailService();
+                $emailService->enviarEmail($user->email,'Blupy: recupera tu contraseña','email.recuperarcontrasena',['code'=>$randomNumber]);
                 $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$user->email,'cliente_id'=>$cliente->id]);
             }
             if($req->forma == 1){
@@ -139,16 +141,6 @@ class UserController extends Controller
     }
 
 
-    private function enviarEmailRecuperacion(String $email, int $code){
-        try {
-            Mail::send('email.recuperarcontrasena', ['code'=>$code], function ($message) use($email) {
-                $message->subject('Blupy: recuperar contraseña');
-                $message->to($email);
-            });
-        } catch (\Throwable $th) {
-            throw $th;
-        }
-    }
     private function enviarMensajeDeTextoRecuperacion(String $celular, int $code){
         try {
             $hora = Carbon::now()->format('H:i');
