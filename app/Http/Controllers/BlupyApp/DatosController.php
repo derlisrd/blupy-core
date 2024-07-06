@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\HistorialDato;
 use App\Models\User;
 use App\Models\Validacion;
+use App\Services\EmailService;
 use App\Services\InfinitaService;
 use App\Services\TigoSmsService;
 use Carbon\Carbon;
@@ -38,7 +39,8 @@ class DatosController extends Controller
         $cliente = $user->cliente;
 
         $randomNumber = random_int(100000, 999999);
-        $this->enviarEmail($req->email,$randomNumber);
+        $emailService = new EmailService();
+        $emailService->enviarEmail($req->email,"[".$randomNumber."]Blupy confirmar email",'email.validar',['code'=>$randomNumber]);
         $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email,'cliente_id'=>$cliente->id]);
 
         return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Email enviado']);
@@ -112,6 +114,9 @@ class DatosController extends Controller
             throw $th;
         }
     }
+
+
+
 
     private function cambiosEnInfinita($cliid, $email,$telefono){
 
