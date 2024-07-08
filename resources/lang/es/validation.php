@@ -12,10 +12,11 @@ return [
             ]
         ],
         'telefono'=>[
-            'telefono'=>'required',
+            'celular'=>'required|regex:/^[0-9]{10}$/',
             'password'=>'required',
             'messages'=>[
-                'telefono.required'=>'Telefono es obligatorio.',
+                'celular.required'=>'Celular es obligatorio.',
+                'celular.regex'=>'Debe tener formato de numero de celular',
                 'password.required'=>'Contraseña es obligatoria.'
             ]
         ],

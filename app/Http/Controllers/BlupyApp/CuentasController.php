@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class CuentasController extends Controller
@@ -114,7 +115,22 @@ class CuentasController extends Controller
     }
 
     public function extracto(Request $req){
-
+        try {
+            $resultado = (object)$this->infinitaService->extractoCerrado($req->Maectaid,$req->Mtnume,$req->Periodo);
+            if($resultado->Retorno == 'Extracto no encontrado.'){
+                return response()->json(['success'=>false,'message'=>'Extracto no disponible'],404);
+            }
+            return response()->json([
+                'success'=>true,
+                'message'=>'Extracto disponible',
+                'results'=>[
+                    'url'=>env('BASE_EXTRACTO') . $resultado->Url
+                ]
+            ]);
+        } catch (\Throwable $th) {
+           Log::info($th);
+           return response()->json(['success'=>false,'message'=>'Error de servidor'],500);
+        }
     }
 }
 

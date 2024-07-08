@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cliente;
 use App\Models\HistorialDato;
 use App\Models\User;
 use App\Models\Validacion;
@@ -13,40 +14,127 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 
 class DatosController extends Controller
 {
     public function cambiarEmail(Request $req){
-        $validator = Validator::make($req->all(),trans('validation.cambio.email'), trans('validation.cambio.email.messages'));
-        if($validator->fails())
-            return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+        try {
+            $validator = Validator::make($req->all(),trans('validation.cambio.email'), trans('validation.cambio.email.messages'));
+            if($validator->fails())
+                return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
-        $ip = $req->ip();
-        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 2,function() {});
-        if (!$executed)
-            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+            $ip = $req->ip();
+            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 2,function() {});
+            if (!$executed)
+                return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
-        $user = $req->user();
-        if (!Hash::check($req->password, $user->password))
-            return response()->json(['success'=>false,'message'=>'Contraseña incorrecta.'],401);
+            $user = $req->user();
+            if (!Hash::check($req->password, $user->password))
+                return response()->json(['success'=>false,'message'=>'Contraseña incorrecta.'],401);
 
-        if(!$user)
-            return response()->json(['success'=>false, 'message'=>'No existe.' ],404);
+            if(!$user)
+                return response()->json(['success'=>false, 'message'=>'No existe.' ],404);
 
-        $cliente = $user->cliente;
+            $cliente = $user->cliente;
 
-        $randomNumber = random_int(100000, 999999);
-        $emailService = new EmailService();
-        $emailService->enviarEmail($req->email,"[".$randomNumber."]Blupy confirmar email",'email.validar',['code'=>$randomNumber]);
-        $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email,'cliente_id'=>$cliente->id]);
+            $randomNumber = random_int(100000, 999999);
+            $emailService = new EmailService();
+            $emailService->enviarEmail($req->email,"[".$randomNumber."]Blupy confirmar email",'email.validar',['code'=>$randomNumber]);
+            $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email,'cliente_id'=>$cliente->id]);
 
-        return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Email enviado']);
+            return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Email enviado']);
+
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return response()->json(['success'=>false,'message'=>'Error de servidor']);
+        }
     }
 
+
+
+
+
     public function confirmaCambiarEmail(Request $req){
+        try {
+            $validator = Validator::make($req->all(),trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
+            if($validator->fails())
+                    return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+
+            $ip = $req->ip();
+            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});
+            if (!$executed)
+                return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+
+            $validacion = Validacion::where('id',$req->id)->where('validado',0)->where('codigo',$req->codigo)->first();
+            if(!$validacion)
+                return response()->json(['success'=>false,'message'=>'Codigo invalido'],403);
+
+            $fechaCreado = Carbon::parse($validacion->created_at);
+            $fechaActual = Carbon::now();
+            $diferenciaEnMinutos = $fechaCreado->diffInMinutes($fechaActual);
+
+            if ($diferenciaEnMinutos >= 10)
+                return response()->json(['success'=>false,'message'=>'Código ha expirado'],401);
+
+            $validacion->validado = 1;
+            $validacion->save();
+
+            $user = $req->user();
+            HistorialDato::create([
+                'user_id'=>$user->id,
+                'email'=>$user->email
+            ]);
+            $user->email = $validacion->email;
+            $user->save();
+            $this->cambiosEnInfinita($user->cliente->cliid,$req->email,null);
+            return response()->json(['success'=>true,'message'=>'Email ha cambiado.']);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return response()->json(['success'=>false,'message'=>'Error de servidor']);
+        }
+    }
+
+
+
+
+    public function cambiarCelular(Request $req){
+        try {
+            $validator = Validator::make($req->all(),trans('validation.cambio.telefono'), trans('validation.cambio.telefono.messages'));
+            if($validator->fails())
+                return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+
+            $ip = $req->ip();
+            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 2,function() {});
+            if (!$executed)
+                return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+
+            $user = $req->user();
+            if (!Hash::check($req->password, $user->password))
+                return response()->json(['success'=>false,'message'=>'Contraseña incorrecta.'],401);
+
+            if(!$user)
+                return response()->json(['success'=>false, 'message'=>'No existe.' ],404);
+
+            $cliente = $user->cliente;
+
+            $randomNumber = random_int(100000, 999999);
+            $tigoService = new TigoSmsService();
+            $hora = Carbon::now()->format('H:i');
+            $mensaje = $randomNumber." es tu codigo de verificacion de BLUPY. ". $hora  ;
+            $tigoService->enviarSms($cliente->celular,$mensaje);
+
+            $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->celular,'cliente_id'=>$cliente->id]);
+
+            return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Mensaje enviado']);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return response()->json(['success'=>false,'message'=>'Error de servidor']);
+        }
+    }
+
+    public function confirmaCambiarCelular(Request $req){
         $validator = Validator::make($req->all(),trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
         if($validator->fails())
                 return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
@@ -71,50 +159,17 @@ class DatosController extends Controller
         $validacion->save();
 
         $user = $req->user();
+        $clienteId = $user->cliente->id;
         HistorialDato::create([
             'user_id'=>$user->id,
-            'email'=>$user->email
+            'celular'=>$user->cliente->celular
         ]);
-        $user->email = $validacion->email;
-        $user->save();
-        $this->cambiosEnInfinita($user->cliente->cliid,$req->email,null);
-        return response()->json(['success'=>true,'message'=>'Email ha cambiado.']);
+        Cliente::find($clienteId)->update([
+            'celular'=>$validacion->celular
+        ]);
+        $this->cambiosEnInfinita($user->cliente->cliid,null,$user->cliente->celular);
+        return response()->json(['success'=>true,'message'=>'Telefono celular ha cambiado.']);
     }
-
-    public function cambiarCelular(Request $req){
-
-    }
-
-    public function confirmaCambiarCelular(Request $req){
-
-    }
-
-    private function enviarEmail(String $email, int $code){
-        $datos = [
-            'email'=>$email,
-            'code'=>$code
-        ];
-        try {
-            Mail::send('email.validar', ['code'=>$code], function ($message) use($datos) {
-                $message->subject('['.$datos['code'].'] Blupy confirmacion');
-                $message->to($datos['email']);
-            });
-        } catch (\Throwable $th) {
-            throw $th;
-        }
-    }
-
-    private function enviarMensajeDeTexto(String $celular, int $code){
-        try {
-            $hora = Carbon::now()->format('H:i');
-            $mensaje = "$code es tu codigo de verificacion de BLUPY. ". $hora  ;
-            $tigoService = new TigoSmsService();
-            $tigoService->enviarSms($celular,$mensaje);
-        } catch (\Throwable $th) {
-            throw $th;
-        }
-    }
-
 
 
 
@@ -124,6 +179,8 @@ class DatosController extends Controller
 
         $cliente = (object) $webserviceInfinita->TraerDatosCliente($cliid);
         $clienteDatos = (object) $cliente->data;
+
+        Log::info($cliente->data);
 
         $cliObj = (object)$clienteDatos->wCliente;
 

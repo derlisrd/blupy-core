@@ -22,6 +22,10 @@ class InfinitaService
         ];
     }
 
+    public function ExtractoCerrado($Maectaid,$Mtnume,$Periodo){
+        return $this->get('ExtractoCerrado',['Maectaid' => $Maectaid,'Mtnume'=>$Mtnume,'Periodo' => $Periodo]);
+    }
+
     public function movimientosPorFecha(String $cuenta, String $periodo){
         return $this->get('TarjMovimPorFecha',['Maectaid'=>$cuenta,'Periodo'=>$periodo,'Mtnume'=>"1"]);
     }
@@ -47,94 +51,9 @@ class InfinitaService
         return $this->get('TraerPorDocumento',['Clidocu' => $cedula]);
     }
 
-    public function registrar(Object $cliente)
-    {
-        $data = (object)[
-            "wSolicitud" => (object)[
-                "SolApe1"=> $cliente->apellido_primero,
-                "SolApe2"=> $cliente->apellido_segundo ?? "",
-                "SolCed"=> $cliente->cedula,
-                "SolCel"=> $cliente->celular,
-                "SolFNa"=> $cliente->fecha_nacimiento,
-                "SolFec"=> Carbon::now()->format('Y-m-d'),
-                "SolMail"=> $cliente->email,
-                "SolNom1"=> $cliente->nombre_primero,
-                "SolNom2"=> $cliente->nombre_segundo ?? "",
-                "SolProdId"=> 171, // 171 registro
-                "AfinId" => 1,
-                "BancaId"=> 1,
-                "DesCreId"=> 0,
-                "LugTrabId"=> 0,
-                "MarcaId"=> 1,
-                "MedioId"=> 0,
-                "OficialId"=> 0,
-                "Sol1Vto"=> "2023-03-20",
-                "SolAsoId"=> 0,
-                "SolAsoOrd"=> "123",
-                "SolAuxId"=> 0,
-                "SolCanPer"=> 1,
-                "SolCargo"=> "CARGO",
-                "SolCond"=> "TAR",
-                "SolConsol"=> 0,
-                "SolCuoC"=> 1,
-                "SolCygSala"=> 0,
-                "SolDir"=> '',
-                "SolDepId" => 0,
-                "SolCiuId" => 0,
-                "SolBarId" => 0,
-                "SolEsCiv"=> 1,
-                "SolDirLat" =>  '',
-                "SolDirLon" => '',
-                "SolLabDirLat" => '',
-                "SolLabDirLon" => '',
-                "SolFijVto"=> false,
-                "SolGarBarId"=> 0,
-                "SolGarCiuId"=> 0,
-                "SolGarCySala"=> 0,
-                "SolGarDepId"=> 0,
-                "SolGarEsCiv"=> 0,
-                "SolGarFNa"=> "0001-01-01",
-                "SolGarLabAntA"=> 0,
-                "SolGarLabAntM"=> 0,
-                "SolGarNacId"=> 0,
-                "SolGarProfId"=> 0,
-                "SolGarSala"=> 0,
-                "SolId"=> 0,
-                "SolImpSol"=> 300000,
-                "SolImpor"=> 300000,
-                "SolLabEmp" => '',
-                "SolLabAntA"=> 0,
-                "SolLabAntM" => 0,
-                "SolLabDir"=> '',
-                "SolLabFecIn"=> "",
-                "SolLabSal"=> '',
-                "SolLabTel"=> '',
-                "SolLabTipId"=> 0,
-                "SolLinea"=> 300000,
-                "SolMaeCta"=> 0,
-                "SolMonId"=> 6900,
-                "Adicional" => [],
-                "SolNacId"=> 172,
-                "SolObs"=> "",
-                "SolProfId"=> 0,
-                "SolRUC"=> "0000000",
-                "SolSepBi"=> "N",
-                "SolSexo"=> "M",
-                "SolSucNro"=> 1,
-                "SolTcEmb"=> "D",
-                "SolTcTip"=> "P",
-                "SolTel"=> "",
-                "SolTipCal"=> 5,
-                "SolTipViv"=> "P",
-                "SolTipVto"=> 1,
-                "SolVendId"=> 0,
-                "SolicGarId"=> 0
-            ],
-            "Proceso"=> 2
-        ];
 
-        return $this->post('IngresarSolicitud',$data);
-    }
+
+
 
     public function enviarFotoCedula($cedula, $frontCi, $backCi)
     {
@@ -253,6 +172,95 @@ class InfinitaService
             ],
             "Proceso"=> 2
         ];
+        return $this->post('IngresarSolicitud',$data);
+    }
+
+    public function registrar(Object $cliente)
+    {
+        $data = (object)[
+            "wSolicitud" => (object)[
+                "SolApe1"=> $cliente->apellido_primero,
+                "SolApe2"=> $cliente->apellido_segundo ?? "",
+                "SolCed"=> $cliente->cedula,
+                "SolCel"=> $cliente->celular,
+                "SolFNa"=> $cliente->fecha_nacimiento,
+                "SolFec"=> Carbon::now()->format('Y-m-d'),
+                "SolMail"=> $cliente->email,
+                "SolNom1"=> $cliente->nombre_primero,
+                "SolNom2"=> $cliente->nombre_segundo ?? "",
+                "SolProdId"=> 171, // 171 registro
+                "AfinId" => 1,
+                "BancaId"=> 1,
+                "DesCreId"=> 0,
+                "LugTrabId"=> 0,
+                "MarcaId"=> 1,
+                "MedioId"=> 0,
+                "OficialId"=> 0,
+                "Sol1Vto"=> "2023-03-20",
+                "SolAsoId"=> 0,
+                "SolAsoOrd"=> "123",
+                "SolAuxId"=> 0,
+                "SolCanPer"=> 1,
+                "SolCargo"=> "CARGO",
+                "SolCond"=> "TAR",
+                "SolConsol"=> 0,
+                "SolCuoC"=> 1,
+                "SolCygSala"=> 0,
+                "SolDir"=> '',
+                "SolDepId" => 0,
+                "SolCiuId" => 0,
+                "SolBarId" => 0,
+                "SolEsCiv"=> 1,
+                "SolDirLat" =>  '',
+                "SolDirLon" => '',
+                "SolLabDirLat" => '',
+                "SolLabDirLon" => '',
+                "SolFijVto"=> false,
+                "SolGarBarId"=> 0,
+                "SolGarCiuId"=> 0,
+                "SolGarCySala"=> 0,
+                "SolGarDepId"=> 0,
+                "SolGarEsCiv"=> 0,
+                "SolGarFNa"=> "0001-01-01",
+                "SolGarLabAntA"=> 0,
+                "SolGarLabAntM"=> 0,
+                "SolGarNacId"=> 0,
+                "SolGarProfId"=> 0,
+                "SolGarSala"=> 0,
+                "SolId"=> 0,
+                "SolImpSol"=> 300000,
+                "SolImpor"=> 300000,
+                "SolLabEmp" => '',
+                "SolLabAntA"=> 0,
+                "SolLabAntM" => 0,
+                "SolLabDir"=> '',
+                "SolLabFecIn"=> "",
+                "SolLabSal"=> '',
+                "SolLabTel"=> '',
+                "SolLabTipId"=> 0,
+                "SolLinea"=> 300000,
+                "SolMaeCta"=> 0,
+                "SolMonId"=> 6900,
+                "Adicional" => [],
+                "SolNacId"=> 172,
+                "SolObs"=> "",
+                "SolProfId"=> 0,
+                "SolRUC"=> "0000000",
+                "SolSepBi"=> "N",
+                "SolSexo"=> "M",
+                "SolSucNro"=> 1,
+                "SolTcEmb"=> "D",
+                "SolTcTip"=> "P",
+                "SolTel"=> "",
+                "SolTipCal"=> 5,
+                "SolTipViv"=> "P",
+                "SolTipVto"=> 1,
+                "SolVendId"=> 0,
+                "SolicGarId"=> 0
+            ],
+            "Proceso"=> 2
+        ];
+
         return $this->post('IngresarSolicitud',$data);
     }
 
