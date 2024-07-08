@@ -171,6 +171,40 @@ return [
                 'fechaHasta.required'=>'La fechaHasta es requerida (YYYY-MM-DD)',
             ]
         ],
+        'adicional'=>[
+            'cedula'=>'required|unique:adicionales,cedula',
+            'nombres'=>'required',
+            'apellidos'=>'required',
+            'limite'=>'required|numeric|min:0',
+            'direccion'=>'required',
+            'celular'=>'required',
+            'maectaid'=>'required|numeric',
+            'messages'=>[
+                'cedula.unique'=>'Cedula no disponible.',
+                'cedula.required'=>'La cedula es obligatoria.',
+                'nombres.required'=>'Nombres es obligatorio',
+                'apellidos.required'=>'Apellidos es obligatorio',
+                'limite.required'=>'Limite es obligatorio',
+                'limite.min'=>'El limite es de un minimo de 0',
+                'limite.numeric'=>'El limite debe ser numero.',
+                'direccion.required'=>'La direccion es obligatoria.',
+                'celular.required'=>'Celular es obligatorio.',
+                'maectaid.required'=>'Cuenta es obligatoria (maectaid)',
+                'maectaid.numeric'=>'Cuenta debe ser numero (maectaid)',
+             ]
+        ],
+        'ampliacion'=>[
+            'numeroCuenta' => 'required',
+            'lineaSolicitada' => 'required',
+            'fotoIngreso' => 'required',
+            'fotoAnde'=>'required',
+            'messages'=>[
+                'numeroCuenta.required'=>'Numero cuenta es obligatorio (numeroCuenta)',
+                'lineaSolicitada.required'=>'Linea es obligatoria (lineaSolicitada)',
+                'fotoIngreso.required'=>'Foto de ingreso es obligatoria (fotoIngreso)',
+                'fotoAnde.required'=>'Foto de factura de ande es obligatoria (fotoAnde)'
+            ],
+        ],
         "solicitar"=>[
             'latitud_direccion'=>'required',
             'longitud_direccion'=>'required',

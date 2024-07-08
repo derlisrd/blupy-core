@@ -9,5 +9,14 @@ class Adicional extends Model
 {
     use HasFactory;
     protected $table = 'adicionales';
-    protected $fillable = [];
+    protected $fillable = [
+        'cedula',
+        'nombres',
+        'apellidos',
+        'limite',
+        'direccion',
+        'celular',
+        'cliente_id',
+        'mae_cuenta_id'
+    ];
 }

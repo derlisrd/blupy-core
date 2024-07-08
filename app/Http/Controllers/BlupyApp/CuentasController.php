@@ -114,6 +114,9 @@ class CuentasController extends Controller
         ]);
     }
 
+
+
+
     public function extracto(Request $req){
         try {
             $resultado = (object)$this->infinitaService->extractoCerrado($req->Maectaid,$req->Mtnume,$req->Periodo);

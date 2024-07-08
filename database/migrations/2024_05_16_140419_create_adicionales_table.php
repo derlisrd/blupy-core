@@ -13,7 +13,16 @@ return new class extends Migration
     {
         Schema::create('adicionales', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('cliente_id')->unsigned();
+            $table->string('cedula')->unique();
+            $table->string('nombres');
+            $table->string('apellidos');
+            $table->bigInteger('limite');
+            $table->string('direccion');
+            $table->string('celular');
+            $table->string('mae_cuenta_id')->nullable();
             $table->timestamps();
+            $table->foreign('cliente_id')->references('id')->on('clientes');
         });
     }
 

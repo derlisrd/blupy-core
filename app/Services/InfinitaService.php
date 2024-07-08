@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Facades\Log;
 
 class InfinitaService
 {
@@ -51,8 +52,26 @@ class InfinitaService
         return $this->get('TraerPorDocumento',['Clidocu' => $cedula]);
     }
 
-
-
+    public function enviarComprobantes($cedula,$comprobanteIngreso,$ande){
+        $data = (object)[
+            "CliAdj" => (object)[
+                "CliDocu" => $cedula,
+                "adjunto" => array(
+                    (object)[
+                        "titulo" => "INGRESO",
+                        "detalle" => "COMPROBANTE DE INGRESO",
+                        "imagen" => $comprobanteIngreso
+                    ],
+                    (object)[
+                        "titulo" => "ANDE",
+                        "detalle" => "Comprobante de pago de ANDE",
+                        "imagen" => $ande
+                    ]
+                )
+            ]
+        ];
+        return $this->post('IngresarAdj',$data);
+    }
 
 
     public function enviarFotoCedula($cedula, $frontCi, $backCi)
@@ -87,10 +106,36 @@ class InfinitaService
         ]);
     }
 
+    public function ampliacionCredito($cliente,$solicitudDeLineaAmpliada,$numeroCuenta)
+    {
+        $datosDeCliente = $this->datosCliente($cliente,174,null,$solicitudDeLineaAmpliada,null);
+        return $this->post('IngresarSolicitud',$datosDeCliente);
+    }
+
+    public function agregarAdicional($cliente,$adicional,$numeroCuenta)
+    {
+        $datosDeCliente = $this->datosCliente($cliente,173,$adicional,null,$numeroCuenta);
+        return $this->post('IngresarSolicitud',$datosDeCliente);
+    }
+
     public function solicitudLineaDeCredito($cliente)
     {
-        $data = (object)[
+        $datosDeCliente = $this->datosCliente($cliente,172,[],null,null);
+        return $this->post('IngresarSolicitud',$datosDeCliente);
+    }
+
+    public function registrar(Object $cliente)
+    {
+        $data = $this->datosCliente($cliente,171,[],null,null);
+        return $this->post('IngresarSolicitud',$data);
+    }
+
+    private function datosCliente($cliente,$productoId,$adicionales,$solicitudDeLinea,$cuentaNumero){
+        $adicionalesObject = $adicionales ? $adicionales  : [];
+        return  (object)[
             "wSolicitud" => (object)[
+                "SolProdId"=> $productoId, // 171 registro 172 solicitud de credito 173 adicional 174 ampliacion
+                "SolTcTip"=> $adicionales ? "A" : "P",
                 "SolApe1"=> $cliente->apellido_primero,
                 "SolApe2"=> $cliente->apellido_segundo ?? "",
                 "SolCed"=> $cliente->cedula,
@@ -111,13 +156,15 @@ class InfinitaService
                 "SolLabSal"=> $cliente->salario ?? '',
                 "SolLabTel"=> $cliente->empresa_telefono ?? '',
                 "SolLabTipId"=> $cliente->tipo_empresa_id ?? 0,
-                "SolLinea"=> 300000,
+                "SolLinea"=> $solicitudDeLinea ? $solicitudDeLinea : 300000,
+                "SolMaeCta"=> $cuentaNumero ? $cuentaNumero : 0,
                 "SolMail"=> $cliente->email,
                 "SolNom1"=> $cliente->nombre_primero,
                 "SolNom2"=> $cliente->nombre_segundo ?? "",
                 "SolProfId"=> $cliente->profesion_id ?? 0,
                 "SolFec"=> Carbon::now()->format('Y-m-d'),
-                "SolProdId"=> 172, // 172 solicitud de credito
+                "SolRUC"=> $cliente->cedula,
+                "Adicional" => $adicionales ? $adicionalesObject : [],
                 "AfinId" => 1,
                 "BancaId"=> 1,
                 "DesCreId"=> 0,
@@ -152,17 +199,13 @@ class InfinitaService
                 "SolImpSol"=> 300000,
                 "SolImpor"=> 300000,
                 "SolLabFecIn"=> "",
-                "SolMaeCta"=> 0,
                 "SolMonId"=> 6900,
-                "Adicional" => [],
                 "SolNacId"=> 172,
                 "SolObs"=> "",
-                "SolRUC"=> "0000000",
                 "SolSepBi"=> "N",
                 "SolSexo"=> "M",
                 "SolSucNro"=> 1,
                 "SolTcEmb"=> "D",
-                "SolTcTip"=> "P",
                 "SolTel"=> "",
                 "SolTipCal"=> 5,
                 "SolTipViv"=> "P",
@@ -172,98 +215,7 @@ class InfinitaService
             ],
             "Proceso"=> 2
         ];
-        return $this->post('IngresarSolicitud',$data);
     }
-
-    public function registrar(Object $cliente)
-    {
-        $data = (object)[
-            "wSolicitud" => (object)[
-                "SolApe1"=> $cliente->apellido_primero,
-                "SolApe2"=> $cliente->apellido_segundo ?? "",
-                "SolCed"=> $cliente->cedula,
-                "SolCel"=> $cliente->celular,
-                "SolFNa"=> $cliente->fecha_nacimiento,
-                "SolFec"=> Carbon::now()->format('Y-m-d'),
-                "SolMail"=> $cliente->email,
-                "SolNom1"=> $cliente->nombre_primero,
-                "SolNom2"=> $cliente->nombre_segundo ?? "",
-                "SolProdId"=> 171, // 171 registro
-                "AfinId" => 1,
-                "BancaId"=> 1,
-                "DesCreId"=> 0,
-                "LugTrabId"=> 0,
-                "MarcaId"=> 1,
-                "MedioId"=> 0,
-                "OficialId"=> 0,
-                "Sol1Vto"=> "2023-03-20",
-                "SolAsoId"=> 0,
-                "SolAsoOrd"=> "123",
-                "SolAuxId"=> 0,
-                "SolCanPer"=> 1,
-                "SolCargo"=> "CARGO",
-                "SolCond"=> "TAR",
-                "SolConsol"=> 0,
-                "SolCuoC"=> 1,
-                "SolCygSala"=> 0,
-                "SolDir"=> '',
-                "SolDepId" => 0,
-                "SolCiuId" => 0,
-                "SolBarId" => 0,
-                "SolEsCiv"=> 1,
-                "SolDirLat" =>  '',
-                "SolDirLon" => '',
-                "SolLabDirLat" => '',
-                "SolLabDirLon" => '',
-                "SolFijVto"=> false,
-                "SolGarBarId"=> 0,
-                "SolGarCiuId"=> 0,
-                "SolGarCySala"=> 0,
-                "SolGarDepId"=> 0,
-                "SolGarEsCiv"=> 0,
-                "SolGarFNa"=> "0001-01-01",
-                "SolGarLabAntA"=> 0,
-                "SolGarLabAntM"=> 0,
-                "SolGarNacId"=> 0,
-                "SolGarProfId"=> 0,
-                "SolGarSala"=> 0,
-                "SolId"=> 0,
-                "SolImpSol"=> 300000,
-                "SolImpor"=> 300000,
-                "SolLabEmp" => '',
-                "SolLabAntA"=> 0,
-                "SolLabAntM" => 0,
-                "SolLabDir"=> '',
-                "SolLabFecIn"=> "",
-                "SolLabSal"=> '',
-                "SolLabTel"=> '',
-                "SolLabTipId"=> 0,
-                "SolLinea"=> 300000,
-                "SolMaeCta"=> 0,
-                "SolMonId"=> 6900,
-                "Adicional" => [],
-                "SolNacId"=> 172,
-                "SolObs"=> "",
-                "SolProfId"=> 0,
-                "SolRUC"=> "0000000",
-                "SolSepBi"=> "N",
-                "SolSexo"=> "M",
-                "SolSucNro"=> 1,
-                "SolTcEmb"=> "D",
-                "SolTcTip"=> "P",
-                "SolTel"=> "",
-                "SolTipCal"=> 5,
-                "SolTipViv"=> "P",
-                "SolTipVto"=> 1,
-                "SolVendId"=> 0,
-                "SolicGarId"=> 0
-            ],
-            "Proceso"=> 2
-        ];
-
-        return $this->post('IngresarSolicitud',$data);
-    }
-
 
     private function get(String $endpoint,Array $parametros) {
         try {
