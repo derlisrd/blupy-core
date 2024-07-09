@@ -50,26 +50,5 @@ class UserController extends Controller
 
 
 
-    private function enviarEmailRecuperacion(String $email, int $code){
-        try {
-            Mail::send('email.recuperarcontrasena', ['code'=>$code], function ($message) use($email) {
-                $message->subject('Blupy: recuperar contraseña');
-                $message->to($email);
-            });
-        } catch (\Throwable $th) {
-            throw $th;
-        }
-    }
-    private function enviarMensajeDeTextoRecuperacion(String $celular, int $code){
-        try {
-            $hora = Carbon::now()->format('H:i');
-            $mensaje = "$code es tu codigo de recuperacion de BLUPY. ". $hora  ;
-            $this->tigoService->enviarSms($celular,$mensaje);
-        } catch (\Throwable $th) {
-            throw $th;
-        }
-    }
-
-
 
 }

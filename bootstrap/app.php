@@ -8,6 +8,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Illuminate\Auth\AuthenticationException;
 use App\Http\Middleware\XapiKeyTokenIsValid;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Client\ConnectionException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
@@ -48,6 +49,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (AuthenticationException $e) {
             if (request()->is('api/*')) {
                 return response()->json([
+                    'success'=>false,
                     'message' => $e->getMessage(),
                 ], 401);
             }
@@ -77,6 +79,23 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message'=> $e->getMessage(),
             ],500);
         });
+        $exceptions->renderable(function (QueryException $e){
+            return response()->json([
+                'success'=>false,
+                'message'=> 'Error al insertar los datos en la base de datos.'
+            ],500);
+        });
+        $exceptions->renderable(function (PDOException $e){
+            return response()->json([
+                'success'=>false,
+                'message'=> 'Error al insertar los datos en la base de datos.'
+            ],500);
+        });
+        $exceptions->renderable(function (BadMethodCallException $e){
+            return response()->json([
+                'success'=>false,
+                'message'=> 'Error de servidor metodo invalido',
+            ],500);
+        });
 
-
-    })->create();
+})->create();

@@ -40,25 +40,22 @@
             border-radius: 0 0 10px 10px;
             font-size: 12px;
         }
-        .text{
-            text-align: center;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <img width="128" src="{!! asset('assets/img/logo.png') !!}">
+            <h2>Intento de Ingreso a tu cuenta de BLUPY</h2>
         </div>
         <div class="content">
-            <div class="text">
-                <hr />
-                <h4>Utiliza este código para recuperar tu contraseña de Blupy</h4>
-                <hr />
-                <h1>{{ $code ?? '' }}</h1>
-                <hr />
-                <p>Si no solicitaste este código ignora este mensaje.</p>
-            </div>
+            <p>Hola {{ $nombre ?? '' }}</p>
+            <p>Hemos detectado el ingreso a tu cuenta desde un dispositivo inusual.</p>
+            <p><strong>Detalles del intento:</strong></p>
+            <p><strong>IP:</strong> {{ $ip ?? ''}}</p>
+            <p><strong>Dispositivo:</strong> {{ $device ?? '' }}</p>
+            <p>Si no fuiste tú, te recomendamos cambiar tu contraseña de inmediato y revisar la seguridad de tu cuenta.</p>
+            <p>Gracias</p>
+            <p>El equipo de BLUPY</p>
         </div>
         <div class="footer">
             <p>&copy; 2024 BLUPY. Todos los derechos reservados.</p>
@@ -66,4 +63,3 @@
     </div>
 </body>
 </html>
-

@@ -1,21 +1,50 @@
 <?php
 
 return [
+    'device'=>[
+        'codigo'=>[
+            'email' => 'required|email',
+            'messages'=>[
+                'email.required'=>'Email nuevo es obligatorio.',
+                'email.email'=>'Email debe tener formato ejemplo@email.com',
+            ],
+        ],
+        'confirmar'=>[
+            "codigo"=> 'required',
+            'id'=>'required',
+            'desktop'=>'required|boolean',
+            'confianza'=>'boolean',
+            'web'=>'required|boolean',
+            'device'=>'required',
+            'messages'=>[
+                'codigo.required'=>'Codigo es obligatorio.',
+                "id.required"=>"Id es obligatorio.",
+                "desktop.required"=>"Tipo de dispositivo es obligatorio. (desktop)",
+                "desktop.boolean"=>"Tipo de dispositivo es boleano.",
+                "web.required"=>"SistemaOS de ingreso es obligatorio. (web)",
+                "web.boolean"=>"SistemaOS de ingreso es boleano.",
+                "device.required"=>"Dispositivo es obligatorio (device)",
+                "confianza.boolean"=>"Confianza de ingreso es boleano.",
+                ]
+        ],
+    ],
     'cambio'=>[
         'email'=>[
-            'email'=>'required|email',
+            'email' => 'required|email|unique:users,email',
             'password'=>'required',
             'messages'=>[
                 'email.required'=>'Email nuevo es obligatorio.',
                 'email.email'=>'Email debe tener formato ejemplo@email.com',
+                'email.unique'=>'Este email ya esta en uso',
                 'password.required'=>'Contraseña es obligatoria.'
             ]
         ],
         'telefono'=>[
-            'celular'=>'required|regex:/^[0-9]{10}$/',
+            'celular'=>'required|regex:/^[0-9]{10}$/|unique:clientes,celular',
             'password'=>'required',
             'messages'=>[
                 'celular.required'=>'Celular es obligatorio.',
+                'celular.unique'=>'Ese numero no esta disponible.',
                 'celular.regex'=>'Debe tener formato de numero de celular',
                 'password.required'=>'Contraseña es obligatoria.'
             ]
@@ -86,9 +115,17 @@ return [
         "login"=>[
             "cedula"=> 'required',
             'password'=>'required',
+            'desktop'=>'required|boolean',
+            'web'=>'required|boolean',
+            'device'=>'required',
             'messages'=>[
                 'cedula.required'=>'Cédula es requerida.',
-                "password.required"=>"Contraseña es requerida."
+                "password.required"=>"Contraseña es requerida.",
+                "desktop.required"=>"Tipo de dispositivo es obligatorio. (desktop)",
+                "desktop.boolean"=>"Tipo de dispositivo es boleano.",
+                "web.required"=>"SistemaOS de ingreso es obligatorio. (web)",
+                "web.boolean"=>"SistemaOS de ingreso es boleano.",
+                "device.required"=>"Dispositivo es obligatorio (device)"
                 ]
             ],
         "register"=>[
@@ -101,6 +138,8 @@ return [
             'fotoceduladorso'=>'required',
             'fecha_nacimiento' => 'required|date_format:Y-m-d',
             'celular'=>'required',
+            'desktop'=>'required|boolean',
+            'web'=>'required|boolean',
             'messages'=>[
                 'nombres.required'=>'Los nombres son requeridos.',
                 'apellidos.required'=>'Los apellidos son requeridos.',
@@ -118,6 +157,10 @@ return [
                 'fecha_nacimiento.required' => 'El campo fecha de nacimiento es obligatorio.',
                 'fecha_nacimiento.date_format' => 'El campo fecha de nacimiento debe tener el formato YYYY-MM-DD.',
                 'celular.required'=>'Celular es requerido.',
+                'desktop.required'=>'Tipo de dispositivo es obligatorio (desktop)',
+                'desktop.boolean'=>'Tipo de dispositivo es verdadero o falso',
+                'web.required'=>'SistemaOS es obligatorio (web)',
+                'web.boolean'=>'SistemaOS es verdadero o falso',
                 ]
             ]
         ],

@@ -73,8 +73,7 @@ class AuthController extends Controller
 
             $codigoSolicitud = $resRegistrarInfinita->solicitudId;
 
-            // enviar foto de cedula a infinita
-            $this->enviarFotoCedulaInfinita($req->cedula,$req->fotocedulafrente,$req->fotoceduladorso);
+
 
             $datosCliente['cliid'] = $resRegistrarInfinita->cliId;
 
@@ -85,7 +84,8 @@ class AuthController extends Controller
                 'cliente_id'=>$cliente->id,
                 'name'=>$req->nombres . ' '.$req->apellidos,
                 'email'=>$req->email,
-                'password'=> bcrypt($req->password)
+                'password'=> bcrypt($req->password),
+                'vendedor_id'=>$req->vendedor_id,
             ]);
             Device::create([
                 'user_id'=>$user->id,
@@ -93,6 +93,7 @@ class AuthController extends Controller
                 'version'=>$req->version,
                 'device'=>$req->device,
                 'model'=>$req->model,
+                'ip'=>$req->ip(),
                 'version'=>$req->version
             ]);
 
@@ -105,21 +106,28 @@ class AuthController extends Controller
             ]);
 
             DB::commit();
+            // enviar foto de cedula a infinita
+            $this->enviarFotoCedulaInfinita($req->cedula,$req->fotocedulafrente,$req->fotoceduladorso);
             $this->enviarEmailRegistro($req->email,$nombres[0]);
 
             $token = JWTAuth::fromUser($user);
 
             return response()->json([
                 'success'=>true,
+                'message'=>'Usuario registrado correctamente',
                 'results'=>$this->userInfo($cliente,$token)
             ], 201);
 
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error($th);
+            throw $th;
             return response()->json(['success'=>false, 'message'=>'Error de servidor'],500);
         }
     }
+
+
+
 
     /* ----------------------------
     INGRESO O LOGIN
@@ -141,11 +149,28 @@ class AuthController extends Controller
 
             $cliente = Cliente::where('cedula',$cedula)->first();
             if($cliente){
-                $user = $cliente->user;
+                $user =  $cliente->user;
                 $credentials = ['email'=>$user->email, 'password'=>$password];
                 $token = JWTAuth::attempt($credentials);
-
                 if($token){
+                    $dispositoDeConfianza = $user->devices
+                    ->where('desktop',$req->desktop)
+                    ->where('web',$req->web)
+                    ->where('device',$req->device)
+                    ->where('notitoken',$req->notitoken)
+                    ->first();
+
+                    if(!$dispositoDeConfianza){
+                        $this->enviarEmailDeLogueoInusual(['ip'=>$ip,'device'=>$req->device,'email'=>$user->email,'nombre'=>$cliente->nombre_primero]);
+                        return response()->json([
+                            'success'=>true,
+                            'results'=>null,
+                            'message'=>'Dispositivo inusual. Te hemos enviado un correo electronico para verificar.'
+                        ]);
+                    }
+
+
+
                     $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s') ]);
                     return response()->json([
                         'success'=>true,
@@ -157,11 +182,12 @@ class AuthController extends Controller
             }
 
             return response()->json([
-                'success'=>false, 'message'=>"Error de credenciales"
+                'success'=>false, 'message'=>'Error de credenciales'
             ],401);
 
         } catch (\Throwable $th) {
             Log::error($th);
+            throw $th;
             return response()->json(['success'=>false,'message'=>"Error de servidor"],500);
         }
     }

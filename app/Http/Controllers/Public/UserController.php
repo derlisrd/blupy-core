@@ -48,7 +48,7 @@ class UserController extends Controller
             $forma = 'email.';
             if($req->forma == 0){
                 $emailService = new EmailService();
-                $emailService->enviarEmail($user->email,'Blupy: recupera tu contraseña','email.recuperarcontrasena',['code'=>$randomNumber]);
+                $emailService->enviarEmail($user->email,'Blupy: recupera tu contraseña','email.recuperarContrasena',['code'=>$randomNumber]);
                 $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$user->email,'cliente_id'=>$cliente->id]);
             }
             if($req->forma == 1){

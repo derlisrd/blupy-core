@@ -48,12 +48,12 @@
     <div class="container">
         <div class="header">
             <img src="{!! asset('assets/img/logo.png') !!}" alt="Blupy Logo">
-            <h1>Verificación de Email</h1>
+            <h1>Verificación de dispositivo</h1>
         </div>
         <div class="content">
-            <p>Por favor, usa el siguiente código para verificar tu dirección de email:</p>
+            <h3>Hemos detectado que se ha ingresado a tu cuenta de BLUPY, si fuiste tu utiliza este código</h3>
             <div class="verification-code"> {{ $code ?? '' }}</div>
-            <p>Si no solicitaste esta verificación, por favor ignora este mensaje.</p>
+            <h3>Si no solicitaste esta verificación, por favor cambia tu contraseña lo más rápido posible.</h3>
         </div>
         <div class="footer">
             <p>&copy; 2024 Blupy es un empresa registrada de Mi Credito S.A. Todos los derechos reservados.</p>

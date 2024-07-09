@@ -44,7 +44,7 @@ class DatosController extends Controller
             $emailService->enviarEmail($req->email,"[".$randomNumber."]Blupy confirmar email",'email.validar',['code'=>$randomNumber]);
             $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email,'cliente_id'=>$cliente->id]);
 
-            return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Email enviado']);
+            return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Hemos enviado un email con el codigo']);
 
         } catch (\Throwable $th) {
             Log::error($th);
@@ -60,7 +60,7 @@ class DatosController extends Controller
         try {
             $validator = Validator::make($req->all(),trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
             if($validator->fails())
-                    return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+                return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
             $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});
@@ -89,7 +89,7 @@ class DatosController extends Controller
             $user->email = $validacion->email;
             $user->save();
             $this->cambiosEnInfinita($user->cliente->cliid,$req->email,null);
-            return response()->json(['success'=>true,'message'=>'Email ha cambiado.']);
+            return response()->json(['success'=>true,'message'=>'El email se ha cambiado correctamente.']);
         } catch (\Throwable $th) {
             Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error de servidor']);

@@ -106,6 +106,27 @@ trait RegisterTraits
         }
     }
 
+    public function enviarEmailDeLogueoInusual(Array $datos){
+        try {
+            $datas = [
+                'email'=>$datos['email'],
+                'ip'=>$datos['ip'],
+                'nombre'=>$datos['nombre'],
+                'device'=>$datos['device']
+            ];
+            Mail::send('email.intentoIngreso', $datas, function ($message) use($datas) {
+                $message->subject('Blupy: intento de ingreso inusual');
+                $message->to($datas['email']);
+            });
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return response()->json([
+                'success'=>false,
+                'message'=>'Error al enviar el email mas tarde'
+            ],500);
+        }
+    }
+
     public function userInfo($cliente,$token){
         return [
             'cliid'=>$cliente->cliid,
@@ -120,8 +141,9 @@ trait RegisterTraits
             'solicitudCredito'=>$cliente->solicitud_credito,
             'funcionario'=>$cliente->funcionario,
             'aso'=>$cliente->asofarma,
-            'token'=>$token,
-
+            'vendedorId'=>$cliente->user->vendedor_id,
+            'tokenType'=>'Bearer',
+            'token'=>$token
         ];
     }
 

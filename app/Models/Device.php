@@ -13,6 +13,8 @@ class Device extends Model
         'user_id',
         'device',
         'model',
+        'web',
+        'desktop',
         'notitoken',
         'ip',
         'version'
