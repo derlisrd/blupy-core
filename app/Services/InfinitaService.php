@@ -40,6 +40,16 @@ class InfinitaService
         return $this->get('ListarTarjetasPorDoc',['Mtdocu' => $cedula]);
     }
 
+    public function listarProfesiones()
+    {
+        return $this->get('ListarProfesiones',[]);
+    }
+
+    public function listarTiposLaboral()
+    {
+        return $this->get('ListarTiposLaboral',[]);
+    }
+
     public function ModificarCliente ($clienteId,$arrayDatas){
         $data = (object)[
             "CliId"=>$clienteId,

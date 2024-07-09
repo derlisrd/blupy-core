@@ -194,6 +194,11 @@ class AuthController extends Controller
 
 
 
+
+    /* ----------------------------
+    CHECK TOKEN VALIDO
+    ----------------------------*/
+
     public function checkToken(){
         try {
             JWTAuth::check(JWTAuth::getToken());
@@ -230,7 +235,9 @@ class AuthController extends Controller
     }
 
 
-
+    public function eliminarCuenta(Request $req){
+        return response()->json(['success'=>true,'message'=>'Su cuenta ha sido desactivada correctamente']);
+    }
 
 
 }

@@ -22,8 +22,7 @@ Route::post('/validar-codigo-recuperacion',[UserPublic::class,'validarCodigoRecu
 Route::post('/restablecer-contrasena',[UserPublic::class,'restablecerContrasena']);
 
 Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDocumento']);
-Route::get('/ciudades',[ConsultasController::class,'ciudades']);
-Route::get('/barrios',[ConsultasController::class,'barrios']);
+
 
 Route::post('/scan',[AWSController::class,'scanearDocumento']);
 
@@ -41,6 +40,8 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/check-token',[AuthController::class,'checkToken']);
     Route::put('/refresh-token',[AuthController::class,'refreshToken']);
     Route::delete('/logout',[AuthController::class,'logout']);
+
+    Route::delete('/eliminar-cuenta',[AuthController::class,'eliminarCuenta']);
 
     Route::get('/tarjetas',[CuentasController::class,'tarjetas']);
     Route::get('/movimientos',[CuentasController::class,'movimientos']);
@@ -60,5 +61,12 @@ Route::middleware('auth:api')->group(function(){
 
     Route::get('/consultar-qr',[QRController::class,'consultar']);
     Route::post('/autorizar-qr',[QRController::class,'autorizar']);
+
+    Route::get('/ciudades',[ConsultasController::class,'ciudades']);
+    Route::get('/barrios-por-ciudad/{idCiudad}',[ConsultasController::class,'barriosPorCiudad']);
+
+    Route::get('/tipos-laboral',[ConsultasController::class,'tiposLaboral']);
+    Route::get('/profesiones',[ConsultasController::class,'profesiones']);
+
 
 });

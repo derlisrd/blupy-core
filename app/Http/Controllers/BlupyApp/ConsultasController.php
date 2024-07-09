@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
+use App\Models\Barrio;
+use App\Models\Ciudad;
 use App\Models\Cliente;
 use App\Models\Version;
 use App\Services\InfinitaService;
 use App\Services\FarmaService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -51,21 +54,67 @@ class ConsultasController extends Controller
 
     }
 
-    public function buscarCiudad(Request $req){
+    public function profesiones(){
+        try {
+            $res = (object)$this->infinitaService->listarProfesiones();
+            $infinita = (object) $res->data;
+            if (property_exists($infinita, 'wDato')) {
+                $results = [];
+                foreach($infinita->wDato as $val){
+                    $nuevo = $val;
+                    $nuevo['id'] = $val['DatoId'];
+                    $nuevo['descripcion'] = $val['DatoDesc'];
+                    array_push($results,$nuevo);
+                }
+                return response()->json([
+                    'success' => true,
+                    'results' => $results,
+                ]);
+            }
 
+            return response()->json([ 'success' => false,'message' => 'No se recuperaron registros'],404);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return response()->json(['success'=>false,'message'=>'Error de servidor.'],500);
+        }
     }
 
-    public function buscarBarrioPorCiudad(Request $req){
 
+    public function tiposLaboral(){
+        try {
+            $res = (object)$this->infinitaService->listarTiposLaboral();
+            $infinita = (object) $res->data;
+            if (property_exists($infinita, 'wDato')) {
+                $results = [];
+                foreach($infinita->wDato as $val){
+                    $nuevo = $val;
+                    $nuevo['id'] = $val['DatoId'];
+                    $nuevo['descripcion'] = $val['DatoDesc'];
+                    array_push($results,$nuevo);
+                }
+                return response()->json([
+                    'success' => true,
+                    'results' => $results,
+                ]);
+            }
+
+            return response()->json([ 'success' => false,'message' => 'No se recuperaron registros'],404);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return response()->json(['success'=>false,'message'=>'Error de servidor.'],500);
+        }
+    }
+
+
+    public function barriosPorCiudad(Request $req){
+        $results = Barrio::where('ciudad_id',$req->idCiudad)->get();
+        return response()->json(['success'=>true,'results'=>$results]);
     }
 
     public function ciudades(){
-
+        return response()->json(['success'=>true,'results'=>Ciudad::all()]);
     }
 
-    public function barrios(){
-
-    }
 
     public function verificarVersion(Request $req){
 
