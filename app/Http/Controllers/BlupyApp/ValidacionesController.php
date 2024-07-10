@@ -25,7 +25,7 @@ class ValidacionesController extends Controller
                 return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
-            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 1,function() {});
+            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 10,function() {});
             if (!$executed)
                 return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
@@ -88,7 +88,7 @@ class ValidacionesController extends Controller
                 return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
-            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 1,function() {});
+            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 6,function() {});
             if (!$executed)
                 return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
