@@ -70,3 +70,7 @@ Route::middleware('auth:api')->group(function(){
 
 
 });
+
+Route::get('/',function(){
+    return response()->json(['success'=>true]);
+});
