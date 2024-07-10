@@ -93,8 +93,8 @@ class ValidacionesController extends Controller
                 return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
             $randomNumber = random_int(100000, 999999);
-            $this->enviarMensajeDeTexto($req->telefono,$randomNumber);
-            $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->telefono]);
+            $this->enviarMensajeDeTexto($req->celular,$randomNumber);
+            $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->celular]);
 
             return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Mensaje enviado']);
         } catch (\Throwable $th) {

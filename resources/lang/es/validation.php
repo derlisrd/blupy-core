@@ -39,7 +39,7 @@ return [
                 'password.required'=>'Contraseña es obligatoria.'
             ]
         ],
-        'telefono'=>[
+        'celular'=>[
             'celular'=>'required|regex:/^[0-9]{10}$/|unique:clientes,celular',
             'password'=>'required',
             'messages'=>[

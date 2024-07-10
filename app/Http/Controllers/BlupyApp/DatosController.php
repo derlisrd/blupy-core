@@ -101,12 +101,12 @@ class DatosController extends Controller
 
     public function cambiarCelular(Request $req){
         try {
-            $validator = Validator::make($req->all(),trans('validation.cambio.telefono'), trans('validation.cambio.telefono.messages'));
+            $validator = Validator::make($req->all(),trans('validation.cambio.celular'), trans('validation.cambio.celular.messages'));
             if($validator->fails())
                 return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
-            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 2,function() {});
+            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 4,function() {});
             if (!$executed)
                 return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
