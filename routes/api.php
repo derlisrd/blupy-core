@@ -34,7 +34,6 @@ Route::post('/confirmar-telefono',[ValidacionesController::class,'confirmarTelef
 Route::post('/codigo-nuevo-dispositivo',[DeviceController::class,'codigoNuevoDispositivo']);
 Route::post('/confirmar-nuevo-dispositivo',[DeviceController::class,'confirmarNuevoDispositivo']);
 
-//Route::middleware(Authenticate::using('api'))->group(function(){
 Route::middleware('auth:api')->group(function(){
 
     Route::post('/check-token',[AuthController::class,'checkToken']);
