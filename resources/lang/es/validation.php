@@ -43,7 +43,7 @@ return [
             'celular'=>'required|regex:/^[0-9]{10}$/|unique:clientes,celular',
             'password'=>'required',
             'messages'=>[
-                'celular.required'=>'Celular es obligatorio.',
+                'celular.required'=>'Numero de celular es obligatorio.',
                 'celular.unique'=>'Ese numero no esta disponible.',
                 'celular.regex'=>'Debe tener formato de numero de celular',
                 'password.required'=>'Contraseña es obligatoria.'
@@ -52,9 +52,10 @@ return [
     ],
     'verificaciones'=>[
         'email'=>[
-            'email'=>'required|email',
+            'email'=>'required|email|unique:users,email',
             'messages'=>[
                 'email.required'=>'Email es obligatorio.',
+                'email.unique'=>'Este email ya esta en uso',
                 'email.email'=>'Email debe tener formato ejemplo@email.com',
             ]
         ],
@@ -67,10 +68,12 @@ return [
                 'codigo.required'=>'Codigo es obligatorio.'
             ],
         ],
-        'sms'=>[
-            'telefono'=>'required',
+        'celular'=>[
+            'celular'=>'required|regex:/^[0-9]{10}$/|unique:clientes,celular',
             'messages'=>[
-                'telefono.required'=>'Telefono es obligatorio.',
+                'celular.required'=>'Numero de celular es obligatorio.',
+                'celular.unique'=>'Ese numero no esta disponible.',
+                'celular.regex'=>'Debe tener formato de numero de celular',
             ]
         ],
     ],

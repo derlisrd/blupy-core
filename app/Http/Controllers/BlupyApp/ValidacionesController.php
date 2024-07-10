@@ -83,7 +83,7 @@ class ValidacionesController extends Controller
 
     public function validarTelefono(Request $req){
         try {
-            $validator = Validator::make($req->all(),trans('validation.verificaciones.sms'), trans('validation.verificaciones.sms.messages'));
+            $validator = Validator::make($req->all(),trans('validation.verificaciones.celular'), trans('validation.verificaciones.celular.messages'));
             if($validator->fails())
                 return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
 
