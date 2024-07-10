@@ -26,7 +26,7 @@ class AuthController extends Controller
 
         $validator = Validator::make($req->all(),trans('validation.auth.register'), trans('validation.auth.register.messages'));
         if($validator->fails())
-            return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         try {
             // consulta si tiene ficha en farma
