@@ -10,6 +10,7 @@ use Illuminate\Auth\AuthenticationException;
 use App\Http\Middleware\XapiKeyTokenIsValid;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Client\ConnectionException;
+use Intervention\Image\Exceptions\NotWritableException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -96,6 +97,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 'success'=>false,
                 'message'=> 'Error de servidor metodo invalido',
             ],500);
+        });
+        $exceptions->renderable(function (NotWritableException $e){
+            return response()->json([
+                'success'=>false,
+                'message'=> 'Sin permisos para escribir',
+            ],403);
         });
 
 })->create();
