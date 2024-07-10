@@ -67,5 +67,4 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/tipos-laboral',[ConsultasController::class,'tiposLaboral']);
     Route::get('/profesiones',[ConsultasController::class,'profesiones']);
 
-
 });
