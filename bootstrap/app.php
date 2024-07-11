@@ -104,5 +104,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message'=> 'Sin permisos para escribir',
             ],403);
         });
+        $exceptions->renderable(function (ErrorException $e){
+            return response()->json([
+                'success'=>false,
+                'message'=> 'Error de servidor',
+            ],500);
+        });
 
 })->create();
