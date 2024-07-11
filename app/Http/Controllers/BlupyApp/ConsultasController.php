@@ -31,7 +31,7 @@ class ConsultasController extends Controller
         $validator = Validator::make($req->all(),trans('validation.verify.documento'),trans('validation.verify.documento.messages'));
 
         if($validator->fails())
-            return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $ip = $req->ip();
         $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});

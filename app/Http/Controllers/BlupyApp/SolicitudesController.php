@@ -8,7 +8,6 @@ use App\Models\Cliente;
 use App\Models\SolicitudCredito;
 use App\Services\InfinitaService;
 use App\Traits\RegisterTraits;
-use Aws\DynamoDb\NumberValue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
@@ -26,7 +25,7 @@ class SolicitudesController extends Controller
 
     public function solicitudes(Request $req){
         $validator = Validator::make($req->all(),trans('validation.solicitudes.listar'),trans('validation.solicitudes.listar.messages'));
-        if($validator->fails()) return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+        if($validator->fails()) return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
         $results = [];
         $user = $req->user();
         $res = (object)$this->infinitaService->ListarSolicitudes($user->cliente->cedula,$req->fechaDesde,$req->fechaHasta);
@@ -65,7 +64,7 @@ class SolicitudesController extends Controller
         }
         $validator = Validator::make($req->all(),trans('validation.solicitudes.solicitar'),trans('validation.solicitudes.solicitar.messages'));
         if($validator->fails())
-            return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
 
         $verificarSolicitudPendiente = SolicitudCredito::where('cliente_id',$user->cliente->id)->where('tipo',1)->where('estado_id',5)->latest()->first();
@@ -145,7 +144,7 @@ class SolicitudesController extends Controller
         try {
             $validator = Validator::make($req->all(),trans('validation.solicitudes.adicional'),trans('validation.solicitudes.adicional.messages'));
         if($validator->fails())
-            return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $nombres = $this->separarNombres( $req->nombres );
         $apellidos = $this->separarNombres( $req->apellidos );

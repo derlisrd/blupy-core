@@ -19,7 +19,7 @@ class DeviceController extends Controller
         try {
             $validator = Validator::make($req->all(),trans('validation.device.codigo'), trans('validation.device.codigo.messages'));
             if($validator->fails())
-                return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
             $ip = $req->ip();
             $executed = RateLimiter::attempt($ip,$perTwoMinutes = 2,function() {});
             if (!$executed)
@@ -46,7 +46,7 @@ class DeviceController extends Controller
         try {
             $validator = Validator::make($req->all(),trans('validation.device.confirmar'), trans('validation.device.confirmar.messages'));
             if($validator->fails())
-                return response()->json(['success'=>false,'messages'=>$validator->errors()->first()], 400);
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first()], 400);
 
             $id = $req->id;
             $codigo = $req->codigo;

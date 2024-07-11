@@ -28,7 +28,7 @@ class UserController extends Controller
 
         $validator = Validator::make($req->all(),trans('validation.verify.olvide'),trans('validation.verify.olvide.messages'));
         if($validator->fails())
-            return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $ip = $req->ip();
         $executed = RateLimiter::attempt($ip,3,function() {});
@@ -76,7 +76,7 @@ class UserController extends Controller
     public function validarCodigoRecuperacion(Request $req){
         $validator = Validator::make($req->all(),trans('validation.verify.codigo'),trans('validation.verify.codigo.messages'));
         if($validator->fails())
-            return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $validacion = Validacion::where('id',$req->id)->where('codigo',$req->codigo)->where('validado',0)->first();
         if(!$validacion)
@@ -112,7 +112,7 @@ class UserController extends Controller
     public function restablecerContrasena(Request $req){
         $validator = Validator::make($req->all(),trans('validation.user.resetpassword'),trans('validation.user.resetpassword.messages'));
         if($validator->fails())
-            return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $reset = DB::table('password_reset_tokens')->where([
             ['token', $req->token]

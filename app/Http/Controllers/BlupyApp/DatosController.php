@@ -23,7 +23,7 @@ class DatosController extends Controller
         try {
             $validator = Validator::make($req->all(),trans('validation.cambio.email'), trans('validation.cambio.email.messages'));
             if($validator->fails())
-                return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
             $executed = RateLimiter::attempt($ip,$perTwoMinutes = 2,function() {});
@@ -60,7 +60,7 @@ class DatosController extends Controller
         try {
             $validator = Validator::make($req->all(),trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
             if($validator->fails())
-                return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
             $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});
@@ -103,7 +103,7 @@ class DatosController extends Controller
         try {
             $validator = Validator::make($req->all(),trans('validation.cambio.celular'), trans('validation.cambio.celular.messages'));
             if($validator->fails())
-                return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
             $executed = RateLimiter::attempt($ip,$perTwoMinutes = 4,function() {});
@@ -137,7 +137,7 @@ class DatosController extends Controller
     public function confirmaCambiarCelular(Request $req){
         $validator = Validator::make($req->all(),trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
         if($validator->fails())
-                return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $ip = $req->ip();
         $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});

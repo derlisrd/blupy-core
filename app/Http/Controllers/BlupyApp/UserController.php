@@ -29,7 +29,7 @@ class UserController extends Controller
         $validator = Validator::make($req->all(), trans('validation.user.newpassword'),trans('validation.user.newpassword.messages'));
 
         if($validator->fails())
-            return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $ip = $req->ip();
         $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});

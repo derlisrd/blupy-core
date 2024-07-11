@@ -71,7 +71,7 @@ class CuentasController extends Controller
 
     public function movimientos(Request $req){
         $validator = Validator::make($req->only('periodo'),['periodo'=>'required'],['periodo.required'=>'El periodo es requerido (MM-AAAA).']);
-        if($validator->fails()) return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+        if($validator->fails()) return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $results = [];
         $user = $req->user();

@@ -14,7 +14,7 @@ class AuthController extends Controller
     public function login(Request $req){
         $validator = Validator::make($req->all(),trans('validation.rest.login'), trans('validation.rest.login.messages'));
         if($validator->fails())
-            return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
 
         $ip = $req->ip();

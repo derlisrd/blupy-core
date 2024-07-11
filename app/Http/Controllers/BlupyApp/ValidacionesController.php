@@ -22,7 +22,7 @@ class ValidacionesController extends Controller
         try {
             $validator = Validator::make($req->all(),trans('validation.verificaciones.email'), trans('validation.verificaciones.email.messages'));
             if($validator->fails())
-                return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
             $executed = RateLimiter::attempt($ip,$perTwoMinutes = 10,function() {});
@@ -51,7 +51,7 @@ class ValidacionesController extends Controller
     public function confirmarEmail(Request $req){
         $validator = Validator::make($req->all(),trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
         if($validator->fails())
-                return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $ip = $req->ip();
         $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});
@@ -85,7 +85,7 @@ class ValidacionesController extends Controller
         try {
             $validator = Validator::make($req->all(),trans('validation.verificaciones.celular'), trans('validation.verificaciones.celular.messages'));
             if($validator->fails())
-                return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
             $executed = RateLimiter::attempt($ip,$perTwoMinutes = 6,function() {});
@@ -111,7 +111,7 @@ class ValidacionesController extends Controller
     public function confirmarTelefono(Request $req){
         $validator = Validator::make($req->all(),trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
         if($validator->fails())
-                return response()->json(['success'=>false,'messages'=>$validator->errors()->first() ], 400);
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $validacion = Validacion::where('id',$req->id)->where('validado',0)->where('codigo',$req->codigo)->first();
         if(!$validacion)
