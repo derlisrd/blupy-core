@@ -77,7 +77,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->renderable(function (ConnectionException $e){
             return response()->json([
                 'success'=>false,
-                'message'=> $e->getMessage(),
+                'message'=> "Hubo un error con la conexion error de servidor."
             ],500);
         });
         $exceptions->renderable(function (QueryException $e){
