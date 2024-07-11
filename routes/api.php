@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::post('/login',[AuthController::class,'login']);
+Route::post('/confirmar-nuevo-dispositivo',[DeviceController::class,'confirmarNuevoDispositivo']);
 Route::post('/register',[AuthController::class,'register']);
 
 Route::post('/olvide-contrasena',[UserPublic::class,'olvideContrasena']);
@@ -31,8 +32,6 @@ Route::post('/confirmar-email',[ValidacionesController::class,'confirmarEmail'])
 Route::post('/validar-telefono',[ValidacionesController::class,'validarTelefono']);
 Route::post('/confirmar-telefono',[ValidacionesController::class,'confirmarTelefono']);
 
-Route::post('/codigo-nuevo-dispositivo',[DeviceController::class,'codigoNuevoDispositivo']);
-Route::post('/confirmar-nuevo-dispositivo',[DeviceController::class,'confirmarNuevoDispositivo']);
 
 Route::middleware('auth:api')->group(function(){
 

@@ -7,6 +7,8 @@ use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\SolicitudCredito;
 use App\Models\User;
+use App\Models\Validacion;
+use App\Services\EmailService;
 use App\Traits\RegisterTraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -165,10 +167,11 @@ class AuthController extends Controller
                     ->first();
 
                     if(!$dispositoDeConfianza){
-                        $this->enviarEmailDeLogueoInusual(['ip'=>$ip,'device'=>$req->device,'email'=>$user->email,'nombre'=>$cliente->nombre_primero]);
+                        $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id);
                         return response()->json([
                             'success'=>true,
                             'results'=>null,
+                            'id'=> $idValidacion,
                             'message'=>'Dispositivo inusual. Te hemos enviado un correo electronico para verificar.'
                         ]);
                     }
@@ -180,6 +183,8 @@ class AuthController extends Controller
                     $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula);
                     return response()->json([
                         'success'=>true,
+                        'message'=>'Ha ingresado',
+                        'id'=>null,
                         'results'=>$this->userInfo($cliente,$token,$tarjetas)
                         ]
                     );
@@ -245,5 +250,12 @@ class AuthController extends Controller
         return response()->json(['success'=>true,'message'=>'Su cuenta ha sido desactivada correctamente']);
     }
 
+    private function enviarEmaildispositivoInusual($email,$clienteId){
+        $randomNumber = random_int(100000, 999999);
+        $emailService = new EmailService();
+        $emailService->enviarEmail($email,"[".$randomNumber."]Blupy confirmar dispositivo",'email.validarDispositivo',['code'=>$randomNumber]);
+        $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$email,'cliente_id'=>$clienteId]);
+        return $validacion->id;
+    }
 
 }
