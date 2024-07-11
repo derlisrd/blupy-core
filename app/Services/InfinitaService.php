@@ -150,7 +150,7 @@ class InfinitaService
                 "SolApe2"=> $cliente->apellido_segundo ?? "",
                 "SolCed"=> $cliente->cedula,
                 "SolCel"=> $cliente->celular,
-                "SolDir"=> $cliente->calle ? $cliente->calle.$cliente->numero_casa : '',
+                "SolDir"=> isset($cliente->calle) ? $cliente->calle : '' ,
                 "SolDepId" => (int)$cliente->departamento_id ?? 0,
                 "SolCiuId" => (int)$cliente->ciudad_id ?? 0,
                 "SolBarId" => (int)$cliente->barrio_id ?? 0,
