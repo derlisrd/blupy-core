@@ -71,7 +71,8 @@ class CuentasController extends Controller
 
     public function movimientos(Request $req){
         $validator = Validator::make($req->only('periodo'),['periodo'=>'required'],['periodo.required'=>'El periodo es requerido (MM-AAAA).']);
-        if($validator->fails()) return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+        if($validator->fails())
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $results = [];
         $user = $req->user();
@@ -119,7 +120,12 @@ class CuentasController extends Controller
 
     public function extracto(Request $req){
         try {
-            $resultado = (object)$this->infinitaService->extractoCerrado($req->Maectaid,$req->Mtnume,$req->Periodo);
+            $validator = Validator::make($req->only('periodo'),['periodo'=>'required'],['periodo.required'=>'El periodo es requerido (MM-AAAA).']);
+            if($validator->fails())
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+
+            $res = (object)$this->infinitaService->extractoCerrado($req->cuenta,1,$req->periodo);
+            $resultado = (object) $res->data;
             if($resultado->Retorno == 'Extracto no encontrado.'){
                 return response()->json(['success'=>false,'message'=>'Extracto no disponible'],404);
             }
