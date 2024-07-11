@@ -139,6 +139,7 @@ trait RegisterTraits
             'telefono'=>$cliente->celular,
             'celular'=>$cliente->celular,
             'solicitudCredito'=>$cliente->solicitud_credito,
+            'direccionCompletado'=>$cliente->direccion_completado,
             'funcionario'=>$cliente->funcionario,
             'aso'=>$cliente->asofarma,
             'vendedorId'=>$cliente->user->vendedor_id,
