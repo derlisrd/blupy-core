@@ -94,7 +94,9 @@ class AuthController extends Controller
                 'device'=>$req->device,
                 'model'=>$req->model,
                 'ip'=>$req->ip(),
-                'version'=>$req->version
+                'version'=>$req->version,
+                'web'=>$req->web ?? 0,
+                'desktop'=>$req->desktop ?? 0,
             ]);
 
             SolicitudCredito::create([
