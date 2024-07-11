@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/confirmar-nuevo-dispositivo',[DeviceController::class,'confirmarNuevoDispositivo']);
+Route::post('/codigo-nuevo-dispositivo',[DeviceController::class,'codigoNuevoDispositivo']);
 Route::post('/register',[AuthController::class,'register']);
 
 Route::post('/olvide-contrasena',[UserPublic::class,'olvideContrasena']);
