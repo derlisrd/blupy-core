@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Private\CuentasController;
 use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\SolicitudCredito;
@@ -113,11 +114,12 @@ class AuthController extends Controller
             $this->enviarEmailRegistro($req->email,$nombres[0]);
 
             $token = JWTAuth::fromUser($user);
-
+            $tarjetasConsultas = new CuentasController();
+            $tarjetas = $tarjetasConsultas->tarjetas($req->cedula);
             return response()->json([
                 'success'=>true,
                 'message'=>'Usuario registrado correctamente',
-                'results'=>$this->userInfo($cliente,$token)
+                'results'=>$this->userInfo($cliente,$token,$tarjetas)
             ], 201);
 
         } catch (\Throwable $th) {
@@ -174,9 +176,11 @@ class AuthController extends Controller
 
 
                     $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s') ]);
+                    $tarjetasConsultas = new CuentasController();
+                    $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula);
                     return response()->json([
                         'success'=>true,
-                        'results'=>$this->userInfo($cliente,$token)
+                        'results'=>$this->userInfo($cliente,$token,$tarjetas)
                         ]
                     );
                 }

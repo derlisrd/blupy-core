@@ -127,7 +127,7 @@ trait RegisterTraits
         }
     }
 
-    public function userInfo($cliente,$token){
+    public function userInfo($cliente,string $token, array $tarjetas){
         return [
             'cliid'=>$cliente->cliid,
             'name'=>$cliente->user->name,
@@ -143,7 +143,8 @@ trait RegisterTraits
             'aso'=>$cliente->asofarma,
             'vendedorId'=>$cliente->user->vendedor_id,
             'tokenType'=>'Bearer',
-            'token'=>$token
+            'token'=>'Bearer '.$token,
+            'tarjetas'=>$tarjetas ?? []
         ];
     }
 
