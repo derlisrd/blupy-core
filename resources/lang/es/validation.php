@@ -60,11 +60,8 @@ return [
             ]
         ],
         'confirmar'=>[
-            'id'=>'required|numeric',
             'codigo'=>'required',
             'messages'=>[
-                'id.required'=>'El id es obligatorio.',
-                'id.numeric'=>'El id debe ser numerico.',
                 'codigo.required'=>'Codigo es obligatorio.'
             ],
         ],
