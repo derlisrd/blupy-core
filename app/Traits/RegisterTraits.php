@@ -145,6 +145,7 @@ trait RegisterTraits
             'vendedorId'=>$cliente->user->vendedor_id,
             'tokenType'=>'Bearer',
             'token'=>'Bearer '.$token,
+            'tokenRaw'=>$token,
             'tarjetas'=>$tarjetas ?? []
         ];
     }
