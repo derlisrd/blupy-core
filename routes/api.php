@@ -55,10 +55,10 @@ Route::middleware('auth:api')->group(function(){
 
     Route::put('/cambiar-contrasena',[UserPrivate::class,'cambiarContrasena']);
 
-    Route::put('/cambiar-celular',[DatosController::class,'cambiarCelular']);
-    Route::put('/confirma-cambiar-celular',[DatosController::class,'confirmaCambiarCelular']);
-    Route::put('/cambiar-email',[DatosController::class,'cambiarEmail']);
-    Route::put('/confirma-cambiar-email',[DatosController::class,'confirmaCambiarEmail']);
+    Route::put('/solicitar-cambiar-celular',[DatosController::class,'solicitarCambiarCelular']);
+    Route::put('/confirmar-cambiar-celular',[DatosController::class,'confirmaCambiarCelular']);
+    Route::put('/solicitar-cambiar-email',[DatosController::class,'solicitarCambiarEmail']);
+    Route::put('/confirmar-cambiar-email',[DatosController::class,'confirmaCambiarEmail']);
 
     Route::get('/consultar-qr',[QRController::class,'consultar']);
     Route::post('/autorizar-qr',[QRController::class,'autorizar']);

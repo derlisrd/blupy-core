@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Validator;
 
 class DatosController extends Controller
 {
-    public function cambiarEmail(Request $req){
+    public function solicitarCambiarEmail(Request $req){
         try {
             $validator = Validator::make($req->all(),trans('validation.cambio.email'), trans('validation.cambio.email.messages'));
             if($validator->fails())
@@ -99,7 +99,7 @@ class DatosController extends Controller
 
 
 
-    public function cambiarCelular(Request $req){
+    public function solicitarCambiarCelular(Request $req){
         try {
             $validator = Validator::make($req->all(),trans('validation.cambio.celular'), trans('validation.cambio.celular.messages'));
             if($validator->fails())
