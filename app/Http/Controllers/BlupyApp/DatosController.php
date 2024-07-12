@@ -92,7 +92,7 @@ class DatosController extends Controller
             ]);
             $user->email = $validacion->email;
             $user->save();
-            $this->cambiosEnInfinita($user->cliente->cliid,$req->email,null);
+            $this->cambiosEnInfinita($user->cliente->cliid,$validacion->email,null);
             return response()->json(['success'=>true,'message'=>'El email se ha cambiado correctamente.']);
         } catch (\Throwable $th) {
             Log::error($th);
@@ -129,7 +129,7 @@ class DatosController extends Controller
             $mensaje = $randomNumber." es tu codigo de verificacion de BLUPY. ". $hora  ;
             $tigoService->enviarSms($req->celular,$mensaje);
 
-            $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->celular,'cliente_id'=>$cliente->id]);
+            Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->celular,'cliente_id'=>$cliente->id]);
 
             return response()->json(['success' =>true,'results'=>null,'message'=>'Mensaje enviado']);
         } catch (\Throwable $th) {
@@ -173,20 +173,18 @@ class DatosController extends Controller
         Cliente::find($clienteId)->update([
             'celular'=>$validacion->celular
         ]);
-        $this->cambiosEnInfinita($user->cliente->cliid,null,$user->cliente->celular);
+        $this->cambiosEnInfinita($user->cliente->cliid,null,$validacion->celular);
         return response()->json(['success'=>true,'message'=>'Telefono celular ha cambiado.']);
     }
 
 
 
-    private function cambiosEnInfinita($cliid, $email,$telefono){
+    private function cambiosEnInfinita($cliid, $email,$telefono) : void{
 
         $webserviceInfinita = new InfinitaService();
 
         $cliente = (object) $webserviceInfinita->TraerDatosCliente($cliid);
         $clienteDatos = (object) $cliente->data;
-
-        Log::info($cliente->data);
 
         $cliObj = (object)$clienteDatos->wCliente;
 
@@ -250,8 +248,8 @@ class DatosController extends Controller
             'Tel'=> $telefono ? $telefonoNuevo : $cliObj->Tel,
             'TipDocId'=>$cliObj->TipDocId
         ];
-         $modificarCliente = $webserviceInfinita->ModificarCliente($cliid,$clienteModificado);
-         Log::info($modificarCliente);
+         $webserviceInfinita->ModificarCliente($cliid,$clienteModificado);
+
     }
 
 }
