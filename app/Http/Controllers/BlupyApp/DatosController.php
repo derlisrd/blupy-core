@@ -44,7 +44,7 @@ class DatosController extends Controller
             $emailService->enviarEmail($req->email,"[".$randomNumber."]Blupy confirmar email",'email.validar',['code'=>$randomNumber]);
             $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email,'cliente_id'=>$cliente->id]);
 
-            return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Hemos enviado un email con el codigo']);
+            return response()->json(['success' =>true,'results'=>null,'message'=>'Hemos enviado un email con el codigo']);
 
         } catch (\Throwable $th) {
             Log::error($th);
@@ -67,7 +67,9 @@ class DatosController extends Controller
             if (!$executed)
                 return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
-            $validacion = Validacion::where('id',$req->id)->where('validado',0)->where('codigo',$req->codigo)->first();
+            $user = $req->user();
+            $cliente = $user->cliente;
+            $validacion = Validacion::where('cliente_id',$cliente->id)->where('validado',0)->where('codigo',$req->codigo)->latest()->first();
             if(!$validacion)
                 return response()->json(['success'=>false,'message'=>'Codigo invalido'],403);
 
