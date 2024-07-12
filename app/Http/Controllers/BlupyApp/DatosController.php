@@ -26,7 +26,7 @@ class DatosController extends Controller
                 return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
-            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 2,function() {});
+            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 5,function() {});
             if (!$executed)
                 return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
@@ -56,7 +56,7 @@ class DatosController extends Controller
 
 
 
-    public function confirmaCambiarEmail(Request $req){
+    public function confirmarCambiarEmail(Request $req){
         try {
             $validator = Validator::make($req->all(),trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
             if($validator->fails())
@@ -69,9 +69,11 @@ class DatosController extends Controller
 
             $user = $req->user();
             $cliente = $user->cliente;
-            $validacion = Validacion::where('cliente_id',$cliente->id)->where('validado',0)->where('codigo',$req->codigo)->latest()->first();
-            if(!$validacion)
+            $validacion = Validacion::where('cliente_id',$cliente->id)->where('validado',0)->latest('created_at')->first();
+            if(!$validacion || $validacion->codigo != $req->codigo)
                 return response()->json(['success'=>false,'message'=>'Codigo invalido'],403);
+
+
 
             $fechaCreado = Carbon::parse($validacion->created_at);
             $fechaActual = Carbon::now();
@@ -136,7 +138,7 @@ class DatosController extends Controller
         }
     }
 
-    public function confirmaCambiarCelular(Request $req){
+    public function confirmarCambiarCelular(Request $req){
         $validator = Validator::make($req->all(),trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
         if($validator->fails())
                 return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
@@ -146,9 +148,11 @@ class DatosController extends Controller
         if (!$executed)
             return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
-        $validacion = Validacion::where('id',$req->id)->where('validado',0)->where('codigo',$req->codigo)->first();
-        if(!$validacion)
-            return response()->json(['success'=>false,'message'=>'Codigo invalido'],403);
+        $user = $req->user();
+        $cliente = $user->cliente;
+        $validacion = Validacion::where('cliente_id',$cliente->id)->where('validado',0)->latest('created_at')->first();
+        if(!$validacion || $validacion->codigo != $req->codigo)
+                return response()->json(['success'=>false,'message'=>'Codigo invalido'],403);
 
         $fechaCreado = Carbon::parse($validacion->created_at);
         $fechaActual = Carbon::now();

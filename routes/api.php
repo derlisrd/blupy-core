@@ -56,9 +56,9 @@ Route::middleware('auth:api')->group(function(){
     Route::put('/cambiar-contrasena',[UserPrivate::class,'cambiarContrasena']);
 
     Route::put('/solicitar-cambiar-celular',[DatosController::class,'solicitarCambiarCelular']);
-    Route::put('/confirmar-cambiar-celular',[DatosController::class,'confirmaCambiarCelular']);
+    Route::put('/confirmar-cambiar-celular',[DatosController::class,'confirmarCambiarCelular']);
     Route::put('/solicitar-cambiar-email',[DatosController::class,'solicitarCambiarEmail']);
-    Route::put('/confirmar-cambiar-email',[DatosController::class,'confirmaCambiarEmail']);
+    Route::put('/confirmar-cambiar-email',[DatosController::class,'confirmarCambiarEmail']);
 
     Route::get('/consultar-qr',[QRController::class,'consultar']);
     Route::post('/autorizar-qr',[QRController::class,'autorizar']);
