@@ -48,6 +48,27 @@ class SolicitudesController extends Controller
         ]);
     }
 
+
+    public function verificarEstadoSolicitud(Request $req){
+        $user = $req->user();
+        $cliente = $user->cliente;
+        $solicitudes = SolicitudCredito::where('cliente_id',$cliente->id)->where('tipo',1)->latest()->first();
+
+        if($solicitudes){
+            $fechaCarbon = Carbon::parse($solicitudes->created_at);
+            $fechaActual = Carbon::now();
+            $haPasadoUnDia = $fechaActual->diffInDays($fechaCarbon) > 2;
+            if(!$haPasadoUnDia){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'
+                ],403);
+            }
+        }
+        return response()->json(['success'=>true, 'message'=>'Puede ingresar una nueva solicitud']);
+
+    }
+
     public function contratoPendiente(Request $req){
 
     }
