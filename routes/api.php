@@ -34,6 +34,9 @@ Route::post('/validar-telefono',[ValidacionesController::class,'validarTelefono'
 Route::post('/confirmar-telefono',[ValidacionesController::class,'confirmarTelefono']);
 
 
+
+
+
 Route::middleware('auth:api')->group(function(){
 
     Route::post('/check-token',[AuthController::class,'checkToken']);
