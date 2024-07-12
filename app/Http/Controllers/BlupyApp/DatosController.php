@@ -127,11 +127,11 @@ class DatosController extends Controller
             $tigoService = new TigoSmsService();
             $hora = Carbon::now()->format('H:i');
             $mensaje = $randomNumber." es tu codigo de verificacion de BLUPY. ". $hora  ;
-            $tigoService->enviarSms($cliente->celular,$mensaje);
+            $tigoService->enviarSms($req->celular,$mensaje);
 
             $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->celular,'cliente_id'=>$cliente->id]);
 
-            return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Mensaje enviado']);
+            return response()->json(['success' =>true,'results'=>null,'message'=>'Mensaje enviado']);
         } catch (\Throwable $th) {
             Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error de servidor']);
