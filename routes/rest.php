@@ -9,8 +9,5 @@ Route::post('login',[AuthController::class,'login']);
 
 Route::middleware(Authenticate::using('api'))->group(function(){
 
-    Route::get('/solicitudes',function(){
-        return response()->json(['success'=>true]);
-    });
 
 });
