@@ -56,7 +56,7 @@ class DeviceController extends Controller
             $web = $req->web ? 1 : 0;
             $desktop = $req->desktop ? 1 : 0;
             $confianza = $req->confianza ? 1 : 0;
-            $validacion = Validacion::where('id',$id)->where('codigo',$codigo)->where('validado',0)->first();
+            $validacion = Validacion::where('id',$id)->where('codigo',$codigo)->where('validado',0)->latest('created_at')->first();
             if(!$validacion)
                 return response()->json(['success'=>false,'message'=>'Código inválido.'],400);
 
