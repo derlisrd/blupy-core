@@ -53,7 +53,12 @@
         <div class="content">
             <h3>Hemos detectado que se ha ingresado a tu cuenta de BLUPY, si fuiste tu utiliza este código</h3>
             <div class="verification-code"> {{ $code ?? '' }}</div>
-            <h3>Si no solicitaste esta verificación, por favor cambia tu contraseña lo más rápido posible.</h3>
+            <p><strong>Detalles del intento:</strong></p>
+            <p><strong>IP:</strong> {{ $ip ?? ''}}</p>
+            <p><strong>Dispositivo:</strong> {{ $device ?? '' }}</p>
+            <p>Si no fuiste tú, te recomendamos cambiar tu contraseña de inmediato y revisar la seguridad de tu cuenta.</p>
+            <p>Gracias</p>
+            <p>El equipo de BLUPY</p>
         </div>
         <div class="footer">
             <p>&copy; 2024 Blupy es un empresa registrada de Mi Credito S.A. Todos los derechos reservados.</p>

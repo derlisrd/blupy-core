@@ -167,7 +167,7 @@ class AuthController extends Controller
                     ->first();
 
                     if(!$dispositoDeConfianza){
-                        $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id);
+                        $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id,$req);
                         return response()->json([
                             'success'=>true,
                             'results'=>null,
@@ -250,10 +250,15 @@ class AuthController extends Controller
         return response()->json(['success'=>true,'message'=>'Su cuenta ha sido desactivada correctamente']);
     }
 
-    private function enviarEmaildispositivoInusual($email,$clienteId){
+    private function enviarEmaildispositivoInusual($email,$clienteId,$req){
         $randomNumber = random_int(100000, 999999);
         $emailService = new EmailService();
-        $emailService->enviarEmail($email,"[".$randomNumber."]Blupy confirmar dispositivo",'email.validarDispositivo',['code'=>$randomNumber]);
+        $datos = [
+            'code'=>$randomNumber,
+            'device'=>$req->device,
+            'ip'=>$req->ip
+        ];
+        $emailService->enviarEmail($email,"[".$randomNumber."]Blupy confirmar dispositivo",'email.validarDispositivo',$datos);
         $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$email,'cliente_id'=>$clienteId]);
         return $validacion->id;
     }
