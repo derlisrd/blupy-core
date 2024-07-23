@@ -50,6 +50,14 @@ class InfinitaService
         return $this->get('ListarTiposLaboral',[]);
     }
 
+    public function PagoTarjeta ($documento,$cuenta,$importe){
+        $data = (object)[
+            "Documento"=>$documento,
+            "Cuenta"=>$cuenta,
+            "Importe"=>$importe
+        ];
+        return $this->post('PagoTarjeta',$data);
+    }
     public function ModificarCliente ($clienteId,$arrayDatas){
         $data = (object)[
             "CliId"=>$clienteId,

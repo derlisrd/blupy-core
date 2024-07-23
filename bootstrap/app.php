@@ -21,6 +21,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         //apiPrefix:'/api',
         then:function(){
+            Route::prefix('bancard')
+            ->name('bancard')
+            ->group(base_path('routes/bancard.php'));
+
             Route::middleware('api')
             ->prefix('rest')
             ->name('rest')
