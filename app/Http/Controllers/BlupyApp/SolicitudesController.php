@@ -125,11 +125,12 @@ class SolicitudesController extends Controller
 
             $user = $req->user();
             $cliente = $user->cliente;
-
             $cliente['email'] = $user['email'];
+
             $infinita = (object)$this->infinitaService->ampliacionCredito($cliente,$req->lineaSolicitada,$req->numeroCuenta);
             $res = (object) $infinita->data;
             Log::info($infinita->data);
+
             if($res->CliId == "0"){
                 $message = property_exists($res,'Messages') ? $res->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';
                 return response()->json(['success' => false,'message' => $message],400);
@@ -169,28 +170,28 @@ class SolicitudesController extends Controller
 
         $nombres = $this->separarNombres( $req->nombres );
         $apellidos = $this->separarNombres( $req->apellidos );
-        $datos = [
-            (object)[
-                'SolAdiCed'=>$req->cedula,
-                'SolAdiNom1'=>$nombres[0],
-                'SolAdiNom2'=>$nombres[1],
-                'SolAdiApe1'=>$apellidos[0],
-                'SolAdiApe2'=>$apellidos[1],
-                'SolAdiLim'=>(int)$req->limite,
-                'SolAdiTel'=>$req->celular,
-                'SolAdiDire'=>$req->direccion
-            ]
+
+        $datoDelAdicional = [
+            'cedula'=>$req->cedula,
+            'nombre1'=>$nombres[0],
+            'nombre2'=>$nombres[1],
+            'apellido1'=>$apellidos[0],
+            'apellido2'=>$apellidos[1],
+            'limite'=>(int)$req->limite,
+            'telefono'=>$req->celular,
+            'direccion'=>$req->direccion
         ];
+
         $user = $req->user();
         $cliente = $user->cliente;
         $cliente['email'] = $user->email;
-        $infinita = (object) $this->infinitaService->agregarAdicional($cliente,$datos,$req->maectaid);
-        $res = (object)$infinita->data;
-        Log::info($infinita->data);
-        if($res->CliId == "0"){
-            $message = property_exists($res,'Messages') ? $res->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';
-            return response()->json(['success' => false,'message' => $message],400);
+
+        $infinitaAmpliacion = $this->adicionalEnInfinita($cliente,$datoDelAdicional,$req->maectaid);
+
+        if( ! $infinitaAmpliacion->success ){
+            return response()->json(['success'=>false,'message'=>$infinitaAmpliacion->message],400);
         }
+        $res = $infinitaAmpliacion->results;
 
         Adicional::create([
             'cliente_id'=>$cliente->id,
@@ -261,6 +262,25 @@ class SolicitudesController extends Controller
             }
         }
         return $resultado;
+    }
+
+    private function adicionalEnInfinita($clientePrincipal,$datosDelAdicional,$cuentaPrincipal){
+        $datos = [(object)$datosDelAdicional];
+
+        $infinita = (object) $this->infinitaService->agregarAdicional($clientePrincipal,$datos,$cuentaPrincipal);
+        $res = (object)$infinita->data;
+        Log::info($infinita->data);
+        if($res->CliId == "0"){
+            $message = property_exists($res,'Messages') ? $res->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';
+            return (object)['success'=>false, 'message'=>$message,'results'=>null];
+        }
+        return (object)[
+            'success'=>true,
+            'results'=> (object) [
+            'solicitudId'=>$res->SolId,
+            'solicitudEstado'=>$res->SolEstado
+            ]
+        ];
     }
 
 }
