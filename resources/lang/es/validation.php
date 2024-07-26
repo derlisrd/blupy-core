@@ -1,6 +1,29 @@
 <?php
 
 return [
+    'bancard'=>[
+        'consultarDeuda'=>[
+            'cedula' => 'required',
+            'cuenta' => 'required|numeric',
+            'messages'=>[
+                'cedula.required'=>'Cédula es obligatoria.',
+                'cuenta.required'=>'Cuenta es obligatoria.',
+                'cuenta.numeric'=>'Cuenta debe ser un número.',
+            ],
+        ],
+        'pagarDeuda'=>[
+            'cedula' => 'required',
+            'cuenta' => 'required|numeric',
+            'importe' => 'required|numeric',
+            'messages'=>[
+                'cedula.required'=>'Cédula es obligatoria.',
+                'cuenta.required'=>'Cuenta es obligatoria.',
+                'cuenta.numeric'=>'Cuenta debe ser un número.',
+                'importe.required'=>'Importe es obligatorio.',
+                'importe.numeric'=>'Importe debe ser un número.',
+            ],
+        ]
+    ],
     'device'=>[
         'codigo'=>[
             'email' => 'required|email',
