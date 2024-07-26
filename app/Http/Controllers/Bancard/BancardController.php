@@ -61,7 +61,17 @@ class BancardController extends Controller
         }
     }
     public function revertirPago(Request $req){
+        try {
 
+            return response()->json([
+                'success'=>false,
+                'message'=> 'Revercion de pago'
+            ]);
+
+        } catch (\Throwable $th) {
+            throw $th;
+            Log::error($th);
+        }
     }
 
 }
