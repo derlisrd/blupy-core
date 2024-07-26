@@ -23,5 +23,5 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
-          cd /var/www/html/blupy-core/
+          cd /var/www/html/dev-blupy-core/
           git pull origin dev
