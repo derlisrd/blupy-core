@@ -69,6 +69,8 @@ class BancardController extends Controller
             Log::error($th);
         }
     }
+
+
     public function revertirPago(Request $req){
         try {
             $results = $this->pagarDeudaPorDocumento($req->cedula,$req->cuenta,$req->importe);

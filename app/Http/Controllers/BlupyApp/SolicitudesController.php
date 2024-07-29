@@ -127,18 +127,7 @@ class SolicitudesController extends Controller
             $cliente = $user->cliente;
             $cliente['email'] = $user['email'];
 
-            $infinita = (object)$this->infinitaService->ampliacionCredito($cliente,$req->lineaSolicitada,$req->numeroCuenta);
-            $res = (object) $infinita->data;
-            Log::info($infinita->data);
 
-            if($res->CliId == "0"){
-                $message = property_exists($res,'Messages') ? $res->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';
-                return response()->json(['success' => false,'message' => $message],400);
-            }
-
-            $ingreso = preg_replace('#data:image/[^;]+;base64,#', '', $req->fotoIngreso);
-            $ande = preg_replace('#data:image/[^;]+;base64,#', '', $req->fotoAnde);
-            $this->infinitaService->enviarComprobantes($cliente->cedula, $ingreso, $ande);
 
             SolicitudCredito::create([
                 'cliente_id' => $cliente->id,
@@ -155,6 +144,8 @@ class SolicitudesController extends Controller
             return response()->json(['success'=>false,'message'=>'Error de servidor']);
         }
     }
+
+
 
 
 
@@ -262,6 +253,22 @@ class SolicitudesController extends Controller
             }
         }
         return $resultado;
+    }
+
+    private function ampliacionEnInfinita($datosDeCliente,$lineaSolicitada,$numeroCuenta){
+
+        $infinita = (object)$this->infinitaService->ampliacionCredito($datosDeCliente,$lineaSolicitada,$numeroCuenta);
+            $res = (object) $infinita->data;
+            Log::info($infinita->data);
+
+            if($res->CliId == "0"){
+                $message = property_exists($res,'Messages') ? $res->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';
+                return response()->json(['success' => false,'message' => $message],400);
+            }
+
+            $ingreso = preg_replace('#data:image/[^;]+;base64,#', '', $req->fotoIngreso);
+            $ande = preg_replace('#data:image/[^;]+;base64,#', '', $req->fotoAnde);
+            $this->infinitaService->enviarComprobantes($datosDeCliente->cedula, $ingreso, $ande);
     }
 
     private function adicionalEnInfinita($clientePrincipal,$datosDelAdicional,$cuentaPrincipal){
