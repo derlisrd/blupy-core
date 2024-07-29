@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vendedores', function (Blueprint $table) {
+        Schema::create('supervisores', function (Blueprint $table) {
             $table->id();
-            $table->string('cedula')->unique();
-            $table->text('nombre');
-            $table->string('punto');
-            $table->text('direccion')->nullable();
-            $table->string('organigrama')->nullable();
-            $table->bigInteger('qr_generado')->default(0);
+            $table->string('cedula_supervisor')->unique()->nullable();
+            $table->string('nombre_supervisor')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vendedores');
+        Schema::dropIfExists('supervisores');
     }
 };

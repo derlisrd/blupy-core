@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Adicional;
 use App\Models\Cliente;
 use App\Models\SolicitudCredito;
-use App\Services\InfinitaService;
+
 use App\Traits\RegisterTraits;
+use App\Traits\SolicitudesInfinita;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
@@ -16,32 +17,18 @@ use Illuminate\Support\Facades\Log;
 class SolicitudesController extends Controller
 {
     use RegisterTraits;
-    private $infinitaService;
+    use SolicitudesInfinita;
 
-    public function __construct()
-    {
-        $this->infinitaService = new InfinitaService();
-    }
 
     public function solicitudes(Request $req){
         $validator = Validator::make($req->all(),trans('validation.solicitudes.listar'),trans('validation.solicitudes.listar.messages'));
-        if($validator->fails()) return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
-        $results = [];
+        if($validator->fails())
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+
         $user = $req->user();
-        $res = (object)$this->infinitaService->ListarSolicitudes($user->cliente->cedula,$req->fechaDesde,$req->fechaHasta);
-        $solicitudes = (object)$res->data;
-        if(property_exists($solicitudes,'wSolicitudes')){
-            foreach ($solicitudes->wSolicitudes as $value) {
-                array_push($results,[
-                    'id'=>$value['SolId'],
-                    'producto'=>$value['SolProdId'],
-                    'estado'=>$value['SolEstado'],
-                    'descripcion'=>$value['SolProdNom'],
-                    'fecha'=>$value['SolFec'],
-                    'importe'=>(int) $value['SolImpor'],
-                ]);
-            }
-        }
+
+        $results = $this->listaSolicitudes($user->cliente->cedula,$req->fechaDesde,$req->fechaHasta);
+
         return response()->json([
             'success'=>true,
             'results'=>$results
@@ -99,11 +86,20 @@ class SolicitudesController extends Controller
             $clienteUpdated->update($request);
             $clienteUpdated['email'] = $user->email;
 
-            $res = (object)$this->infinitaService->solicitudLineaDeCredito($clienteUpdated);
-            $solicitudResultado = $res->data;
 
-            $this->ingresarSolicitud($user->cliente->id,$solicitudResultado);
 
+            $solicitud = $this->ingresarSolicitudInfinita($clienteUpdated);
+            if(!$solicitud->success){
+                return response()->json(['success'=>false,'message'=>$solicitud->message],400);
+            }
+            SolicitudCredito::create([
+                'cliente_id'=>$user->cliente->id,
+                'estado_id'=>$solicitud->id,
+                'estado'=>$solicitud->estado,
+                'codigo'=>$solicitud->codigo,
+                'tipo'=>1,
+                'importe'=>0
+            ]);
             return response()->json(['success'=>true,'message'=>'Solicitud ingresada correctamente.']);
         } catch (\Throwable $th) {
             Log::error($th);
@@ -126,15 +122,23 @@ class SolicitudesController extends Controller
             $user = $req->user();
             $cliente = $user->cliente;
             $cliente['email'] = $user['email'];
+            $lineaSolicitada = $req->lineaSolicitada;
+            $nroCuenta = $req->numeroCuenta;
+            $fotoIngreso = $req->fotoIngreso;
+            $fotoAnde = $req->fotoAnde;
+            $ampliacion = $this->ampliacionEnInfinita($cliente,$lineaSolicitada,$nroCuenta,$fotoIngreso,$fotoAnde);
 
+            if(!$ampliacion->success){
+                return response()->json(['success'=>false,'message'=>$ampliacion->message]);
+            }
 
 
             SolicitudCredito::create([
                 'cliente_id' => $cliente->id,
-                'codigo' => $res->SolId,
-                'estado' => trim($res->SolEstado),
+                'codigo' => $ampliacion->codigo,
+                'estado' => $ampliacion->estado,
                 'estado_id'=> 3,
-                'importe'=>$req->lineaSolicitada,
+                'importe'=>$lineaSolicitada,
                 'tipo' => 3
             ]);
             return response()->json(['success'=>true,'message'=>'La ampliación de la línea ha ingresado con éxito.']);
@@ -158,6 +162,12 @@ class SolicitudesController extends Controller
             $validator = Validator::make($req->all(),trans('validation.solicitudes.adicional'),trans('validation.solicitudes.adicional.messages'));
         if($validator->fails())
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+
+        $adicional = Adicional::where('cedula',$req->cedula)->first();
+
+        if($adicional)
+            return response()->json(['success'=>false,'message'=>'Adicional ya existe en la base de datos'], 400);
+
 
         $nombres = $this->separarNombres( $req->nombres );
         $apellidos = $this->separarNombres( $req->apellidos );
@@ -225,69 +235,6 @@ class SolicitudesController extends Controller
         return true;
     }
 
-    private function ingresarSolicitud(string $clienteId, array $resultado): bool{
 
-        $resultadoInfinitaObject = (object) $resultado;
-        $resultado = false;
-        if(property_exists($resultadoInfinitaObject,'CliId')){
-            if($resultadoInfinitaObject->CliId !== '0'){
-                $codigoSolicitud = $resultadoInfinitaObject->SolId;
-                $estadoId = 11;
-                $estado = trim($resultadoInfinitaObject->SolEstado);
-                if($estado == 'Contrato Pendiente'){
-                    $estadoId = 5;
-                    $resultado = true;
-                }
-                if($estado == 'Pend. Aprobación'){
-                    $estadoId= 3;
-                }
-                SolicitudCredito::create([
-                    'cliente_id'=>$clienteId,
-                    'estado_id'=>$estadoId,
-                    'estado'=>$estado,
-                    'codigo'=>$codigoSolicitud,
-                    'tipo'=>1,
-                    'importe'=>0
-                ]);
-                return $resultado;
-            }
-        }
-        return $resultado;
-    }
-
-    private function ampliacionEnInfinita($datosDeCliente,$lineaSolicitada,$numeroCuenta){
-
-        $infinita = (object)$this->infinitaService->ampliacionCredito($datosDeCliente,$lineaSolicitada,$numeroCuenta);
-            $res = (object) $infinita->data;
-            Log::info($infinita->data);
-
-            if($res->CliId == "0"){
-                $message = property_exists($res,'Messages') ? $res->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';
-                return response()->json(['success' => false,'message' => $message],400);
-            }
-
-            $ingreso = preg_replace('#data:image/[^;]+;base64,#', '', $req->fotoIngreso);
-            $ande = preg_replace('#data:image/[^;]+;base64,#', '', $req->fotoAnde);
-            $this->infinitaService->enviarComprobantes($datosDeCliente->cedula, $ingreso, $ande);
-    }
-
-    private function adicionalEnInfinita($clientePrincipal,$datosDelAdicional,$cuentaPrincipal){
-        $datos = [(object)$datosDelAdicional];
-
-        $infinita = (object) $this->infinitaService->agregarAdicional($clientePrincipal,$datos,$cuentaPrincipal);
-        $res = (object)$infinita->data;
-        Log::info($infinita->data);
-        if($res->CliId == "0"){
-            $message = property_exists($res,'Messages') ? $res->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';
-            return (object)['success'=>false, 'message'=>$message,'results'=>null];
-        }
-        return (object)[
-            'success'=>true,
-            'results'=> (object) [
-            'solicitudId'=>$res->SolId,
-            'solicitudEstado'=>$res->SolEstado
-            ]
-        ];
-    }
 
 }

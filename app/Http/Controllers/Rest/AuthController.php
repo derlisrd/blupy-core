@@ -22,7 +22,7 @@ class AuthController extends Controller
         if (!$executed)
             return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
-        $user = User::where([['email',$req->email],['rol'=>1]])->first();
+        $user = User::where([['email',$req->email],['rol',1]])->first();
         if(!$user)
             return response()->json(['success'=>false,'message'=>'Error de credenciales'],401);
 

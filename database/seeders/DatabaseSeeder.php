@@ -15,11 +15,12 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-
+        $pass = env('PASS_ADMIN');
         User::factory()->create([
-            'name' => 'Derlis',
-            'email' => 'derlis@blupy.com.py',
-            'password'=> Hash::make('demo')
+            'name' => 'Blupy Admin',
+            'email' => 'admin@blupy.com.py',
+            'password'=> Hash::make($pass),
+            'rol'=>1
         ]);
     }
 }

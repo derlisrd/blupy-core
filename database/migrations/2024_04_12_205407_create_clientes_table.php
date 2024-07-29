@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('celular');
             $table->string('foto_ci_frente')->nullable();
             $table->string('foto_ci_dorso')->nullable();
+            $table->string('foto_ingreso')->nullable();
+            $table->string('foto_ande')->nullable();
             $table->string('departamento')->nullable();
             $table->string('departamento_id')->nullable();
             $table->string('ciudad')->nullable();
@@ -38,6 +40,7 @@ return new class extends Migration
             $table->string('tipo_empresa')->nullable();
             $table->string('tipo_empresa_id')->nullable();
             $table->string('empresa_direccion')->nullable();
+            $table->string('lugar_empresa')->nullable();
             $table->string('latitud_empresa')->nullable();
             $table->string('longitud_empresa')->nullable();
             $table->string('empresa_departamento')->nullable();

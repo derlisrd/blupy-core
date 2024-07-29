@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('encargados', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('supervisor_id')->unsigned()->nullable();
+            $table->string('nombre_encargado');
+            $table->string('cedula_encargado');
+            $table->string('puntos');
+            $table->foreign('supervisor_id')->references('id')->on('supervisores');
             $table->timestamps();
         });
     }
