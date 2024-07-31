@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Mail;
 
 class EmailService
 {
-    /**
-     * Create a new class instance.
-     */
+
     public function __construct()
     {
 

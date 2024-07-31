@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Version extends Model
 {
     use HasFactory;
+    protected $table='versiones';
 }
