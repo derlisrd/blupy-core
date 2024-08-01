@@ -114,6 +114,10 @@ class InfinitaService
         return $this->post('IngresarAdj',$data);
     }
 
+    public function consultaEstadoSolicitud($codigo)
+    {
+        return $this->get('ConsultaEstadoSolicitud',["Solid" => $codigo]);
+    }
 
     public function ListarSolicitudes(String $cedula, String $fechaDesde, String $fechaHasta)
     {

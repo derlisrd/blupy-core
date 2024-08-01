@@ -48,6 +48,13 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Device::class,'user_id');
     }
 
+    public function notitokens()
+    {
+        $id = $this->id;
+        $tokens = Device::where('user_id', $id)->pluck('notitoken');
+        return $tokens;
+    }
+
     protected function casts(): array
     {
         return [

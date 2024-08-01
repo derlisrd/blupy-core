@@ -86,12 +86,12 @@ class SolicitudesController extends Controller
             $clienteUpdated->update($request);
             $clienteUpdated['email'] = $user->email;
 
-
-
             $solicitud = $this->ingresarSolicitudInfinita($clienteUpdated);
             if(!$solicitud->success){
                 return response()->json(['success'=>false,'message'=>$solicitud->message],400);
             }
+
+
             SolicitudCredito::create([
                 'cliente_id'=>$user->cliente->id,
                 'estado_id'=>$solicitud->id,
@@ -100,7 +100,16 @@ class SolicitudesController extends Controller
                 'tipo'=>1,
                 'importe'=>0
             ]);
-            return response()->json(['success'=>true,'message'=>'Solicitud ingresada correctamente.']);
+            $results = [
+                'estado_id'=>$solicitud->id,
+                'estado'=>$solicitud->estado,
+                'codigo'=>$solicitud->codigo
+            ];
+            return response()->json([
+                'success'=>true,
+                'results'=>$results,
+                'message'=>'Solicitud ingresada correctamente.']);
+
         } catch (\Throwable $th) {
             Log::error($th);
             return response()->json(['success'=>false,'message'=>'Hubo un error con el servidor. Contacte con nosotros por favor.'],500);

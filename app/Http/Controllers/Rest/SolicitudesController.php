@@ -5,11 +5,205 @@ namespace App\Http\Controllers\Rest;
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use App\Models\SolicitudCredito;
+use App\Models\User;
+use App\Services\PushExpoService;
+use App\Traits\SolicitudesInfinita;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SolicitudesController extends Controller
 {
+    use SolicitudesInfinita;
+    private $camposSolicitud;
+    public function __construct()
+    {
+        $this->camposSolicitud = [
+            'solicitud_creditos.id',
+            'solicitud_creditos.codigo',
+            'solicitud_creditos.estado',
+            'solicitud_creditos.estado_id',
+            'solicitud_creditos.created_at',
+            'solicitud_creditos.updated_at',
+            'solicitud_creditos.tipo',
+            'solicitud_creditos.cliente_id',
+            'u.name',
+            'u.email',
+            'u.id as uid',
+            'c.cedula',
+            'c.cliid',
+            'c.celular',
+            'c.foto_ci_frente',
+            'c.foto_ci_dorso',
+            'c.asofarma',
+            'c.solicitud_credito',
+            'c.funcionario',
+            'c.solicitud_credito'
+        ];
+    }
+    /*
+    ==============================================================================================================
+    ACTUALIZAR SOLICITUD DESDE INFINITA
+    ==============================================================================================================
+    */
+
+    public function actualizarSolicitud(Request $request){
+
+        $codigo = $request->codigo;
+        $solicitud = SolicitudCredito::where('codigo',$codigo)->first();
+        if(!$solicitud){
+            return response()->json([
+                'success'=>false,
+                'message'=>'Solicitud no existe.'
+            ],404);
+        }
+        $user = User::where('cliente_id',$solicitud->cliente_id)->first();
+        $res = $this->actualizarSolicitudInfinita($codigo);
+
+        if($res->success){
+            $solicitud->estado = $res->estado;
+            $solicitud->estado_id = $res->id;
+            $solicitud->save();
+        }
+        if($res->id == '5'){
+            $notificacion = new PushExpoService();
+            $to = $user->notitokens;
+            $notificacion->send(
+                $to,
+                'Buenas noticias! Crédito aprobado',
+                'Crédito aprobado. Acercate a cualquier punto farma y activalo. Tenés 30% de descuento en tu primera compra.'
+            );
+        }
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'Actualizada',
+            'results'=>$solicitud
+        ]);
+
+    }
+
+    /*
+    ==============================================================================================================
+    SOLICITUDES DEL MES, POR DIA Y SEMANA
+    ==============================================================================================================
+    */
+    public function index(Request $request){
+
+
+        $desde = ($request->desde ?? date('Y-m-01')).' 00:00:00';
+        $hasta = ($request->hasta ?? date('Y-m-t')).' 23:59:59';
+
+        $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
+        ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
+        ->join('users as u','u.cliente_id','=','clientes.id')
+        ->whereBetween('solicitud_creditos.created_at',[$desde,$hasta])
+        ->select($this->camposSolicitud);
+
+
+        $total = SolicitudCredito::count();
+
+        return response()->json([
+            'success'=>true,
+            'total'=>$total,
+            'results'=>$soli->get()
+        ]);
+    }
+
+    /*
+    ==============================================================================================================
+    BUSCAR
+    ==============================================================================================================
+    */
+    public function buscar(Request $request){
+
+        $buscar = $request->buscar;
+
+        $limite = 100;
+        $page =  0;
+        $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
+        ->where('users.name', 'like', '%' . $buscar. '%')
+        ->orWhere('clientes.cedula', 'like', '%' . $buscar . '%')
+        ->join('clientes','clientes.id', '=', 'solicitud_creditos.cliente_id')
+        ->join('users','users.cliente_id','=','clientes.id')
+        ->offset($page * $limite )
+        ->limit($limite)
+        ->select($this->camposSolicitud)
+        ->get();
+
+        $total = SolicitudCredito::count();
+        $pages = (int)($total / $limite) - 1;
+
+        return response()->json([
+            'success'=>true,
+            'total'=>$total,
+            'pages'=>$pages,
+            'current'=>(int)$page,
+            'limit'=> (int) $limite,
+            'results'=>$soli
+        ]);
+    }
+    /*
+    ==============================================================================================================
+    FILTROS
+    ==============================================================================================================
+    */
+
+    public function filtros (Request $request){
+
+        $estado_id = $request->estado_id;
+        $desde = ($request->desde ?? date('Y-m-01')).' 00:00:00';
+        $hasta = ($request->hasta ?? date('Y-m-t')).' 23:59:59';
+        $asofarma = ($request->asofarma) ?? '0';
+        $funcionario = ($request->funcionario) ?? '0';
+
+
+        if($request->tipo == "0"){
+            $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
+            ->where('solicitud_creditos.tipo',0)
+            ->where('clientes.asofarma',$asofarma)
+            ->where('clientes.funcionario',$funcionario)
+            ->where('solicitud_creditos.estado_id',  7 )
+            ->whereBetween('solicitud_creditos.created_at', [$desde, $hasta])
+            ->join('clientes','clientes.id', '=', 'solicitud_creditos.cliente_id')
+            ->join('users','users.cliente_id','=','clientes.id')
+            ->select($this->camposSolicitud)
+            ->get();
+        }
+        if($request->tipo == "1")
+        {
+            $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
+            ->where('solicitud_creditos.tipo',1)
+            ->where('solicitud_creditos.estado_id','like','%'.  $estado_id)
+            ->where('clientes.funcionario','like','%'.$funcionario)
+            ->where('clientes.asofarma','like','%'.$asofarma)
+            ->whereBetween('solicitud_creditos.created_at', [$desde. ' 00:00:00', $hasta.' 23:59:59'])
+            ->join('clientes','clientes.id', '=', 'solicitud_creditos.cliente_id')
+            ->join('users','users.cliente_id','=','clientes.id')
+            ->select($this->camposSolicitud)
+            ->get();
+        }
+
+        if(!isset($request->tipo))
+        {
+            $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
+            ->where('solicitud_creditos.estado_id','like','%'.  $estado_id)
+            ->where('clientes.funcionario','like','%'.$funcionario)
+            ->where('clientes.asofarma','like','%'.$asofarma)
+            ->whereBetween('solicitud_creditos.created_at', [$desde. ' 00:00:00', $hasta.' 23:59:59'])
+            ->join('clientes','clientes.id', '=', 'solicitud_creditos.cliente_id')
+            ->join('users','users.cliente_id','=','clientes.id')
+            ->select($this->camposSolicitud)
+            ->get();
+        }
+
+
+        return response()->json([
+            'tipo'=>$request->tipo,
+            'success'=>true,
+            'results'=>$soli,
+            'total'=>$soli->count()
+        ]);
+    }
 
     /*
     ==============================================================================================================
@@ -17,8 +211,6 @@ class SolicitudesController extends Controller
     ==============================================================================================================
     */
     public function totales (Request $request){
-
-
         $desde = $request->desde ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
         $hasta = $request->hasta ?? Carbon::now()->format('Y-m-d');
 

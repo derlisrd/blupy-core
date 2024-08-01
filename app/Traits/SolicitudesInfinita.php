@@ -13,6 +13,20 @@ trait SolicitudesInfinita
         $this->infinitaService = new InfinitaService();
     }
 
+    public function actualizarSolicitudInfinita(string $codigo){
+        $infinita = (object)$this->webserviceInfinita->consultaEstadoSolicitud($codigo);
+        $data = (object) $infinita->data;
+        $results = ['success'=>false,'estado'=>null, 'id'=>null];
+        if($data && property_exists($data, 'wDato')){
+            $results = [
+                'success'=>true,
+                'estado'=>$data->wDato[0]['DatoDesc'],
+                'id'=>$data->wDato[0]['DatoId']
+            ];
+        }
+        return (object) $results;
+    }
+
     public function listaSolicitudes($cedula,$desde,$hasta){
         $res = (object)$this->infinitaService->ListarSolicitudes($cedula,$desde,$hasta);
         $solicitudes = (object)$res->data;
