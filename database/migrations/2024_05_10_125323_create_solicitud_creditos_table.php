@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('solicitud_creditos', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('cliente_id')->unsigned();
-            $table->tinyInteger('estado_id');
+            $table->bigInteger('cliente_id')->unsigned()->nullable();
+            $table->tinyInteger('estado_id')->nullable();
             $table->string('estado')->nullable();
             $table->string('codigo');
-            $table->tinyInteger('tipo');
+            $table->tinyInteger('tipo')->default(0);
             $table->float('importe')->nullable();
             $table->foreign('cliente_id')->references('id')->on('clientes');
             $table->timestamps();

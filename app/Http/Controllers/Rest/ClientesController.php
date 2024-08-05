@@ -109,7 +109,7 @@ class ClientesController extends Controller
     */
 
 
-    public function reiniciarContrasena(Request $request){
+    public function restablecerContrasena(Request $request){
         $validator = Validator::make($request->all(), ['id' => 'required|exists:users,id','password'=>'required|string|min:8']);
         if ($validator->fails())
             return response()->json(['success'=>false,'message'=> $validator->errors()->first()], 400);

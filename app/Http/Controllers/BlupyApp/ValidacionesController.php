@@ -36,7 +36,6 @@ class ValidacionesController extends Controller
             return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Email enviado']);
 
         } catch (\Throwable $th) {
-            Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error en el servidor'],500);
         }
     }
@@ -98,7 +97,6 @@ class ValidacionesController extends Controller
 
             return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Mensaje enviado']);
         } catch (\Throwable $th) {
-            Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error en el servidor'],500);
         }
 

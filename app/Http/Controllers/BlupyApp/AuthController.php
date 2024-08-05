@@ -126,7 +126,6 @@ class AuthController extends Controller
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error($th);
             throw $th;
             return response()->json(['success'=>false, 'message'=>'Error de servidor'],500);
         }
@@ -177,7 +176,7 @@ class AuthController extends Controller
                     }
 
 
-
+                    $dispositoDeConfianza->update(['updated_at'=>date('Y-m-d H:i:s')]);
                     $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s') ]);
                     $tarjetasConsultas = new CuentasController();
                     $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula);
@@ -197,7 +196,6 @@ class AuthController extends Controller
             ],401);
 
         } catch (\Throwable $th) {
-            Log::error($th);
             throw $th;
             return response()->json(['success'=>false,'message'=>"Error de servidor"],500);
         }
@@ -217,7 +215,6 @@ class AuthController extends Controller
                 'success'=>true, 'message'=>'valid'
             ]);
         } catch (\Throwable $th) {
-            Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error de servidor'],500);
         }
     }

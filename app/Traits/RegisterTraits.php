@@ -88,7 +88,6 @@ trait RegisterTraits
         $foto1 = preg_replace('#data:image/[^;]+;base64,#', '', $fotoFrontal);
         $foto2 = preg_replace('#data:image/[^;]+;base64,#', '', $fotoDorsal);
         $res = $infinitaService->enviarFotoCedula($cedula,$foto1,$foto2);
-        Log::info($res);
     }
 
     public function enviarEmailRegistro(String $email, String $nombre){
@@ -98,7 +97,6 @@ trait RegisterTraits
                 $message->to($email);
             });
         } catch (\Throwable $th) {
-            Log::error($th);
             return response()->json([
                 'success'=>false,
                 'message'=>'Error al enviar el email mas tarde'
@@ -119,7 +117,6 @@ trait RegisterTraits
                 $message->to($datas['email']);
             });
         } catch (\Throwable $th) {
-            Log::error($th);
             return response()->json([
                 'success'=>false,
                 'message'=>'Error al enviar el email mas tarde'

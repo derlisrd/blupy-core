@@ -3,6 +3,7 @@
 use App\Http\Controllers\Rest\AuthController;
 use App\Http\Controllers\Rest\ClientesController;
 use App\Http\Controllers\Rest\NotificacionesController;
+use App\Http\Controllers\Rest\SolicitudesController;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
 
@@ -13,8 +14,19 @@ Route::post('login',[AuthController::class,'login']);
 Route::middleware(Authenticate::using('api'))->group(function(){
 
     Route::get('/clientes',[ClientesController::class,'index']);
+    Route::post('/clientes-filtros',[ClientesController::class,'filtros']);
+    Route::get('/cliente',[ClientesController::class,'buscar']);
+    Route::get('/cliente/restablecer-contrasena',[ClientesController::class,'restablecerContrasena']);
 
 
     Route::post('enviar-notificacion',[NotificacionesController::class,'enviarNotificacion']);
+
+    Route::post('enviar-notificaciones-masivas',[NotificacionesController::class,'enviarNotificacionesMasivas']);
+
+
+    Route::get('/solicitudes',[SolicitudesController::class,'index']);
+    Route::post('/solicitudes-filtros',[SolicitudesController::class,'filtros']);
+    Route::get('/solicitud',[SolicitudesController::class,'buscar']);
+    Route::get('/totales',[SolicitudesController::class,'totales']);
 
 });

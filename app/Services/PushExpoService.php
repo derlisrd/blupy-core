@@ -2,7 +2,6 @@
 
 namespace App\Services;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class PushExpoService
 {
@@ -20,7 +19,6 @@ class PushExpoService
             ],['Content-Type' => 'application/json']);
             return true;
         } catch (\Throwable $th) {
-            Log::error($th);
             return false;
         }
     }

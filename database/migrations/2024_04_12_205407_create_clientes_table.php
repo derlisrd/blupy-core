@@ -41,6 +41,7 @@ return new class extends Migration
             $table->string('tipo_empresa_id')->nullable();
             $table->string('empresa_direccion')->nullable();
             $table->string('lugar_empresa')->nullable();
+            $table->string('lugar_empresa_id')->nullable();
             $table->string('latitud_empresa')->nullable();
             $table->string('longitud_empresa')->nullable();
             $table->string('empresa_departamento')->nullable();
@@ -58,7 +59,7 @@ return new class extends Migration
             $table->string('antiguedad_laboral_mes', 100)->nullable();
             $table->string('empresa_email')->nullable();
             $table->boolean('asofarma')->default(0);
-            $table->boolean('linea_farma')->default(0);
+            $table->boolean('linea_farma')->default(0)->nullable();
             $table->bigInteger('importe_credito_farma')->default(0);
             $table->boolean('direccion_completado')->default(0);
             $table->boolean('funcionario')->default(0);

@@ -22,7 +22,6 @@ class QRController extends Controller
             ->autorizarQR($req->id,$cliente->cedula, $req->numerocuenta,$req->telefono,$req->ip,$req->localizacion);
         $data = (object) $blupy['data'];
 
-        Log::info($blupy['data']);
         return response()->
         json([
             'success'=>$data->success,

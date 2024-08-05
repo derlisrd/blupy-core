@@ -36,7 +36,6 @@ class BancardController extends Controller
 
         } catch (\Throwable $th) {
             throw $th;
-            Log::error($th);
         }
     }
 
@@ -66,7 +65,6 @@ class BancardController extends Controller
 
         } catch (\Throwable $th) {
             throw $th;
-            Log::error($th);
         }
     }
 
@@ -89,7 +87,6 @@ class BancardController extends Controller
 
         } catch (\Throwable $th) {
             throw $th;
-            Log::error($th);
         }
     }
 

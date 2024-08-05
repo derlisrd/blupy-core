@@ -37,7 +37,6 @@ class DeviceController extends Controller
 
             return response()->json(['success'=>true,'results'=>['id'=>$id], 'message'=>'Te hemos enviado un correo electronico para verificar tu cuenta']);
         } catch (\Throwable $th) {
-            Log::error($th);
             throw $th;
         }
     }

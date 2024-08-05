@@ -47,7 +47,6 @@ class DatosController extends Controller
             return response()->json(['success' =>true,'results'=>null,'message'=>'Hemos enviado un email con el codigo']);
 
         } catch (\Throwable $th) {
-            Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error de servidor']);
         }
     }
@@ -95,7 +94,6 @@ class DatosController extends Controller
             $this->cambiosEnInfinita($user->cliente->cliid,$validacion->email,null);
             return response()->json(['success'=>true,'message'=>'El email se ha cambiado correctamente.']);
         } catch (\Throwable $th) {
-            Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error de servidor']);
         }
     }
@@ -133,7 +131,6 @@ class DatosController extends Controller
 
             return response()->json(['success' =>true,'results'=>null,'message'=>'Mensaje enviado']);
         } catch (\Throwable $th) {
-            Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error de servidor']);
         }
     }

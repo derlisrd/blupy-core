@@ -58,7 +58,6 @@ class AWSController extends Controller
 
             if($cedula != $extraidoCedula){
                 $nroCedula = false;
-                Log::info('error de nro'. $scaned);
             }
             unlink($imagePath);
             return response()->json([
@@ -71,7 +70,6 @@ class AWSController extends Controller
                 ]
             ]);
         } catch (\Throwable $th) {
-            Log::error($th);
             return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
         }
     }

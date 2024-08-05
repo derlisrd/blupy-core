@@ -10,13 +10,17 @@ use App\Services\PushExpoService;
 use App\Traits\SolicitudesInfinita;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class SolicitudesController extends Controller
 {
     use SolicitudesInfinita;
     private $camposSolicitud;
+    private $minutes;
     public function __construct()
     {
+        $this->minutes = 30;
         $this->camposSolicitud = [
             'solicitud_creditos.id',
             'solicitud_creditos.codigo',
@@ -88,25 +92,24 @@ class SolicitudesController extends Controller
     ==============================================================================================================
     */
     public function index(Request $request){
+        try {
+            $desde = ($request->desde ?? date('Y-m-01')).' 00:00:00';
+            $hasta = ($request->hasta ?? date('Y-m-t')).' 23:59:59';
 
+            $data = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
+                ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
+                ->join('users as u','u.cliente_id','=','c.id')
+                ->whereBetween('solicitud_creditos.created_at',[$desde,$hasta])
+                ->select($this->camposSolicitud);
 
-        $desde = ($request->desde ?? date('Y-m-01')).' 00:00:00';
-        $hasta = ($request->hasta ?? date('Y-m-t')).' 23:59:59';
-
-        $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
-        ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
-        ->join('users as u','u.cliente_id','=','clientes.id')
-        ->whereBetween('solicitud_creditos.created_at',[$desde,$hasta])
-        ->select($this->camposSolicitud);
-
-
-        $total = SolicitudCredito::count();
-
-        return response()->json([
-            'success'=>true,
-            'total'=>$total,
-            'results'=>$soli->get()
-        ]);
+            return response()->json([
+                'success'=>true,
+                'total'=>$data->count(),
+                'results'=>$data->get()
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /*
@@ -121,10 +124,10 @@ class SolicitudesController extends Controller
         $limite = 100;
         $page =  0;
         $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
-        ->where('users.name', 'like', '%' . $buscar. '%')
-        ->orWhere('clientes.cedula', 'like', '%' . $buscar . '%')
-        ->join('clientes','clientes.id', '=', 'solicitud_creditos.cliente_id')
-        ->join('users','users.cliente_id','=','clientes.id')
+        ->where('u.name', 'like', '%' . $buscar. '%')
+        ->orWhere('c.cedula', 'like', '%' . $buscar . '%')
+        ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
+        ->join('users as u','u.cliente_id','=','c.id')
         ->offset($page * $limite )
         ->limit($limite)
         ->select($this->camposSolicitud)
@@ -160,12 +163,12 @@ class SolicitudesController extends Controller
         if($request->tipo == "0"){
             $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
             ->where('solicitud_creditos.tipo',0)
-            ->where('clientes.asofarma',$asofarma)
-            ->where('clientes.funcionario',$funcionario)
+            ->where('c.asofarma',$asofarma)
+            ->where('c.funcionario',$funcionario)
             ->where('solicitud_creditos.estado_id',  7 )
             ->whereBetween('solicitud_creditos.created_at', [$desde, $hasta])
-            ->join('clientes','clientes.id', '=', 'solicitud_creditos.cliente_id')
-            ->join('users','users.cliente_id','=','clientes.id')
+            ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
+            ->join('users as u','u.cliente_id','=','c.id')
             ->select($this->camposSolicitud)
             ->get();
         }
@@ -174,11 +177,11 @@ class SolicitudesController extends Controller
             $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
             ->where('solicitud_creditos.tipo',1)
             ->where('solicitud_creditos.estado_id','like','%'.  $estado_id)
-            ->where('clientes.funcionario','like','%'.$funcionario)
-            ->where('clientes.asofarma','like','%'.$asofarma)
+            ->where('c.funcionario','like','%'.$funcionario)
+            ->where('c.asofarma','like','%'.$asofarma)
             ->whereBetween('solicitud_creditos.created_at', [$desde. ' 00:00:00', $hasta.' 23:59:59'])
-            ->join('clientes','clientes.id', '=', 'solicitud_creditos.cliente_id')
-            ->join('users','users.cliente_id','=','clientes.id')
+            ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
+            ->join('users as u','u.cliente_id','=','c.id')
             ->select($this->camposSolicitud)
             ->get();
         }
@@ -259,7 +262,7 @@ class SolicitudesController extends Controller
         $vigentesHoy = SolicitudCredito::whereBetween('updated_at',[$hoy.' 00:00:00',$fechaHoy])->where('tipo',1)->where('estado_id',7)->count();
         $vigentesSemana = SolicitudCredito::whereBetween('updated_at',[$lunes,$domingo])->where('tipo',1)->where('estado_id',7)->count();
         $vigentesMes = SolicitudCredito::whereBetween('updated_at',[$fechaInicioMes,$fechaHoy])->where('tipo',1)->where('estado_id',7)->count();
-        $porcentajeDeRechazo = $solicitudesTotales * 100 / $solicitudesRechazadas;
+        $porcentajeDeRechazo = number_format( ($solicitudesRechazadas  * 100 / $solicitudesTotales),2 );
 
         return response()->json([
             'success'=>true,

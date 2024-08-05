@@ -74,7 +74,6 @@ class ConsultasController extends Controller
 
             return response()->json([ 'success' => false,'message' => 'No se recuperaron registros'],404);
         } catch (\Throwable $th) {
-            Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error de servidor.'],500);
         }
     }
@@ -100,7 +99,6 @@ class ConsultasController extends Controller
 
             return response()->json([ 'success' => false,'message' => 'No se recuperaron registros'],404);
         } catch (\Throwable $th) {
-            Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error de servidor.'],500);
         }
     }
