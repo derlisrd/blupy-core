@@ -172,7 +172,7 @@ class AuthController extends Controller
                             'success'=>true,
                             'results'=>null,
                             'id'=> $idValidacion,
-                            'message'=>'Dispositivo inusual. Te hemos enviado un correo a '.$pistaEmail.' para verificar.'
+                            'message'=>'Dispositivo inusual. Hemos enviado un correo a '.$pistaEmail.' para verificar.'
                         ]);
                     }
 
