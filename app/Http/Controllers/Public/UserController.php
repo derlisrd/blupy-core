@@ -65,6 +65,7 @@ class UserController extends Controller
                 'message'=>'Código enviado correctamente al ' . $forma
             ]);
         } catch (\Throwable $th) {
+            Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error de servidor. Intente en unos minutos.'],500);
         }
     }
