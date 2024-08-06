@@ -86,27 +86,36 @@ class CuentasController extends Controller
                 $infinita = (object) $resInfinita->data;
                 if(property_exists($infinita,'Tarj')){
                     foreach($infinita->Tarj['Mov'] as $val){
+                        $date = Carbon::parse($val['TcMovFec']);
+                        $fecha = $date->format('Y-m-d');
+                        $hora = $date->format('H:i:s');
                         array_push($results,[
                             'comercio'=>$val['TcComNom'],
                             'descripcion'=>$val['MvDes'],
                             'detalles'=> $val['TcMovDes'],
-                            'fecha'=>$val['TcMovFec'],
+                            'fecha'=>$fecha,
+                            'hora'=>$hora,
                             'monto'=>(int) $val['TcMovImp']
                         ]);
                     }
                 }
             }
-            if(!isset($req->cuenta) || $req->cuenta == null){
+            if(!$req->has('cuenta') || $req->cuenta == null){
                 //farma
                 $resFarma = (object) $this->farmaService->movimientos($user->cliente->cedula,$periodo);
                 $farma = (object) $resFarma->data;
                 if(property_exists($farma,'result')){
                     foreach($farma->result['movimientos'] as $val){
+                        $date = Carbon::parse($val['evenFecha'],'UTC');
+                        $date->setTimezone('America/Asuncion');
+                        $fecha = $date->format('Y-m-d');
+                        $hora = $date->format('H:i:s');
                         array_push($results,[
                             'comercio'=>'Farma S.A.',
                             'descripcion'=>$val['ticoDescripcion'],
                             'detalles'=> $val['ticoCodigo'].' '.$val['evenNumero'],
-                            'fecha'=>$val['evenFecha'],
+                            'fecha'=>$fecha,
+                            'hora'=>$hora,
                             'monto'=>$val['monto']
                         ]);
                     }
