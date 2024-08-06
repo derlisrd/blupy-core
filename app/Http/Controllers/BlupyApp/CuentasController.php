@@ -72,14 +72,14 @@ class CuentasController extends Controller
 
     public function movimientos(Request $req){
         try {
-            // $validator = Validator::make($req->only('periodo'),['periodo'=>'required'],['periodo.required'=>'El periodo es requerido (MM-AAAA).']);
-            // if($validator->fails())
-            //     return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+            $validator = Validator::make($req->all(),trans('validation.movimientos'),trans('validation.movimientos.messages'));
+            if($validator->fails())
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
             $results = [];
             $user = $req->user();
             $fechaActual = Carbon::now();
-            $periodo = $req->input('periodo', $fechaActual->format('m-Y'));
+            $periodo = isset($req->periodo) ? $req->periodo : $fechaActual->format('m-Y');
             if(isset($req->cuenta)){
                 //infinita
                 $resInfinita = (object) $this->infinitaService->movimientosPorFecha($req->cuenta,$periodo);
@@ -100,7 +100,7 @@ class CuentasController extends Controller
                     }
                 }
             }
-            if(!$req->has('cuenta') || $req->cuenta == null){
+            if(!isset($req->cuenta) || $req->cuenta == null){
                 //farma
                 $resFarma = (object) $this->farmaService->movimientos($user->cliente->cedula,$periodo);
                 $farma = (object) $resFarma->data;
@@ -125,6 +125,7 @@ class CuentasController extends Controller
             return response()->json(['success'=>true,'results'=>$results]);
 
         } catch (\Throwable $th) {
+            Log::error($th);
             throw $th;
         }
     }

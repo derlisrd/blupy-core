@@ -24,6 +24,14 @@ return [
             ],
         ]
     ],
+    'movimientos'=>[
+        'periodo'=>['nullable', 'regex:/^\d{2}-\d{4}$/'],
+        'cuenta'=>'nullable|numeric',
+        'messages'=>[
+            'periodo.regex'=>'El periodo es debe ser (MM-AAAA).',
+            'cuenta.numeric'=>'La cuenta debe ser número'
+        ]
+    ],
     'device'=>[
         'codigo'=>[
             'email' => 'required|email',
