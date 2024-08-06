@@ -4,7 +4,6 @@ namespace App\Traits;
 
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
