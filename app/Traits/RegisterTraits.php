@@ -22,6 +22,21 @@ trait RegisterTraits
         return [$nombre1,$nombre2];
     }
 
+    public function ocultarParcialmenteEmail(string $email){
+            $emailParts = explode('@', $email);
+            $name = $emailParts[0];
+            $domain = $emailParts[1];
+
+            $obfuscatedName = substr($name, 0, 3) . str_repeat('*', strlen($name) - 3);
+
+            $domainParts = explode('.', $domain);
+            $domainName = substr($domainParts[0], 0, 3) . str_repeat('*', strlen($domainParts[0]) - 3);
+            $domainExtension = $domainParts[1];
+
+            return $obfuscatedName . '@' . $domainName . '.' . $domainExtension;
+
+    }
+
     public function clienteFarma(String $cedula){
         $farma = new FarmaService();
         $res = (object)$farma->cliente($cedula);

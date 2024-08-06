@@ -166,12 +166,13 @@ class AuthController extends Controller
                     ->first();
 
                     if(!$dispositoDeConfianza){
+                        $pistaEmail = $this->ocultarParcialmenteEmail($user->email);
                         $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id,$req);
                         return response()->json([
                             'success'=>true,
                             'results'=>null,
                             'id'=> $idValidacion,
-                            'message'=>'Dispositivo inusual. Te hemos enviado un correo electronico para verificar.'
+                            'message'=>'Dispositivo inusual. Te hemos enviado un correo a '.$pistaEmail.' para verificar.'
                         ]);
                     }
 
