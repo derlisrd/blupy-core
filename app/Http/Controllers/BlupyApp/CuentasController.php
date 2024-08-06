@@ -5,6 +5,7 @@ namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -71,15 +72,17 @@ class CuentasController extends Controller
 
     public function movimientos(Request $req){
         try {
-            $validator = Validator::make($req->only('periodo'),['periodo'=>'required'],['periodo.required'=>'El periodo es requerido (MM-AAAA).']);
-            if($validator->fails())
-                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+            // $validator = Validator::make($req->only('periodo'),['periodo'=>'required'],['periodo.required'=>'El periodo es requerido (MM-AAAA).']);
+            // if($validator->fails())
+            //     return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
             $results = [];
             $user = $req->user();
+            $fechaActual = Carbon::now();
+            $periodo = $req->input('periodo', $fechaActual->format('m-Y'));
             if(isset($req->cuenta)){
                 //infinita
-                $resInfinita = (object) $this->infinitaService->movimientosPorFecha($req->cuenta,$req->periodo);
+                $resInfinita = (object) $this->infinitaService->movimientosPorFecha($req->cuenta,$periodo);
                 $infinita = (object) $resInfinita->data;
                 if(property_exists($infinita,'Tarj')){
                     foreach($infinita->Tarj['Mov'] as $val){
@@ -95,7 +98,7 @@ class CuentasController extends Controller
             }
             if(!isset($req->cuenta) || $req->cuenta == null){
                 //farma
-                $resFarma = (object) $this->farmaService->movimientos($user->cliente->cedula,$req->periodo);
+                $resFarma = (object) $this->farmaService->movimientos($user->cliente->cedula,$periodo);
                 $farma = (object) $resFarma->data;
                 if(property_exists($farma,'result')){
                     foreach($farma->result['movimientos'] as $val){
