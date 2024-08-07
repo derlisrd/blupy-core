@@ -150,6 +150,7 @@ trait RegisterTraits
         return [
             'cliid'=>$cliente->cliid,
             'name'=>$cliente->user->name,
+            'primerNombre'=>$cliente->nombre_primero,
             'nombres'=>trim($cliente->nombre_primero . ' ' . $cliente->nombre_segundo),
             'apellidos'=>trim($cliente->apellido_primero . ' ' . $cliente->apellido_segundo),
             'cedula'=>$cliente->cedula,
