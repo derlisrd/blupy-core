@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
 use App\Services\TigoSmsService;
+use App\Traits\RegisterTraits;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\RateLimiter;
 class UserController extends Controller
 {
 
+    use RegisterTraits;
 
 
     // aqui recibe cedula y forma de recuperar
@@ -31,7 +33,7 @@ class UserController extends Controller
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $ip = $req->ip();
-        $executed = RateLimiter::attempt($ip,3,function() {});
+        $executed = RateLimiter::attempt($ip,5,function() {});
         if (!$executed)
             return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
@@ -45,13 +47,15 @@ class UserController extends Controller
                 return response()->json(['success'=>false,'message'=>'No hay registro'],404);
 
             $randomNumber = random_int(100000, 999999);
-            $forma = 'email.';
+            $forma = '';
             if($req->forma == 0){
+                $forma = $this->ocultarParcialmenteEmail($user->email);
                 $emailService = new EmailService();
                 $emailService->enviarEmail($user->email,'Blupy: recupera tu contraseña','email.recuperarcontrasena',['code'=>$randomNumber]);
                 $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$user->email,'cliente_id'=>$cliente->id]);
             }
             if($req->forma == 1){
+                $forma = $this->ocultarParcialmenteTelefono($user->cliente->celular);
                 $this->enviarMensajeDeTextoRecuperacion($user->cliente->celular,$randomNumber);
                 $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$cliente->celular,'cliente_id'=>$cliente->id]);
                 $forma = 'mensaje de texto.';

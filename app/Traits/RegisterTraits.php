@@ -22,6 +22,14 @@ trait RegisterTraits
         return [$nombre1,$nombre2];
     }
 
+    function ocultarParcialmenteTelefono($phoneNumber) {
+        if (strlen($phoneNumber) < 7) {
+            return $phoneNumber;
+        }
+        $obfuscatedPhoneNumber = substr($phoneNumber, 0, 3) . str_repeat('*', strlen($phoneNumber) - 6) . substr($phoneNumber, -2);
+        return $obfuscatedPhoneNumber;
+    }
+
     public function ocultarParcialmenteEmail(string $email){
             $emailParts = explode('@', $email);
             $name = $emailParts[0];
