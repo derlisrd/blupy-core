@@ -58,7 +58,6 @@ class UserController extends Controller
                 $forma = $this->ocultarParcialmenteTelefono($user->cliente->celular);
                 $this->enviarMensajeDeTextoRecuperacion($user->cliente->celular,$randomNumber);
                 $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$cliente->celular,'cliente_id'=>$cliente->id]);
-                $forma = 'mensaje de texto.';
             }
 
             return response()->json([
