@@ -100,7 +100,7 @@ class CuentasController extends Controller
                     }
                 }
             }
-            if(!isset($req->cuenta) || $req->cuenta == null){
+            if(!isset($req->cuenta) || $req->cuenta == null || $req->cuenta == '0'){
                 //farma
                 $resFarma = (object) $this->farmaService->movimientos($user->cliente->cedula,$periodo);
                 $farma = (object) $resFarma->data;
