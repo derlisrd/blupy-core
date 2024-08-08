@@ -198,6 +198,7 @@ class AuthController extends Controller
 
         } catch (\Throwable $th) {
             throw $th;
+            Log::error($th);
             return response()->json(['success'=>false,'message'=>"Error de servidor"],500);
         }
     }
