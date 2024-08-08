@@ -40,11 +40,11 @@ class UserController extends Controller
         try {
             $cliente = Cliente::where('cedula',$req->cedula)->first();
             if(!$cliente)
-                return response()->json(['success'=>false,'message'=>'No hay registro'],404);
+                return response()->json(['success'=>false,'message'=>'No existe registro en nuestras bases de datos.'],404);
 
             $user = $cliente->user;
             if(!$user || $user->active == 0)
-                return response()->json(['success'=>false,'message'=>'No hay registro'],404);
+                return response()->json(['success'=>false,'message'=>'No existe registro en nuestras bases de datos.'],404);
 
             $randomNumber = random_int(100000, 999999);
             $forma = '';
