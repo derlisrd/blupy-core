@@ -21,6 +21,9 @@ class CuentasController extends Controller
         $this->farmaService = new FarmaService();
     }
 
+
+
+
     public function tarjetas(Request $req){
         $results = [];
         $user = $req->user();
@@ -154,6 +157,11 @@ class CuentasController extends Controller
         } catch (\Throwable $th) {
            return response()->json(['success'=>false,'message'=>'Error de servidor'],500);
         }
+    }
+
+    public function misDispositivos(Request $req){
+        $user = $req->user();
+        return response()->json(['success'=>true,'results'=>$user->devices]);
     }
 }
 
