@@ -238,11 +238,11 @@ return [
     ],
     "solicitudes"=>[
         "listar"=>[
-            'fechaDesde'=>'required',
-            'fechaHasta'=>'required',
+            'fechaDesde'=>'nullable|date_format:Y-m-d',
+            'fechaHasta'=>'nullable|date_format:Y-m-d',
             'messages'=>[
-                'fechaDesde.required'=>'La fechaDesde es requerida (YYYY-MM-DD)',
-                'fechaHasta.required'=>'La fechaHasta es requerida (YYYY-MM-DD)',
+                'fechaDesde.date_format'=>'La fechaDesde debe tener formato (YYYY-MM-DD)',
+                'fechaHasta.date_format'=>'La fechaHasta debe tener formato (YYYY-MM-DD)',
             ]
         ],
         'adicional'=>[

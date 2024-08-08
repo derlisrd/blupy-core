@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Services\InfinitaService;
+use Illuminate\Support\Facades\Log;
 
 trait SolicitudesInfinita
 {
@@ -32,8 +33,9 @@ trait SolicitudesInfinita
         $solicitudes = (object)$res->data;
         $result = [];
         if(property_exists($solicitudes,'wSolicitudes')){
-            foreach ($solicitudes->wSolicitudes as $value) {
-                array_push($results,[
+           $arr = ($solicitudes->wSolicitudes);
+            foreach ($arr as $value) {
+                array_push($result,[
                     'id'=>$value['SolId'],
                     'producto'=>$value['SolProdId'],
                     'estado'=>$value['SolEstado'],

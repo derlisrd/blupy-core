@@ -27,8 +27,16 @@ class SolicitudesController extends Controller
 
         $user = $req->user();
 
-        $results = $this->listaSolicitudes($user->cliente->cedula,$req->fechaDesde,$req->fechaHasta);
+        $desde = isset($req->fechaDesde) ? $req->fechaDesde : Carbon::now()->startOfMonth()->format('Y-m-d');
+        $hasta = isset($req->fechaHasta) ? $req->fechaHasta : Carbon::now()->format('Y-m-d');
 
+        $results = $this->listaSolicitudes($user->cliente->cedula,$desde,$hasta);
+        // $results = SolicitudCredito::where([
+        //     ['cliente_id','=',$user->cliente->id],
+        //     ['tipo','>',0]
+        // ])
+        // ->select('id','estado','codigo','created_at as fecha','tipo')
+        // ->get();
         return response()->json([
             'success'=>true,
             'results'=>$results
