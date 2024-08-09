@@ -41,7 +41,7 @@ class ConsultasController extends Controller
 
         $cliente = Cliente::where('cedula',$req->cedula)->first();
         if($cliente)
-            return response()->json(['success'=>false,'message'=>'El cliente ya existe.'],403);
+            return response()->json(['success'=>false,'message'=>'El número de cédula de cliente ya existe.'],403);
 
         return response()->json(['success'=>true,'message'=>'El cliente no existe.']);
     }

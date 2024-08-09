@@ -64,7 +64,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->renderable(function (NotFoundHttpException $e){
             return response()->json([
                 'success'=>false,
-                'message'=> 'No existe.' //$e->getMessage(),
+                'message'=> 'No encontrado.' //$e->getMessage(),
             ],404);
         });
         $exceptions->renderable(function (RouteNotFoundException $e){
