@@ -39,7 +39,8 @@ Route::post('/confirmar-telefono',[ValidacionesController::class,'confirmarTelef
 
 Route::middleware('auth:api')->group(function(){
 
-    Route::get('mis-dispositivos',[CuentasController::class,'misDispositivos']);
+    Route::get('/mis-dispositivos',[CuentasController::class,'misDispositivos']);
+    Route::delete('/eliminar-dispositivo',[CuentasController::class,'eliminarDispositivo']);
 
     Route::post('/check-token',[AuthController::class,'checkToken']);
     Route::put('/refresh-token',[AuthController::class,'refreshToken']);

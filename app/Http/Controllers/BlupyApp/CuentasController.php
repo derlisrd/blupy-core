@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
+use App\Models\Device;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
 use Carbon\Carbon;
@@ -160,6 +161,12 @@ class CuentasController extends Controller
     }
 
     public function misDispositivos(Request $req){
+        $user = $req->user();
+        return response()->json(['success'=>true,'results'=>$user->devices]);
+    }
+    public function eliminarDispositivo(Request $req){
+        $device = Device::findOrFail($req->id);
+        $device->delete();
         $user = $req->user();
         return response()->json(['success'=>true,'results'=>$user->devices]);
     }
