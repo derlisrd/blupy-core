@@ -168,7 +168,7 @@ class CuentasController extends Controller
         $device = Device::findOrFail($req->id);
         $device->delete();
         $user = $req->user();
-        return response()->json(['success'=>true,'results'=>$user->devices]);
+        return response()->json(['success'=>true, 'message' => 'Dispositivo eliminado con éxito', 'results'=>$user->devices]);
     }
 }
 
