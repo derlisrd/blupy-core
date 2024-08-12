@@ -53,6 +53,7 @@ class DeviceController extends Controller
             $notitoken = $req->notitoken;
             $device = $req->device;
             $web = $req->web ? 1 : 0;
+            $model = $req->model;
             $desktop = $req->desktop ? 1 : 0;
             $confianza = $req->confianza ? 1 : 0;
             $validacion = Validacion::where('id',$id)->where('codigo',$codigo)->where('validado',0)->latest('created_at')->first();
@@ -74,6 +75,7 @@ class DeviceController extends Controller
                 'notitoken'=>$notitoken,
                 'user_id'=>$user->id,
                 'web'=>$web,
+                'model'=>$model,
                 'ip'=>$ip,
                 'desktop'=>$desktop,
                 'confianza'=>$confianza
