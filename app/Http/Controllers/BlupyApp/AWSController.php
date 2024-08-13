@@ -61,6 +61,7 @@ class AWSController extends Controller
             $status = 200;
             if($cedula != $extraidoCedula){
                 $nroCedula = false;
+                $success = false;
                 $message = 'Número de cédula no concuerda con la foto. Verifique los datos.';
                 $status = 400;
             }
