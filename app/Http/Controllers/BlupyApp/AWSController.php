@@ -58,23 +58,27 @@ class AWSController extends Controller
 
             $message = '';
             $success = true;
-
+            $status = 200;
             if($cedula != $extraidoCedula){
                 $nroCedula = false;
                 $message = 'Número de cédula no concuerda con la foto. Verifique los datos.';
+                $status = 400;
             }
 
             if(!$fechaNacimiento ){
                 $success = false;
                 $message = 'Fecha de nacimiento no concuerda con la foto. Verifique los datos.';
+                $status = 400;
             }
             if(!$nombres ){
                 $success = false;
                 $message = 'Fecha de nacimiento no concuerda con la foto. Verifique los datos.';
+                $status = 400;
             }
             if(!$apellidos ){
                 $success = false;
                 $message = 'Fecha de nacimiento no concuerda con la foto. Verifique los datos.';
+                $status = 400;
             }
             unlink($imagePath);
             return response()->json([
@@ -86,9 +90,9 @@ class AWSController extends Controller
                     'cedula' => $nroCedula
                 ],
                 'message'=>$message
-            ]);
+            ],$status);
         } catch (\Throwable $th) {
-            Log::error($th);
+            //Log::error($th);
             return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
         }
     }
