@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Aws\Rekognition\RekognitionClient;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class AWSController extends Controller
@@ -87,6 +88,7 @@ class AWSController extends Controller
                 'message'=>$message
             ]);
         } catch (\Throwable $th) {
+            Log::error($th);
             return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
         }
     }
