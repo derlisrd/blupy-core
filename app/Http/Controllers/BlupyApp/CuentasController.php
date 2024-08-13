@@ -139,11 +139,14 @@ class CuentasController extends Controller
 
     public function extracto(Request $req){
         try {
-            $validator = Validator::make($req->only('periodo'),['periodo'=>'required'],['periodo.required'=>'El periodo es requerido (MM-AAAA).']);
+            $validator = Validator::make($req->all(),trans('validation.extracto'),trans('validation.extracto.messages'));
             if($validator->fails())
                 return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
-            $res = (object)$this->infinitaService->extractoCerrado($req->cuenta,1,$req->periodo);
+            $fechaActual = Carbon::now();
+            $periodo = isset($req->periodo) ? $req->periodo : $fechaActual->format('m-Y');
+
+            $res = (object)$this->infinitaService->extractoCerrado($req->cuenta,1,$periodo);
             $resultado = (object) $res->data;
             if($resultado->Retorno == 'Extracto no encontrado.'){
                 return response()->json(['success'=>false,'message'=>'Extracto no disponible'],404);
