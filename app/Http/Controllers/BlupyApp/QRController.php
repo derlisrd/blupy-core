@@ -31,6 +31,7 @@ class QRController extends Controller
     }
 
     public function consultar($id){
+
         $blupy = $this->webserviceBlupyQRCore->consultarQR($id);
         $data = (object) $blupy['data'];
 

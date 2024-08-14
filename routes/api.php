@@ -66,7 +66,7 @@ Route::middleware('auth:api')->group(function(){
     Route::put('/solicitar-cambiar-email',[DatosController::class,'solicitarCambiarEmail']);
     Route::put('/confirmar-cambiar-email',[DatosController::class,'confirmarCambiarEmail']);
 
-    Route::get('/consultar-qr',[QRController::class,'consultar']);
+    Route::get('/consultar-qr/{id}',[QRController::class,'consultar']);
     Route::post('/autorizar-qr',[QRController::class,'autorizar']);
 
     Route::get('/ciudades',[ConsultasController::class,'ciudades']);
