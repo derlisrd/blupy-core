@@ -37,7 +37,8 @@ class QRController extends Controller
         if($data->success){
             return response()->json([
                 'success'=>$data->success,
-                'results'=>$data->results
+                'message'=>'',
+                'results'=>$data->results,
             ],$blupy['status']);
         }
 
