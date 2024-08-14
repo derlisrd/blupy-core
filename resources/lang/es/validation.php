@@ -221,6 +221,19 @@ return [
                 'codigo.required'=>'El código es obligatorio'
             ]
         ],
+        "email"=>[
+            'email'=>'required,email',
+            'messages'=>[
+                'email.required'=>'Email es obligatorio.',
+                'email.email'=>'Email debe tener formato correcto (usuario@email.com)'
+            ],
+        ],
+        "telefono"=>[
+            'celular'=>'required',
+            'messages'=>[
+                'celular.required'=>'Celular es obligatorio.'
+            ],
+        ],
         "documento"=>[
             'cedula'=>'required',
             'messages'=>[

@@ -24,6 +24,8 @@ Route::post('/validar-codigo-recuperacion',[UserPublic::class,'validarCodigoRecu
 Route::post('/restablecer-contrasena',[UserPublic::class,'restablecerContrasena']);
 
 Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDocumento']);
+Route::get('/verificar-telefono',[ConsultasController::class,'verificarExisteTelefono']);
+Route::get('/verificar-email',[ConsultasController::class,'verificarExisteEmail']);
 
 
 Route::post('/scan',[AWSController::class,'scanearDocumento']);

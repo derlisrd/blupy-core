@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Barrio;
 use App\Models\Ciudad;
 use App\Models\Cliente;
+use App\Models\User;
 use App\Models\Version;
 use App\Services\InfinitaService;
 use App\Services\FarmaService;
@@ -24,6 +25,46 @@ class ConsultasController extends Controller
     {
         $this->infinitaService = new InfinitaService();
         $this->farmaService = new FarmaService();
+    }
+
+
+    public function verificarExisteTelefono(Request $req){
+        $validator = Validator::make($req->all(),trans('validation.telefono.documento'),trans('validation.verify.telefono.messages'));
+
+        if($validator->fails())
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+
+        $ip = $req->ip();
+        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 8,function() {});
+        if (!$executed)
+            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+
+
+        $cliente = Cliente::where('celular',$req->celular)->first();
+        if($cliente)
+            return response()->json(['success'=>false,'message'=>'El número de teléfono ya ha sido tomado.'],403);
+
+        return response()->json(['success'=>true,'message'=>'Número libre.']);
+    }
+
+
+    public function verificarExisteEmail(Request $req){
+        $validator = Validator::make($req->all(),trans('validation.verify.email'),trans('validation.verify.email.messages'));
+
+        if($validator->fails())
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+
+        $ip = $req->ip();
+        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 8,function() {});
+        if (!$executed)
+            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+
+
+        $cliente = User::where('email',$req->email)->first();
+        if($cliente)
+            return response()->json(['success'=>false,'message'=>'El email ya ha sido tomado.'],403);
+
+        return response()->json(['success'=>true,'message'=>'Email libre.']);
     }
 
 
