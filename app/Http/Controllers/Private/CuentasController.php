@@ -32,7 +32,7 @@ class CuentasController extends Controller
                     'otorgadoPor'=>'Mi crédito S.A.',
                     'tipo'=>1,
                     'condicion'=>'Contado',
-                    'condicionVenta'=>2,
+                    'condicionVenta'=>1,
                     'cuenta' => $val['MaeCtaId'],
                     'linea' => (int)$val['MTLinea'],
                     'deuda' => (int) $val['MTSaldo'],
