@@ -93,7 +93,7 @@ class AWSController extends Controller
                 'message'=>$message
             ],$status);
         } catch (\Throwable $th) {
-            //Log::error($th);
+            Log::error($th);
             return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
         }
     }
