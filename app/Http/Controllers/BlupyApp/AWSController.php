@@ -73,12 +73,12 @@ class AWSController extends Controller
             }
             if(!$nombres ){
                 $success = false;
-                $message = 'Fecha de nacimiento no concuerda con la foto. Verifique los datos.';
+                $message = 'Nombre no concuerda con la foto. Verifique los datos.';
                 $status = 400;
             }
             if(!$apellidos ){
                 $success = false;
-                $message = 'Fecha de nacimiento no concuerda con la foto. Verifique los datos.';
+                $message = 'Apellido no concuerda con la foto. Verifique los datos.';
                 $status = 400;
             }
             unlink($imagePath);
