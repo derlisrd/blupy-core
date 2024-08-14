@@ -19,7 +19,7 @@ class QRController extends Controller
         $user = $req->user();
         $cliente = $user->cliente;
         $blupy = $this->webserviceBlupyQRCore
-            ->autorizarQR($req->id,$cliente->cedula, $req->numerocuenta,$req->telefono,$req->ip,$req->localizacion);
+            ->autorizarQR($req->id,$cliente->cedula, $req->numerocuenta,$req->telefono,$req->ip(),$req->localizacion);
         $data = (object) $blupy['data'];
 
         return response()->
