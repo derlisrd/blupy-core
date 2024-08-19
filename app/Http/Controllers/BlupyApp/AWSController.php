@@ -21,7 +21,6 @@ class AWSController extends Controller
                 'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
                 'version' => 'latest',
             ]);
-            Log::info($req->all());
             $base64Image = explode(";base64,", $req->fotofrontal64);
             $explodeImage = explode("image/", $base64Image[0]);
             $imageType = $explodeImage[1];
