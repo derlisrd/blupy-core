@@ -149,7 +149,7 @@ class CuentasController extends Controller
             $res = (object)$this->infinitaService->extractoCerrado($req->cuenta,1,$periodo);
             $resultado = (object) $res->data;
             if($resultado->Retorno == 'Extracto no encontrado.'){
-                return response()->json(['success'=>false,'message'=>'Extracto no disponible'],404);
+                return response()->json(['success'=>false,'message'=>'Extracto no disponible','results'=>null],404);
             }
             return response()->json([
                 'success'=>true,
