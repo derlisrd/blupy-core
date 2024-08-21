@@ -255,6 +255,7 @@ class AuthController extends Controller
         $datos = [
             'code'=>$randomNumber,
             'device'=>$req->device,
+            'model'=>$req->model,
             'ip'=>$req->ip()
         ];
         $emailService->enviarEmail($email,"[".$randomNumber."]Blupy confirmar dispositivo",'email.validarDispositivo',$datos);

@@ -57,6 +57,7 @@
             <p><strong>Detalles del intento:</strong></p>
             <p><strong>IP:</strong> {{ $ip ?? ''}}</p>
             <p><strong>Dispositivo:</strong> {{ $device ?? '' }}</p>
+            <p><strong>Modelo:</strong> {{ $model ?? '' }}</p>
             <p>Si no fuiste tú, te recomendamos cambiar tu contraseña de inmediato y revisar la seguridad de tu cuenta.</p>
             <p>Gracias</p>
             <p>El equipo de BLUPY</p>
