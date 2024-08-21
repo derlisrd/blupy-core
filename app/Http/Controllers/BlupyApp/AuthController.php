@@ -172,7 +172,7 @@ class AuthController extends Controller
                             'success'=>true,
                             'results'=>null,
                             'id'=> $idValidacion,
-                            'message'=>'Dispositivo inusual. Hemos enviado un correo a '.$pistaEmail.' para verificar.'
+                            'message'=>'Parece que intentas iniciar sesión desde un dispositivo o ubicación nuevos. Como medida de seguridad adicional, ingresa el código de 6 dígitos que enviamos a tu correo '.$pistaEmail.' para verificar.'
                         ]);
                     }
 
