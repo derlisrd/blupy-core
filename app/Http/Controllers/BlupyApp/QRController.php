@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
 use App\Services\BlupyQrService;
+use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -21,7 +22,7 @@ class QRController extends Controller
         $blupy = $this->webserviceBlupyQRCore
             ->autorizarQR($req->id,$cliente->cedula, $req->numerocuenta,$req->telefono,$req->ip(),$req->localizacion);
         $data = (object) $blupy['data'];
-
+        SupabaseService::LOG('autorizadoQR', $blupy['data'] );
         return response()->
         json([
             'success'=>$data->success,
