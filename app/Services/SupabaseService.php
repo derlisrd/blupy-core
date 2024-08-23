@@ -5,15 +5,15 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class SupabaseLog
+class SupabaseService
 {
 
     public function __construct(){
     }
 
-    public function insertLog($origen, $detalles){
+    public static function LOG($origen, $detalles){
         try {
-            $response = Http::withHeaders([
+            Http::withHeaders([
                 'apikey' => env('SUPABASE_API_KEY'),
                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
                 'Content-Type' => 'application/json',
@@ -21,7 +21,6 @@ class SupabaseLog
                 'origin' => $origen,
                 'details' => $detalles
             ]);
-            Log::info($response);
             return true;
         } catch (\Throwable $th) {
             Log::error($th);

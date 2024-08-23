@@ -11,7 +11,6 @@ use App\Http\Controllers\BlupyApp\SolicitudesController;
 use App\Http\Controllers\BlupyApp\UserController as UserPrivate;
 use App\Http\Controllers\Public\UserController as UserPublic;
 use App\Http\Controllers\BlupyApp\ValidacionesController;
-use App\Services\SupabaseLog;
 use Illuminate\Support\Facades\Route;
 
 
@@ -33,15 +32,6 @@ Route::post('/validar-email',[ValidacionesController::class,'validarEmail']);
 Route::post('/confirmar-email',[ValidacionesController::class,'confirmarEmail']);
 Route::post('/validar-telefono',[ValidacionesController::class,'validarTelefono']);
 Route::post('/confirmar-telefono',[ValidacionesController::class,'confirmarTelefono']);
-
-
-Route::get('/supabase',function(){
-    $supabase = new SupabaseLog();
-    $supabase->insertLog('este es el origen','los detalles');
-    return response()->json([
-        'success'=>true
-    ]);
-});
 
 
 Route::middleware('auth:api')->group(function(){

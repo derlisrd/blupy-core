@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Device;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
+use App\Services\SupabaseService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class CuentasController extends Controller
@@ -129,7 +129,7 @@ class CuentasController extends Controller
             return response()->json(['success'=>true,'results'=>$results]);
 
         } catch (\Throwable $th) {
-            Log::error($th);
+            SupabaseService::LOG('movimientos',$th);
             throw $th;
         }
     }

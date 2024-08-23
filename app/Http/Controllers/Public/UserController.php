@@ -8,6 +8,7 @@ use App\Models\Cliente;
 use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
+use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
 use App\Traits\RegisterTraits;
 use Illuminate\Support\Facades\Mail;
@@ -68,7 +69,7 @@ class UserController extends Controller
                 'message'=>'Código enviado correctamente al ' . $forma
             ]);
         } catch (\Throwable $th) {
-            Log::error($th);
+            SupabaseService::LOG('olvido_password',$th);
             return response()->json(['success'=>false,'message'=>'Error de servidor. Intente en unos minutos.'],500);
         }
     }

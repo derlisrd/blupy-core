@@ -9,6 +9,7 @@ use App\Models\SolicitudCredito;
 use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
+use App\Services\SupabaseService;
 use App\Traits\RegisterTraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -126,7 +127,7 @@ class AuthController extends Controller
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            throw $th;
+            SupabaseService::LOG('register',$th);
             return response()->json(['success'=>false, 'message'=>'Error de servidor'],500);
         }
     }
@@ -197,8 +198,8 @@ class AuthController extends Controller
             ],401);
 
         } catch (\Throwable $th) {
+            SupabaseService::LOG('login',$th);
             throw $th;
-            Log::error($th);
             return response()->json(['success'=>false,'message'=>"Error de servidor"],500);
         }
     }
