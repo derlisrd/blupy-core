@@ -6,12 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Barrio;
 use App\Models\Ciudad;
 use App\Models\Cliente;
-use App\Models\User;
 use App\Models\Version;
 use App\Services\InfinitaService;
-use App\Services\FarmaService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -19,12 +16,11 @@ use Illuminate\Support\Facades\RateLimiter;
 class ConsultasController extends Controller
 {
     private $infinitaService;
-    private $farmaService;
+
 
     public function __construct()
     {
         $this->infinitaService = new InfinitaService();
-        $this->farmaService = new FarmaService();
     }
 
 
@@ -38,7 +34,7 @@ class ConsultasController extends Controller
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $ip = $req->ip();
-        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});
+        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 6,function() {});
         if (!$executed)
             return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 

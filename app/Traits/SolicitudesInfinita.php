@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\Services\InfinitaService;
+use App\Services\SupabaseService;
 use Illuminate\Support\Facades\Log;
 
 trait SolicitudesInfinita
@@ -100,7 +101,8 @@ trait SolicitudesInfinita
 
     public function adicionalEnInfinita($clientePrincipal,$datosDelAdicional,$cuentaPrincipal){
         $datos = [(object)$datosDelAdicional];
-
+        SupabaseService::LOG('ADICIONAL sin obj',$datosDelAdicional);
+        SupabaseService::LOG('ADICIONAL',$datos);
         $infinita = (object) $this->infinitaService->agregarAdicional($clientePrincipal,$datos,$cuentaPrincipal);
         $res = (object)$infinita->data;
         if($res->CliId == "0"){
