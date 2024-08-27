@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Adicional;
 use App\Models\Cliente;
 use App\Models\SolicitudCredito;
-
+use App\Services\SupabaseService;
 use App\Traits\RegisterTraits;
 use App\Traits\SolicitudesInfinita;
 use Illuminate\Http\Request;
@@ -169,10 +169,10 @@ class SolicitudesController extends Controller
 
 
     /******************************************************
-     * ADICIONAL adiciona adi adicional solicitar adicional
+     * ADICIONAL AGREGAR adiciona adi adicional solicitar adicional
     *******************************************************/
 
-    public function solicitarAdicional(Request $req){
+    public function agregarAdicional(Request $req){
         try {
             $validator = Validator::make($req->all(),trans('validation.solicitudes.adicional'),trans('validation.solicitudes.adicional.messages'));
         if($validator->fails())
@@ -230,6 +230,7 @@ class SolicitudesController extends Controller
         ]);
         return response()->json(['success'=>true,'message'=>'Adicional ingresado correctamente']);
         } catch (\Throwable $th) {
+            SupabaseService::LOG('error_adicional',$th->getMessage());
             return response()->json(['success'=>false,'message'=>'Error de servidor'],500);
         }
     }

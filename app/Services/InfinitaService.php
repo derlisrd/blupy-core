@@ -5,7 +5,6 @@ namespace App\Services;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Facades\Log;
 
 class InfinitaService
 {
@@ -134,10 +133,12 @@ class InfinitaService
         return $this->post('IngresarSolicitud',$datosDeCliente);
     }
 
-    public function agregarAdicional($cliente,$adicional,$numeroCuenta)
+    public function agregarAdicional($cliente,$adicionales,$numeroCuenta)
     {
-        $datosDeCliente = $this->datosCliente($cliente,173,$adicional,null,$numeroCuenta);
-        return $this->post('IngresarSolicitud',$datosDeCliente);
+        $datosDeCliente = $this->datosCliente($cliente,173,$adicionales,null,$numeroCuenta);
+        $post = $this->post('IngresarSolicitud',$datosDeCliente);
+        SupabaseService::LOG('agregarAdicional',$post);
+        return $post;
     }
 
     public function solicitudLineaDeCredito($cliente)
@@ -154,10 +155,10 @@ class InfinitaService
 
     private function datosCliente($cliente,$productoId,$adicionales,$solicitudDeLinea,$cuentaNumero){
         $adicionalesObject = $adicionales ? $adicionales  : [];
-        return  (object)[
+        $cliente =  (object)[
             "wSolicitud" => (object)[
                 "SolProdId"=> $productoId, // 171 registro 172 solicitud de credito 173 adicional 174 ampliacion
-                "SolTcTip"=> $adicionales ? "A" : "P",
+                "SolTcTip"=> $productoId == 173 ? "A" : "P",
                 "SolApe1"=> $cliente->apellido_primero,
                 "SolApe2"=> $cliente->apellido_segundo ?? "",
                 "SolCed"=> $cliente->cedula,
@@ -237,6 +238,8 @@ class InfinitaService
             ],
             "Proceso"=> 2
         ];
+        SupabaseService::LOG('datos_cliente',$cliente);
+        return $cliente;
     }
 
     private function get(String $endpoint,Array $parametros) {

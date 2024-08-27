@@ -52,7 +52,7 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/solicitudes',[SolicitudesController::class,'solicitudes']);
     Route::post('/solicitar-credito',[SolicitudesController::class,'solicitarCredito']);
     Route::post('/solicitar-ampliacion',[SolicitudesController::class,'solicitarAmpliacion']);
-    Route::post('/solicitar-adicional',[SolicitudesController::class,'solicitarAdicional']);
+    Route::post('/agregar-adicional',[SolicitudesController::class,'agregarAdicional']);
     Route::get('/verificar-estado-solicitud',[SolicitudesController::class,'verificarEstadoSolicitud']);
 
 

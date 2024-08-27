@@ -100,21 +100,42 @@ trait SolicitudesInfinita
     }
 
     public function adicionalEnInfinita($clientePrincipal,$datosDelAdicional,$cuentaPrincipal){
-        $datos = [(object)$datosDelAdicional];
-        SupabaseService::LOG('ADICIONAL sin obj',$datosDelAdicional);
-        SupabaseService::LOG('ADICIONAL',$datos);
-        $infinita = (object) $this->infinitaService->agregarAdicional($clientePrincipal,$datos,$cuentaPrincipal);
+        $ADICIONALES = [];
+
+        array_push($ADICIONALES, [
+            'SolAdiCed' =>$datosDelAdicional['cedula'],
+            "SolAdiNom1" => $datosDelAdicional['nombre1'],
+            "SolAdiApe1"=> $datosDelAdicional['apellido1'],
+            "SolAdiTel" => $datosDelAdicional['nombre1'],
+            "SolAdiLim" => $datosDelAdicional['limite'],
+            "SolAdiNom2" => $datosDelAdicional['nombre2'],
+            "SolAdiApe2" => $datosDelAdicional['apellido2'],
+            "SolAdiDire" => $datosDelAdicional['direccion']
+        ]);
+
+        $infinita = (object) $this->infinitaService->agregarAdicional($clientePrincipal,$ADICIONALES,$cuentaPrincipal);
         $res = (object)$infinita->data;
-        if($res->CliId == "0"){
+
+        if(property_exists($res,'CliId')){
             $message = property_exists($res,'Messages') ? $res->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';
-            return (object)['success'=>false, 'message'=>$message,'results'=>null];
+
+            if($res->CliId == '0'){
+                return (object)[
+                    'success'=>false,
+                    'results'=> null,
+                    'message'=> $message
+                ];
+            }
+
+            return (object)[
+                'success'=>true,
+                'results'=> (object) [
+                'solicitudId'=>$res->SolId,
+                'solicitudEstado'=>$res->SolEstado
+                ]
+            ];
         }
-        return (object)[
-            'success'=>true,
-            'results'=> (object) [
-            'solicitudId'=>$res->SolId,
-            'solicitudEstado'=>$res->SolEstado
-            ]
-        ];
+        SupabaseService::LOG('adicional_error',$res);
+        return (object)['success'=>false, 'message'=>'Error de servidor','results'=>null];
     }
 }
