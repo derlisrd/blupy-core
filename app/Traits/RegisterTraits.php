@@ -146,8 +146,9 @@ trait RegisterTraits
         }
     }
 
-    public function userInfo($cliente,string $token, array $tarjetas){
+    public function userInfo($cliente,string $token, array $tarjetas, bool $esAdicional){
         return [
+            'adicional'=>$esAdicional,
             'cliid'=>$cliente->cliid,
             'name'=>$cliente->user->name,
             'primerNombre'=>$cliente->nombre_primero,

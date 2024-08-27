@@ -67,4 +67,7 @@ class Cliente extends Model
     {
         return $this->hasOne(User::class, 'cliente_id');
     }
+    public function adicional(){
+        return $this->hasMany(Adicional::class,'cliente_id');
+    }
 }

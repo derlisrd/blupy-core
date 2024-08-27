@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Private\CuentasController;
+use App\Models\Adicional;
 use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\SolicitudCredito;
@@ -45,8 +46,18 @@ class AuthController extends Controller
 
 
             DB::beginTransaction();
+
+            $adicional = Adicional::whereCedula($req->cedula)->first();
+            $esAdicional = $adicional ? true : false;
+
             $nombres = $this->separarNombres( $req->nombres );
             $apellidos = $this->separarNombres( $req->apellidos );
+
+            $direccionCompletado = 0;
+            if($clienteFarma->completado == 0 || $esAdicional){
+                $direccionCompletado = 1;
+            }
+
             $datosCliente = [
                 'cedula'=>$req->cedula,
                 'foto_ci_frente'=>$fotoCiFrente,
@@ -63,7 +74,7 @@ class AuthController extends Controller
                 'linea_farma'=>$clienteFarma->lineaFarma,
                 'asofarma'=>$clienteFarma->asofarma,
                 'importe_credito_farma'=>$clienteFarma->credito,
-                'direccion_completado'=>$clienteFarma->completado,
+                'direccion_completado'=>$direccionCompletado,
                 'cliid'=>0,
                 'solicitud_credito'=>0
             ];
@@ -122,7 +133,7 @@ class AuthController extends Controller
             return response()->json([
                 'success'=>true,
                 'message'=>'Usuario registrado correctamente',
-                'results'=>$this->userInfo($cliente,$token,$tarjetas)
+                'results'=>$this->userInfo($cliente,$token,$tarjetas,$esAdicional)
             ], 201);
 
         } catch (\Throwable $th) {
@@ -152,10 +163,12 @@ class AuthController extends Controller
                 return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
             $cedula = $req->cedula; $password = $req->password;
-
             $cliente = Cliente::where('cedula',$cedula)->first();
             if($cliente){
                 $user =  $cliente->user;
+                $adicional = Adicional::whereCedula($req->cedula)->first();
+                $esAdicional = $adicional ? true : false;
+
                 $credentials = ['email'=>$user->email, 'password'=>$password];
                 $token = JWTAuth::attempt($credentials);
                 if($token){
@@ -186,7 +199,7 @@ class AuthController extends Controller
                         'success'=>true,
                         'message'=>'Ha ingresado',
                         'id'=>null,
-                        'results'=>$this->userInfo($cliente,$token,$tarjetas)
+                        'results'=>$this->userInfo($cliente,$token,$tarjetas,$esAdicional)
                         ]
                     );
                 }
