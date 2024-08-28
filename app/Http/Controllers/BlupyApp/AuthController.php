@@ -54,7 +54,7 @@ class AuthController extends Controller
             $apellidos = $this->separarNombres( $req->apellidos );
 
             $direccionCompletado = 0;
-            if($clienteFarma->completado == 0 || $esAdicional){
+            if($clienteFarma->completado == 1 || $esAdicional){
                 $direccionCompletado = 1;
             }
 
