@@ -80,12 +80,18 @@ class SolicitudesController extends Controller
         }
         $validator = Validator::make($req->all(),trans('validation.solicitudes.solicitar'),trans('validation.solicitudes.solicitar.messages'));
         if($validator->fails())
+        {
+            SupabaseService::LOG('Error en solicitud','Error en validacion');
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+        }
 
 
         $verificarSolicitudPendiente = SolicitudCredito::where('cliente_id',$user->cliente->id)->where('tipo',1)->where('estado_id',5)->latest()->first();
         if($verificarSolicitudPendiente)
+        {
+            SupabaseService::LOG('Error en solicitud','Tiene una solicitud pendiente');
             return response()->json(['success'=>false,'message'=>'Ya tiene una solicitud con contrato pendiente.'],400);
+        }
 
 
         try {
