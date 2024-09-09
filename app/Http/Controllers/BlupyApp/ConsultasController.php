@@ -83,21 +83,23 @@ class ConsultasController extends Controller
         try {
             $res = (object)$this->infinitaService->listarTiposLaboral();
             $infinita = (object) $res->data;
+            $results = [];
+            $success = false;
+            $message = 'No se recuperaron registros';
+            $status = 404;
             if (property_exists($infinita, 'wDato')) {
-                $results = [];
                 foreach($infinita->wDato as $val){
                     $nuevo = $val;
                     $nuevo['id'] = $val['DatoId'];
                     $nuevo['descripcion'] = $val['DatoDesc'];
                     array_push($results,$nuevo);
                 }
-                return response()->json([
-                    'success' => true,
-                    'results' => $results,
-                ]);
+                $success = true;
+                $message = '';
+                $status = 200;
             }
 
-            return response()->json([ 'success' => false,'message' => 'No se recuperaron registros'],404);
+            return response()->json([ 'success' => $success,'message' =>$message,'results'=>$results ],$status);
         } catch (\Throwable $th) {
             return response()->json(['success'=>false,'message'=>'Error de servidor.'],500);
         }
