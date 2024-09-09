@@ -102,6 +102,7 @@ class SolicitudesController extends Controller
 
             $solicitud = $this->ingresarSolicitudInfinita($clienteUpdated);
             if(!$solicitud->success){
+                SupabaseService::LOG('Error en solicitud infinita',$solicitud);
                 return response()->json(['success'=>false,'message'=>$solicitud->message],400);
             }
 
