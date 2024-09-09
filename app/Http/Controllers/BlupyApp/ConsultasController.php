@@ -62,13 +62,14 @@ class ConsultasController extends Controller
                 $results = [];
                 foreach($infinita->wDato as $val){
                     $nuevo = $val;
-                    $nuevo['id'] = $val['DatoId'];
+                    $nuevo['id'] = (int) $val['DatoId'];
                     $nuevo['descripcion'] = $val['DatoDesc'];
                     array_push($results,$nuevo);
                 }
                 return response()->json([
                     'success' => true,
                     'results' => $results,
+                    'message' => ''
                 ]);
             }
 
@@ -90,7 +91,7 @@ class ConsultasController extends Controller
             if (property_exists($infinita, 'wDato')) {
                 foreach($infinita->wDato as $val){
                     $nuevo = $val;
-                    $nuevo['id'] = $val['DatoId'];
+                    $nuevo['id'] = (int) $val['DatoId'];
                     $nuevo['descripcion'] = $val['DatoDesc'];
                     array_push($results,$nuevo);
                 }
