@@ -107,8 +107,8 @@ class SolicitudesController extends Controller
             $ciudad = Ciudad::find($req->ciudad_id);
             $barrio = Barrio::find($req->barrio_id);
 
-            $departamento_empresa = Departamento::find($req->departamento_id_empresa);
-            $ciudad_empresa = Ciudad::find($req->ciudad_id_empresa);
+            $departamento_empresa = Departamento::find($req->empresa_departamento_id);
+            $ciudad_empresa = Ciudad::find($req->empresa_ciudad_id);
 
             $datosAenviar = $clienteUpdated;
 
