@@ -147,6 +147,7 @@ class SolicitudesController extends Controller
                 'message'=>'Solicitud ingresada correctamente.']);
 
         } catch (\Throwable $th) {
+            SupabaseService::LOG($th->getMessage(),$th);
             return response()->json(['success'=>false,'message'=>'Hubo un error con el servidor. Contacte con nosotros por favor.'],500);
         }
     }
