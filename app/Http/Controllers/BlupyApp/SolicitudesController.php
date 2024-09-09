@@ -4,7 +4,10 @@ namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
 use App\Models\Adicional;
+use App\Models\Barrio;
+use App\Models\Ciudad;
 use App\Models\Cliente;
+use App\Models\Departamento;
 use App\Models\SolicitudCredito;
 use App\Services\SupabaseService;
 use App\Traits\RegisterTraits;
@@ -100,7 +103,25 @@ class SolicitudesController extends Controller
             $clienteUpdated->update($request);
             $clienteUpdated['email'] = $user->email;
 
-            $solicitud = $this->ingresarSolicitudInfinita($clienteUpdated);
+            $departamento = Departamento::find($req->departamento_id);
+            $ciudad = Ciudad::find($req->ciudad_id);
+            $barrio = Barrio::find($req->barrio_id);
+
+            $departamento_empresa = Departamento::find($req->departamento_id_empresa);
+            $ciudad_empresa = Ciudad::find($req->ciudad_id_empresa);
+
+            $datosAenviar = $clienteUpdated;
+
+            $datosAenviar['departamento_id'] = $departamento->codigo;
+            $datosAenviar['ciudad_id'] = $ciudad->codigo;
+            $datosAenviar['barrio_id'] = $barrio->codigo;
+
+            $datosAenviar['empresa_departamento_id'] = $departamento_empresa->codigo;
+            $datosAenviar['empresa_ciudad_id'] = $ciudad_empresa->codigo;
+
+
+
+            $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
             if(!$solicitud->success){
                 SupabaseService::LOG('Error en solicitud infinita',$solicitud);
                 return response()->json(['success'=>false,'message'=>$solicitud->message],400);
