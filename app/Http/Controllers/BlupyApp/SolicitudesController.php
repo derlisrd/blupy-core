@@ -172,9 +172,9 @@ class SolicitudesController extends Controller
             $nroCuenta = $req->numeroCuenta;
             $fotoIngreso = $req->fotoIngreso;
             $fotoAnde = $req->fotoAnde;
-            $ampliacion = $this->ampliacionEnInfinita($cliente,$lineaSolicitada,$nroCuenta,$fotoIngreso,$fotoAnde);
+            $ampliacion = (object) $this->ampliacionEnInfinita($cliente,$lineaSolicitada,$nroCuenta,$fotoIngreso,$fotoAnde);
             SupabaseService::LOG('core_ampliacion_176',$ampliacion);
-            if(!$ampliacion['success']){
+            if(!$ampliacion->success){
                 SupabaseService::LOG('core_ampliacion_178',$ampliacion);
                 return response()->json(['success'=>false,'message'=>$ampliacion->message],400);
             }
