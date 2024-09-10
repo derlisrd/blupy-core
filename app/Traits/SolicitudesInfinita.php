@@ -81,12 +81,14 @@ trait SolicitudesInfinita
     public function ampliacionEnInfinita($datosDeCliente,$lineaSolicitada,$numeroCuenta,$ingreso,$ande){
 
         $infinita = (object)$this->infinitaService->ampliacionCredito($datosDeCliente,$lineaSolicitada,$numeroCuenta);
-            $res = (object) $infinita->data;
-            $resultado = ['success'=>false];
-            if($res->CliId == "0"){
-                $message = property_exists($res,'Messages') ? $res->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';
-                return ['success' => false,'message' => $message];
-            }
+        $res = (object) $infinita->data;
+        $resultado = ['success'=>false];
+        SupabaseService::LOG('core_infinita_ampliacion_86',$res);
+        if($res->CliId == "0"){
+            SupabaseService::LOG('core_infinita_ampliacion_88',$res);
+            $message = property_exists($res,'Messages') ? $res->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';
+            return ['success' => false,'message' => $message];
+        }
 
             $resultado = [
                 'success'=>true,
@@ -94,10 +96,10 @@ trait SolicitudesInfinita
                 'estado'=>trim($res->SolEstado)
             ];
 
-            $ingreso = preg_replace('#data:image/[^;]+;base64,#', '', $ingreso);
-            $ande = preg_replace('#data:image/[^;]+;base64,#', '', $ande);
-            $this->infinitaService->enviarComprobantes($datosDeCliente->cedula, $ingreso, $ande);
-            return (object) $resultado;
+        $ingreso = preg_replace('#data:image/[^;]+;base64,#', '', $ingreso);
+        $ande = preg_replace('#data:image/[^;]+;base64,#', '', $ande);
+        $this->infinitaService->enviarComprobantes($datosDeCliente->cedula, $ingreso, $ande);
+        return (object) $resultado;
     }
 
     public function adicionalEnInfinita($clientePrincipal,$datosDelAdicional,$cuentaPrincipal){
