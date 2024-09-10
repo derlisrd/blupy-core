@@ -175,7 +175,7 @@ class SolicitudesController extends Controller
             $ampliacion = $this->ampliacionEnInfinita($cliente,$lineaSolicitada,$nroCuenta,$fotoIngreso,$fotoAnde);
 
             if(!$ampliacion->success){
-                return response()->json(['success'=>false,'message'=>$ampliacion->message]);
+                return response()->json(['success'=>false,'message'=>$ampliacion->message],400);
             }
 
 
