@@ -93,7 +93,8 @@ trait SolicitudesInfinita
             $resultado = [
                 'success'=>true,
                 'codigo'=>$res->$res->SolId,
-                'estado'=>trim($res->SolEstado)
+                'estado'=>trim($res->SolEstado),
+                'message'=>'Ingresado'
             ];
 
         $ingreso = preg_replace('#data:image/[^;]+;base64,#', '', $ingreso);

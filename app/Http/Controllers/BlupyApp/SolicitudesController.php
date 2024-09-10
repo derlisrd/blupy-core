@@ -175,6 +175,7 @@ class SolicitudesController extends Controller
             $ampliacion = $this->ampliacionEnInfinita($cliente,$lineaSolicitada,$nroCuenta,$fotoIngreso,$fotoAnde);
 
             if(!$ampliacion->success){
+                SupabaseService::LOG('core_ampliacion_178',$ampliacion);
                 return response()->json(['success'=>false,'message'=>$ampliacion->message],400);
             }
 
@@ -190,7 +191,7 @@ class SolicitudesController extends Controller
             return response()->json(['success'=>true,'message'=>'La ampliación de la línea ha ingresado con éxito.']);
 
         } catch (\Throwable $th) {
-            SupabaseService::LOG('core_ampliacion_193',$th->getMessage());
+            SupabaseService::LOG('core_ampliacion_194',$th->getMessage());
             return response()->json(['success'=>false,'message'=>'Error de servidor']);
         }
     }
