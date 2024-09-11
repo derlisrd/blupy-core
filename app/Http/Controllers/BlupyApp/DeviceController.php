@@ -7,6 +7,7 @@ use App\Models\Device;
 use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
+use App\Services\SupabaseService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -56,7 +57,7 @@ class DeviceController extends Controller
             $model = $req->model;
             $desktop = $req->desktop ? 1 : 0;
             $confianza = $req->confianza ? 1 : 0;
-            Log::info($req->all());
+            SupabaseService::LOG('core_59',$req->all());
             $validacion = Validacion::where('id',$id)->where('codigo',$codigo)->where('validado',0)->latest('created_at')->first();
             if(!$validacion)
                 return response()->json(['success'=>false,'message'=>'Código inválido.'],400);

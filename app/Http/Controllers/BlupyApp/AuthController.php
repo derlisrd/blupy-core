@@ -178,7 +178,7 @@ class AuthController extends Controller
                     ->where('device',$req->device)
                     ->where('notitoken',$req->notitoken)
                     ->first();
-                    Log::info($req->all());
+                    SupabaseService::LOG('core_181',$req->all());
                     if(!$dispositoDeConfianza){
                         $pistaEmail = $this->ocultarParcialmenteEmail($user->email);
                         $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id,$req);
