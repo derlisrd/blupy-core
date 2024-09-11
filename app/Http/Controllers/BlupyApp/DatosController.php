@@ -62,7 +62,7 @@ class DatosController extends Controller
                 return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
-            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});
+            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 10,function() {});
             if (!$executed)
                 return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
