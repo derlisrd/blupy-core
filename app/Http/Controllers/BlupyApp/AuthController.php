@@ -158,7 +158,7 @@ class AuthController extends Controller
                 return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
-            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 5,function() {});
+            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 10,function() {});
             if (!$executed)
                 return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
@@ -166,6 +166,11 @@ class AuthController extends Controller
             $cliente = Cliente::where('cedula',$cedula)->first();
             if($cliente){
                 $user =  $cliente->user;
+
+                if($user->active == 0)
+                    return response()->json(['success'=>false,'message'=>'Cuenta inhabilitada o bloqueada temporalmente. Contacte con soporte.'], 400);
+
+
                 $adicional = Adicional::whereCedula($req->cedula)->first();
                 $esAdicional = $adicional ? true : false;
 
