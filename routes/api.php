@@ -6,6 +6,7 @@ use App\Http\Controllers\BlupyApp\ConsultasController;
 use App\Http\Controllers\BlupyApp\CuentasController;
 use App\Http\Controllers\BlupyApp\DatosController;
 use App\Http\Controllers\BlupyApp\DeviceController;
+use App\Http\Controllers\BlupyApp\FarmaController;
 use App\Http\Controllers\BlupyApp\QRController;
 use App\Http\Controllers\BlupyApp\SolicitudesController;
 use App\Http\Controllers\BlupyApp\UserController as UserPrivate;
@@ -71,5 +72,8 @@ Route::middleware('auth:api')->group(function(){
 
     Route::get('/tipos-laboral',[ConsultasController::class,'tiposLaboral']);
     Route::get('/profesiones',[ConsultasController::class,'profesiones']);
+
+
+    Route::get('/sucursales-cercanas',[FarmaController::class,'sucursalesCercanas']);
 
 });
