@@ -57,7 +57,7 @@ class SolicitudesController extends Controller
             if($solicitudes->estado_id == 7 || $solicitudes->estado_id == 5 ){
                 return response()->json([
                     'success' => false,
-                    'message' => 'Su solicitud ya ingresó o ya esta activa. Verifique en sus solicitudes.'
+                    'message' => 'Su solicitud ya ingresó o yá esta activa. Verifique en sus solicitudes.'
                 ],400);
             }
 
@@ -69,7 +69,7 @@ class SolicitudesController extends Controller
             if($hanPasado2Dias > 2){
                 return response()->json([
                     'success' => false,
-                    'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'
+                    'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.' . $hanPasado2Dias
                 ],403);
             }
         }
