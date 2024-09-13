@@ -61,10 +61,12 @@ class SolicitudesController extends Controller
                 ],400);
             }
 
-            $fechaCarbon = Carbon::parse($solicitudes->created_at);
+
+            $fechaSolicitud = Carbon::parse($solicitudes->created_at);
             $fechaActual = Carbon::now();
-            $haPasadoUnDia = $fechaActual->diffInDays($fechaCarbon) > 2;
-            if(!$haPasadoUnDia){
+            $hanPasado2Dias = $fechaSolicitud->diffInDays($fechaActual);
+
+            if($hanPasado2Dias > 2){
                 return response()->json([
                     'success' => false,
                     'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'
