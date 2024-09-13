@@ -53,6 +53,14 @@ class SolicitudesController extends Controller
         $solicitudes = SolicitudCredito::where('cliente_id',$cliente->id)->where('tipo',1)->latest()->first();
 
         if($solicitudes){
+
+            if($solicitudes->estado_id == 7 || $solicitudes->estado_id == 5 ){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Su solicitud ya ingresó o ya esta activa. Verifique en sus solicitudes.'
+                ],400);
+            }
+
             $fechaCarbon = Carbon::parse($solicitudes->created_at);
             $fechaActual = Carbon::now();
             $haPasadoUnDia = $fechaActual->diffInDays($fechaCarbon) > 2;
