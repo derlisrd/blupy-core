@@ -12,7 +12,7 @@ class VersionController extends Controller
     public function verificarVersion(Request $req){
 
         $validator = Validator::make($req->all(),[
-            'id'=>'required,numeric,min:1,max:2'
+            'id'=>'required|numeric|min:1|max:2'
         ],[
             'required'=>'id es obligatorio',
             'numeric'=>'id es numerico',
