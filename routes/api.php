@@ -14,7 +14,6 @@ use App\Http\Controllers\Public\UserController as UserPublic;
 use App\Http\Controllers\BlupyApp\ValidacionesController;
 use Illuminate\Support\Facades\Route;
 
-
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/confirmar-nuevo-dispositivo',[DeviceController::class,'confirmarNuevoDispositivo']);
 Route::post('/codigo-nuevo-dispositivo',[DeviceController::class,'codigoNuevoDispositivo']);
@@ -26,14 +25,12 @@ Route::post('/restablecer-contrasena',[UserPublic::class,'restablecerContrasena'
 
 Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDocumento']);
 
-
 Route::post('/scan',[AWSController::class,'scanearDocumento']);
 
 Route::post('/validar-email',[ValidacionesController::class,'validarEmail']);
 Route::post('/confirmar-email',[ValidacionesController::class,'confirmarEmail']);
 Route::post('/validar-telefono',[ValidacionesController::class,'validarTelefono']);
 Route::post('/confirmar-telefono',[ValidacionesController::class,'confirmarTelefono']);
-
 
 Route::middleware('auth:api')->group(function(){
 
@@ -56,7 +53,6 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/agregar-adicional',[SolicitudesController::class,'agregarAdicional']);
     Route::get('/verificar-estado-solicitud',[SolicitudesController::class,'verificarEstadoSolicitud']);
 
-
     Route::put('/cambiar-contrasena',[UserPrivate::class,'cambiarContrasena']);
 
     Route::put('/solicitar-cambiar-celular',[DatosController::class,'solicitarCambiarCelular']);
@@ -72,7 +68,6 @@ Route::middleware('auth:api')->group(function(){
 
     Route::get('/tipos-laboral',[ConsultasController::class,'tiposLaboral']);
     Route::get('/profesiones',[ConsultasController::class,'profesiones']);
-
 
     Route::get('/sucursales-cercanas',[FarmaController::class,'sucursalesCercanas']);
 
