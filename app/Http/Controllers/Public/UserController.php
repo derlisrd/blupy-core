@@ -11,13 +11,11 @@ use App\Services\EmailService;
 use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
 use App\Traits\RegisterTraits;
-use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 
 class UserController extends Controller
