@@ -216,7 +216,7 @@ class AuthController extends Controller
             ],401);
 
         } catch (\Throwable $th) {
-            SupabaseService::LOG('login',$th);
+            SupabaseService::LOG('login_core',$th);
             throw $th;
             return response()->json(['success'=>false,'message'=>"Error de servidor"],500);
         }
