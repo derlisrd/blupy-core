@@ -25,7 +25,6 @@ class BlupyQrService
     }
 
     public function autorizarQR(Array $params){
-
         $data = (object)[
             'id'=>$params['id'],
             'documento'=>$params['documento'],
