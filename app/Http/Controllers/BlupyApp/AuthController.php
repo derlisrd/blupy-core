@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Private\CuentasController;
+use App\Http\Controllers\Private\CuentasController as CuentasPrivate;
 use App\Models\Adicional;
 use App\Models\Cliente;
 use App\Models\Device;
@@ -128,7 +128,7 @@ class AuthController extends Controller
             $this->enviarEmailRegistro($req->email,$nombres[0]);
 
             $token = JWTAuth::fromUser($user);
-            $tarjetasConsultas = new CuentasController();
+            $tarjetasConsultas = new CuentasPrivate();
             $tarjetas = $tarjetasConsultas->tarjetas($req->cedula);
             return response()->json([
                 'success'=>true,
@@ -198,7 +198,7 @@ class AuthController extends Controller
 
                     $dispositoDeConfianza->update(['updated_at'=>date('Y-m-d H:i:s')]);
                     $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s') ]);
-                    $tarjetasConsultas = new CuentasController();
+                    $tarjetasConsultas = new CuentasPrivate();
                     $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula);
                     return response()->json([
                         'success'=>true,

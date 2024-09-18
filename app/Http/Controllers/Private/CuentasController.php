@@ -47,6 +47,16 @@ class CuentasController extends Controller
 
         if(property_exists( $farma,'result')){
             foreach ($farma->result as $val) {
+                $alianzas = [];
+                foreach($val['alianzas'] as $alianza){
+                    array_push($alianzas,[
+                        'codigo'=>$alianza['codigoAdicional'],
+                        'nombre'=> $alianza['alianza'],
+                        'descripcion'=> $alianza['alianza'],
+                        'formaPagoCodigo'=> $alianza['frpaCodigo'],
+                        'formaPago'=>$alianza['formaPago']
+                    ]);
+                }
                 array_push($results, [
                     'id'=>1,
                     'descripcion'=>'Blupy crédito 1 día',
@@ -58,7 +68,7 @@ class CuentasController extends Controller
                     'linea' => $val['limiteCreditoTotal'],
                     'deuda' => $val['pendiente'],
                     'disponible' => $val['saldoDisponible'],
-                    'alianzas' => $val['alianzas']
+                    'alianzas' => $alianzas
                 ]);
             }
         }
