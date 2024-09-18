@@ -24,14 +24,15 @@ class BlupyQrService
         return $this->get('cliente/consultar-qr/'.$codigo_id_qr,[]);
     }
 
-    public function autorizarQR($codigo_id_qr,$documento,$numerocuenta,$tel,$ip,$loc){
+    public function autorizarQR(Array $params){
         $data = (object)[
-            'id'=>$codigo_id_qr,
-            'documento'=>$documento,
-            'numero_cuenta'=>$numerocuenta,
-            'telefono'=>$tel,
-            'ip'=>$ip,
-            'localizacion'=>$loc
+            'id'=>$params['id'],
+            'documento'=>$params['documento'],
+            'numero_cuenta'=>$params['numero_cuenta'],
+            'telefono'=>$params['telefono'],
+            'ip'=>$params['ip'],
+            'localizacion'=>$params['localizacion'],
+            'adicional'=>$params['adicional']
         ];
         return $this->post('cliente/autorizar-qr',$data);
     }

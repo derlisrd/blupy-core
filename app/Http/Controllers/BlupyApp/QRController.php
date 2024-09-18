@@ -19,8 +19,17 @@ class QRController extends Controller
     public function autorizar(Request $req){
         $user = $req->user();
         $cliente = $user->cliente;
+        $parametrosPorArray = [
+            'id'=>$req->id,
+            'documento'=>$cliente->cedula,
+            'numero_cuenta'=>$req->numerocuenta,
+            'telefono'=>$req->telefono,
+            'ip'=>$req->ip(),
+            'localizacion'=>$req->localizacion,
+            'adicional'=>$req->adicional
+        ];
         $blupy = $this->webserviceBlupyQRCore
-            ->autorizarQR($req->id,$cliente->cedula, $req->numerocuenta,$req->telefono,$req->ip(),$req->localizacion);
+            ->autorizarQR($parametrosPorArray);
         $data = (object) $blupy['data'];
         SupabaseService::LOG('autorizadoQR', $blupy['data'] );
         return response()->
