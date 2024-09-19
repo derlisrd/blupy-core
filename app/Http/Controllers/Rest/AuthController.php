@@ -23,7 +23,7 @@ class AuthController extends Controller
 
         $user = User::where('email',$req->email)->where('rol',1)->first();
         if(!$user)
-            return response()->json(['success'=>false,'message'=>'Error de credenciales aaaa'],401);
+            return response()->json(['success'=>false,'message'=>'Error de credenciales'],401);
 
         $credentials = ['email'=>$req->email, 'password'=>$req->password];
         $token = JWTAuth::attempt($credentials);
