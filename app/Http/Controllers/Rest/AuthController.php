@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -47,12 +49,15 @@ class AuthController extends Controller
 
     public function checkToken(Request $req){
         try {
-            if(auth('rest')->check()){
-                return response()->json(['success'=>true,'message'=>'Valid']);
-             }
-        } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(['success'=>false,'message'=>'Sesión no válida o expirada'],401);
+            // Intenta autenticar al usuario con el token
+            $user = JWTAuth::parseToken()->authenticate();
+            return response()->json(['success' => true, 'message' => 'Token válido', 'user' => $user]);
+        } catch (TokenExpiredException $e) {
+            return response()->json(['success' => false, 'message' => 'Token expirado'],401);
+        } catch (TokenInvalidException $e) {
+            return response()->json(['success' => false, 'message' => 'Token inválido'],401);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Token no encontrado'],401);
         }
     }
 
