@@ -38,7 +38,8 @@ class ClientesController extends Controller
 
         return response()->json([
             'success'=>true,
-            'results'=>$results
+            'results'=>$results,
+            'desdes'=>$desde . $hasta
         ]);
     }
 
