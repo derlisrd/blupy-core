@@ -27,20 +27,32 @@ class ClientesController extends Controller
     */
 
     public function index(){
+        try {
+            $desde = Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+            $hasta = Carbon::now()->format('Y-m-d H:i:s');
+            $results = Cliente::join('users as u','u.cliente_id','=','clientes.id')
+            ->orderBy('clientes.created_at','DESC')
+            ->whereBetween('clientes.created_at',[$desde,$hasta])
+            ->select($this->campos)
+            ->get();
+            /* Cliente::join('users as u','u.cliente_id','=','clientes.id')
+            ->whereBetween('clientes.created_at',[$desde,$hasta])
+            ->orderBy('clientes.created_at','DESC')
+            ->select($this->campos)
+            ->get(); */
 
-        $desde = Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
-        $hasta = Carbon::now()->format('Y-m-d H:i:s');
-        $results = Cliente::join('users as u','u.cliente_id','=','clientes.id')
-        ->whereBetween('clientes.created_at',[$desde,$hasta])
-        ->orderBy('clientes.created_at','DESC')
-        ->select($this->campos)
-        ->get();
-
-        return response()->json([
-            'success'=>true,
-            'results'=>$results,
-            'desdes'=>$desde . $hasta
-        ]);
+            return response()->json([
+                'success'=>true,
+                'results'=>$results
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+            return response()->json([
+                'success'=>false,
+                'results'=>null,
+                'message'=>'Error de servidor'
+            ]);
+        }
     }
 
     /*
