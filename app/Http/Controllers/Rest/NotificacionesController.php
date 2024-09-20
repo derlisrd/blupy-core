@@ -45,8 +45,7 @@ class NotificacionesController extends Controller
                 'message'=> $validator->errors()->first()
             ], 400);
         }
-        $tokens = Device::select('notitoken')->get();
-
+        $tokens = Device::pluck('notitoken')->toArray();
         NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database');
         return response()->json(['success'=>true,'message'=>'Notificaciones enviadas']);
     }
