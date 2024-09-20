@@ -18,7 +18,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::get('/cliente',[ClientesController::class,'buscar']);
     Route::get('/cliente/restablecer-contrasena',[ClientesController::class,'restablecerContrasena']);
 
-    Route::post('/check',[AuthController::class,'checkToken']);
+    Route::get('/check',[AuthController::class,'checkToken']);
 
     Route::post('enviar-notificacion',[NotificacionesController::class,'enviarNotificacion']);
 
