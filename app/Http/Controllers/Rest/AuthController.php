@@ -44,4 +44,16 @@ class AuthController extends Controller
         ],401);
     }
 
+
+    public function checkToken(Request $req){
+        try {
+            if(auth('rest')->check()){
+                return response()->json(['success'=>true,'message'=>'Valid']);
+             }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['success'=>false,'message'=>'Sesión no válida o expirada'],401);
+        }
+    }
+
 }
