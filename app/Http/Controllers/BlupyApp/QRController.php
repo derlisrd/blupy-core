@@ -8,6 +8,7 @@ use App\Services\BlupyQrService;
 use App\Services\PushExpoService;
 use App\Services\SupabaseService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class QRController extends Controller
 {
@@ -51,7 +52,7 @@ class QRController extends Controller
                 'message'=>$data->message
             ],$blupy['status']);
         } catch (\Throwable $th) {
-
+            Log::error($th);
             throw $th;
             return response()->json([
                 'success'=>false,
