@@ -56,7 +56,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if (request()->is('api/*')) {
                 return response()->json([
                     'success'=>false,
-                    'message' => $e->getMessage(),
+                    'message' =>'Sesión inválida. Inicie sesión.'// $e->getMessage(),
                 ], 401);
             }
         });
