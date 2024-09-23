@@ -7,6 +7,7 @@ use App\Http\Controllers\BlupyApp\CuentasController;
 use App\Http\Controllers\BlupyApp\DatosController;
 use App\Http\Controllers\BlupyApp\DeviceController;
 use App\Http\Controllers\BlupyApp\FarmaController;
+use App\Http\Controllers\BlupyApp\NotificacionesController;
 use App\Http\Controllers\BlupyApp\QRController;
 use App\Http\Controllers\BlupyApp\SolicitudesController;
 use App\Http\Controllers\BlupyApp\UserController as UserPrivate;
@@ -39,6 +40,8 @@ Route::middleware('auth:api')->group(function(){
 
     Route::get('/mis-dispositivos',[CuentasController::class,'misDispositivos']);
     Route::delete('/eliminar-dispositivo',[CuentasController::class,'eliminarDispositivo']);
+
+    Route::get('/notificaciones',[NotificacionesController::class,'porUser']);
 
     Route::post('/check-token',[AuthController::class,'checkToken']);
     Route::put('/refresh-token',[AuthController::class,'refreshToken']);
