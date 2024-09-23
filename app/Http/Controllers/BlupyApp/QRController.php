@@ -41,7 +41,7 @@ class QRController extends Controller
                 Notificacion::create([
                     'user_id'=>$user->id,
                     'title'=>'Compra en comercio',
-                    'body'=> $data->results['descripcion']
+                    'body'=> $data->results['info']
                 ]);
 
 
