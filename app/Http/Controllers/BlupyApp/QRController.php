@@ -8,7 +8,6 @@ use App\Services\BlupyQrService;
 use App\Services\PushExpoService;
 use App\Services\SupabaseService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class QRController extends Controller
 {
@@ -38,7 +37,7 @@ class QRController extends Controller
 
         $noti = new PushExpoService();
         SupabaseService::LOG('autorizadoQR', $blupy['data'] );
-        $tokens = Device::where('user_id', $user->id)->pluck('notitoken')->toArray();
+        $tokens = $user->notitokens();
         $noti->send($tokens,'Compra en comercio','Se ha registrado una compra en comercio');
 
         return response()->json([

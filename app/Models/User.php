@@ -51,7 +51,7 @@ class User extends Authenticatable implements JWTSubject
     public function notitokens()
     {
         $id = $this->id;
-        $tokens = Device::where('user_id', $id)->pluck('notitoken');
+        $tokens = Device::where('user_id', $id)->pluck('notitoken')->toArray();
         return $tokens;
     }
 
