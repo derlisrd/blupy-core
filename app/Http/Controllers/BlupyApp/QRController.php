@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
 use App\Models\Device;
+use App\Models\Notificacion;
 use App\Services\BlupyQrService;
 use App\Services\PushExpoService;
 use App\Services\SupabaseService;
@@ -39,6 +40,11 @@ class QRController extends Controller
         SupabaseService::LOG('autorizadoQR', $blupy['data'] );
         $tokens = $user->notitokens();
         $noti->send($tokens,'Compra en comercio','Se ha registrado una compra en comercio');
+
+        Notificacion::create([
+            'title'=>'Compra en comercio',
+            'body'=> 'Hemos registrado una compra en comercio'
+        ]);
 
         return response()->json([
             'success'=>$data->success,

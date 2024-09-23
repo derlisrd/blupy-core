@@ -48,6 +48,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Device::class,'user_id');
     }
 
+    public function notificaciones(){
+        return $this->hasMany(Notificacion::class,'user_id');
+    }
+
     public function notitokens()
     {
         $id = $this->id;
