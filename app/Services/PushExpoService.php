@@ -12,12 +12,15 @@ class PushExpoService
 
     public function send(array $to, string $title,string $body){
         try {
-            Http::post($this->urlService, [
-                'to' => $to,
-                'title' =>$title,
-                'body'=>$body
-            ],['Content-Type' => 'application/json']);
-            return true;
+            $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                ])->post('https://exp.host/--/api/v2/push/send', [
+                    'to' => $to,
+                    'title' => $title,
+                    'body' => $body,
+                   /*  'data' => null */
+                ]);
+            SupabaseService::LOG('Notificacion',$response);
         } catch (\Throwable $th) {
             return false;
         }
