@@ -34,16 +34,17 @@ class QRController extends Controller
             ->autorizarQR($parametrosPorArray);
         $data = (object) $blupy['data'];
 
-        $noti = new PushExpoService();
-        SupabaseService::LOG('autorizadoQR', $blupy['data'] );
-        $tokens = $user->notitokens();
-        $noti->send($tokens,'Compra en comercio','Se ha registrado una compra en comercio');
-
-        Notificacion::create([
-            'user_id'=>$user->id,
-            'title'=>'Compra en comercio',
-            'body'=> 'Hemos registrado una compra en comercio'
-        ]);
+        if($blupy['status'] == 200){
+            $noti = new PushExpoService();
+            $tokens = $user->notitokens();
+            $noti->send($tokens,'Compra en comercio','Se ha registrado una compra en comercio');
+            $body = (object) $data['results'];
+            Notificacion::create([
+                'user_id'=>$user->id,
+                'title'=>'Compra en c',
+                'body'=> $body->info
+            ]);
+        }
 
         return response()->json([
             'success'=>$data->success,
