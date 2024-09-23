@@ -9,12 +9,16 @@ use Illuminate\Http\Request;
 class NotificacionesController extends Controller
 {
     public function porUser(Request $req){
-        $user = $req->user;
-        $results = Notificacion::where('user_id',$user->id)->get();
+        try {
+            $user = $req->user();
+            $results = Notificacion::where('user_id',$user->id)->get();
 
-        return response()->json([
-            'success'=>true,
-            'results' =>$results
-        ]);
+            return response()->json([
+                'success'=>true,
+                'results' =>$results
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }
