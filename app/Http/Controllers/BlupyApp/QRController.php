@@ -40,6 +40,7 @@ class QRController extends Controller
         $noti->send($tokens,'Compra en comercio','Se ha registrado una compra en comercio');
 
         Notificacion::create([
+            'user_id'=>$user->id,
             'title'=>'Compra en comercio',
             'body'=> 'Hemos registrado una compra en comercio'
         ]);
