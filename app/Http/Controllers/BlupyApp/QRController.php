@@ -34,8 +34,6 @@ class QRController extends Controller
             ->autorizarQR($parametrosPorArray);
         $data = (object) $blupy['data'];
 
-
-
         $noti = new PushExpoService();
         SupabaseService::LOG('autorizadoQR', $blupy['data'] );
         $tokens = $user->notitokens();
