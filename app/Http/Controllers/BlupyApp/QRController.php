@@ -18,37 +18,46 @@ class QRController extends Controller
     }
 
     public function autorizar(Request $req){
-        $user = $req->user();
-        $cliente = $user->cliente;
-        $parametrosPorArray = [
-            'id'=>$req->id,
-            'documento'=>$cliente->cedula,
-            'numero_cuenta'=>$req->numerocuenta,
-            'telefono'=>$req->telefono,
-            'ip'=>$req->ip(),
-            'localizacion'=>$req->localizacion,
-            'adicional'=>$req->adicional
-        ];
-        $blupy = $this->webserviceBlupyQRCore
-            ->autorizarQR($parametrosPorArray);
-        $data = (object) $blupy['data'];
-        SupabaseService::LOG('auto_qr_35',$data);
-        if($blupy['status'] == 200){
-            $noti = new PushExpoService();
-            $tokens = $user->notitokens();
-            $noti->send($tokens,'Compra en comercio','Se ha registrado una compra en comercio');
-            $body = (object) $data['results'];
-            Notificacion::create([
-                'user_id'=>$user->id,
-                'title'=>'Compra en c',
-                'body'=> $body->info
-            ]);
-        }
+        try {
+            $user = $req->user();
+            $cliente = $user->cliente;
+            $parametrosPorArray = [
+                'id'=>$req->id,
+                'documento'=>$cliente->cedula,
+                'numero_cuenta'=>$req->numerocuenta,
+                'telefono'=>$req->telefono,
+                'ip'=>$req->ip(),
+                'localizacion'=>$req->localizacion,
+                'adicional'=>$req->adicional
+            ];
+            $blupy = $this->webserviceBlupyQRCore
+                ->autorizarQR($parametrosPorArray);
+            $data = (object) $blupy['data'];
+            SupabaseService::LOG('auto_qr_35',$data);
+            SupabaseService::LOG('auto_qr_35',(object)$blupy);
+                $noti = new PushExpoService();
+                $tokens = $user->notitokens();
+                $noti->send($tokens,'Compra en comercio','Se ha registrado una compra en comercio');
+                $body = (object) $data['results'];
+                Notificacion::create([
+                    'user_id'=>$user->id,
+                    'title'=>'Compra en c',
+                    'body'=> $body->info
+                ]);
 
-        return response()->json([
-            'success'=>$data->success,
-            'message'=>$data->message
-        ],$blupy['status']);
+
+            return response()->json([
+                'success'=>$data->success,
+                'message'=>$data->message
+            ],$blupy['status']);
+        } catch (\Throwable $th) {
+
+            throw $th;
+            return response()->json([
+                'success'=>false,
+                'message'=>'Error de servidor'
+            ],500);
+        }
     }
 
     public function consultar($id){
