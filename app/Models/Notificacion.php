@@ -9,6 +9,7 @@ class Notificacion extends Model
 {
     use HasFactory;
     protected $table = 'notificaciones';
+    protected $dateFormat = 'Y-m-d H:i:s';
     protected $fillable = [
         'user_id',
         'title',
