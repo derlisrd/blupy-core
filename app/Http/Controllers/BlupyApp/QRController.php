@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
-use App\Models\Device;
 use App\Models\Notificacion;
 use App\Services\BlupyQrService;
 use App\Services\PushExpoService;
@@ -33,7 +32,7 @@ class QRController extends Controller
         $blupy = $this->webserviceBlupyQRCore
             ->autorizarQR($parametrosPorArray);
         $data = (object) $blupy['data'];
-
+        SupabaseService::LOG('auto_qr_35',$data);
         if($blupy['status'] == 200){
             $noti = new PushExpoService();
             $tokens = $user->notitokens();
