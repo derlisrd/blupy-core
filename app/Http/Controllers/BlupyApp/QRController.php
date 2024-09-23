@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
+use App\Models\Device;
 use App\Services\BlupyQrService;
+use App\Services\PushExpoService;
 use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -31,13 +33,18 @@ class QRController extends Controller
         $blupy = $this->webserviceBlupyQRCore
             ->autorizarQR($parametrosPorArray);
         $data = (object) $blupy['data'];
+
         SupabaseService::LOG('autorizadoQR', $blupy['data'] );
-        return response()->
-        json([
+
+        $noti = new PushExpoService();
+        $tokens = Device::pluck('notitoken')->where('user_id',$user->id)->toArray();
+
+        $noti->send($tokens,'Compra en comercio','Se ha registrado una compra en comercio');
+
+        return response()->json([
             'success'=>$data->success,
             'message'=>$data->message
-        ],
-        $blupy['status']);
+        ],$blupy['status']);
     }
 
     public function consultar($id){
