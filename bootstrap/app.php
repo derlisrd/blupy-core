@@ -48,7 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->renderable(function (AuthenticationException $e){
             return response()->json([
                 'success'=>false,
-                'message'=> $e->getMessage(),
+                'message'=> 'Sesión inválida. Inicie sesión.' //$e->getMessage(),
             ],401);
         });
 
