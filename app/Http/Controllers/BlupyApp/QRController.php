@@ -58,7 +58,7 @@ class QRController extends Controller
             throw $th;
             return response()->json([
                 'success' => false,
-                'message' => 'Error de servidor. Q500'
+                'message' => 'Error de servidor. CQ500'
             ], 500);
         }
     }
