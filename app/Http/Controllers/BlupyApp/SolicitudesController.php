@@ -290,6 +290,7 @@ class SolicitudesController extends Controller
 
     private function verificarSolicitud ($id) : bool{
         $verificarSolicitud = SolicitudCredito::where('cliente_id',$id)->where('tipo',1)->latest()->first();
+        SupabaseService::LOG('SOLICITUD CONTROLLER',$verificarSolicitud);
         if($verificarSolicitud){
             $fechaCarbon = Carbon::parse($verificarSolicitud->created_at);
             $fechaActual = Carbon::now();
