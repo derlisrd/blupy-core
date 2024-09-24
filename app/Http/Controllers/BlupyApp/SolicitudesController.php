@@ -298,8 +298,7 @@ class SolicitudesController extends Controller
             $fechaActual = Carbon::now();
             $fechaCarbon = Carbon::parse($verificarSolicitud->created_at);
             $diferenciaEnDias = $fechaActual->diffInDays($fechaCarbon);
-            SupabaseService::LOG('cantidad',$diferenciaEnDias);
-            return $diferenciaEnDias >= 2;
+            return $diferenciaEnDias <= 2;
         }
         return true;
     }
