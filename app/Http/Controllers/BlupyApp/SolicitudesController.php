@@ -8,6 +8,7 @@ use App\Models\Barrio;
 use App\Models\Ciudad;
 use App\Models\Cliente;
 use App\Models\Departamento;
+use App\Models\Notificacion;
 use App\Models\SolicitudCredito;
 use App\Services\SupabaseService;
 use App\Traits\RegisterTraits;
@@ -137,6 +138,11 @@ class SolicitudesController extends Controller
                 return response()->json(['success'=>false,'message'=>$solicitud->message],400);
             }
 
+            Notificacion::create([
+                'user_id'=>$user->id,
+                'title'=> 'Solicitud de crédito',
+                'body' => $solicitud->estado
+            ]);
 
             SolicitudCredito::create([
                 'cliente_id'=>$user->cliente->id,
