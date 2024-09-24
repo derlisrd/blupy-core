@@ -30,7 +30,8 @@ class QRController extends Controller
                 'telefono' => $req->telefono,
                 'ip' => $req->ip(),
                 'localizacion' => $req->localizacion,
-                'adicional' => $req->adicional
+                'adicional' => $req->adicional,
+                'mtnume' =>$req->mtnume
             ];
             $blupy = $this->webserviceBlupyQRCore
                 ->autorizarQR($parametrosPorArray);
