@@ -297,8 +297,9 @@ class SolicitudesController extends Controller
         if($verificarSolicitud){
             $fechaActual = Carbon::now();
             $fechaCarbon = Carbon::parse($verificarSolicitud->created_at);
-            $diferenciaEnDias = $fechaActual->diffInDays($fechaCarbon);
-            return $diferenciaEnDias <= 2;
+            $diferenciaEnDias = $fechaCarbon->diffInDays($fechaActual);
+            SupabaseService::LOG('difrencia_dias',$diferenciaEnDias);
+            return $diferenciaEnDias >= 2;
         }
         return true;
     }
