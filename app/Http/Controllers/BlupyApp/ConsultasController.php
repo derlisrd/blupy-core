@@ -46,9 +46,7 @@ class ConsultasController extends Controller
         return response()->json(['success'=>true,'message'=>'El cliente no existe.']);
     }
 
-    public function sucursalesCercanas(){
 
-    }
 
     public function lugarDeTrabajo(){
 
