@@ -10,6 +10,7 @@ use App\Models\Cliente;
 use App\Models\Departamento;
 use App\Models\Notificacion;
 use App\Models\SolicitudCredito;
+use App\Services\PushExpoService;
 use App\Services\SupabaseService;
 use App\Traits\RegisterTraits;
 use App\Traits\SolicitudesInfinita;
@@ -140,7 +141,9 @@ class SolicitudesController extends Controller
                 SupabaseService::LOG('Error en solicitud infinita',$solicitud);
                 return response()->json(['success'=>false,'message'=>$solicitud->message],400);
             }
-
+            $noti = new PushExpoService();
+            $tokens = $user->notitokens();
+            $noti->send($tokens, 'Solicitud de crédito', $solicitud->estado);
             Notificacion::create([
                 'user_id'=>$user->id,
                 'title'=> 'Solicitud de crédito',
@@ -298,7 +301,6 @@ class SolicitudesController extends Controller
             $fechaActual = Carbon::now();
             $fechaCarbon = Carbon::parse($verificarSolicitud->created_at);
             $diferenciaEnDias = $fechaCarbon->diffInDays($fechaActual);
-            SupabaseService::LOG('difrencia_dias',$diferenciaEnDias);
             return $diferenciaEnDias >= 2;
         }
         return true;

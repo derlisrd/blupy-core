@@ -95,8 +95,9 @@ class CuentasController extends Controller
                 if(property_exists($infinita,'Tarj')){
                     foreach($infinita->Tarj['Mov'] as $val){
                         $date = Carbon::parse($val['TcMovFec']);
+                        $horario = Carbon::parse($val['TcMovCFh']);
                         $fecha = $date->format('Y-m-d');
-                        $hora = $date->format('H:i:s');
+                        $hora = $horario->format('H:i:s');
                         array_push($results,[
                             'comercio'=>$val['TcComNom'],
                             'descripcion'=>$val['MvDes'],
