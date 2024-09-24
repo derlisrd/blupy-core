@@ -92,9 +92,9 @@ class SolicitudesController extends Controller
         if(!$this->verificarSolicitud($user->cliente->id)){
             return response()->json(['success' => false, 'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'],403);
         }
+
         $validator = Validator::make($req->all(),trans('validation.solicitudes.solicitar'),trans('validation.solicitudes.solicitar.messages'));
-        if($validator->fails())
-        {
+        if($validator->fails()){
             SupabaseService::LOG('Error en solicitud','Error en validacion');
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
         }
@@ -133,6 +133,7 @@ class SolicitudesController extends Controller
 
 
             $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
+
             if(!$solicitud->success){
                 SupabaseService::LOG('Error en solicitud infinita',$solicitud);
                 return response()->json(['success'=>false,'message'=>$solicitud->message],400);
@@ -290,13 +291,12 @@ class SolicitudesController extends Controller
 
     private function verificarSolicitud ($id) : bool{
         $verificarSolicitud = SolicitudCredito::where('cliente_id',$id)->where('tipo',1)->latest()->first();
-        SupabaseService::LOG('SOLICITUD CONTROLLER',$verificarSolicitud);
+
         if($verificarSolicitud){
-            $fechaCarbon = Carbon::parse($verificarSolicitud->created_at);
             $fechaActual = Carbon::now();
-            $haPasado2Dias = $fechaActual->diffInDays($fechaCarbon) > 2;
-            SupabaseService::LOG('2 dias',$haPasado2Dias);
-            return $haPasado2Dias;
+            $fechaCarbon = Carbon::parse($verificarSolicitud->created_at);
+            $diferenciaEnDias = $fechaActual->diffInDays($fechaCarbon);
+            return $diferenciaEnDias >= 2;
         }
         return true;
     }
