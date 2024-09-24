@@ -295,6 +295,7 @@ class SolicitudesController extends Controller
             $fechaCarbon = Carbon::parse($verificarSolicitud->created_at);
             $fechaActual = Carbon::now();
             $haPasado2Dias = $fechaActual->diffInDays($fechaCarbon) > 2;
+            SupabaseService::LOG('2 dias',$haPasado2Dias);
             return $haPasado2Dias;
         }
         return true;
