@@ -36,6 +36,7 @@ class CuentasController extends Controller
                     'cuenta' => $val['MaeCtaId'],
                     'mtnume'=>$val['MTNume'],
                     'linea' => (int)$val['MTLinea'],
+                    'pagoMinimo'=> (int) $val['MCPagMin'],
                     'deuda' => (int) $val['MTSaldo'],
                     'disponible' => (int) $val['MTLinea'] - (int) $val['MTSaldo'],
                     'alianzas' => []
@@ -68,6 +69,7 @@ class CuentasController extends Controller
                     'cuenta' => null,
                     'mtnume'=>null,
                     'linea' => $val['limiteCreditoTotal'],
+                    'pagoMinimo'=> null,
                     'deuda' => $val['pendiente'],
                     'disponible' => $val['saldoDisponible'],
                     'alianzas' => $alianzas
