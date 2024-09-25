@@ -4,7 +4,6 @@ namespace App\Traits;
 
 use App\Services\InfinitaService;
 use App\Services\SupabaseService;
-use Illuminate\Support\Facades\Log;
 
 trait SolicitudesInfinita
 {

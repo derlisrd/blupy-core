@@ -11,18 +11,18 @@ use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
 use App\Services\SupabaseService;
+use App\Traits\Helpers;
 use App\Traits\RegisterTraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 
 
 class AuthController extends Controller
 {
-    use RegisterTraits;
+    use RegisterTraits, Helpers;
 
     /* ----------------------------
     REGISTRO

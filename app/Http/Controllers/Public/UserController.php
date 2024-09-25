@@ -10,7 +10,7 @@ use App\Models\Validacion;
 use App\Services\EmailService;
 use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
-use App\Traits\RegisterTraits;
+use App\Traits\Helpers;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\RateLimiter;
 class UserController extends Controller
 {
 
-    use RegisterTraits;
+    use Helpers;
 
 
     // aqui recibe cedula y forma de recuperar

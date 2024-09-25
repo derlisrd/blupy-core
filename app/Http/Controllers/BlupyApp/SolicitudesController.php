@@ -12,6 +12,7 @@ use App\Models\Notificacion;
 use App\Models\SolicitudCredito;
 use App\Services\PushExpoService;
 use App\Services\SupabaseService;
+use App\Traits\Helpers;
 use App\Traits\RegisterTraits;
 use App\Traits\SolicitudesInfinita;
 use Illuminate\Http\Request;
@@ -21,8 +22,7 @@ use Illuminate\Support\Facades\Log;
 
 class SolicitudesController extends Controller
 {
-    use RegisterTraits;
-    use SolicitudesInfinita;
+    use RegisterTraits, SolicitudesInfinita, Helpers;
 
 
     public function solicitudes(Request $req){
