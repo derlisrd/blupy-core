@@ -65,6 +65,10 @@ class BancardController extends Controller
 
         } catch (\Throwable $th) {
             throw $th;
+            return response()->json([
+                'success'=>false,
+                'message'=> 'Error de servidor. BC500'
+            ],500);
         }
     }
 
