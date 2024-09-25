@@ -33,7 +33,7 @@ class BlupyQrService
             'ip'=>$params['ip'],
             'localizacion'=>$params['localizacion'],
             'adicional'=>$params['adicional'],
-            'numeroTarjeta'=>$params['numeroTarjeta']
+            'numero_tarjeta'=>$params['numeroTarjeta']
         ];
         return $this->post('cliente/autorizar-qr',$data);
     }
