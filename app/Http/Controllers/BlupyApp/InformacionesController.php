@@ -9,14 +9,17 @@ use Illuminate\Http\Request;
 class InformacionesController extends Controller
 {
     public function InfoPopUpInicial(Request $req){
-
-        $results = Informacion::where('active',1)
+        $user = $req->user();
+        $general = Informacion::where('active',1)
         ->where('general',1)
         ->latest()->first();
 
         return response()->json([
             'success'=>true,
-            'results'=>$results
+            'results'=>[
+                'general'=>$general,
+                'user' =>$user->info()
+            ]
         ]);
     }
 }

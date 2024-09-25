@@ -15,7 +15,8 @@ class Notificacion extends Model
         'user_id',
         'title',
         'description',
-        'body'
+        'body',
+        'leido'
     ];
     public function getCreatedAtAttribute($date)
     {

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('description')->nullable();
             $table->text('body')->nullable();
+            $table->boolean('leido')->default(0);
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
         });

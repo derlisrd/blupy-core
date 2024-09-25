@@ -17,6 +17,7 @@ class Informacion extends Model
         'img_url',
         'url',
         'active',
+        'leido',
         'general',
     ];
 }

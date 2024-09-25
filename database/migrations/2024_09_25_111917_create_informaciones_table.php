@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('text');
             $table->text('url')->nullable();
             $table->text('img_url')->nullable();
+            $table->boolean('leido')->default(0);
             $table->boolean('active')->default(1);
             $table->boolean('general')->default(1);
             $table->timestamps();
