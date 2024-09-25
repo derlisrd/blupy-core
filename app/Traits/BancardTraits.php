@@ -36,7 +36,7 @@ trait BancardTraits
         $res = (object)$infinitaService->PagoTarjeta($documento,$cuenta,$importe);
         $data = (object) $res->data;
 
-        if( (int)($data->MovCajNro) > 0)
+        if( property_exists($data,'MovCajNro') && (int)($data->MovCajNro) > 0)
         {
             return (object) [
                 'success'=>true,
