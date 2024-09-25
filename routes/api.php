@@ -7,6 +7,7 @@ use App\Http\Controllers\BlupyApp\CuentasController;
 use App\Http\Controllers\BlupyApp\DatosController;
 use App\Http\Controllers\BlupyApp\DeviceController;
 use App\Http\Controllers\BlupyApp\FarmaController;
+use App\Http\Controllers\BlupyApp\InformacionesController;
 use App\Http\Controllers\BlupyApp\NotificacionesController;
 use App\Http\Controllers\BlupyApp\QRController;
 use App\Http\Controllers\BlupyApp\SolicitudesController;
@@ -38,7 +39,7 @@ Route::get('/verificar-version',[VersionController::class,'verificarVersion']);
 
 Route::middleware('auth:api')->group(function(){
 
-    Route::get('/info');
+    Route::get('/info',[InformacionesController::class,'InfoPopUpInicial']);
 
     Route::get('/mis-dispositivos',[CuentasController::class,'misDispositivos']);
     Route::delete('/eliminar-dispositivo',[CuentasController::class,'eliminarDispositivo']);
