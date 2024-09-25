@@ -28,7 +28,7 @@ class BlupyQrService
         $data = (object)[
             'id'=>$params['id'],
             'documento'=>$params['documento'],
-            'numero_cuenta'=>$params['numero_cuenta'],
+            'numero_cuenta'=>$params['numeroCuenta'],
             'telefono'=>$params['telefono'],
             'ip'=>$params['ip'],
             'localizacion'=>$params['localizacion'],

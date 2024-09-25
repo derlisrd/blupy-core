@@ -26,12 +26,12 @@ class QRController extends Controller
             $parametrosPorArray = [
                 'id' => $req->id,
                 'documento' => $cliente->cedula,
-                'numero_cuenta' => $req->numerocuenta,
+                'numeroCuenta' => $req->numeroCuenta,
+                'numeroTarjeta' =>$req->numeroTarjeta,
                 'telefono' => $req->telefono,
                 'ip' => $req->ip(),
                 'localizacion' => $req->localizacion,
                 'adicional' => $req->adicional,
-                'numeroTarjeta' =>$req->numeroTarjeta
             ];
             $blupy = $this->webserviceBlupyQRCore
                 ->autorizarQR($parametrosPorArray);
