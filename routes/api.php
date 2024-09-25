@@ -38,6 +38,8 @@ Route::get('/verificar-version',[VersionController::class,'verificarVersion']);
 
 Route::middleware('auth:api')->group(function(){
 
+    Route::get('/info');
+
     Route::get('/mis-dispositivos',[CuentasController::class,'misDispositivos']);
     Route::delete('/eliminar-dispositivo',[CuentasController::class,'eliminarDispositivo']);
 
