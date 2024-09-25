@@ -51,13 +51,15 @@ class CuentasController extends Controller
             foreach ($farma->result as $val) {
                 $alianzas = [];
                 foreach($val['alianzas'] as $alianza){
-                    array_push($alianzas,[
-                        'codigo'=>$alianza['codigoAdicional'],
-                        'nombre'=> $alianza['alianza'],
-                        'descripcion'=> $alianza['alianza'],
-                        'formaPagoCodigo'=> $alianza['frpaCodigo'],
-                        'formaPago'=>$alianza['formaPago']
-                    ]);
+                    if($alianza['frpaCodigo'] === 129 ){
+                        array_push($alianzas,[
+                            'codigo'=>$alianza['codigoAdicional'],
+                            'nombre'=> $alianza['alianza'],
+                            'descripcion'=> $alianza['alianza'],
+                            'formaPagoCodigo'=> $alianza['frpaCodigo'],
+                            'formaPago'=>$alianza['formaPago']
+                        ]);
+                    }
                 }
                 array_push($results, [
                     'id'=>1,

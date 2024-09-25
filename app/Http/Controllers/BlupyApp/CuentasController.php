@@ -53,6 +53,18 @@ class CuentasController extends Controller
         $farma = (object) $resFarma->data;
 
         if(property_exists( $farma,'result')){
+            $alianzas = [];
+            foreach($val['alianzas'] as $alianza){
+                if($alianza['frpaCodigo'] === 129 ){
+                    array_push($alianzas,[
+                        'codigo'=>$alianza['codigoAdicional'],
+                        'nombre'=> $alianza['alianza'],
+                        'descripcion'=> $alianza['alianza'],
+                        'formaPagoCodigo'=> $alianza['frpaCodigo'],
+                        'formaPago'=>$alianza['formaPago']
+                    ]);
+                }
+            }
             foreach ($farma->result as $val) {
                 array_push($results, [
                     'id'=>1,
@@ -66,7 +78,7 @@ class CuentasController extends Controller
                     'pagoMinimo'=> null,
                     'deuda' => $val['pendiente'],
                     'disponible' => $val['saldoDisponible'],
-                    'alianzas' => $val['alianzas']
+                    'alianzas' => $alianzas
                 ]);
             }
         }
