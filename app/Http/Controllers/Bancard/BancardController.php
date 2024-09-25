@@ -54,7 +54,7 @@ class BancardController extends Controller
                 return response()->json([
                     'success'=>true,
                     'message'=>'Pago efectuado correctamente.',
-                    'results' => $results->recibo
+                    'results' => 'Recibo '.$results->recibo
                 ]);
             }
 
