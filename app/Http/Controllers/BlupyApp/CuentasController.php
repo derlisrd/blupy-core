@@ -108,10 +108,11 @@ class CuentasController extends Controller
                 if(property_exists($infinita,'Tarj')){
                     foreach($infinita->Tarj['Mov'] as $val){
                         $date = Carbon::parse($val['TcMovFec']);
-                        $horario = Carbon::parse($val['TcMovCFh'],'UTC');
-                        $horario->setTimezone('America/Asuncion');
+                        //$horario = Carbon::parse($val['TcMovCFh'],'UTC');
+                        //$horario->setTimezone('America/Asuncion');
                         $fecha = $date->format('Y-m-d');
-                        $hora = $horario->format('H:i:s');
+                        //$hora = $horario->format('H:i:s');
+                        $hora = '00:00:00';
                         array_push($results,[
                             'comercio'=>$val['TcComNom'],
                             'descripcion'=>$val['MvDes'],
