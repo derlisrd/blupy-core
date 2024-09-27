@@ -183,7 +183,6 @@ class AuthController extends Controller
                     ->where('device',$req->device)
                     ->where('notitoken',$req->notitoken)
                     ->first();
-                    SupabaseService::LOG('core_181',$req->all());
                     if(!$dispositoDeConfianza){
                         $pistaEmail = $this->ocultarParcialmenteEmail($user->email);
                         $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id,$req);
@@ -191,7 +190,7 @@ class AuthController extends Controller
                             'success'=>true,
                             'results'=>null,
                             'id'=> $idValidacion,
-                            'message'=>'Parece que intentas iniciar sesión desde un dispositivo o ubicación nuevos. Como medida de seguridad adicional, ingresa el código de 6 dígitos que enviamos a tu correo '.$pistaEmail.' para verificar.'
+                            'message'=>'Inicio de sesión desde un nuevo dispositivo. Ingresa el código de 6 dígitos que enviamos a tu correo '.$pistaEmail.' para verificar. Revisa tus carpetas de spam y correos no deseados, por si acaso.'
                         ]);
                     }
 
