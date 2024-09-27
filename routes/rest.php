@@ -4,6 +4,7 @@ use App\Http\Controllers\Rest\AuthController;
 use App\Http\Controllers\Rest\ClientesController;
 use App\Http\Controllers\Rest\NotificacionesController;
 use App\Http\Controllers\Rest\SolicitudesController;
+use App\Http\Controllers\Rest\UsersController;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
 
@@ -31,4 +32,6 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::get('/solicitud',[SolicitudesController::class,'buscar']);
     Route::get('/totales',[SolicitudesController::class,'totales']);
 
+
+    Route::post('/restablecer-contrasena',[UsersController::class,'restablecerContrasena']);
 });
