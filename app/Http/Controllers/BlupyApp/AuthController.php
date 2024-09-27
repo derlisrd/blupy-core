@@ -164,6 +164,8 @@ class AuthController extends Controller
 
             $cedula = $req->cedula; $password = $req->password;
             $cliente = Cliente::where('cedula',$cedula)->first();
+            SupabaseService::LOG('cedula',$req->cedula);
+            SupabaseService::LOG('pass',$req->password);
             if($cliente){
                 $user =  $cliente->user;
 
