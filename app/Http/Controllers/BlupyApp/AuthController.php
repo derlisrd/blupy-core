@@ -183,7 +183,7 @@ class AuthController extends Controller
                     ->where('device',$req->device)
                     ->where('notitoken',$req->notitoken)
                     ->first();
-                    if(!$dispositoDeConfianza){
+                    /* if(!$dispositoDeConfianza){
                         $pistaEmail = $this->ocultarParcialmenteEmail($user->email);
                         $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id,$req);
                         return response()->json([
@@ -196,7 +196,7 @@ class AuthController extends Controller
 
 
                     $dispositoDeConfianza->update(['updated_at'=>date('Y-m-d H:i:s')]);
-                    $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s') ]);
+                    $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s') ]); */
                     $tarjetasConsultas = new CuentasPrivate();
                     $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula);
                     return response()->json([
