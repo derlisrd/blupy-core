@@ -6,6 +6,7 @@ use App\Http\Controllers\Rest\ConsultasController;
 use App\Http\Controllers\Rest\NotificacionesController;
 use App\Http\Controllers\Rest\SolicitudesController;
 use App\Http\Controllers\Rest\UsersController;
+use App\Http\Controllers\Rest\VendedoresController;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +38,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
     Route::get('/consultas/farma',[ConsultasController::class,'farma']);
 
-
+    Route::post('/ingresar-vendedor',[VendedoresController::class,'ingresarVendedor']);
 
     Route::post('/restablecer-contrasena',[UsersController::class,'restablecerContrasena']);
 });
