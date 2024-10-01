@@ -162,4 +162,15 @@ class ClientesController extends Controller
         ]);
     }
 
+
+    public function ficha(Request $request){
+
+        $clients = Cliente::find($request->id);
+
+        return response()->json([
+            'success'=>true,
+            'results'=>$clients
+        ]);
+    }
+
 }

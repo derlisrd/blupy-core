@@ -19,6 +19,8 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::post('/clientes-filtros',[ClientesController::class,'filtros']);
     Route::get('/cliente',[ClientesController::class,'buscar']);
     Route::get('/cliente/restablecer-contrasena',[ClientesController::class,'restablecerContrasena']);
+    Route::get('/cliente/ficha/{id}',[ClientesController::class,'ficha']);
+
 
     Route::get('/check',[AuthController::class,'checkToken']);
 
@@ -34,6 +36,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::get('/totales',[SolicitudesController::class,'totales']);
 
     Route::get('/consultas/farma',[ConsultasController::class,'farma']);
+
 
 
     Route::post('/restablecer-contrasena',[UsersController::class,'restablecerContrasena']);
