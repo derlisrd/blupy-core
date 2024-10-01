@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Notificacion;
 use App\Services\BlupyQrService;
 use App\Services\PushExpoService;
+use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -42,7 +43,7 @@ class QRController extends Controller
                 $noti = new PushExpoService();
                 $tokens = $user->notitokens();
                 $noti->send($tokens, 'Compra en comercio', 'Se ha registrado una compra en comercio');
-
+                SupabaseService::LOG('Compra commercio 46','Compra QR '.$cliente->cedula);
                 Notificacion::create([
                     'user_id' => $user->id,
                     'title' => 'Compra en comercio',
