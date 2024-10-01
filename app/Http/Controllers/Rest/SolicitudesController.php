@@ -68,15 +68,7 @@ class SolicitudesController extends Controller
             $solicitud->estado_id = $res->id;
             $solicitud->save();
         }
-        if($res->id == '5'){
-            $notificacion = new PushExpoService();
-            $to = $user->notitokens;
-            $notificacion->send(
-                $to,
-                'Buenas noticias! Crédito aprobado',
-                'Crédito aprobado. Acercate a cualquier punto farma y activalo. Tenés 30% de descuento en tu primera compra.'
-            );
-        }
+
 
         return response()->json([
             'success'=>true,
@@ -237,7 +229,7 @@ class SolicitudesController extends Controller
 
         $registrosDelMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$fechaHoy])->count();
         $registrosSemana = Cliente::whereBetween('created_at',[$lunes,$domingo])->count();
-        $registrosHoy = Cliente::whereBetween('created_at',[$hoy.' 00:00:00',$fechaHoy])->count();
+        $registrosHoy = Cliente::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->count();
         $registrosAyer = Cliente::whereBetween('created_at',[$ayer.$primeraHora, $ayer . $ultimaHora])->count();
 
 
