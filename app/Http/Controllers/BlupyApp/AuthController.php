@@ -190,7 +190,7 @@ class AuthController extends Controller
                             'success'=>true,
                             'results'=>null,
                             'id'=> $idValidacion,
-                            'message'=>'Inicio de sesión desde un nuevo dispositivo. Ingresa el código de 6 dígitos que enviamos a tu correo '.$pistaEmail.' para verificar. Revisa tus carpetas de spam y correos no deseados, por si acaso.'
+                            'message'=>'Nuevo dispositivo. Ingresa el código que enviamos a tu correo '.$pistaEmail.' para verificar, puede tardar unos minutos. Revisa tus carpetas de spam y correos no deseados, por si acaso.'
                         ]);
                     }
 
