@@ -20,7 +20,7 @@ class ConsultasController extends Controller
                 return response()->json([
                     'success'=>true,
                     'message'=>'Posee regitros',
-                    'results'=>$result
+                    'results'=>$result[0]
                 ]);
             }
         }
