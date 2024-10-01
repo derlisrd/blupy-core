@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Rest\AuthController;
 use App\Http\Controllers\Rest\ClientesController;
+use App\Http\Controllers\Rest\ConsultasController;
 use App\Http\Controllers\Rest\NotificacionesController;
 use App\Http\Controllers\Rest\SolicitudesController;
 use App\Http\Controllers\Rest\UsersController;
@@ -31,6 +32,8 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::post('/solicitudes-filtros',[SolicitudesController::class,'filtros']);
     Route::get('/solicitud',[SolicitudesController::class,'buscar']);
     Route::get('/totales',[SolicitudesController::class,'totales']);
+
+    Route::get('/consultas/farma',[ConsultasController::class,'farma']);
 
 
     Route::post('/restablecer-contrasena',[UsersController::class,'restablecerContrasena']);
