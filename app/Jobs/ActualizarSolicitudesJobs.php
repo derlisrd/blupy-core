@@ -30,7 +30,7 @@ class ActualizarSolicitudesJobs implements ShouldQueue
     public function handle(): void
     {
         try {
-            SupabaseService::LOG('results',$this->codigoDeSolicitudesPendientes[0]);
+            SupabaseService::LOG('results','entra aqui jeje');
 
         } catch (\Throwable $th) {
             throw $th;

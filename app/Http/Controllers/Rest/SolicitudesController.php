@@ -58,8 +58,7 @@ class SolicitudesController extends Controller
 
       return response()->json([
         'success'=>true,
-        'message'=>'Actualizando solicitudes',
-        'results'=>$pendientes
+        'message'=>'Actualizando solicitudes'
       ]);
     }
 
