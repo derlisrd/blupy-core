@@ -9,6 +9,7 @@ use App\Models\Device;
 use App\Models\User;
 use App\Services\PushExpoService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class NotificacionesController extends Controller
@@ -24,12 +25,13 @@ class NotificacionesController extends Controller
             $to = $user->notitokens;
             $notificacion->send(
                 $to,
-                'Buenas noticias! Crédito aprobado',
-                'Crédito aprobado. Acercate a cualquier punto farma y activalo. Tenés 30% de descuento en tu primera compra.'
+                $req->title,
+                $req->body
             );
             return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito']);
 
         } catch (\Throwable $th) {
+            Log::error($th);
             return response()->json(['success'=>false,'message'=>'Error de servidor'],500);
         }
     }
