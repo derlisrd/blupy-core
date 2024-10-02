@@ -31,19 +31,14 @@ class ActualizarSolicitudesJobs implements ShouldQueue
     {
         try {
             foreach($this->codigoDeSolicitudesPendientes as $codigo){
-              $result =  $this->consultarEstadoSolicitudInfinita($codigo);
-              if($result){
-                SupabaseService::LOG('result '.$codigo,$result['estado']);
-                /* SolicitudCredito::where('codigo', $codigo)
-                    ->update([
-                        'estado' => $result['estado'],
-                        'estado_id'=> $result['id']
-                    ]); */
-              }
+
+                SupabaseService::LOG('result ',$codigo);
+
 
             }
 
         } catch (\Throwable $th) {
+            throw $th;
             SupabaseService::LOG('Error_46_','Error al actualizar los pendientes');
         }
     }
