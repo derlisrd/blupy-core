@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ActualizarSolicitudesJobs;
 use App\Models\Cliente;
 use App\Models\SolicitudCredito;
 use App\Models\User;
@@ -49,7 +50,12 @@ class SolicitudesController extends Controller
     */
 
     public function actualizarSolicitudes(){
-      $pendientes =  SolicitudCredito::where('estado_id',5)->get();
+
+      $pendientes = SolicitudCredito::where('estado_id', 5)->pluck('codigo')->toArray();
+
+
+      //ActualizarSolicitudesJobs::dispatch($pendientes)->onConnection('database');
+
       return response()->json([
         'success'=>true,
         'message'=>'Actualizando solicitudes',
