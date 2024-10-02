@@ -31,15 +31,9 @@ class ActualizarSolicitudesJobs implements ShouldQueue
     public function handle(): void
     {
         try {
-            $log = '';
             foreach($this->codigos as $codigo){
                 $results = $this->consultarEstadoSolicitudInfinita($codigo);
-
-               if($results){
-                $log .= $results['estado'];
-               }
             }
-            SupabaseService::LOG('log_solic',$log);
         } catch (\Throwable $th) {
             throw $th;
             Log::error($th);
