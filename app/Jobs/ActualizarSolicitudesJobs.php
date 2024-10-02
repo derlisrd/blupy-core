@@ -32,13 +32,13 @@ class ActualizarSolicitudesJobs implements ShouldQueue
         try {
             foreach($this->codigoDeSolicitudesPendientes as $codigo){
               $result =  $this->consultarEstadoSolicitudInfinita($codigo);
-              if($result != null && $result['id'] !== 5){
-
-                SolicitudCredito::where('codigo', $codigo)
+              if($result){
+                SupabaseService::LOG('result '.$codigo,$result['estado']);
+                /* SolicitudCredito::where('codigo', $codigo)
                     ->update([
                         'estado' => $result['estado'],
                         'estado_id'=> $result['id']
-                    ]);
+                    ]); */
               }
 
             }
