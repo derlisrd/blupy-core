@@ -20,7 +20,7 @@ class PushExpoService
                     'body' => $body,
                    /*  'data' => null */
                 ]);
-            SupabaseService::LOG('Notificacion',$response);
+            //SupabaseService::LOG('Notificacion',$response);
         } catch (\Throwable $th) {
             return false;
         }
