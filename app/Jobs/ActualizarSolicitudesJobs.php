@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ActualizarSolicitudesJobs implements ShouldQueue
 {
@@ -39,7 +40,8 @@ class ActualizarSolicitudesJobs implements ShouldQueue
             }
             SupabaseService::LOG('log_solic',$log);
         } catch (\Throwable $th) {
-            SupabaseService::LOG('Error_46_','Error de solicitudes');
+            throw $th;
+            Log::error($th);
         }
     }
 }
