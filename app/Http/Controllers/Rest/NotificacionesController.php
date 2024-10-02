@@ -22,7 +22,7 @@ class NotificacionesController extends Controller
         try {
             $user = User::find($req->id);
             $notificacion = new PushExpoService();
-            $to = $user->notitokens;
+            $to = $user->notitokens();
             $notificacion->send(
                 $to,
                 $req->title,
