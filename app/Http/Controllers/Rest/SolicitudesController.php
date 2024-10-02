@@ -6,12 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use App\Models\SolicitudCredito;
 use App\Models\User;
-use App\Services\PushExpoService;
 use App\Traits\SolicitudesInfinita;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
+
 
 class SolicitudesController extends Controller
 {
@@ -49,6 +47,16 @@ class SolicitudesController extends Controller
     ACTUALIZAR SOLICITUD DESDE INFINITA
     ==============================================================================================================
     */
+
+    public function actualizarSolicitudes(){
+      $pendientes =  SolicitudCredito::where('estado_id',5)->get();
+      return response()->json([
+        'success'=>true,
+        'message'=>'Actualizando solicitudes',
+        'results'=>$pendientes
+      ]);
+    }
+
 
     public function actualizarSolicitud(Request $request){
 
