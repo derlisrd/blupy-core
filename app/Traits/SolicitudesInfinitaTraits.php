@@ -29,7 +29,7 @@ trait SolicitudesInfinitaTraits
     }
 
     public function actualizarSolicitudInfinita(string $codigo){
-        $infinita = (object)$this->infinitaService->consultaEstadoSolicitud($codigo);
+        $infinita = (object)$this->infinitaService->ConsultaEstadoSolicitud($codigo);
         $data = (object) $infinita->data;
         $results = ['success'=>false,'estado'=>null, 'id'=>null];
         if($data && property_exists($data, 'wDato')){
