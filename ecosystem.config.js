@@ -10,7 +10,6 @@ module.exports = {
         max_restarts: 10,
         restart_delay: 5000,
         env: {
-          // Variables de entorno si necesitas alguna
           QUEUE_CONNECTION: 'database',
         },
       },
