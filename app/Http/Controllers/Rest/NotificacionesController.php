@@ -28,7 +28,7 @@ class NotificacionesController extends Controller
                 $req->title,
                 $req->body
             );
-            return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito']);
+            return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito', 'results'=>$to, 'user'=>$user]);
 
         } catch (\Throwable $th) {
             Log::error($th);
