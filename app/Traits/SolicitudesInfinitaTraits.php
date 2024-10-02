@@ -14,7 +14,7 @@ trait SolicitudesInfinitaTraits
         $this->infinitaService = new InfinitaService();
     }
 
-    public function consultarEstadoSolicitudInfinita($codigo){
+    public function consultarEstadoSolicitudInfinita(string $codigo){
 
         $infinita = (object)$this->infinitaService->consultaEstadoSolicitud($codigo);
         $data = (object) $infinita->data;
