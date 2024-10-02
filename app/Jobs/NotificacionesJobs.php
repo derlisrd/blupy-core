@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Services\SupabaseService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -32,7 +33,7 @@ class NotificacionesJobs implements ShouldQueue
     public function handle(): void
     {
         try {
-            Log::info("Inicia enviar notificaciones");
+
             $chunks = array_chunk($this->tokens, 100);
             foreach ($chunks as $chunk) {
                 $response = Http::withHeaders([
@@ -44,11 +45,10 @@ class NotificacionesJobs implements ShouldQueue
                     'data' => ['screen'=>'flyer']
                 ]);
 
-                Log::info($response->body());
+                //SupabaseService::LOG('notificaciones',$response->body());
             }
-            Log::info("Fin enviar notificaciones");
         } catch (\Throwable $th) {
-            Log::info($th);
+            SupabaseService::LOG('Notificaciones','Error en enviar notificaciones');
         }
     }
 }
