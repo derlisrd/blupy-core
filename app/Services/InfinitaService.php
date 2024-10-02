@@ -113,7 +113,7 @@ class InfinitaService
         return $this->post('IngresarAdj',$data);
     }
 
-    public function consultaEstadoSolicitud($codigo)
+    public function ConsultaEstadoSolicitud($codigo)
     {
         return $this->get('ConsultaEstadoSolicitud',["Solid" => $codigo]);
     }

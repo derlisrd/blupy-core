@@ -16,7 +16,7 @@ trait SolicitudesInfinitaTraits
 
     public function consultarEstadoSolicitudInfinita(string $codigo){
 
-        $infinita = (object)$this->infinitaService->consultaEstadoSolicitud($codigo);
+        $infinita = (object)$this->infinitaService->ConsultaEstadoSolicitud($codigo);
         $data = (object) $infinita->data;
         if($data && property_exists($data, 'wDato')){
             $results = [
