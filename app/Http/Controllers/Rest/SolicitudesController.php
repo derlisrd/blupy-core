@@ -7,14 +7,14 @@ use App\Jobs\ActualizarSolicitudesJobs;
 use App\Models\Cliente;
 use App\Models\SolicitudCredito;
 use App\Models\User;
-use App\Traits\SolicitudesInfinita;
+use App\Traits\SolicitudesInfinitaTraits;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 
 class SolicitudesController extends Controller
 {
-    use SolicitudesInfinita;
+    use SolicitudesInfinitaTraits;
     private $camposSolicitud;
     private $minutes;
     public function __construct()
@@ -54,7 +54,7 @@ class SolicitudesController extends Controller
       $pendientes = SolicitudCredito::where('estado_id', 5)->pluck('codigo')->toArray();
 
 
-      //ActualizarSolicitudesJobs::dispatch($pendientes)->onConnection('database');
+      ActualizarSolicitudesJobs::dispatch($pendientes)->onConnection('database');
 
       return response()->json([
         'success'=>true,

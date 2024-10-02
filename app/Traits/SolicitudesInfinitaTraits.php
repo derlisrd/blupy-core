@@ -5,13 +5,26 @@ namespace App\Traits;
 use App\Services\InfinitaService;
 use App\Services\SupabaseService;
 
-trait SolicitudesInfinita
+trait SolicitudesInfinitaTraits
 {
     private $infinitaService;
 
     public function __construct()
     {
         $this->infinitaService = new InfinitaService();
+    }
+
+    public function consultarEstadoSolicitudInfinita($codigo){
+        $infinita = (object)$this->webserviceInfinita->consultaEstadoSolicitud($codigo);
+        $data = (object) $infinita->data;
+        if($data && property_exists($data, 'wDato')){
+            $results = [
+                'estado'=>$data->wDato[0]['DatoDesc'],
+                'id'=>(int) $data->wDato[0]['DatoId']
+            ];
+            return $results;
+        }
+        return null;
     }
 
     public function actualizarSolicitudInfinita(string $codigo){

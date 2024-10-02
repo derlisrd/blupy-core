@@ -14,7 +14,7 @@ use App\Services\PushExpoService;
 use App\Services\SupabaseService;
 use App\Traits\Helpers;
 use App\Traits\RegisterTraits;
-use App\Traits\SolicitudesInfinita;
+use App\Traits\SolicitudesInfinitaTraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Log;
 
 class SolicitudesController extends Controller
 {
-    use RegisterTraits, SolicitudesInfinita, Helpers;
+    use RegisterTraits, SolicitudesInfinitaTraits, Helpers;
 
 
     public function solicitudes(Request $req){
