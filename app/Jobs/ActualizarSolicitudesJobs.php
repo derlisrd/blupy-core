@@ -39,7 +39,7 @@ class ActualizarSolicitudesJobs implements ShouldQueue
 
         } catch (\Throwable $th) {
             throw $th;
-            SupabaseService::LOG('Error_46_','Error al actualizar los pendientes');
+            SupabaseService::LOG('Error_46_',$th);
         }
     }
 }
