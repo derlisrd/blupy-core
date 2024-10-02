@@ -35,7 +35,9 @@ class ActualizarSolicitudesJobs implements ShouldQueue
             foreach($this->codigos as $codigo){
                 $results = $this->consultarEstadoSolicitudInfinita($codigo);
 
-               $log .= $results.'-';
+               if($results){
+                $log .= $results['estado'];
+               }
             }
             SupabaseService::LOG('log_solic',$log);
         } catch (\Throwable $th) {
