@@ -15,13 +15,13 @@ class ActualizarSolicitudesJobs implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, SolicitudesInfinitaTraits;
 
-    public $codigoDeSolicitudesPendientes;
+    public $codigos;
     /**
      * Create a new job instance.
      */
     public function __construct($codigos)
     {
-        $this->codigoDeSolicitudesPendientes = $codigos;
+        $this->codigos = $codigos;
     }
 
     /**
@@ -33,8 +33,7 @@ class ActualizarSolicitudesJobs implements ShouldQueue
             SupabaseService::LOG('results','entra aqui jeje');
 
         } catch (\Throwable $th) {
-            throw $th;
-            SupabaseService::LOG('Error_46_',$th);
+            SupabaseService::LOG('Error_46_','Muy raro todo');
         }
     }
 }
