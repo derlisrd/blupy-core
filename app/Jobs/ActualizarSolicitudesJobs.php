@@ -19,9 +19,9 @@ class ActualizarSolicitudesJobs implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct($codigoDeSolicitudesPendientes)
+    public function __construct($codigos)
     {
-        $this->codigoDeSolicitudesPendientes = $codigoDeSolicitudesPendientes;
+        $this->codigoDeSolicitudesPendientes = $codigos;
     }
 
     /**
@@ -30,12 +30,7 @@ class ActualizarSolicitudesJobs implements ShouldQueue
     public function handle(): void
     {
         try {
-            foreach($this->codigoDeSolicitudesPendientes as $codigo){
-
-                SupabaseService::LOG('result ',$codigo);
-
-
-            }
+            SupabaseService::LOG('results',$this->codigoDeSolicitudesPendientes[0]);
 
         } catch (\Throwable $th) {
             throw $th;
