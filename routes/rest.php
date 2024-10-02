@@ -16,6 +16,9 @@ Route::post('login',[AuthController::class,'login']);
 
 Route::middleware(Authenticate::using('api'))->group(function(){
 
+
+    Route::put('/actualizar-solicitudes',[SolicitudesController::class,'actualizarSolicitudes']);
+
     Route::get('/clientes',[ClientesController::class,'index']);
     Route::post('/clientes-filtros',[ClientesController::class,'filtros']);
     Route::get('/cliente',[ClientesController::class,'buscar']);
@@ -41,4 +44,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::post('/ingresar-vendedor',[VendedoresController::class,'ingresarVendedor']);
 
     Route::post('/restablecer-contrasena',[UsersController::class,'restablecerContrasena']);
+
+
+
 });

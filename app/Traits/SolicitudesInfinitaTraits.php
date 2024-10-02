@@ -5,7 +5,7 @@ namespace App\Traits;
 use App\Services\InfinitaService;
 use App\Services\SupabaseService;
 
-trait SolicitudesInfinita
+trait SolicitudesInfinitaTraits
 {
     private $infinitaService;
 
@@ -14,8 +14,23 @@ trait SolicitudesInfinita
         $this->infinitaService = new InfinitaService();
     }
 
+    public function consultarEstadoSolicitudInfinita(string $codigo){
+
+        $infinita = (object)$this->infinitaService->ConsultaEstadoSolicitud($codigo);
+        SupabaseService::LOG('infinita',$infinita);
+        $data = (object) $infinita->data;
+        if($data && property_exists($data, 'wDato')){
+            $results = [
+                'estado'=>$data->wDato[0]['DatoDesc'],
+                'id'=>(int) $data->wDato[0]['DatoId']
+            ];
+            return $results;
+        }
+        return null;
+    }
+
     public function actualizarSolicitudInfinita(string $codigo){
-        $infinita = (object)$this->webserviceInfinita->consultaEstadoSolicitud($codigo);
+        $infinita = (object)$this->infinitaService->ConsultaEstadoSolicitud($codigo);
         $data = (object) $infinita->data;
         $results = ['success'=>false,'estado'=>null, 'id'=>null];
         if($data && property_exists($data, 'wDato')){
@@ -53,7 +68,7 @@ trait SolicitudesInfinita
         $res = (object)$this->infinitaService->solicitudLineaDeCredito($cliente);
         $resultadoInfinitaObject = (object) $res->data;
         $resultado = ['success'=>false, 'message'=>'Error en la solicitud'];
-        SupabaseService::LOG('ingresar solicitud',$res->data);
+        //SupabaseService::LOG('ingresar solicitud',$res->data);
         if(property_exists($resultadoInfinitaObject,'CliId')){
             if($resultadoInfinitaObject->CliId !== '0'){
                 $codigoSolicitud = $resultadoInfinitaObject->SolId;

@@ -113,7 +113,7 @@ class InfinitaService
         return $this->post('IngresarAdj',$data);
     }
 
-    public function consultaEstadoSolicitud($codigo)
+    public function ConsultaEstadoSolicitud($codigo)
     {
         return $this->get('ConsultaEstadoSolicitud',["Solid" => $codigo]);
     }
@@ -238,7 +238,7 @@ class InfinitaService
             ],
             "Proceso"=> 2
         ];
-        SupabaseService::LOG('datos_cliente',$cliente);
+        //SupabaseService::LOG('datos_cliente',$cliente);
         return $cliente;
     }
 

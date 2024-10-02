@@ -3,19 +3,18 @@
 namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ActualizarSolicitudesJobs;
 use App\Models\Cliente;
 use App\Models\SolicitudCredito;
 use App\Models\User;
-use App\Services\PushExpoService;
-use App\Traits\SolicitudesInfinita;
+use App\Traits\SolicitudesInfinitaTraits;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
+
 
 class SolicitudesController extends Controller
 {
-    use SolicitudesInfinita;
+    use SolicitudesInfinitaTraits;
     private $camposSolicitud;
     private $minutes;
     public function __construct()
@@ -49,6 +48,20 @@ class SolicitudesController extends Controller
     ACTUALIZAR SOLICITUD DESDE INFINITA
     ==============================================================================================================
     */
+
+    public function actualizarSolicitudes(){
+
+      $pendientes = SolicitudCredito::where('estado_id', 5)->pluck('codigo')->toArray();
+
+
+      ActualizarSolicitudesJobs::dispatch($pendientes)->onConnection('database');
+
+      return response()->json([
+        'success'=>true,
+        'message'=>'Actualizando solicitudes'
+      ]);
+    }
+
 
     public function actualizarSolicitud(Request $request){
 
