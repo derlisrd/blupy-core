@@ -45,7 +45,7 @@ class NotificacionesJobs implements ShouldQueue
                     'data' => ['screen'=>'flyer']
                 ]);
 
-                //SupabaseService::LOG('notificaciones',$response->body());
+                SupabaseService::LOG('notificaciones',$response->body());
             }
         } catch (\Throwable $th) {
             SupabaseService::LOG('Notificaciones','Error en enviar notificaciones');
