@@ -25,7 +25,8 @@ trait RegisterTraits
                     'funcionario'=> $dato->esFuncionario == "N" ? 0 : 1,
                     'lineaFarma'=> ($dato->limiteCreditoTotal > 0) ? 1 : 0,
                     'credito'=> $dato->limiteCreditoTotal,
-                    'asofarma'=> ($dato->esFuncionario == "N" && ((int)$dato->limiteCreditoTotal) > 0 ) ? 1 : 0,
+                    'asofarma'=> ($dato->esFuncionario == "N") ? 1 : 0,
+                    //'asofarma'=> ($dato->esFuncionario == "N" && ((int)$dato->limiteCreditoTotal) > 0 ) ? 1 : 0,
                     'completado'=>1
                 ];
             }
