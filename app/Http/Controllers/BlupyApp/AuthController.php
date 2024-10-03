@@ -184,7 +184,7 @@ class AuthController extends Controller
                     ->where('notitoken',$req->notitoken)
                     ->first();
                     if(!$dispositoDeConfianza){
-                        $pistaEmail = $this->ocultarParcialmenteEmail($user->email);
+                        $pistaEmail =  $user->email;//$this->ocultarParcialmenteEmail($user->email);
                         $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id,$req);
                         return response()->json([
                             'success'=>true,

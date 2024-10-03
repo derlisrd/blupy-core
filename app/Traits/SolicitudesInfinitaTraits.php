@@ -17,8 +17,8 @@ trait SolicitudesInfinitaTraits
     public function consultarEstadoSolicitudInfinita(string $codigo){
 
         $infinita = (object)$this->infinitaService->ConsultaEstadoSolicitud($codigo);
-        SupabaseService::LOG('infinita',$infinita);
         $data = (object) $infinita->data;
+
         if($data && property_exists($data, 'wDato')){
             $results = [
                 'estado'=>$data->wDato[0]['DatoDesc'],
@@ -26,7 +26,7 @@ trait SolicitudesInfinitaTraits
             ];
             return $results;
         }
-        return null;
+
     }
 
     public function actualizarSolicitudInfinita(string $codigo){

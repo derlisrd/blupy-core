@@ -45,6 +45,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
     Route::post('/restablecer-contrasena',[UsersController::class,'restablecerContrasena']);
 
-
-
 });
+
+
+Route::get('/consultar-solicitud',[SolicitudesController::class,'actualizarSolicitudes']);

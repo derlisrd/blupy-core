@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Traits\SolicitudesInfinitaTraits;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Log;
 
 class SolicitudesController extends Controller
 {
@@ -49,17 +49,24 @@ class SolicitudesController extends Controller
     ==============================================================================================================
     */
 
-    public function actualizarSolicitudes(){
+    public function actualizarSolicitudes(Request $req){
 
-      $pendientes = SolicitudCredito::where('estado_id', 5)->pluck('codigo')->toArray();
+      //$pendientes = SolicitudCredito::where('estado_id', 5)->pluck('codigo')->toArray();
 
 
-      ActualizarSolicitudesJobs::dispatch($pendientes)->onConnection('database');
+      //ActualizarSolicitudesJobs::dispatch($pendientes)->onConnection('database');
+      try {
+        $res = $this->consultarEstadoSolicitudInfinita($req->codigo);
 
-      return response()->json([
-        'success'=>true,
-        'message'=>'Actualizando solicitudes'
-      ]);
+        return response()->json([
+            'resutls'=>$res,
+            'success'=>true,
+            'message'=>'Actualizando solicitudes'
+        ]);
+      } catch (\Throwable $th) {
+        throw $th;
+        Log::error($th);
+      }
     }
 
 
