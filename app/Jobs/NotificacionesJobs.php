@@ -42,7 +42,11 @@ class NotificacionesJobs implements ShouldQueue
                     'to' => $chunk,
                     'title' => $this->title,
                     'body' => $this->text,
-                    'data' => ['screen'=>'flyer']
+                    'data' => [
+                        'info'=>'notificaciones',
+                        'title'=>$this->title,
+                        'body'=>$this->text
+                    ]
                 ]);
 
                 //SupabaseService::LOG('notificaciones',$response->body());
