@@ -51,21 +51,17 @@ class SolicitudesController extends Controller
 
     public function actualizarSolicitudes(Request $req){
 
-      //$pendientes = SolicitudCredito::where('estado_id', 5)->pluck('codigo')->toArray();
-
-
-      //ActualizarSolicitudesJobs::dispatch($pendientes)->onConnection('database');
       try {
-        $res = $this->consultarEstadoSolicitudInfinita($req->codigo);
 
+        $pendientes = SolicitudCredito::where('estado_id', 5)->pluck('codigo')->toArray();
+        ActualizarSolicitudesJobs::dispatch($pendientes)->onConnection('database');
         return response()->json([
-            'resutls'=>$res,
             'success'=>true,
             'message'=>'Actualizando solicitudes'
         ]);
       } catch (\Throwable $th) {
         throw $th;
-        Log::error($th);
+        return response()->json(['success'=>false,'message'=>'Error de servidor. BQS64'],500);
       }
     }
 

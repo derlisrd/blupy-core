@@ -33,6 +33,14 @@ class ActualizarSolicitudesJobs implements ShouldQueue
         try {
             foreach($this->codigos as $codigo){
                 $results = $this->consultarEstadoSolicitudInfinita($codigo);
+                if($results && $results['id'] != 5){
+                    SolicitudCredito::where('codigo',$codigo)->update(
+                        [
+                            'estado_id'=>$results['id'],
+                            'estado'=>$results['estado']
+                        ]
+                    );
+                }
             }
         } catch (\Throwable $th) {
             throw $th;

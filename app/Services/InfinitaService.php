@@ -133,25 +133,29 @@ class InfinitaService
         return $this->post('IngresarSolicitud',$datosDeCliente);
     }
 
-    public function agregarAdicional($cliente,$adicionales,$numeroCuenta)
-    {
+    public function agregarAdicional($cliente,$adicionales,$numeroCuenta){
         $datosDeCliente = $this->datosCliente($cliente,173,$adicionales,null,$numeroCuenta);
         $post = $this->post('IngresarSolicitud',$datosDeCliente);
         SupabaseService::LOG('agregarAdicional',$post);
         return $post;
     }
 
-    public function solicitudLineaDeCredito($cliente)
-    {
+
+
+    public function solicitudLineaDeCredito($cliente){
         $datosDeCliente = $this->datosCliente($cliente,172,[],null,null);
         return $this->post('IngresarSolicitud',$datosDeCliente);
     }
 
-    public function registrar(Object $cliente)
-    {
+
+
+    public function registrar(Object $cliente){
         $data = $this->datosCliente($cliente,171,[],null,null);
         return $this->post('IngresarSolicitud',$data);
     }
+
+
+
 
     private function datosCliente($cliente,$productoId,$adicionales,$solicitudDeLinea,$cuentaNumero){
         $adicionalesObject = $adicionales ? $adicionales  : [];
@@ -242,6 +246,8 @@ class InfinitaService
         return $cliente;
     }
 
+
+
     private function get(String $endpoint,Array $parametros) {
         try {
             $response = Http::withHeaders($this->header)->get($this->url . '/' . $endpoint, $parametros);
@@ -257,6 +263,8 @@ class InfinitaService
             ];
         }
     }
+
+
 
     private function post(String $endpoint,Object $body) {
         try {

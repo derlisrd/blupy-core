@@ -48,4 +48,3 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 });
 
 
-Route::get('/consultar-solicitud',[SolicitudesController::class,'actualizarSolicitudes']);
