@@ -90,9 +90,8 @@ class SolicitudesController extends Controller
     public function solicitarCredito(Request $req){
         $user = $req->user();
         $fechaSolicitud = $this->verificarSolicitud($user->cliente->id);
-        SupabaseService::LOG('fecha_solicitud',$fechaSolicitud);
-        if(!$fechaSolicitud){
 
+        if(!$fechaSolicitud){
             return response()->json(['success' => false, 'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'],403);
         }
 
