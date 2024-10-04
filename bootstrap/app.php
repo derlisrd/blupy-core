@@ -26,6 +26,11 @@ return Application::configure(basePath: dirname(__DIR__))
             ->name('bancard')
             ->group(base_path('routes/bancard.php'));
 
+            Route::prefix('farma')
+            ->middleware('x-api-key')
+            ->name('farma')
+            ->group(base_path('routes/farma.php'));
+
             Route::middleware('api')
             ->prefix('rest')
             ->name('rest')
