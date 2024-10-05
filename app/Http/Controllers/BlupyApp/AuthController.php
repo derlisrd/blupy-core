@@ -183,7 +183,7 @@ class AuthController extends Controller
                     ->where('device',$req->device)
                     ->where('notitoken',$req->notitoken)
                     ->first();
-                    if(!$dispositoDeConfianza){
+                    /* if(!$dispositoDeConfianza){
                         $pistaEmail =  $user->email;//$this->ocultarParcialmenteEmail($user->email);
                         $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id,$req);
                         return response()->json([
@@ -192,7 +192,7 @@ class AuthController extends Controller
                             'id'=> $idValidacion,
                             'message'=>'Nuevo dispositivo. Ingresa el código que enviamos a tu correo '.$pistaEmail.' para verificar, puede tardar unos minutos. Revisa tus carpetas de spam y correos no deseados, por si acaso.'
                         ]);
-                    }
+                    } */
 
 
                     $dispositoDeConfianza->update(['updated_at'=>date('Y-m-d H:i:s')]);
