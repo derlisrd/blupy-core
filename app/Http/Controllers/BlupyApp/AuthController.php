@@ -192,11 +192,12 @@ class AuthController extends Controller
                             'id'=> $idValidacion,
                             'message'=>'Nuevo dispositivo. Ingresa el código que enviamos a tu correo '.$pistaEmail.' para verificar, puede tardar unos minutos. Revisa tus carpetas de spam y correos no deseados, por si acaso.'
                         ]);
-                    } */
+                    }
 
 
                     $dispositoDeConfianza->update(['updated_at'=>date('Y-m-d H:i:s')]);
                     $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s') ]);
+                    */
                     $tarjetasConsultas = new CuentasPrivate();
                     $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula);
                     return response()->json([
