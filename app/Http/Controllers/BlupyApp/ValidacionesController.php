@@ -175,8 +175,9 @@ class ValidacionesController extends Controller
         try {
             $hora = Carbon::now()->format('H:i');
             $mensaje = "$code es tu codigo de verificacion de BLUPY. ". $hora  ;
+            $numero = str_replace('+595', '0', $celular);
             $tigoService = new TigoSmsService();
-            $tigoService->enviarSms($celular,$mensaje);
+            $tigoService->enviarSms($numero,$mensaje);
         } catch (\Throwable $th) {
             throw $th;
         }
