@@ -27,6 +27,9 @@ class FarmaService
     public function movimientos(String $cedula, String $periodo){
         return $this->get('cliente/getMovimientos',['documento' => $cedula, 'periodo' =>$periodo]);
     }
+    public function sucursales(){
+        return $this->get('estructura/getEstructuras',[]);
+    }
 
 
 
