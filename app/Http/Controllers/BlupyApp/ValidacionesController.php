@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cliente;
 use App\Models\Validacion;
 use App\Services\TigoSmsService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
@@ -15,6 +15,30 @@ use Illuminate\Support\Facades\Validator;
 class ValidacionesController extends Controller
 {
 
+    public function enviameCodigoSMS(Request $req){
+        try {
+            $validator = Validator::make($req->all(),['id'=>'required'],['id.required'=>'El id obligatorio']);
+            if($validator->fails())
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+
+            $ip = $req->ip();
+            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});
+            if (!$executed)
+                return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+
+            $results = Validacion::where('id',$req->id)->where('validado',0)->first();
+            if($results){
+                $cliente = Cliente::find($results->cliente_id);
+                //$this->enviarMensajeDeTexto($cliente->celular,$results->codigo);
+                return response()->json(['success'=>true,'message'=>'Mensaje enviado','codigo'=>$results,'cliente'=>$cliente]);
+            }
+
+            return response()->json(['success'=>false,'message'=>'No existe codigo','results'=>null],404);
+
+        } catch (\Throwable $th) {
+            return response()->json(['success'=>false,'message'=>'Error en el servidor.'],500);
+        }
+    }
 
 
 
@@ -53,7 +77,7 @@ class ValidacionesController extends Controller
                 return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $ip = $req->ip();
-        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});
+        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 5,function() {});
         if (!$executed)
             return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 

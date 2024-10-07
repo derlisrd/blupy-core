@@ -35,6 +35,8 @@ Route::post('/confirmar-email',[ValidacionesController::class,'confirmarEmail'])
 Route::post('/validar-telefono',[ValidacionesController::class,'validarTelefono']);
 Route::post('/confirmar-telefono',[ValidacionesController::class,'confirmarTelefono']);
 
+Route::get('/enviame-codigo-sms',[ValidacionesController::class,'enviameCodigoSMS']);
+
 Route::get('/verificar-version',[VersionController::class,'verificarVersion']);
 
 Route::middleware('auth:api')->group(function(){
