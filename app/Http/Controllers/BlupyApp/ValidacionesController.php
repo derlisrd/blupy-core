@@ -29,11 +29,11 @@ class ValidacionesController extends Controller
             $results = Validacion::where('id',$req->id)->where('validado',0)->first();
             if($results){
                 $cliente = Cliente::find($results->cliente_id);
-                //$this->enviarMensajeDeTexto($cliente->celular,$results->codigo);
-                return response()->json(['success'=>true,'message'=>'Mensaje enviado','codigo'=>$results,'cliente'=>$cliente]);
+                $this->enviarMensajeDeTexto($cliente->celular,$results->codigo);
+                return response()->json(['success'=>true,'message'=>'Mensaje enviado']);
             }
 
-            return response()->json(['success'=>false,'message'=>'No existe codigo','results'=>null],404);
+            return response()->json(['success'=>false,'message'=>'No existe codigo'],404);
 
         } catch (\Throwable $th) {
             return response()->json(['success'=>false,'message'=>'Error en el servidor.'],500);
