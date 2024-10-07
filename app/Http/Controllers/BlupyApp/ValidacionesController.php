@@ -29,6 +29,9 @@ class ValidacionesController extends Controller
             $results = Validacion::where('id',$req->id)->where('validado',0)->first();
             if($results){
                 $cliente = Cliente::find($results->cliente_id);
+                $validacion = Validacion::find($req->id);
+                $validacion->celular = $cliente->celular;
+                $validacion->save();
                 $this->enviarMensajeDeTexto($cliente->celular,$results->codigo);
                 return response()->json(['success'=>true,'message'=>'Mensaje enviado']);
             }
