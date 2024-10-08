@@ -33,7 +33,7 @@ class ValidacionesController extends Controller
                 $validacion->celular = $cliente->celular;
                 $validacion->save();
                 $this->enviarMensajeDeTexto($cliente->celular,$results->codigo);
-                return response()->json(['success'=>true,'message'=>'Mensaje enviado']);
+                return response()->json(['success'=>true,'message'=>'Mensaje enviado al '.$cliente->celular]);
             }
 
             return response()->json(['success'=>false,'message'=>'No existe codigo'],404);
