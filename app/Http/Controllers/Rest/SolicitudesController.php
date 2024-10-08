@@ -76,7 +76,7 @@ class SolicitudesController extends Controller
                 'message'=>'Solicitud no existe.'
             ],404);
         }
-        $user = User::where('cliente_id',$solicitud->cliente_id)->first();
+
         $res = $this->actualizarSolicitudInfinita($codigo);
 
         if($res->success){

@@ -18,6 +18,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
 
     Route::put('/actualizar-solicitudes',[SolicitudesController::class,'actualizarSolicitudes']);
+    Route::put('/actualizar-solicitud',[SolicitudesController::class,'actualizarSolicitud']);
 
     Route::get('/clientes',[ClientesController::class,'index']);
     Route::post('/clientes-filtros',[ClientesController::class,'filtros']);
