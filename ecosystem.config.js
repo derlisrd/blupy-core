@@ -6,6 +6,14 @@ module.exports = {
         args: 'queue:work --tries=3',
         interpreter: 'php',
         watch: false,
+      },
+      {
+        name: 'laravel-scheduler',
+        script: 'artisan',
+        args: 'schedule:run',
+        interpreter: 'php',
+        cron_restart: '*/1 * * * *',
+        watch: false,
       }
     ]
   };
