@@ -12,7 +12,6 @@ module.exports = {
         script: 'artisan',
         args: 'schedule:work',
         interpreter: 'php',
-        cron_restart: '*/1 * * * *',
         watch: false,
       }
     ]
