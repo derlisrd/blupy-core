@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\UpdatePerfilJobs;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -34,6 +35,15 @@ class UsersController extends Controller
         return response()->json([
             'success'=>true,
             'message'=>'Restablecido'
+        ]);
+    }
+
+
+    public function actualizarPerfiles(){
+        UpdatePerfilJobs::dispatch();
+        return response()->json([
+            'success'=>true,
+            'message'=>'Actualizando...'
         ]);
     }
 }

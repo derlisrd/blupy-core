@@ -46,6 +46,9 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
     Route::post('/restablecer-contrasena',[UsersController::class,'restablecerContrasena']);
 
+
+    Route::post('/actualizar-perfiles',[UsersController::class,'actualizarPerfiles']);
+
 });
 
 
