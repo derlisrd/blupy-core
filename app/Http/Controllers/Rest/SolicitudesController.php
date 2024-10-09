@@ -253,7 +253,7 @@ class SolicitudesController extends Controller
         $rechazadosSemana = SolicitudCredito::whereBetween('created_at',[$lunes,$domingo])->where('tipo',1)->where('estado_id',11)->count();
         $rechazadosMes = SolicitudCredito::whereBetween('created_at',[$fechaInicioMes,$hoy . ' 23:59:59'])->where('tipo',1)->where('estado_id',11)->count();
 
-        $solicitudesFuncionarios = Cliente::where('s.tipo',1)->where('cliente.funcionario',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
+        $solicitudesFuncionarios = Cliente::where('s.tipo',1)->where('clientes.funcionario',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
 
         $solicitudesTotales = SolicitudCredito::where('tipo',1)->where('estado_id','<>',null)->count();
         $solicitudesHoy = SolicitudCredito::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->count();
