@@ -15,7 +15,7 @@ Route::get('/app', function (Request $request) {
     // Detectar iOS
     elseif (stripos($userAgent, 'iPhone') !== false || stripos($userAgent, 'iPad') !== false) {
         // Intentar abrir la app primero
-        return response()->view('redirect_to_ios');
+        return redirect()->away('intent://blupy/#Intent;scheme=blupy;package=com.teo.blupy;end');
     }
     // Para otros dispositivos, redirigir al sitio web
     else {
