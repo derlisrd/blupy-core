@@ -17,6 +17,7 @@ use App\Http\Controllers\BlupyApp\ValidacionesController;
 use App\Http\Controllers\Public\VersionController;
 use Illuminate\Support\Facades\Route;
 
+
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/confirmar-nuevo-dispositivo',[DeviceController::class,'confirmarNuevoDispositivo']);
 Route::post('/codigo-nuevo-dispositivo',[DeviceController::class,'codigoNuevoDispositivo']);
@@ -85,4 +86,7 @@ Route::middleware('auth:api')->group(function(){
 });
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> dev
