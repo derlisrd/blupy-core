@@ -84,9 +84,3 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/sucursales-cercanas',[FarmaController::class,'sucursalesCercanas']);
 
 });
-
-
-<<<<<<< HEAD
-
-=======
->>>>>>> dev
