@@ -15,7 +15,6 @@ use App\Http\Controllers\BlupyApp\UserController as UserPrivate;
 use App\Http\Controllers\Public\UserController as UserPublic;
 use App\Http\Controllers\BlupyApp\ValidacionesController;
 use App\Http\Controllers\Public\VersionController;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login',[AuthController::class,'login']);
