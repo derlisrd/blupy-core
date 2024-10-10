@@ -16,6 +16,7 @@ class InformacionesController extends Controller
 
         return response()->json([
             'success'=>true,
+            'message'=>'',
             'results'=>[
                 'general'=>$general,
                 'user' =>$user->info()
