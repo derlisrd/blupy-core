@@ -28,6 +28,7 @@ class NotificacionesController extends Controller
                 $req->title,
                 $req->body,
                 [
+                    'info'=>'notificaciones',
                     'body'=>$req->body,
                     'title'=>$req->title
                 ]
