@@ -142,7 +142,11 @@ class SolicitudesController extends Controller
             }
             $noti = new PushExpoService();
             $tokens = $user->notitokens();
-            $noti->send($tokens, 'Solicitud de crédito', $solicitud->estado);
+            $noti->send($tokens, 'Solicitud de crédito', $solicitud->estado,[
+                'info'=>'notificaciones',
+                'body'=>"Estado de solicitud ".$solicitud->estado,
+                'title'=>'Solicitud de crédito'
+            ]);
             Notificacion::create([
                 'user_id'=>$user->id,
                 'title'=> 'Solicitud de crédito',
