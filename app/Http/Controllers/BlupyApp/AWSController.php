@@ -7,6 +7,7 @@ use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Aws\Rekognition\RekognitionClient;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class AWSController extends Controller
@@ -93,7 +94,7 @@ class AWSController extends Controller
                 'message'=>$message
             ],$status);
         } catch (\Throwable $th) {
-            SupabaseService::LOG('foto_cedula_error',$th);
+            Log::error($th);
             return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
         }
     }
