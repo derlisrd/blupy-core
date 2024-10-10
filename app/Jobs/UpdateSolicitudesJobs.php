@@ -19,7 +19,6 @@ class UpdateSolicitudesJobs implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(){
-        SupabaseService::LOG('schedule_24','Inicio de actualizacion solicitudes');
         $soli2 = SolicitudCredito::where('estado_id',5)->get();
         $webserviceInfinita = new InfinitaService();
         foreach ($soli2 as $key => $val) {
@@ -39,7 +38,6 @@ class UpdateSolicitudesJobs implements ShouldQueue
                 }
             }
         }
-        SupabaseService::LOG('schedule_24','fin de actualizacion solicitudes');
     }
 
     /**
