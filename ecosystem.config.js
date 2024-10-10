@@ -10,7 +10,7 @@ module.exports = {
       {
         name: 'laravel-scheduler',
         script: 'artisan',
-        args: 'schedule:work',
+        args: 'schedule:run',
         interpreter: 'php',
         watch: false,
       }
