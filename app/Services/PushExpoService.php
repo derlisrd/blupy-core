@@ -10,7 +10,7 @@ class PushExpoService
         $this->urlService = env('PUSH_SERVICE');
     }
 
-    public function send(array $to, string $title,string $body){
+    public function send(array $to, string $title,string $body, array $data){
         try {
             $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
@@ -18,7 +18,7 @@ class PushExpoService
                     'to' => $to,
                     'title' => $title,
                     'body' => $body,
-                   /*  'data' => null */
+                   'data' => $data
                 ]);
             //SupabaseService::LOG('Notificacion',$response);
         } catch (\Throwable $th) {

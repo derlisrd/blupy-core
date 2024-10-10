@@ -26,7 +26,11 @@ class NotificacionesController extends Controller
             $notificacion->send(
                 $to,
                 $req->title,
-                $req->body
+                $req->body,
+                [
+                    'body'=>$req->body,
+                    'title'=>$req->title
+                ]
             );
             return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito', 'results'=>$to, 'user'=>$user]);
 
