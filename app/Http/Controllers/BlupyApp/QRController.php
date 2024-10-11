@@ -42,7 +42,7 @@ class QRController extends Controller
 
                 $noti = new PushExpoService();
                 $tokens = $user->notitokens();
-                $noti->send($tokens, 'Compra en comercio', 'Se ha registrado una compra en comercio');
+                $noti->send($tokens, 'Compra en comercio', 'Se ha registrado una compra en comercio',[]);
                 SupabaseService::LOG('Compra commercio 46','Compra QR '.$cliente->cedula);
                 Notificacion::create([
                     'user_id' => $user->id,
