@@ -9,5 +9,10 @@ class Barrio extends Model
 {
     use HasFactory;
     protected $table = 'barrios';
-    protected $fillable = [];
+    protected $fillable = [
+        'departamento_id',
+        'ciudad_id',
+        'nombre',
+        'codigo'
+    ];
 }

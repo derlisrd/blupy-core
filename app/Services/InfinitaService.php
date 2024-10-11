@@ -44,6 +44,14 @@ class InfinitaService
         return $this->get('ListarProfesiones',[]);
     }
 
+    public function listarBarrios($departamentoId,$ciudadId)
+    {
+        return $this->get('ListarBarrios',[
+            'Deparid'=>$departamentoId,
+            'Ciudadid'=>$ciudadId
+        ]);
+    }
+
     public function listarTiposLaboral()
     {
         return $this->get('ListarTiposLaboral',[]);
