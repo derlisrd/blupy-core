@@ -23,7 +23,7 @@ class VentasFarmaController extends Controller
 
         $res = (object)$farmaService->ventasRendidas($req->fecha);
         $data = (object) $res->data;
-
+        $results = [];
         if(property_exists($data,'result')){
             $ventas = $data->result;
             foreach($ventas as $v){
@@ -32,7 +32,7 @@ class VentasFarmaController extends Controller
                     $fechaFormateada = Carbon::parse($v['ventFecha'])->format('Y-m-d H:i:s');
                     $cliente = Cliente::where('cedula',$v['cedula'])->first();
                     $cliente_id = $cliente ? $cliente->id : null;
-                    Venta::create([
+                    $ventaCreada = Venta::create([
                         'cliente_id'=>$cliente_id,
                         'codigo'=>$v['ventCodigo'],
                         'documento'=>$v['cedula'],
@@ -48,11 +48,12 @@ class VentasFarmaController extends Controller
                         'fecha'=>$fechaFormateada,
                         'forma_venta'=>$v['ventTipo']
                     ]);
+                    array_push($results,$ventaCreada);
                 }
             }
         }
 
-        return response()->json(['success'=>true,'message'=>"Ventas ingresadas"]);
+        return response()->json(['success'=>true,'message'=>"Ventas ingresadas", 'results'=>$results]);
 
     }
 }
