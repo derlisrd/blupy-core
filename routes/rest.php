@@ -7,6 +7,7 @@ use App\Http\Controllers\Rest\NotificacionesController;
 use App\Http\Controllers\Rest\SolicitudesController;
 use App\Http\Controllers\Rest\UsersController;
 use App\Http\Controllers\Rest\VendedoresController;
+use App\Http\Controllers\Rest\VentasFarmaController;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +49,8 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
 
     Route::post('/actualizar-perfiles',[UsersController::class,'actualizarPerfiles'])->name('rest_actualizar_perfiles');
+
+    Route::get('/ventas-dia-farma',[VentasFarmaController::class,'VentasDelDia']);
 
 });
 

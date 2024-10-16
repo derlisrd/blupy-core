@@ -30,6 +30,9 @@ class FarmaService
     public function sucursales(){
         return $this->get('estructura/getEstructuras',[]);
     }
+    public function ventasRendidas($fecha){
+        return $this->get('ventas/deldia',['fecha'=>$fecha]);
+    }
 
 
 
