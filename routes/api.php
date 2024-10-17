@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BlupyApp\AuthController;
 use App\Http\Controllers\BlupyApp\AWSController;
+use App\Http\Controllers\BlupyApp\ClienteController;
 use App\Http\Controllers\BlupyApp\ConsultasController;
 use App\Http\Controllers\BlupyApp\CuentasController;
 use App\Http\Controllers\BlupyApp\DatosController;
@@ -83,6 +84,7 @@ Route::middleware('auth:api')->group(function(){
 
     Route::get('/sucursales-cercanas',[FarmaController::class,'sucursalesCercanas'])->name('api_sucursales_cercanas');
 
+    Route::get('/mis-descuentos',[ClienteController::class,'misDescuentos']);
 });
 
 

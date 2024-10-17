@@ -63,11 +63,13 @@ class Cliente extends Model
         'importe_credito_farma'
     ];
 
-    public function user()
-    {
+    public function user(){
         return $this->hasOne(User::class, 'cliente_id');
     }
     public function adicional(){
         return $this->hasMany(Adicional::class,'cliente_id');
+    }
+    public function ventas(){
+        return $this->hasMany(Venta::class,'cliente_id');
     }
 }
