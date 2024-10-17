@@ -27,8 +27,8 @@ class CuentasController extends Controller
     public function tarjetas(Request $req){
         $results = [];
         $user = $req->user();
-
-        $resInfinita = (object) $this->infinitaService->ListarTarjetasPorDoc($user->cliente->cedula);
+        $cedula = $user->cliente->cedula;
+        $resInfinita = (object) $this->infinitaService->ListarTarjetasPorDoc($cedula);
         $infinita = (object)$resInfinita->data;
         if(property_exists( $infinita,'Tarjetas')){
             foreach ($infinita->Tarjetas as $val) {
@@ -37,51 +37,60 @@ class CuentasController extends Controller
                     'descripcion'=>'Blupy crédito digital',
                     'otorgadoPor'=>'Mi crédito S.A.',
                     'tipo'=>1,
+                    'bloqueo'=> $val['MTBloq'] === "" ? false : true,
                     'condicion'=>'Contado',
+                    'condicionVenta'=>1,
                     'cuenta' => $val['MaeCtaId'],
                     'numeroTarjeta'=>$val['MTNume'],
                     'linea' => (int)$val['MTLinea'],
-                    'deuda' => (int) $val['MTSaldo'],
                     'pagoMinimo'=> (int) $val['MCPagMin'],
+                    'deuda' => (int) $val['MTSaldo'],
                     'disponible' => (int) $val['MTLinea'] - (int) $val['MTSaldo'],
                     'alianzas' => []
                 ]);
             }
         }
 
-        $resFarma = (object)$this->farmaService->cliente($user->cliente->cedula);
+        $resFarma = (object)$this->farmaService->cliente($cedula);
         $farma = (object) $resFarma->data;
 
         if(property_exists( $farma,'result')){
-            $alianzas = [];
-            foreach($val['alianzas'] as $alianza){
-                if($alianza['frpaCodigo'] === 129 ){
-                    array_push($alianzas,[
-                        'codigo'=>$alianza['codigoAdicional'],
-                        'nombre'=> $alianza['alianza'],
-                        'descripcion'=> $alianza['alianza'],
-                        'formaPagoCodigo'=> $alianza['frpaCodigo'],
-                        'formaPago'=>$alianza['formaPago']
+            foreach ($farma->result as $val) {
+                $alianzas = [];
+                foreach($val['alianzas'] as $alianza){
+                    if($alianza['frpaCodigo'] === 129 ){
+                        array_push($alianzas,[
+                            'codigo'=>$alianza['codigoAdicional'],
+                            'nombre'=> $alianza['alianza'],
+                            'descripcion'=> $alianza['alianza'],
+                            'formaPagoCodigo'=> $alianza['frpaCodigo'],
+                            'formaPago'=>$alianza['formaPago']
+                        ]);
+                    }
+                }
+                if(count($alianzas)>0)
+                {
+                    array_push($results, [
+                        'id'=>1,
+                        'descripcion'=>'Blupy crédito 1 día',
+                        'otorgadoPor'=>'Farma S.A.',
+                        'tipo'=>0,
+                        'condicion'=>'credito',
+                        'condicionVenta'=>2,
+                        'cuenta' => null,
+                        'bloqueo'=> false,
+                        'numeroTarjeta'=>null,
+                        'linea' => $val['limiteCreditoTotal'],
+                        'pagoMinimo'=> null,
+                        'deuda' => $val['pendiente'],
+                        'disponible' => $val['saldoDisponible'],
+                        'alianzas' => $alianzas
                     ]);
                 }
             }
-            foreach ($farma->result as $val) {
-                array_push($results, [
-                    'id'=>1,
-                    'descripcion'=>'Blupy crédito 1 día',
-                    'otorgadoPor'=>'Farma S.A.',
-                    'tipo'=>0,
-                    'condicion'=>'credito',
-                    'cuenta' => null,
-                    'numeroTarjeta'=>null,
-                    'linea' => $val['limiteCreditoTotal'],
-                    'pagoMinimo'=> null,
-                    'deuda' => $val['pendiente'],
-                    'disponible' => $val['saldoDisponible'],
-                    'alianzas' => $alianzas
-                ]);
-            }
         }
+
+
 
         return response()->json([
             'success'=>true,

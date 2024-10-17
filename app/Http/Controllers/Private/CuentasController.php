@@ -20,8 +20,6 @@ class CuentasController extends Controller
 
     public function tarjetas(string $cedula){
         $results = [];
-
-
         $resInfinita = (object) $this->infinitaService->ListarTarjetasPorDoc($cedula);
         $infinita = (object)$resInfinita->data;
         if(property_exists( $infinita,'Tarjetas')){
