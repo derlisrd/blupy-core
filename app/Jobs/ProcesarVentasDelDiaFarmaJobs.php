@@ -35,7 +35,6 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
 
         $res = (object)$farmaService->ventasRendidas($this->fecha);
         $data = (object) $res->data;
-        $results = [];
         if (property_exists($data, 'result')) {
             $ventas = $data->result;
             foreach ($ventas as $v) {
@@ -60,7 +59,6 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
                         'fecha' => $fechaFormateada,
                         'forma_venta' => $v['ventTipo']
                     ]);
-                    array_push($results, $ventaCreada);
                 }
             }
         }

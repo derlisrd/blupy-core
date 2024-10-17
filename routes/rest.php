@@ -50,9 +50,10 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
     Route::post('/actualizar-perfiles',[UsersController::class,'actualizarPerfiles'])->name('rest_actualizar_perfiles');
 
-    Route::get('/ventas-totales',[VentasFarmaController::class,'ventasTotales']);
-    Route::get('/actualizar-ventas-dia',[VentasFarmaController::class,'ventasDiaFarma']);
+    Route::get('/ventas-totales',[VentasFarmaController::class,'ventasTotales'])->name('rest_ventas_totales');
+    Route::get('/actualizar-ventas-dia',[VentasFarmaController::class,'ventasDiaFarma'])->name('rest_actualizar_ventas_dia');
 
+    Route::get('/lista-ventas',[VentasFarmaController::class,'listaVentas']);
 });
 
 

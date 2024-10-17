@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcesarVentasDelDiaFarmaJobs;
+use App\Models\Cliente;
 use App\Models\Venta;
+use App\Services\FarmaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -20,6 +22,25 @@ class VentasFarmaController extends Controller
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
         ProcesarVentasDelDiaFarmaJobs::dispatch($req->fecha);
+        return response()->json(['success' => true, 'message' => "Las ventas se estan registrando en segundo plano."]);
+    }
+
+    public function listaVentas(Request $req){
+        $primerDiaMes = Carbon::now()->startOfMonth()->format('Y-m-d');
+        $fechaHoy = Carbon::now()->format('Y-m-d');
+
+        $ventas = Venta::whereBetween('fecha',[$primerDiaMes.' 00:00:00', $fechaHoy. ' 23:59:59'])->get();
+
+        return response()->json([
+            'success'=>true,
+            'results'=>$ventas
+        ]);
+    }
+
+
+    public function actualizarListaVentasDeHoy(Request $req){
+        $fechaHoy = Carbon::now()->format('Y-m-d');
+        ProcesarVentasDelDiaFarmaJobs::dispatch($fechaHoy);
         return response()->json(['success' => true, 'message' => "Las ventas se estan registrando en segundo plano."]);
     }
 
