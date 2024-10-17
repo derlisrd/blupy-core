@@ -62,22 +62,25 @@ class CuentasController extends Controller
                         ]);
                     }
                 }
-                array_push($results, [
-                    'id'=>1,
-                    'descripcion'=>'Blupy crédito 1 día',
-                    'otorgadoPor'=>'Farma S.A.',
-                    'tipo'=>0,
-                    'condicion'=>'credito',
-                    'condicionVenta'=>2,
-                    'cuenta' => null,
-                    'bloqueo'=> false,
-                    'numeroTarjeta'=>null,
-                    'linea' => $val['limiteCreditoTotal'],
-                    'pagoMinimo'=> null,
-                    'deuda' => $val['pendiente'],
-                    'disponible' => $val['saldoDisponible'],
-                    'alianzas' => $alianzas
-                ]);
+                if(count($alianzas)>0)
+                {
+                    array_push($results, [
+                        'id'=>1,
+                        'descripcion'=>'Blupy crédito 1 día',
+                        'otorgadoPor'=>'Farma S.A.',
+                        'tipo'=>0,
+                        'condicion'=>'credito',
+                        'condicionVenta'=>2,
+                        'cuenta' => null,
+                        'bloqueo'=> false,
+                        'numeroTarjeta'=>null,
+                        'linea' => $val['limiteCreditoTotal'],
+                        'pagoMinimo'=> null,
+                        'deuda' => $val['pendiente'],
+                        'disponible' => $val['saldoDisponible'],
+                        'alianzas' => $alianzas
+                    ]);
+                }
             }
         }
 
