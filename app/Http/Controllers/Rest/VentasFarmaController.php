@@ -23,7 +23,7 @@ class VentasFarmaController extends Controller{
         $porcentajeUso = ($usuariosActivos / $totalUsuarios) * 100;
         return response()->json([
             'success'=>true,
-            'message'=>[
+            'results'=>[
                 'porcentajeUso'=> number_format($porcentajeUso, 2) . "%",
                 'totalUsuarios'=>$totalUsuarios
             ]
