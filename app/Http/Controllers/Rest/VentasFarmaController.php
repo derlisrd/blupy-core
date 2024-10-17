@@ -32,24 +32,36 @@ class VentasFarmaController extends Controller
         $importeTotalAyer = Venta::whereDate('fecha', $ayer)
         ->sum('importe_final');
 
-        $descuentoTotalSemana = Venta::whereBetween('fecha', [$lunes, $domingo])
+        $importeTotalAyerDigital = Venta::whereDate('fecha', $ayer)
+        ->where('forma_codigo',135)
+        ->sum('importe_final');
+
+        $importeTotalSemanaDigital = Venta::whereBetween('fecha', [$lunes, $domingo])
+        ->where('forma_codigo',135)
+        ->sum('importe_final');
+
+        $importeTotalSemana = Venta::whereBetween('fecha', [$lunes, $domingo])
         ->sum('importe_final');
 
         $descuentoMes = Venta::whereMonth('fecha', Carbon::now()->month)
         ->whereYear('fecha', Carbon::now()->year)
         ->sum('descuento');
+
         $importeFinalMes = Venta::whereMonth('fecha', Carbon::now()->month)
         ->whereYear('fecha', Carbon::now()->year)
         ->sum('importe_final');
+
         $importeFinalMesDigital = Venta::whereMonth('fecha', Carbon::now()->month)
         ->whereYear('fecha', Carbon::now()->year)
         ->where('forma_codigo',135)
         ->sum('importe_final');
+
         $importeFinalMesFuncionario = Venta::whereMonth('fecha', Carbon::now()->month)
         ->whereYear('fecha', Carbon::now()->year)
         ->where('forma_codigo',129)
         ->whereNull('adicional')
         ->sum('importe_final');
+
         $importeFinalMesAso = Venta::whereMonth('fecha', Carbon::now()->month)
         ->whereYear('fecha', Carbon::now()->year)
         ->where('forma_codigo',129)
@@ -64,8 +76,10 @@ class VentasFarmaController extends Controller
                 'importeTotalDigital'=>$importeFinalMesDigital,
                 'importeTotalMesFuncionario'=>$importeFinalMesFuncionario,
                 'importeTotalMesAso'=>$importeFinalMesAso,
-                'descuentoTotalSemana'=>$descuentoTotalSemana,
-                'importeTotalAyer'=>$importeTotalAyer
+                'importeTotalSemana'=>$importeTotalSemana,
+                'importeTotalSemanaDigital'=>$importeTotalSemanaDigital,
+                'importeTotalAyer'=>$importeTotalAyer,
+                'importeTotalAyerDigital'=>$importeTotalAyerDigital
             ]
         ]);
     }
