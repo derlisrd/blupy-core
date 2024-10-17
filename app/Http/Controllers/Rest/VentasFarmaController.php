@@ -73,7 +73,7 @@ class VentasFarmaController extends Controller
             'results'=>[
                 'descuentoTotalMes'=>$descuentoMes,
                 'importeTotalMes'=>$importeFinalMes,
-                'importeTotalDigital'=>$importeFinalMesDigital,
+                'importeTotalMesDigital'=>$importeFinalMesDigital,
                 'importeTotalMesFuncionario'=>$importeFinalMesFuncionario,
                 'importeTotalMesAso'=>$importeFinalMesAso,
                 'importeTotalSemana'=>$importeTotalSemana,
