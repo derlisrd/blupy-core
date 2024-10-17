@@ -68,8 +68,7 @@ class CuentasController extends Controller
                         ]);
                     }
                 }
-                if(count($alianzas)>0)
-                {
+
                     array_push($results, [
                         'id'=>1,
                         'descripcion'=>'Blupy crédito 1 día',
@@ -86,7 +85,7 @@ class CuentasController extends Controller
                         'disponible' => $val['saldoDisponible'],
                         'alianzas' => $alianzas
                     ]);
-                }
+
             }
         }
 
