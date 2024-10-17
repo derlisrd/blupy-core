@@ -23,7 +23,5 @@ class ClienteController extends Controller
                 'descuentosTotales'=>$descuentoTotal
             ]
         ]);
-
-
     }
 }
