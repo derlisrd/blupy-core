@@ -12,12 +12,14 @@ class ClienteController extends Controller
         $user = $req->user();
 
         $cliente = Cliente::find($user->cliente->id);
+        $descuentos = $cliente->ventas();
         $descuentoTotal = $cliente->ventas()
         ->sum('descuento');
 
         return response()->json([
             'success'=>true,
             'results'=>[
+                'descuentos'=>$descuentos,
                 'descuentosTotales'=>$descuentoTotal
             ]
         ]);
