@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcesarVentasDelDiaFarmaJobs;
-use App\Models\Cliente;
 use App\Models\Venta;
-use App\Services\FarmaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class VentasFarmaController extends Controller
@@ -26,6 +23,39 @@ class VentasFarmaController extends Controller
         return response()->json(['success' => true, 'message' => "Las ventas se estan registrando en segundo plano."]);
     }
 
+    public function ventasTotales(){
+        $descuentoMes = Venta::whereMonth('fecha', Carbon::now()->month)
+        ->whereYear('fecha', Carbon::now()->year)
+        ->sum('descuento');
+        $importeFinalMes = Venta::whereMonth('fecha', Carbon::now()->month)
+        ->whereYear('fecha', Carbon::now()->year)
+        ->sum('importe_final');
+        $importeFinalMesDigital = Venta::whereMonth('fecha', Carbon::now()->month)
+        ->whereYear('fecha', Carbon::now()->year)
+        ->where('forma_codigo',135)
+        ->sum('importe_final');
+        $importeFinalMesFuncionario = Venta::whereMonth('fecha', Carbon::now()->month)
+        ->whereYear('fecha', Carbon::now()->year)
+        ->where('forma_codigo',129)
+        ->whereNull('adicional')
+        ->sum('importe_final');
+        $importeFinalMesAso = Venta::whereMonth('fecha', Carbon::now()->month)
+        ->whereYear('fecha', Carbon::now()->year)
+        ->where('forma_codigo',129)
+        ->whereNotNull('adicional')
+        ->sum('importe_final');
+
+        return response()->json([
+            'success'=>true,
+            'results'=>[
+                'descuentoTotalMes'=>$descuentoMes,
+                'importeTotalMes'=>$importeFinalMes,
+                'importeTotalDigital'=>$importeFinalMesDigital,
+                'importeTotalMesFuncionario'=>$importeFinalMesFuncionario,
+                'importeTotalMesAso'=>$importeFinalMesAso,
+            ]
+        ]);
+    }
 
 
 

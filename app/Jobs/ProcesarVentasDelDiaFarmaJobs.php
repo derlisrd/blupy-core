@@ -55,7 +55,7 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
                         'importe_final' => $v['ventTotNeto'],
                         'forma_pago' => $v['frpaAbreviatura'],
                         'forma_codigo' => $v['frpaCodigo'],
-                        'descripcion' => $v['ventCodigo'],
+                        'descripcion' => null,
                         'sucursal' => $v['estrDescripcion'],
                         'fecha' => $fechaFormateada,
                         'forma_venta' => $v['ventTipo']
