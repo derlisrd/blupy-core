@@ -65,7 +65,7 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
             }
         }
 
-        SupabaseService::LOG('ventas_farma','ingresadas fecha '.$this->fecha);
+        SupabaseService::LOG('schedule_plano','ingresadas fecha '.$this->fecha);
     }
 
 }
