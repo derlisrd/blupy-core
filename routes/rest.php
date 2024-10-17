@@ -54,6 +54,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::get('/actualizar-ventas-dia',[VentasFarmaController::class,'ventasDiaFarma'])->name('rest_actualizar_ventas_dia');
 
     Route::get('/lista-ventas',[VentasFarmaController::class,'listaVentas']);
+    Route::get('/porcentaje-uso',[VentasFarmaController::class,'porcentajeDeUsoBlupy']);
 });
 
 

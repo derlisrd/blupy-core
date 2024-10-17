@@ -6,13 +6,30 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ProcesarVentasDelDiaFarmaJobs;
 use App\Models\Cliente;
 use App\Models\Venta;
-use App\Services\FarmaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class VentasFarmaController extends Controller
-{
+class VentasFarmaController extends Controller{
+
+    public function porcentajeDeUsoBlupy(){
+        $inicioMes = Carbon::now()->startOfMonth();
+        $finMes = Carbon::now()->endOfMonth();
+
+        $usuariosActivos = Venta::whereBetween('fecha', [$inicioMes, $finMes])
+            ->distinct('cliente_id')
+            ->count('cliente_id');
+        $totalUsuarios = Cliente::count();
+        $porcentajeUso = ($usuariosActivos / $totalUsuarios) * 100;
+        return response()->json([
+            'success'=>true,
+            'message'=>[
+                'porcentajeUso'=> number_format($porcentajeUso, 2) . "%",
+                'totalUsuarios'=>$totalUsuarios
+            ]
+        ]);
+    }
+
     public function ventasDiaFarma(Request $req){
         $validator = Validator::make($req->only(['fecha']), [
             'fecha' => 'required|date_format:Y-m-d'
