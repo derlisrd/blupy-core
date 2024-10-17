@@ -24,6 +24,11 @@ class Venta extends Model
         'forma_venta',
         'documento'
     ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'forma_venta'
+    ];
     public function cliente(){
         return $this->belongsTo(Cliente::class, 'cliente_id');
     }
