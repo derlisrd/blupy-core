@@ -24,6 +24,17 @@ class VentasFarmaController extends Controller
     }
 
     public function ventasTotales(){
+        $lunes = Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $domingo = Carbon::now()->endOfWeek(Carbon::SUNDAY);
+
+        $ayer = Carbon::yesterday()->toDateString();
+
+        $importeTotalAyer = Venta::whereDate('fecha', $ayer)
+        ->sum('importe_final');
+
+        $descuentoTotalSemana = Venta::whereBetween('fecha', [$lunes, $domingo])
+        ->sum('importe_final');
+
         $descuentoMes = Venta::whereMonth('fecha', Carbon::now()->month)
         ->whereYear('fecha', Carbon::now()->year)
         ->sum('descuento');
@@ -53,6 +64,8 @@ class VentasFarmaController extends Controller
                 'importeTotalDigital'=>$importeFinalMesDigital,
                 'importeTotalMesFuncionario'=>$importeFinalMesFuncionario,
                 'importeTotalMesAso'=>$importeFinalMesAso,
+                'descuentoTotalSemana'=>$descuentoTotalSemana,
+                'importeTotalAyer'=>$importeTotalAyer
             ]
         ]);
     }
