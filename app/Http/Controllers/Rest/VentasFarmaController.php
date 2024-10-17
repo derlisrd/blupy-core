@@ -31,38 +31,46 @@ class VentasFarmaController extends Controller
 
         $importeTotalAyer = Venta::whereDate('fecha', $ayer)
         ->sum('importe_final');
-
-        $importeTotalAyerDigital = Venta::whereDate('fecha', $ayer)
-        ->where('forma_codigo',135)
-        ->sum('importe_final');
-
-        $importeTotalSemanaDigital = Venta::whereBetween('fecha', [$lunes, $domingo])
-        ->where('forma_codigo',135)
-        ->sum('importe_final');
-
         $importeTotalSemana = Venta::whereBetween('fecha', [$lunes, $domingo])
         ->sum('importe_final');
-
-        $descuentoMes = Venta::whereMonth('fecha', Carbon::now()->month)
-        ->whereYear('fecha', Carbon::now()->year)
-        ->sum('descuento');
-
         $importeFinalMes = Venta::whereMonth('fecha', Carbon::now()->month)
         ->whereYear('fecha', Carbon::now()->year)
         ->sum('importe_final');
 
-        $importeFinalMesDigital = Venta::whereMonth('fecha', Carbon::now()->month)
+        $importeTotalAyerDigital = Venta::whereDate('fecha', $ayer)
+        ->where('forma_codigo',135)
+        ->sum('importe_final');
+        $importeTotalSemanaDigital = Venta::whereBetween('fecha', [$lunes, $domingo])
+        ->where('forma_codigo',135)
+        ->sum('importe_final');
+        $importeTotalMesDigital = Venta::whereMonth('fecha', Carbon::now()->month)
         ->whereYear('fecha', Carbon::now()->year)
         ->where('forma_codigo',135)
         ->sum('importe_final');
 
-        $importeFinalMesFuncionario = Venta::whereMonth('fecha', Carbon::now()->month)
+        $importeTotalAyerFuncionario = Venta::whereDate('fecha', $ayer)
+        ->where('forma_codigo',129)
+        ->whereNull('adicional')
+        ->sum('importe_final');
+        $importeTotalSemanaFuncionario = Venta::whereBetween('fecha', [$lunes, $domingo])
+        ->where('forma_codigo',129)
+        ->whereNull('adicional')
+        ->sum('importe_final');
+        $importeTotalMesFuncionario = Venta::whereMonth('fecha', Carbon::now()->month)
         ->whereYear('fecha', Carbon::now()->year)
         ->where('forma_codigo',129)
         ->whereNull('adicional')
         ->sum('importe_final');
 
-        $importeFinalMesAso = Venta::whereMonth('fecha', Carbon::now()->month)
+        $importeTotalAyerAso = Venta::whereDate('fecha', $ayer)
+        ->where('forma_codigo',129)
+        ->whereNotNull('adicional')
+        ->sum('importe_final');
+        $importeTotalSemanaAso = Venta::whereBetween('fecha', [$lunes, $domingo])
+        ->where('forma_codigo',129)
+        ->whereNotNull('adicional')
+        ->sum('importe_final');
+        $importeTotalMesAso = Venta::whereMonth('fecha', Carbon::now()->month)
         ->whereYear('fecha', Carbon::now()->year)
         ->where('forma_codigo',129)
         ->whereNotNull('adicional')
@@ -71,15 +79,23 @@ class VentasFarmaController extends Controller
         return response()->json([
             'success'=>true,
             'results'=>[
-                'descuentoTotalMes'=>$descuentoMes,
-                'importeTotalMes'=>$importeFinalMes,
-                'importeTotalMesDigital'=>$importeFinalMesDigital,
-                'importeTotalMesFuncionario'=>$importeFinalMesFuncionario,
-                'importeTotalMesAso'=>$importeFinalMesAso,
-                'importeTotalSemana'=>$importeTotalSemana,
-                'importeTotalSemanaDigital'=>$importeTotalSemanaDigital,
+                'descuentoTotalMes'=>'',
                 'importeTotalAyer'=>$importeTotalAyer,
-                'importeTotalAyerDigital'=>$importeTotalAyerDigital
+                'importeTotalSemana'=>$importeTotalSemana,
+                'importeTotalMes'=>$importeFinalMes,
+
+                'importeTotalAyerDigital'=>$importeTotalAyerDigital,
+                'importeTotalSemanaDigital'=>$importeTotalSemanaDigital,
+                'importeTotalMesDigital'=>$importeTotalMesDigital,
+
+
+                'importeTotalAyerFuncionario'=>$importeTotalAyerFuncionario,
+                'importeTotalSemanaFuncionario'=>$importeTotalSemanaFuncionario,
+                'importeTotalMesFuncionario'=>$importeTotalMesFuncionario,
+
+                'importeTotalAyerAso'=>$importeTotalAyerAso,
+                'importeTotalSemanaAso'=>$importeTotalSemanaAso,
+                'importeTotalMesAso'=>$importeTotalMesAso,
             ]
         ]);
     }
