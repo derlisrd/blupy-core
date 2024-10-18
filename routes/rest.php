@@ -41,7 +41,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::get('/solicitud',[SolicitudesController::class,'buscar'])->name('rest_solicitud');
     Route::get('/totales',[SolicitudesController::class,'totales'])->name('rest_totales');
 
-    Route::get('/consultas/farma',[ConsultasController::class,'farma'])->name('rest_consulta_farma');
+    Route::get('/consultas/cliente',[ConsultasController::class,'clienteFarmaMiCredito'])->name('rest_consulta_cliente');
 
     Route::post('/ingresar-vendedor',[VendedoresController::class,'ingresarVendedor'])->name('rest_ingresar_vendedor');
 
