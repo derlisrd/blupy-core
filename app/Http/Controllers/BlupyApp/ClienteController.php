@@ -12,7 +12,7 @@ class ClienteController extends Controller
         $user = $req->user();
 
         $cliente = Cliente::find($user->cliente->id);
-        $descuentos = $cliente->ventas->pluck('descuentos')->toArray();
+        $descuentos = $cliente->ventas();
         $descuentoTotal = $cliente->ventas()
         ->sum('descuento');
 
@@ -20,7 +20,7 @@ class ClienteController extends Controller
             'success'=>true,
             'results'=>[
                 'descuentos'=>$descuentos,
-                'descuentosTotales'=>$descuentoTotal
+                'descuentosTotales'=>(int)$descuentoTotal
             ]
         ]);
     }
