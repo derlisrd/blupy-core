@@ -40,7 +40,9 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
             foreach ($ventas as $v) {
                 $venta = Venta::where('codigo', $v['ventCodigo'])->first();
                 if (!$venta) {
-                    $fechaFormateada = Carbon::parse($v['ventFecha'])->format('Y-m-d H:i:s');
+                    $date = Carbon::parse($v['ventFecha'],'UTC');
+                    $date->setTimezone('America/Asuncion');
+                    $fechaFormateada = $date->format('Y-m-d H:i:s');
                     $cliente = Cliente::where('cedula', $v['cedula'])->first();
                     $cliente_id = $cliente ? $cliente->id : null;
                     $ventaCreada = Venta::create([
