@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
+use App\Models\Venta;
 use Illuminate\Http\Request;
 
 class ClienteController extends Controller
@@ -11,16 +12,17 @@ class ClienteController extends Controller
     public function misDescuentos(Request $req){
         $user = $req->user();
 
-        $cliente = Cliente::find($user->cliente->id);
-        $descuentos = $cliente->ventas();
-        $descuentoTotal = $cliente->ventas()
-        ->sum('descuento');
+
+        $descuentos = Venta::where('cliente_id',$user->cliente->id)
+        ->select('id','factura_numero','importe','importe_final','descuento','sucursal','fecha');
+       /*  $descuentoTotal = $cliente->ventas()
+        ->sum('descuento'); */
 
         return response()->json([
             'success'=>true,
             'results'=>[
-                'descuentos'=>$descuentos,
-                'descuentosTotales'=>(int)$descuentoTotal
+                'descuentos'=>$descuentos->get(),
+                'descuentosTotales'=>(int) $descuentos->sum('descuento')
             ]
         ]);
     }
