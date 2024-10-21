@@ -25,16 +25,11 @@ class VendedorController extends Controller
     public function vincular(Request $req){
         $user = $req->user();
 
-        if($user->vendedor_id !== null){
-            return response()->json([
-                'success'=>true,
-                'message'=>'Vendedor vinculado'
-            ]);
-        }
+
         return response()->json([
             'success'=>false,
             'message'=>'Vendedor ya vinculado',
-            'vendedor'=>$user
+            'vendedor'=>$user->vendedor_id
         ],400);
     }
 }
