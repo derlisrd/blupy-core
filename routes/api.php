@@ -15,6 +15,7 @@ use App\Http\Controllers\BlupyApp\SolicitudesController;
 use App\Http\Controllers\BlupyApp\UserController as UserPrivate;
 use App\Http\Controllers\Public\UserController as UserPublic;
 use App\Http\Controllers\BlupyApp\ValidacionesController;
+use App\Http\Controllers\BlupyApp\VendedorController;
 use App\Http\Controllers\Public\VersionController;
 use Illuminate\Support\Facades\Route;
 
@@ -85,6 +86,8 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/sucursales-cercanas',[FarmaController::class,'sucursalesCercanas'])->name('api_sucursales_cercanas');
 
     Route::get('/mis-descuentos',[ClienteController::class,'misDescuentos'])->name('api_mis_descuentos');
+
+    Route::post('/vincular-vendedor',[VendedorController::class,'vincular'])->name('api_vincular_vendedor');
 });
 
 
