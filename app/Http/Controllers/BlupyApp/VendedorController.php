@@ -43,8 +43,8 @@ class VendedorController extends Controller
         $user->vendedor_id = $req->id;
         $user->save();
         return response()->json([
-            'success'=>false,
-            'message'=>'Vendedor ya vinculado'
-        ],400);
+            'success'=>true,
+            'message'=>'Vendedor vinculado'
+        ]);
     }
 }
