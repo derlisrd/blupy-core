@@ -14,6 +14,7 @@ class ClienteController extends Controller
 
 
         $descuentos = Venta::where('cliente_id',$user->cliente->id)
+        ->orderByDesc('id')
         ->select('id','factura_numero','importe','importe_final','descuento','sucursal','fecha');
        /*  $descuentoTotal = $cliente->ventas()
         ->sum('descuento'); */
