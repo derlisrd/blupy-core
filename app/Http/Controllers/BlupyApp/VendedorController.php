@@ -33,7 +33,8 @@ class VendedorController extends Controller
         }
         return response()->json([
             'success'=>false,
-            'message'=>'Vendedor ya vinculado'
+            'message'=>'Vendedor ya vinculado',
+            'vendedor'=>$user
         ],400);
     }
 }
