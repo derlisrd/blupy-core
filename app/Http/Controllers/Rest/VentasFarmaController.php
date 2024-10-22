@@ -18,9 +18,9 @@ class VentasFarmaController extends Controller{
 
         $totalUsuarios = Cliente::count();
 
-        $totalFuncionarios = Cliente::count()->where('funcionario',1);
+        $totalFuncionarios = Cliente::where('funcionario',1)->count();
 
-        $totalAso = Cliente::count()->where('asofarma',1);
+        $totalAso = Cliente::where('asofarma',1)->count();
 
 
         $totalDigitalVigentes = Cliente::join('solicitud_creditos as s','s.cliente_id','=','clientes.id')->where('s.tipo',1)->where('estado_id',7)->count();
