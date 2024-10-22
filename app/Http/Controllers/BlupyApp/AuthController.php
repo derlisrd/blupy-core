@@ -177,25 +177,27 @@ class AuthController extends Controller
                 $credentials = ['email'=>$user->email, 'password'=>$password];
                 $token = JWTAuth::attempt($credentials);
                 if($token){
-                    $dispositoDeConfianza = $user->devices
-                    ->where('desktop',$req->desktop)
-                    ->where('web',$req->web)
-                    ->where('device',$req->device)
-                    ->where('notitoken',$req->notitoken)
-                    ->first();
-                    if(!$dispositoDeConfianza){
-                        $pistaEmail =  $user->email;//$this->ocultarParcialmenteEmail($user->email);
-                        $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id,$req);
-                        return response()->json([
-                            'success'=>true,
-                            'results'=>null,
-                            'id'=> $idValidacion,
-                            'message'=>'Nuevo dispositivo. Ingresa el código que enviamos a tu correo '.$pistaEmail.' para verificar, puede tardar unos minutos. Revisa tus carpetas de spam y correos no deseados, por si acaso.'
-                        ]);
+                    if($user->rol == 0){
+                        $dispositoDeConfianza = $user->devices
+                        ->where('desktop',$req->desktop)
+                        ->where('web',$req->web)
+                        ->where('device',$req->device)
+                        ->where('notitoken',$req->notitoken)
+                        ->first();
+                        if(!$dispositoDeConfianza){
+                            $pistaEmail =  $user->email;//$this->ocultarParcialmenteEmail($user->email);
+                            $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id,$req);
+                            return response()->json([
+                                'success'=>true,
+                                'results'=>null,
+                                'id'=> $idValidacion,
+                                'message'=>'Nuevo dispositivo. Ingresa el código que enviamos a tu correo '.$pistaEmail.' para verificar, puede tardar unos minutos. Revisa tus carpetas de spam y correos no deseados, por si acaso.'
+                            ]);
+                        }
+                        $dispositoDeConfianza->update(['updated_at'=>date('Y-m-d H:i:s')]);
                     }
 
 
-                    $dispositoDeConfianza->update(['updated_at'=>date('Y-m-d H:i:s')]);
                     $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s') ]);
 
                     $tarjetasConsultas = new CuentasPrivate();
