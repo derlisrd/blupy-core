@@ -27,30 +27,11 @@ class QRController extends Controller
             $cliente = $user->cliente;
 
 
-            $resultTarjeta = "0";
-            /*
-             MOMENTANEO
-             */
-             $infinitaService = new InfinitaService();
-             $resInfinita = (object) $infinitaService->ListarTarjetasPorDoc($cliente->cedula);
-             $infinita = (object)$resInfinita->data;
-
-             if(property_exists( $infinita,'Tarjetas')){
-                 foreach ($infinita->Tarjetas as $val) {
-
-                      $resultTarjeta = $val['MaeCtaId'];
-
-                 }
-             }
-             /*
-             MOMENTANEO
-             */
-
             $parametrosPorArray = [
                 'id' => $req->id,
                 'documento' => $cliente->cedula,
 
-                'numeroCuenta' => $resultTarjeta, //$req->numeroCuenta,
+                'numeroCuenta' => $req->numeroCuenta,
 
                 'numeroTarjeta' =>$req->numeroTarjeta,
                 'telefono' => $req->telefono,
