@@ -16,16 +16,47 @@ class VentasFarmaController extends Controller{
         $inicioMes = Carbon::now()->startOfMonth();
         $finMes = Carbon::now()->endOfMonth();
 
+        $totalUsuarios = Cliente::count();
+
+        $totalFuncionarios = Cliente::count()->where('funcionario',1);
+
+        $totalAso = Cliente::count()->where('asofarma',1);
+
+
+        $totalDigitalVigentes = Cliente::join('solicitud_creditos as s','s.cliente_id','=','clientes.id')->where('s.tipo',1)->where('estado_id',7)->count();
+
+
         $usuariosActivos = Venta::whereBetween('fecha', [$inicioMes, $finMes])
             ->distinct('cliente_id')
             ->count('cliente_id');
-        $totalUsuarios = Cliente::count();
-        $porcentajeUso = ($usuariosActivos / $totalUsuarios) * 100;
+
+        $usuariosActivosFuncionario = Venta::whereBetween('fecha', [$inicioMes, $finMes])
+            ->where('funcionario',1)
+            ->distinct('cliente_id')
+            ->count('cliente_id');
+
+        $usuariosActivosAso = Venta::whereBetween('fecha', [$inicioMes, $finMes])
+            ->where('asofarma',1)
+            ->distinct('cliente_id')
+            ->count('cliente_id');
+
+
+
+        $porcentajeTotal = ($usuariosActivos / $totalUsuarios) * 100;
+
+        $porcentajeUsoAso = ($usuariosActivosAso / $totalAso) * 100;
+
+        $porcentajeUsoFuncionarios = ($usuariosActivosFuncionario / $totalFuncionarios) * 100 ;
+
+
         return response()->json([
             'success'=>true,
             'results'=>[
-                'porcentajeUso'=> number_format($porcentajeUso, 2) . "%",
-                'totalUsuarios'=>$totalUsuarios
+                'porcentajeUsoTotal'=> number_format($porcentajeTotal, 2) . "%",
+                'porcentajeUsoFuncionario'=> number_format($porcentajeUsoFuncionarios, 2) . "%",
+                'porcentajeUsoAso'=> number_format($porcentajeUsoAso, 2) . "%",
+                'totalUsuarios'=>$totalUsuarios,
+                'digitalVigentes'=>$totalDigitalVigentes
             ]
         ]);
     }
