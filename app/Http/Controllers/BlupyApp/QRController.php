@@ -5,6 +5,7 @@ namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
 use App\Models\Notificacion;
 use App\Services\BlupyQrService;
+use App\Services\InfinitaService;
 use App\Services\PushExpoService;
 use App\Services\SupabaseService;
 use Illuminate\Http\Request;
@@ -24,10 +25,33 @@ class QRController extends Controller
         try {
             $user = $req->user();
             $cliente = $user->cliente;
+
+
+            $resultTarjeta = "0";
+            /*
+             MOMENTANEO
+             */
+             $infinitaService = new InfinitaService();
+             $resInfinita = (object) $infinitaService->ListarTarjetasPorDoc($cliente->cedula);
+             $infinita = (object)$resInfinita->data;
+
+             if(property_exists( $infinita,'Tarjetas')){
+                 foreach ($infinita->Tarjetas as $val) {
+
+                      $resultTarjeta = $val['MaeCtaId'];
+
+                 }
+             }
+             /*
+             MOMENTANEO
+             */
+
             $parametrosPorArray = [
                 'id' => $req->id,
                 'documento' => $cliente->cedula,
-                'numeroCuenta' => $req->numeroCuenta,
+
+                'numeroCuenta' => $resultTarjeta, //$req->numeroCuenta,
+
                 'numeroTarjeta' =>$req->numeroTarjeta,
                 'telefono' => $req->telefono,
                 'ip' => $req->ip(),
