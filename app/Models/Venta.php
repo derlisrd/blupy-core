@@ -30,6 +30,6 @@ class Venta extends Model
         'forma_venta'
     ];
     public function cliente(){
-        return $this->belongsTo(Cliente::class, 'cliente_id');
+        return $this->belongsTo(Cliente::class);
     }
 }

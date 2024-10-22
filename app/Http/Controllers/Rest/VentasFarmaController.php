@@ -16,47 +16,46 @@ class VentasFarmaController extends Controller{
         $inicioMes = Carbon::now()->startOfMonth();
         $finMes = Carbon::now()->endOfMonth();
 
-        $totalUsuarios = Cliente::count();
-
+        // Total de clientes
+        $totalClientes = Cliente::count();
         $totalFuncionarios = Cliente::where('funcionario',1)->count();
-
         $totalAso = Cliente::where('asofarma',1)->count();
+        $totalDigital = Cliente::join('solicitud_creditos as s','s.cliente_id','=','clientes.id')->where('s.tipo',1)->where('s.estado_id',7)->count();
 
+        //Todos los clientes
+        $clientesConVentas = Cliente::whereHas('ventas', function ($query) use ($inicioMes, $finMes) {
+            $query->whereBetween('ventas.fecha', [$inicioMes, $finMes]);
+        })->count();
 
-        $totalDigitalVigentes = Cliente::join('solicitud_creditos as s','s.cliente_id','=','clientes.id')->where('s.tipo',1)->where('estado_id',7)->count();
+        $FuncionariosConVentas = Cliente::where('funcionario', 1)
+        ->whereHas('ventas', function ($query) use ($inicioMes, $finMes) {
+            $query->whereBetween('ventas.fecha', [$inicioMes, $finMes])
+            ->where('ventas.forma_codigo', 129);
+        })->count();
 
+        $AsoConVentas = Cliente::where('asofarma', 1)
+        ->whereHas('ventas', function ($query) use ($inicioMes, $finMes) {
+            $query->whereBetween('ventas.fecha', [$inicioMes, $finMes]);
+        })->count();
 
-        $usuariosActivos = Venta::whereBetween('fecha', [$inicioMes, $finMes])
-            ->distinct('cliente_id')
-            ->count('cliente_id');
+        $DigitalConVentas = Cliente::whereHas('ventas', function ($query) use ($inicioMes, $finMes) {
+            $query->whereBetween('ventas.fecha', [$inicioMes, $finMes])
+            ->where('ventas.forma_codigo', 135);
+        })->count();
 
-        $usuariosActivosFuncionario = Venta::whereBetween('fecha', [$inicioMes, $finMes])
-            ->where('funcionario',1)
-            ->distinct('cliente_id')
-            ->count('cliente_id');
-
-        $usuariosActivosAso = Venta::whereBetween('fecha', [$inicioMes, $finMes])
-            ->where('asofarma',1)
-            ->distinct('cliente_id')
-            ->count('cliente_id');
-
-
-
-        $porcentajeTotal = ($usuariosActivos / $totalUsuarios) * 100;
-
-        $porcentajeUsoAso = ($usuariosActivosAso / $totalAso) * 100;
-
-        $porcentajeUsoFuncionarios = ($usuariosActivosFuncionario / $totalFuncionarios) * 100 ;
-
+        // Tasa de uso (en porcentaje)
+        $tasaDeUso =  ($clientesConVentas / $totalClientes) * 100;
+        $tasaDeUsoFuncionarios = ($FuncionariosConVentas / $totalFuncionarios) * 100 ;
+        $tasaDeUsoAso = ($AsoConVentas / $totalAso) * 100 ;
+        $tasaDeUsoDigital = ($DigitalConVentas / $totalDigital) * 100 ;
 
         return response()->json([
             'success'=>true,
             'results'=>[
-                'porcentajeUsoTotal'=> number_format($porcentajeTotal, 2) . "%",
-                'porcentajeUsoFuncionario'=> number_format($porcentajeUsoFuncionarios, 2) . "%",
-                'porcentajeUsoAso'=> number_format($porcentajeUsoAso, 2) . "%",
-                'totalUsuarios'=>$totalUsuarios,
-                'digitalVigentes'=>$totalDigitalVigentes
+                'tasaUsoTotal' => number_format($tasaDeUso,2) . '%',
+                'tasaUsoFuncionario' => number_format($tasaDeUsoFuncionarios,2) . '%',
+                'tasaUsoAsoc' => number_format($tasaDeUsoAso,2) . '%',
+                'tasaUsoDigital' => number_format($tasaDeUsoDigital,2) . '%'
             ]
         ]);
     }
