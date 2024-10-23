@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ProcesarVentasDelDiaFarmaJobs;
 use App\Models\Cliente;
 use App\Models\Venta;
+use App\Services\FarmaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -82,6 +83,23 @@ class VentasFarmaController extends Controller{
             'success'=>true,
             'results'=>$ventas
         ]);
+    }
+
+    public function ventasDelDia(){
+        $fechaHoy = Carbon::now()->format('Y-m-d');
+
+        $farmaService = new FarmaService();
+        $res = (object)$farmaService->ventasRendidas($fechaHoy);
+        $data = (object) $res->data;
+        $results = [];
+        if (property_exists($data, 'result')) {
+           $results = $data->result;
+        }
+        return response()->json([
+            'success'=>true,
+            'results'=>$results
+        ]);
+
     }
 
 
