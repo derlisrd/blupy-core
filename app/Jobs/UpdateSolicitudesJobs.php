@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class UpdateSolicitudesJobs implements ShouldQueue
 {
@@ -27,6 +28,7 @@ class UpdateSolicitudesJobs implements ShouldQueue
      */
     public function handle(): void
     {
+
         SupabaseService::LOG('JOB','Job de solicitudes iniciadada');
         $soli2 = SolicitudCredito::where('estado_id',5)->get();
         $webserviceInfinita = new InfinitaService();
