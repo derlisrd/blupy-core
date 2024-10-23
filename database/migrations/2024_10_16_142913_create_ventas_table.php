@@ -23,7 +23,7 @@ return new class extends Migration
             $table->bigInteger('importe_final');
             $table->bigInteger('forma_codigo');
             $table->string('forma_pago');
-            $table->text('descripcion');
+            $table->text('descripcion')->nullable();
             $table->string('sucursal');
             $table->string('forma_venta');
             $table->dateTime('fecha');
