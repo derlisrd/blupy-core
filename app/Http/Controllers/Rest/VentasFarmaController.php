@@ -61,7 +61,7 @@ class VentasFarmaController extends Controller{
         ]);
     }
 
-    public function ventasDiaFarma(Request $req){
+    public function ventasDiaFarmaJob(Request $req){
         $validator = Validator::make($req->only(['fecha']), [
             'fecha' => 'required|date_format:Y-m-d'
         ]);
@@ -73,7 +73,7 @@ class VentasFarmaController extends Controller{
         return response()->json(['success' => true, 'message' => "Las ventas se estan registrando en segundo plano."]);
     }
 
-    public function listaVentas(Request $req){
+    public function ventasDiaFarma(Request $req){
         $primerDiaMes = Carbon::now()->startOfMonth()->format('Y-m-d');
         $fechaHoy = Carbon::now()->format('Y-m-d');
 
