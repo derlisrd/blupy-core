@@ -24,7 +24,8 @@ class VendedoresController extends Controller
         if ($validator->fails())
             return response()->json([
                 'success'=>false,
-                'message'=> $validator->errors()
+                'message'=> $validator->errors(),
+                'results'=>null
             ], 400);
 
 
@@ -40,7 +41,7 @@ class VendedoresController extends Controller
         return response()->json([
             'success'=>false,
             'results'=> null,
-            'message'=>'No existe registro. '
+            'message'=>'No existe registro.'
         ],404);
     }
 
