@@ -37,7 +37,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::post('/enviar-notificacion-selectiva',[NotificacionesController::class,'enviarNotificacionSelectiva'])->name('rest_enviar_notificacion_selectiva');
 
     Route::get('/solicitudes',[SolicitudesController::class,'index'])->name('rest_solicitudes');
-    Route::post('/solicitudes-filtros',[SolicitudesController::class,'filtros'])->name('rest_solicitudes_filtros');
+    Route::get('/solicitudes-filtros',[SolicitudesController::class,'filtros'])->name('rest_solicitudes_filtros');
     Route::get('/solicitud',[SolicitudesController::class,'buscar'])->name('rest_solicitud');
     Route::get('/totales',[SolicitudesController::class,'totales'])->name('rest_totales');
 

@@ -57,7 +57,7 @@ class SolicitudesController extends Controller
         ActualizarSolicitudesJobs::dispatch($pendientes)->onConnection('database');
         return response()->json([
             'success'=>true,
-            'message'=>'Actualizando solicitudes'
+            'message'=>'Actualizando solicitudes en segundo plano.'
         ]);
       } catch (\Throwable $th) {
         throw $th;
@@ -107,6 +107,7 @@ class SolicitudesController extends Controller
             $data = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
                 ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
                 ->join('users as u','u.cliente_id','=','c.id')
+                ->where('solicitud_creditos.tipo','>',0)
                 ->whereBetween('solicitud_creditos.created_at',[$desde,$hasta])
                 ->select($this->camposSolicitud);
 
@@ -129,7 +130,7 @@ class SolicitudesController extends Controller
 
         $buscar = $request->buscar;
 
-        $limite = 100;
+        $limite = 25;
         $page =  0;
         $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
         ->where('u.name', 'like', '%' . $buscar. '%')
@@ -167,52 +168,27 @@ class SolicitudesController extends Controller
         $asofarma = ($request->asofarma) ?? '0';
         $funcionario = ($request->funcionario) ?? '0';
 
-
-        if($request->tipo == "0"){
-            $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
-            ->where('solicitud_creditos.tipo',0)
-            ->where('c.asofarma',$asofarma)
-            ->where('c.funcionario',$funcionario)
-            ->where('solicitud_creditos.estado_id',  7 )
-            ->whereBetween('solicitud_creditos.created_at', [$desde, $hasta])
+        if(!$estado_id){
+            $results = SolicitudCredito::where('solicitud_creditos.tipo','>',0)
+            ->whereBetween('solicitud_creditos.created_at',[$desde,$hasta])
             ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
             ->join('users as u','u.cliente_id','=','c.id')
-            ->select($this->camposSolicitud)
-            ->get();
+            ->select($this->camposSolicitud);
         }
-        if($request->tipo == "1")
-        {
-            $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
-            ->where('solicitud_creditos.tipo',1)
-            ->where('solicitud_creditos.estado_id','like','%'.  $estado_id)
-            ->where('c.funcionario','like','%'.$funcionario)
-            ->where('c.asofarma','like','%'.$asofarma)
-            ->whereBetween('solicitud_creditos.created_at', [$desde. ' 00:00:00', $hasta.' 23:59:59'])
+        if($estado_id){
+            $results = SolicitudCredito::where('solicitud_creditos.tipo','>',0)
+            ->where('estado_id',$estado_id)
+            ->whereBetween('solicitud_creditos.created_at',[$desde,$hasta])
             ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
             ->join('users as u','u.cliente_id','=','c.id')
-            ->select($this->camposSolicitud)
-            ->get();
+            ->select($this->camposSolicitud);
         }
-
-        if(!isset($request->tipo))
-        {
-            $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
-            ->where('solicitud_creditos.estado_id','like','%'.  $estado_id)
-            ->where('clientes.funcionario','like','%'.$funcionario)
-            ->where('clientes.asofarma','like','%'.$asofarma)
-            ->whereBetween('solicitud_creditos.created_at', [$desde. ' 00:00:00', $hasta.' 23:59:59'])
-            ->join('clientes','clientes.id', '=', 'solicitud_creditos.cliente_id')
-            ->join('users','users.cliente_id','=','clientes.id')
-            ->select($this->camposSolicitud)
-            ->get();
-        }
-
 
         return response()->json([
             'tipo'=>$request->tipo,
             'success'=>true,
-            'results'=>$soli,
-            'total'=>$soli->count()
+            'total'=>$results->count(),
+            'results'=>$results->get()
         ]);
     }
 
