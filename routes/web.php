@@ -7,3 +7,6 @@ Route::get('/terminos', function () {
 Route::get('/terminos2', function () {
     return view('terminos');
 });
+Route::get('/cumple', function () {
+    return view('email.cumpleanios');
+});
