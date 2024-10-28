@@ -155,22 +155,22 @@ class VentasFarmaController extends Controller{
             'success'=>true,
             'results'=>[
                 'descuentoTotalMes'=>'',
-                'importeTotalAyer'=>$importeTotalAyer,
-                'importeTotalSemana'=>$importeTotalSemana,
-                'importeTotalMes'=>$importeFinalMes,
+                'importeTotalAyer'=>(int)$importeTotalAyer,
+                'importeTotalSemana'=>(int)$importeTotalSemana,
+                'importeTotalMes'=>(int)$importeFinalMes,
 
-                'importeTotalAyerDigital'=>$importeTotalAyerDigital,
-                'importeTotalSemanaDigital'=>$importeTotalSemanaDigital,
-                'importeTotalMesDigital'=>$importeTotalMesDigital,
+                'importeTotalAyerDigital'=>(int)$importeTotalAyerDigital,
+                'importeTotalSemanaDigital'=>(int)$importeTotalSemanaDigital,
+                'importeTotalMesDigital'=>(int)$importeTotalMesDigital,
 
 
-                'importeTotalAyerFuncionario'=>$importeTotalAyerFuncionario,
-                'importeTotalSemanaFuncionario'=>$importeTotalSemanaFuncionario,
-                'importeTotalMesFuncionario'=>$importeTotalMesFuncionario,
+                'importeTotalAyerFuncionario'=>(int)$importeTotalAyerFuncionario,
+                'importeTotalSemanaFuncionario'=>(int)$importeTotalSemanaFuncionario,
+                'importeTotalMesFuncionario'=>(int)$importeTotalMesFuncionario,
 
-                'importeTotalAyerAso'=>$importeTotalAyerAso,
-                'importeTotalSemanaAso'=>$importeTotalSemanaAso,
-                'importeTotalMesAso'=>$importeTotalMesAso,
+                'importeTotalAyerAso'=>(int)$importeTotalAyerAso,
+                'importeTotalSemanaAso'=>(int)$importeTotalSemanaAso,
+                'importeTotalMesAso'=>(int)$importeTotalMesAso,
             ]
         ]);
     }
