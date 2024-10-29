@@ -50,11 +50,10 @@ class CumpleaniosJobs implements ShouldQueue
             $devices = Device::where('user_id',$noti->user_id)->pluck('notitoken')->toArray();
             $emailService->enviarEmail($cliente->email,'Feliz cumpleaños','email.cumpleanios',['nombre'=>$cliente->nombre]);
             if(count($devices)>0){
-                foreach ($devices as $chunk) {
                     $response = Http::withHeaders([
                         'Content-Type' => 'application/json',
                     ])->post('https://exp.host/--/api/v2/push/send', [
-                        'to' => $chunk,
+                        'to' => $devices,
                         'title' => $noti->title,
                         'body' => $noti->body,
                         'data' => [
@@ -63,7 +62,7 @@ class CumpleaniosJobs implements ShouldQueue
                             'body'=>$noti->body
                         ]
                     ]);
-                }
+
             }
 
         }
