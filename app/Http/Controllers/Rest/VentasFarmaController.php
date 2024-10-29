@@ -61,6 +61,24 @@ class VentasFarmaController extends Controller{
         ]);
     }
 
+    public function tickets(){
+        $inicioMes = Carbon::now()->startOfMonth();
+        $finMes = Carbon::now()->endOfMonth();
+
+        $digital = Venta::whereBetween('fecha',[$inicioMes,$finMes])->where('forma_codigo',135)->count();
+        $farma = Venta::whereBetween('fecha',[$inicioMes,$finMes])->where('forma_codigo',129)->whereNull('adicional')->count();
+        $aso = Venta::whereBetween('fecha',[$inicioMes,$finMes])->where('forma_codigo',129)->whereNotNull('adicional')->count();
+
+        return response()->json([
+            'success'=>true,
+            'results'=>[
+                'digital' => $digital,
+                'farma' => $farma,
+                'aso' => $aso
+            ]
+        ]);
+    }
+
     public function ventasDiaFarmaJob(Request $req){
         $validator = Validator::make($req->only(['fecha']), [
             'fecha' => 'required|date_format:Y-m-d'
