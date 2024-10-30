@@ -214,7 +214,7 @@ class AuthController extends Controller
             }
 
             return response()->json([
-                'success'=>false, 'message'=>'Error de credenciales'
+                'success'=>false, 'message'=>'Error. Cédula o contraseña incorrecta.'
             ],401);
 
         } catch (\Throwable $th) {
