@@ -50,6 +50,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::get('/ventas-totales',[VentasFarmaController::class,'ventasTotales'])->name('rest_ventas_totales');
     Route::get('/actualizar-ventas-dia',[VentasFarmaController::class,'ventasDiaFarmaJob'])->name('rest_actualizar_ventas_dia');
     Route::get('/ventas-dia-farma',[VentasFarmaController::class,'ventasDiaFarma'])->name('rest_ventas_dia_farma');
+    Route::get('/ventas-hoy-farma',[VentasFarmaController::class,'actualizarListaVentasDeHoy'])->name('rest_ventas_hoy_farma');
     Route::get('/porcentaje-uso',[VentasFarmaController::class,'porcentajeDeUsoBlupy'])->name('rest_porcentaje_uso');
 
     Route::get('/ventas-tickets',[VentasFarmaController::class,'tickets'])->name('rest_ventas_tickets');

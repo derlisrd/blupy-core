@@ -110,7 +110,7 @@ class VentasFarmaController extends Controller{
     }
 
 
-    public function actualizarListaVentasDeHoy(Request $req){
+    public function actualizarListaVentasDeHoy(){
         $fechaHoy = Carbon::now()->format('Y-m-d');
         ProcesarVentasDelDiaFarmaJobs::dispatch($fechaHoy);
         return response()->json(['success' => true, 'message' => "Las ventas se estan registrando en segundo plano."]);
