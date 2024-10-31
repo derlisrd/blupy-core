@@ -6,10 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ConsultasController extends Controller
 {
     public function clienteFarmaMiCredito(Request $req){
+        $validator = Validator::make($req->only(['cedula']),['cedula'=>'required']);
+
+        if($validator->fails())
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         $infinita = new InfinitaService();
         $farma = new FarmaService();
