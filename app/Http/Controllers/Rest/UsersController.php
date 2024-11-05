@@ -31,6 +31,7 @@ class UsersController extends Controller
             ],404);
         }
         $user->password = Hash::make($request->password);
+        $user->changepass = 1;
         $user->save();
         return response()->json([
             'success'=>true,

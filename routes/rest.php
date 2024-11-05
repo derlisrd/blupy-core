@@ -25,7 +25,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::get('/clientes',[ClientesController::class,'index'])->name('rest_clientes');
     Route::post('/clientes-filtros',[ClientesController::class,'filtros'])->name('rest_clientes_filtros');
     Route::get('/cliente',[ClientesController::class,'buscar'])->name('rest_cliente');
-    Route::get('/cliente/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])->name('rest_cliente_restablecer_contrasena');
+    //Route::get('/cliente/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])->name('rest_cliente_restablecer_contrasena');
     Route::get('/cliente/ficha/{id}',[ClientesController::class,'ficha'])->name('rest_cliente_ficha');
 
 
