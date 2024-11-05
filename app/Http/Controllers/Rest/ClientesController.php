@@ -132,7 +132,7 @@ class ClientesController extends Controller
             return response()->json(['success'=>false,'message'=>'Usuario no existe'],404);
 
         $user->password = Hash::make($request->password);
-        $user->changepass = 1;
+        $user->changepass = true;
         $user->save();
 
         return response()->json([
