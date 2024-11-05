@@ -115,7 +115,8 @@ class CuentasController extends Controller
                 $resInfinita = (object) $this->infinitaService->movimientosPorFecha($req->cuenta,$periodo);
                 $infinita = (object) $resInfinita->data;
                 if(property_exists($infinita,'Tarj')){
-                    foreach($infinita->Tarj['Mov'] as $val){
+                    $movimientos = isset($infinita->Tarj['Mov']) ? $infinita->Tarj['Mov'] : [];
+                    foreach($movimientos as $val){
                         $date = Carbon::parse($val['TcMovFec']);
                         //$horario = Carbon::parse($val['TcMovCFh'],'UTC');
                         //$horario->setTimezone('America/Asuncion');
