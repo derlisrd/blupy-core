@@ -135,6 +135,7 @@ trait RegisterTraits
             'tokenType'=>'Bearer',
             'token'=>'Bearer '.$token,
             'tokenRaw'=>$token,
+            'changepass'=>$cliente->user->changepass,
             'tarjetas'=>$tarjetas ?? []
         ];
     }

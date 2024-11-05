@@ -22,7 +22,8 @@ class User extends Authenticatable implements JWTSubject
         'active',
         'rol',
         'ultimo_ingreso',
-        'intentos'
+        'intentos',
+        'changepass'
     ];
 
     public function getJWTIdentifier()
