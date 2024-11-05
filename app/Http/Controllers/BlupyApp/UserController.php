@@ -43,7 +43,7 @@ class UserController extends Controller
             return response()->json(['success'=>false,'message'=>'Contraseña incorrecta.'],401);
 
 
-        $user->update(['password' => Hash::make($req->password)]);
+        $user->update(['password' => Hash::make($req->password), 'changepass'=>0]);
 
         return response()->json(['success' => true,'message' => 'Contraseña actualizada!']);
     }
