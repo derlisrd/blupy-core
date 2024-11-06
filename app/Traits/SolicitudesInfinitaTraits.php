@@ -144,14 +144,21 @@ trait SolicitudesInfinitaTraits
                     'message'=> $message
                 ];
             }
-
+            if(property_exists($res,'SolId')){
+                return (object)[
+                    'success'=>true,
+                    'results'=> (object) [
+                    'solicitudId'=>$res->SolId,
+                    'solicitudEstado'=>trim($res->SolEstado)
+                    ]
+                ];
+            }
             return (object)[
-                'success'=>true,
-                'results'=> (object) [
-                'solicitudId'=>$res->SolId,
-                'solicitudEstado'=>$res->SolEstado
-                ]
+                'success'=>false,
+                'results'=> null,
+                'message'=> $message
             ];
+
         }
         SupabaseService::LOG('adicional_error',$res);
         return (object)['success'=>false, 'message'=>'Error de servidor','results'=>null];
