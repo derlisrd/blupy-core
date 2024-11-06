@@ -54,15 +54,14 @@ class VendedoresController extends Controller
 
             $validator = Validator::make($r->all(), [
                 'cedula' => 'required|integer|unique:vendedores,cedula',
-                'punto' => 'required|numeric|max:4',
+                'punto' => 'required|integer',
             ], [
                 'cedula.required' => 'La cédula es obligatoria.',
                 'cedula.integer' => 'La cédula debe ser un número entero.',
                 'cedula.unique' => 'Vendedor ya ingresado.',
 
                 'punto.required' => 'El punto es obligatorio.',
-                'punto.numeric' => 'El punto debe ser un valor numérico.',
-                'punto.max' => 'El punto no puede ser mayor a 4.',
+                'punto.integer' => 'El punto debe ser un valor numérico.'
             ]);
         if ($validator->fails())
             return response()->json([
