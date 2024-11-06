@@ -46,7 +46,7 @@ class VendedoresController extends Controller
     }
 
 
-    public function ingresarVendedor(Request $r){
+    public function registrarVendedor(Request $r){
         $ip = $r->ip();
         $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});
         if (!$executed)
@@ -89,7 +89,6 @@ class VendedoresController extends Controller
         return response()->json([
             'success'=>true,
             'message'=>'Error al ingresar. Contacte con nosotros.',
-            'results'=>null
         ],500);
 
 
