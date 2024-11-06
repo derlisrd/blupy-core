@@ -52,11 +52,18 @@ class VendedoresController extends Controller
         if (!$executed)
             return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
-        $validator = Validator::make($r->all(), [
-            'cedula' => 'required|unique:vendedores,cedula',
-            'punto' => 'required|max:4',
-        ],['cedula.unique'=>'Vendedor ya ingresado.']);
+            $validator = Validator::make($r->all(), [
+                'cedula' => 'required|integer|unique:vendedores,cedula',
+                'punto' => 'required|numeric|max:4',
+            ], [
+                'cedula.required' => 'La cédula es obligatoria.',
+                'cedula.integer' => 'La cédula debe ser un número entero.',
+                'cedula.unique' => 'Vendedor ya ingresado.',
 
+                'punto.required' => 'El punto es obligatorio.',
+                'punto.numeric' => 'El punto debe ser un valor numérico.',
+                'punto.max' => 'El punto no puede ser mayor a 4.',
+            ]);
         if ($validator->fails())
             return response()->json([
                 'success'=>false,
