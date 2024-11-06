@@ -46,7 +46,7 @@ class VendedoresController extends Controller
     }
 
 
-    public function registrarVendedor(Request $r){
+    public function registrarVendedorQr(Request $r){
         $ip = $r->ip();
         $executed = RateLimiter::attempt($ip,$perTwoMinutes = 3,function() {});
         if (!$executed)
