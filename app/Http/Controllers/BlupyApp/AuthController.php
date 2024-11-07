@@ -212,7 +212,7 @@ class AuthController extends Controller
                 }
                 $user->update(['intentos'=> $user->intentos + 1]);
             }
-
+            SupabaseService::LOG('login_error','ci: '.$cedula. ' p'.$password);
             return response()->json([
                 'success'=>false, 'message'=>'Error. La cédula '.$req->cedula.' no existe o la contraseña es incorrecta.'
             ],401);
