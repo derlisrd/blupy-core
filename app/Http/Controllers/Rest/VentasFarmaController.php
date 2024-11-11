@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Validator;
 
 class VentasFarmaController extends Controller{
 
-    public function porcentajeDeUsoBlupy(){
-        $inicioMes = Carbon::now()->startOfMonth();
-        $finMes = Carbon::now()->endOfMonth();
+    public function porcentajeDeUsoBlupy(Request $request){
+        $inicioMes = $request->desde ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+        $finMes = $request->hasta ?? Carbon::now()->format('Y-m-d');
 
         // Total de clientes
         $totalClientes = Cliente::count();
@@ -61,9 +61,9 @@ class VentasFarmaController extends Controller{
         ]);
     }
 
-    public function tickets(){
-        $inicioMes = Carbon::now()->startOfMonth();
-        $finMes = Carbon::now()->endOfMonth();
+    public function tickets(Request $request){
+        $inicioMes = $request->desde ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+        $finMes = $request->hasta ?? Carbon::now()->format('Y-m-d');
 
         $digital = Venta::whereBetween('fecha',[$inicioMes,$finMes])->where('forma_codigo',135)->count();
         $farma = Venta::whereBetween('fecha',[$inicioMes,$finMes])->where('forma_codigo',129)->whereNull('adicional')->count();
