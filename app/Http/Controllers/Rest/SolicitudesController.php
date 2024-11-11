@@ -198,12 +198,12 @@ class SolicitudesController extends Controller
     ==============================================================================================================
     */
     public function totales (Request $request){
-        $desde = $request->desde ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
-        $hasta = $request->hasta ?? Carbon::now()->format('Y-m-d');
+        $inicioMes = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+        $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d');
 
         $ayer = Carbon::yesterday()->format('Y-m-d');
-        $fechaInicioMes =  $desde;
-        $hoy = $hasta;
+        $fechaInicioMes =  $inicioMes;
+        $hoy = $finMes; //Carbon::now()->format('Y-m-d');;
         $primeraHora = '00:00:00';
         $ultimaHora = '23:59:59';
 
@@ -218,10 +218,10 @@ class SolicitudesController extends Controller
         $externos = Cliente::where('funcionario',0)->where('asofarma',0)->count();
         $asociaciones = Cliente::where('funcionario',0)->where('asofarma',1)->count();
 
-        $registrosFuncionarioMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$hoy . ' 23:59:59'])->where('funcionario',1)->where('asofarma',0)->count();
-        $registrosAsoMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$hoy . ' 23:59:59'])->where('funcionario',0)->where('asofarma',1)->count();
-        $registrosDigitalMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$hoy . ' 23:59:59'])->where('funcionario',0)->where('asofarma',0)->count();
-        $registrosDelMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$hoy . ' 23:59:59'])->count();
+        $registrosFuncionarioMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$hoy ])->where('funcionario',1)->where('asofarma',0)->count();
+        $registrosAsoMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$hoy ])->where('funcionario',0)->where('asofarma',1)->count();
+        $registrosDigitalMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$hoy  ])->where('funcionario',0)->where('asofarma',0)->count();
+        $registrosDelMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$hoy])->count();
         $registrosSemana = Cliente::whereBetween('created_at',[$lunes,$domingo])->count();
         $registrosHoy = Cliente::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->count();
         $registrosAyer = Cliente::whereBetween('created_at',[$ayer.$primeraHora, $ayer . $ultimaHora])->count();
