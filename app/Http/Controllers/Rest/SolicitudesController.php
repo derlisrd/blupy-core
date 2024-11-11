@@ -218,6 +218,9 @@ class SolicitudesController extends Controller
         $externos = Cliente::where('funcionario',0)->where('asofarma',0)->count();
         $asociaciones = Cliente::where('funcionario',0)->where('asofarma',1)->count();
 
+        $registrosFuncionarioMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$hoy . ' 23:59:59'])->where('funcionario',1)->where('asofarma',0)->count();
+        $registrosAsoMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$hoy . ' 23:59:59'])->where('funcionario',0)->where('asofarma',1)->count();
+        $registrosDigitalMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$hoy . ' 23:59:59'])->where('funcionario',0)->where('asofarma',0)->count();
         $registrosDelMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$hoy . ' 23:59:59'])->count();
         $registrosSemana = Cliente::whereBetween('created_at',[$lunes,$domingo])->count();
         $registrosHoy = Cliente::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->count();
@@ -260,6 +263,9 @@ class SolicitudesController extends Controller
                 'registrosHoy'=>$registrosHoy,
                 'registrosSemana'=>$registrosSemana,
                 'registrosMes'=>$registrosDelMes,
+                'registrosMesFuncionarios'=>$registrosFuncionarioMes,
+                'registrosMesAso'=>$registrosAsoMes,
+                'registrosMesDigital'=>$registrosDigitalMes,
 
                 'funcionarios'=>$funcionarios,
                 'asociaciones'=>$asociaciones,
