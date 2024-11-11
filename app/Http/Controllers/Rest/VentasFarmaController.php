@@ -116,7 +116,10 @@ class VentasFarmaController extends Controller{
         return response()->json(['success' => true, 'message' => "Las ventas se estan registrando en segundo plano."]);
     }
 
-    public function ventasTotales(){
+    public function ventasTotales(Request $request){
+        $inicioMes = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+        $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
+
         $lunes = Carbon::now()->startOfWeek(Carbon::MONDAY);
         $domingo = Carbon::now()->endOfWeek(Carbon::SUNDAY);
 
@@ -126,9 +129,11 @@ class VentasFarmaController extends Controller{
         ->sum('importe_final');
         $importeTotalSemana = Venta::whereBetween('fecha', [$lunes, $domingo])
         ->sum('importe_final');
-        $importeFinalMes = Venta::whereMonth('fecha', Carbon::now()->month)
-        ->whereYear('fecha', Carbon::now()->year)
+        $importeFinalMes = Venta::whereBetween('fecha', [$inicioMes,$finMes])
         ->sum('importe_final');
+        /* $importeFinalMes = Venta::whereMonth('fecha', Carbon::now()->month)
+        ->whereYear('fecha', Carbon::now()->year)
+        ->sum('importe_final'); */
 
         $importeTotalAyerDigital = Venta::whereDate('fecha', $ayer)
         ->where('forma_codigo',135)
@@ -136,8 +141,7 @@ class VentasFarmaController extends Controller{
         $importeTotalSemanaDigital = Venta::whereBetween('fecha', [$lunes, $domingo])
         ->where('forma_codigo',135)
         ->sum('importe_final');
-        $importeTotalMesDigital = Venta::whereMonth('fecha', Carbon::now()->month)
-        ->whereYear('fecha', Carbon::now()->year)
+        $importeTotalMesDigital = Venta::whereBetween('fecha', [$inicioMes,$finMes])
         ->where('forma_codigo',135)
         ->sum('importe_final');
 
@@ -149,8 +153,7 @@ class VentasFarmaController extends Controller{
         ->where('forma_codigo',129)
         ->whereNull('adicional')
         ->sum('importe_final');
-        $importeTotalMesFuncionario = Venta::whereMonth('fecha', Carbon::now()->month)
-        ->whereYear('fecha', Carbon::now()->year)
+        $importeTotalMesFuncionario = Venta::whereBetween('fecha', [$inicioMes,$finMes])
         ->where('forma_codigo',129)
         ->whereNull('adicional')
         ->sum('importe_final');
@@ -163,8 +166,7 @@ class VentasFarmaController extends Controller{
         ->where('forma_codigo',129)
         ->whereNotNull('adicional')
         ->sum('importe_final');
-        $importeTotalMesAso = Venta::whereMonth('fecha', Carbon::now()->month)
-        ->whereYear('fecha', Carbon::now()->year)
+        $importeTotalMesAso = Venta::whereBetween('fecha', [$inicioMes,$finMes])
         ->where('forma_codigo',129)
         ->whereNotNull('adicional')
         ->sum('importe_final');
