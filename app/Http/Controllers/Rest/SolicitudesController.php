@@ -249,7 +249,7 @@ class SolicitudesController extends Controller
         $solicitudesSemana = SolicitudCredito::whereBetween('created_at',[$lunes,$domingo])->where('tipo',1)->count();
         $solicitudesMes = SolicitudCredito::where('tipo',1)->whereBetween('created_at',[$fechaInicioMes,$finMes])->count();
 
-        $solicitudesPendientes = SolicitudCredito::whereBetween('created_at',[$hoy.' 00:00:00',$fechaHace60Dias . ' 23:59:59'])->where('tipo',1)->where('estado_id',5)->count();
+        $solicitudesPendientes = SolicitudCredito::whereBetween('created_at',[$fechaHace60Dias.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->where('estado_id',5)->count();
         $pendientesHoy = SolicitudCredito::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->where('estado_id',5)->count();
         $pendientesSemana = SolicitudCredito::whereBetween('created_at',[$lunes,$domingo])->where('tipo',1)->where('estado_id',5)->count();
         $pendientesMes = SolicitudCredito::where('tipo',1)->whereBetween('created_at',[$fechaInicioMes,$finMes])->where('estado_id',5)->count();
