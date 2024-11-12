@@ -65,10 +65,10 @@ class VentasFarmaController extends Controller{
         $inicioMes = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
         $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
 
-        $inicio = Carbon::parse($inicioMes); // Convierte la fecha de inicio
-        $fin = Carbon::parse($finMes);       // Convierte la fecha de fin
+        // $inicio = Carbon::parse($inicioMes); // Convierte la fecha de inicio
+        // $fin = Carbon::parse($finMes);       // Convierte la fecha de fin
 
-        $diasContados =  $inicio->diffInDays($fin) + 1;
+        // $diasContados =  $inicio->diffInDays($fin) + 1;
 
         $digital = Venta::whereBetween('fecha',[$inicioMes,$finMes])->where('forma_codigo',135)->count();
         $farma = Venta::whereBetween('fecha',[$inicioMes,$finMes])->where('forma_codigo',129)->whereNull('adicional')->count();
@@ -79,10 +79,7 @@ class VentasFarmaController extends Controller{
             'results'=>[
                 'farma' => $farma,
                 'aso' => $aso,
-                'digital' => $digital,
-                'promedioFarma' =>$farma / $diasContados,
-                'promedioAso'=> $aso / $diasContados,
-                'promedioDigital' => $digital / $diasContados,
+                'digital' => $digital
             ]
         ]);
     }
@@ -128,6 +125,9 @@ class VentasFarmaController extends Controller{
         $inicioMes = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
         $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
 
+        $fechaCarbon = Carbon::parse($inicioMes);
+        $yearDeMes = $fechaCarbon->year;
+
         $lunes = Carbon::now()->startOfWeek(Carbon::MONDAY);
         $domingo = Carbon::now()->endOfWeek(Carbon::SUNDAY);
 
@@ -139,9 +139,9 @@ class VentasFarmaController extends Controller{
         ->sum('importe_final');
         $importeFinalMes = Venta::whereBetween('fecha', [$inicioMes,$finMes])
         ->sum('importe_final');
-        /* $importeFinalMes = Venta::whereMonth('fecha', Carbon::now()->month)
-        ->whereYear('fecha', Carbon::now()->year)
-        ->sum('importe_final'); */
+
+        $importeTotalYear = Venta::whereYear('fecha', $yearDeMes)
+        ->sum('importe_final');
 
         $importeTotalAyerDigital = Venta::whereDate('fecha', $ayer)
         ->where('forma_codigo',135)
@@ -199,31 +199,12 @@ class VentasFarmaController extends Controller{
                 'importeTotalAyerAso'=>(int)$importeTotalAyerAso,
                 'importeTotalSemanaAso'=>(int)$importeTotalSemanaAso,
                 'importeTotalMesAso'=>(int)$importeTotalMesAso,
+
+                'importeTotalAnio'=>(int)$importeTotalYear
             ]
         ]);
     }
 
 
 
-    /* public function VentasDelMes(Request $req){
-        $validator = Validator::make($req->only(['fecha_inicio', 'fecha_fin']), [
-            'fecha_inicio' => 'required|date_format:Y-m-d',
-            'fecha_fin' => 'required|date_format:Y-m-d|after_or_equal:fecha_inicio'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
-        }
-
-        $fechaInicio = Carbon::parse($req->fecha_inicio);
-        $fechaFin = Carbon::parse($req->fecha_fin);
-
-        // Recorrer cada día del rango
-        for ($date = $fechaInicio; $date->lte($fechaFin); $date->addDay()) {
-            ProcesarVentasDelDiaFarmaJobs::dispatch($date->format('Y-m-d'));
-        }
-
-
-        return response()->json(['success' => true, 'message' => "El Job para procesar las ventas ha sido despachado."]);
-    } */
 }
