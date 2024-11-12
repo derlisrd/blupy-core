@@ -207,6 +207,11 @@ class SolicitudesController extends Controller
         $primeraHora = '00:00:00';
         $ultimaHora = '23:59:59';
 
+        $fechaHace60Dias = Carbon::now()->subDays(60)->format('Y-m-d');
+
+        $fechaCarbon = Carbon::parse($inicioMes);
+        $yearDeMes = $fechaCarbon->year;
+
         $lunes = Carbon::now()->startOfWeek()->format('Y-m-d H:i:s');
         $domingo = Carbon::now()->endOfWeek()->format('Y-m-d');
 
@@ -225,12 +230,13 @@ class SolicitudesController extends Controller
         $registrosSemana = Cliente::whereBetween('created_at',[$lunes,$domingo])->count();
         $registrosHoy = Cliente::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->count();
         $registrosAyer = Cliente::whereBetween('created_at',[$ayer.$primeraHora, $ayer . $ultimaHora])->count();
-
+        $registroDelAnio = Cliente::whereYear('created_at', $yearDeMes)->count();
 
         $solicitudesRechazadas = SolicitudCredito::where('tipo',1)->where('estado_id',11)->count();
         $rechazadosHoy = SolicitudCredito::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->where('estado_id',11)->count();
         $rechazadosSemana = SolicitudCredito::whereBetween('created_at',[$lunes,$domingo])->where('tipo',1)->where('estado_id',11)->count();
         $rechazadosMes = SolicitudCredito::whereBetween('created_at',[$fechaInicioMes,$finMes])->where('tipo',1)->where('estado_id',11)->count();
+        $rechazadosDelAnio = SolicitudCredito::whereYear('created_at', $yearDeMes)->where('tipo',1)->where('estado_id',11)->count();
 
         $solicitudesFuncionarios = Cliente::where('s.tipo',1)->where('clientes.funcionario',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
         $solicitudesFuncionariosVigentes = Cliente::where('s.tipo',1)->where('s.estado_id',7)->where('clientes.funcionario',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
@@ -243,16 +249,18 @@ class SolicitudesController extends Controller
         $solicitudesSemana = SolicitudCredito::whereBetween('created_at',[$lunes,$domingo])->where('tipo',1)->count();
         $solicitudesMes = SolicitudCredito::where('tipo',1)->whereBetween('created_at',[$fechaInicioMes,$finMes])->count();
 
-        $solicitudesPendientes = SolicitudCredito::where('tipo',1)->where('estado_id',5)->count();
+        $solicitudesPendientes = SolicitudCredito::whereBetween('created_at',[$hoy.' 00:00:00',$fechaHace60Dias . ' 23:59:59'])->where('tipo',1)->where('estado_id',5)->count();
         $pendientesHoy = SolicitudCredito::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->where('estado_id',5)->count();
         $pendientesSemana = SolicitudCredito::whereBetween('created_at',[$lunes,$domingo])->where('tipo',1)->where('estado_id',5)->count();
         $pendientesMes = SolicitudCredito::where('tipo',1)->whereBetween('created_at',[$fechaInicioMes,$finMes])->where('estado_id',5)->count();
 
 
         $solicitudVigentes = SolicitudCredito::where('tipo',1)->where('estado_id',7)->count();
+
         $vigentesHoy = SolicitudCredito::whereBetween('updated_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->where('estado_id',7)->count();
         $vigentesSemana = SolicitudCredito::whereBetween('updated_at',[$lunes,$domingo])->where('tipo',1)->where('estado_id',7)->count();
         $vigentesMes = SolicitudCredito::whereBetween('updated_at',[$fechaInicioMes,$finMes])->where('tipo',1)->where('estado_id',7)->count();
+        $vigentesDelAnio = SolicitudCredito::whereYear('created_at', $yearDeMes)->where('tipo',1)->where('estado_id',7)->count();
         $porcentajeDeRechazo = number_format( ($solicitudesRechazadas  * 100 / $solicitudesTotales),2 );
 
         return response()->json([
@@ -267,6 +275,8 @@ class SolicitudesController extends Controller
                 'registrosMesAso'=>$registrosAsoMes,
                 'registrosMesDigital'=>$registrosDigitalMes,
 
+                'registroDelAnio' =>$registroDelAnio,
+
                 'funcionarios'=>$funcionarios,
                 'asociaciones'=>$asociaciones,
                 'externos'=>$externos,
@@ -280,11 +290,13 @@ class SolicitudesController extends Controller
                 'vigentesHoy'=>$vigentesHoy,
                 'vigentesSemana'=>$vigentesSemana,
                 'vigentesMes'=>$vigentesMes,
+                'vigentesDelAnio'=>$vigentesDelAnio,
 
                 'solicitudesRechazadas'=>$solicitudesRechazadas,
                 'rechazadosHoy'=>$rechazadosHoy,
                 'rechazadosSemana'=>$rechazadosSemana,
                 'rechazadosMes'=>$rechazadosMes,
+                'rechazadosDelAnio'=>$rechazadosDelAnio,
 
                 'porcentajeRechazo'=>$porcentajeDeRechazo,
 

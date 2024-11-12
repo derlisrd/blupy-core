@@ -65,6 +65,8 @@ class VentasFarmaController extends Controller{
         $inicioMes = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
         $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
 
+        $fechaCarbon = Carbon::parse($inicioMes);
+        $yearDeMes = $fechaCarbon->year;
         // $inicio = Carbon::parse($inicioMes); // Convierte la fecha de inicio
         // $fin = Carbon::parse($finMes);       // Convierte la fecha de fin
 
@@ -74,12 +76,15 @@ class VentasFarmaController extends Controller{
         $farma = Venta::whereBetween('fecha',[$inicioMes,$finMes])->where('forma_codigo',129)->whereNull('adicional')->count();
         $aso = Venta::whereBetween('fecha',[$inicioMes,$finMes])->where('forma_codigo',129)->whereNotNull('adicional')->count();
 
+        $totalYear = Venta::whereYear('fecha', $yearDeMes)->count();
+
         return response()->json([
             'success'=>true,
             'results'=>[
                 'farma' => $farma,
                 'aso' => $aso,
-                'digital' => $digital
+                'digital' => $digital,
+                'totalAnio' => $totalYear
             ]
         ]);
     }
