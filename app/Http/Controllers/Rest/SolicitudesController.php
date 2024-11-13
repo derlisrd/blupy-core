@@ -254,8 +254,8 @@ class SolicitudesController extends Controller
         $solicitudesAsociacionesVigentesMes = Cliente::where('s.tipo', 1)
         ->where('s.estado_id', 7)
         ->where('clientes.asofarma', 1)
-        ->whereMonth('s.created_at', $mesSeleccionado) // Filtra por mes
-        ->whereYear('s.created_at', $yearDeMes) // Filtra por año
+        ->whereMonth('s.updated_at', $mesSeleccionado) // Filtra por mes
+        ->whereYear('s.updated_at', $yearDeMes) // Filtra por año
         ->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')
         ->count();
 
@@ -274,14 +274,13 @@ class SolicitudesController extends Controller
 
         $solicitudVigentes = SolicitudCredito::where('tipo',1)->where('estado_id',7)->count();
 
-        $solicitudVigentesExternosMes = Cliente::where('s.tipo', 1)
-        ->where('s.estado_id', 7)
-        ->where('clientes.asofarma', 0)
-        ->where('clientes.funcionario', 0)
-        ->whereMonth('s.created_at', $mesSeleccionado) // Filtra por mes
-        ->whereYear('s.created_at', $yearDeMes) // Filtra por año
-        ->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')
-        ->count();
+        $solicitudVigentesExternosMes = SolicitudCredito::whereBetween('updated_at',[$fechaInicioMes,$finMes])
+        ->join('clientes','clientes.id','=','solicitud_creditos.cliente_id')
+        ->where('clientes.funcionario',0)
+        ->where('clientes.asofarma',0)
+        ->whereMonth('solicitud_creditos.updated_at', $mesSeleccionado) // Filtra por mes
+        ->whereYear('solicitud_creditos.updated_at', $yearDeMes) // Filtra por año
+        ->where('tipo',1)->where('estado_id',7)->count();
 
         $vigentesHoy = SolicitudCredito::whereBetween('updated_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->where('estado_id',7)->count();
         $vigentesSemana = SolicitudCredito::whereBetween('updated_at',[$lunes,$domingo])->where('tipo',1)->where('estado_id',7)->count();
