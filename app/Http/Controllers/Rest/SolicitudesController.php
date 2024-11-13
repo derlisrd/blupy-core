@@ -274,8 +274,8 @@ class SolicitudesController extends Controller
 
         $solicitudVigentes = SolicitudCredito::where('tipo',1)->where('estado_id',7)->count();
 
-        $solicitudVigentesExternosMes = SolicitudCredito::whereBetween('updated_at',[$fechaInicioMes,$finMes])
-        ->join('clientes','clientes.id','=','solicitud_creditos.cliente_id')
+        $solicitudVigentesExternosMes = SolicitudCredito::
+          join('clientes','clientes.id','=','solicitud_creditos.cliente_id')
         ->where('clientes.funcionario',0)
         ->where('clientes.asofarma',0)
         ->whereMonth('solicitud_creditos.updated_at', $mesSeleccionado) // Filtra por mes
