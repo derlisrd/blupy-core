@@ -211,6 +211,7 @@ class SolicitudesController extends Controller
 
         $fechaCarbon = Carbon::parse($inicioMes);
         $yearDeMes = $fechaCarbon->year;
+        $mesSeleccionado = $fechaCarbon->month;
 
         $lunes = Carbon::now()->startOfWeek()->format('Y-m-d H:i:s');
         $domingo = Carbon::now()->endOfWeek()->format('Y-m-d');
@@ -240,8 +241,24 @@ class SolicitudesController extends Controller
 
         $solicitudesFuncionarios = Cliente::where('s.tipo',1)->where('clientes.funcionario',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
         $solicitudesFuncionariosVigentes = Cliente::where('s.tipo',1)->where('s.estado_id',7)->where('clientes.funcionario',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
+        $solicitudesFuncionariosVigentesMes = Cliente::where('s.tipo', 1)
+            ->where('s.estado_id', 7)
+            ->where('clientes.funcionario', 1)
+            ->whereMonth('s.created_at', $mesSeleccionado) // Filtra por mes
+            ->whereYear('s.created_at', $yearDeMes) // Filtra por año
+            ->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')
+            ->count();
+
         $solicitudesAsociaciones = Cliente::where('s.tipo',1)->where('clientes.asofarma',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
         $solicitudesAsociacionesVigentes = Cliente::where('s.tipo',1)->where('s.estado_id',7)->where('clientes.asofarma',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
+        $solicitudesAsociacionesVigentesMes = Cliente::where('s.tipo', 1)
+        ->where('s.estado_id', 7)
+        ->where('clientes.asofarma', 1)
+        ->whereMonth('s.created_at', $mesSeleccionado) // Filtra por mes
+        ->whereYear('s.created_at', $yearDeMes) // Filtra por año
+        ->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')
+        ->count();
+
 
         $solicitudesTotales = SolicitudCredito::where('tipo',1)->where('estado_id','<>',null)->count();
         $solicitudesHoy = SolicitudCredito::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->count();
@@ -256,6 +273,15 @@ class SolicitudesController extends Controller
 
 
         $solicitudVigentes = SolicitudCredito::where('tipo',1)->where('estado_id',7)->count();
+
+        $solicitudVigentesExternosMes = Cliente::where('s.tipo', 1)
+        ->where('s.estado_id', 7)
+        ->where('clientes.asofarma', 0)
+        ->where('clientes.funcionario', 0)
+        ->whereMonth('s.created_at', $mesSeleccionado) // Filtra por mes
+        ->whereYear('s.created_at', $yearDeMes) // Filtra por año
+        ->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')
+        ->count();
 
         $vigentesHoy = SolicitudCredito::whereBetween('updated_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->where('estado_id',7)->count();
         $vigentesSemana = SolicitudCredito::whereBetween('updated_at',[$lunes,$domingo])->where('tipo',1)->where('estado_id',7)->count();
@@ -305,6 +331,12 @@ class SolicitudesController extends Controller
                 'solicitudesHoy'=>$solicitudesHoy,
                 'solicitudesSemana'=>$solicitudesSemana,
                 'solicitudesMes'=>$solicitudesMes,
+
+                'solicitudesFuncionariosVigentesMes'=>$solicitudesFuncionariosVigentesMes,
+
+                'solicitudesAsociacionesVigentesMes'=>$solicitudesAsociacionesVigentesMes,
+
+                'solicitudVigentesExternosMes'=>$solicitudVigentesExternosMes,
 
                 'solicitudesFuncionarios'=>$solicitudesFuncionarios,
                 'solicitudesFuncionariosVigentes'=>$solicitudesFuncionariosVigentes,
