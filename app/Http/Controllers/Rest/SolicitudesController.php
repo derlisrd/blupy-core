@@ -244,8 +244,8 @@ class SolicitudesController extends Controller
         $solicitudesFuncionariosVigentesMes = Cliente::where('s.tipo', 1)
             ->where('s.estado_id', 7)
             ->where('clientes.funcionario', 1)
-            ->whereBetween('solicitud_creditos.updated_at',[$fechaInicioMes,$finMes])
-            ->join('solicitud_creditos', 'clientes.id', '=', 's.cliente_id')
+            ->whereBetween('s.updated_at',[$fechaInicioMes,$finMes])
+            ->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')
             ->count();
 
         $solicitudesAsociaciones = Cliente::where('s.tipo',1)->where('clientes.asofarma',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
@@ -254,7 +254,7 @@ class SolicitudesController extends Controller
         ->where('s.estado_id', 7)
         ->where('clientes.asofarma', 1)
         ->whereBetween('solicitud_creditos.updated_at',[$fechaInicioMes,$finMes])
-        ->join('solicitud_creditos', 'clientes.id', '=', 'solicitud_creditos.cliente_id')
+        ->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')
         ->count();
 
 
