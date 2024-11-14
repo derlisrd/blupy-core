@@ -53,6 +53,8 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::get('/ventas-hoy-farma',[VentasFarmaController::class,'actualizarListaVentasDeHoy'])->name('rest_ventas_hoy_farma');
     Route::get('/porcentaje-uso',[VentasFarmaController::class,'porcentajeDeUsoBlupy'])->name('rest_porcentaje_uso');
 
+    Route::get('/ventas-del-mes',[VentasFarmaController::class,'ventasDelMes']);
+
     Route::get('/ventas-tickets',[VentasFarmaController::class,'tickets'])->name('rest_ventas_tickets');
 });
 

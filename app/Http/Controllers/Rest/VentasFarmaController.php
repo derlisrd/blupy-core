@@ -13,6 +13,17 @@ use Illuminate\Support\Facades\Validator;
 
 class VentasFarmaController extends Controller{
 
+    public function ventasDelMes(Request $request){
+        $inicioMes = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+        $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
+
+        $results = Venta::whereBetween('fecha',[$inicioMes,$finMes])->get();
+        return response()->json([
+            'success'=>true,
+            'results'=>$results
+        ]);
+    }
+
     public function porcentajeDeUsoBlupy(Request $request){
         $inicioMes = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
         $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
