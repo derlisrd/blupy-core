@@ -58,8 +58,8 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
 
-        $exceptions->renderable(function (NotFoundHttpException | RouteNotFoundException $e){
-            if (request()->is('api/*') || request()->is('rest/*')) {
+        $exceptions->renderable(function (NotFoundHttpException $e){
+            if (request()->is('api/*') || request()->is('rest/*') || request()->is('farma/*')) {
                 return response()->json([
                     'success'=>false,
                     'message'=> 'No encontrado.' //$e->getMessage(),
