@@ -57,16 +57,8 @@ return Application::configure(basePath: dirname(__DIR__))
             ],401);
         });
 
-        $exceptions->render(function (AuthenticationException $e) {
-            if (request()->is('api/*')) {
-                return response()->json([
-                    'success'=>false,
-                    'message' =>'Sesión inválida. Inicie sesión.'// $e->getMessage(),
-                ], 401);
-            }
-        });
 
-        $exceptions->renderable(function (NotFoundHttpException $e){
+        $exceptions->renderable(function (NotFoundHttpException | RouteNotFoundException $e){
             if (request()->is('api/*') || request()->is('rest/*')) {
                 return response()->json([
                     'success'=>false,
