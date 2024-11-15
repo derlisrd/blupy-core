@@ -8,6 +8,7 @@ use App\Models\Barrio;
 use App\Models\Ciudad;
 use App\Models\Cliente;
 use App\Models\Departamento;
+use App\Models\Informacion;
 use App\Models\Notificacion;
 use App\Models\SolicitudCredito;
 use App\Services\PushExpoService;
@@ -96,24 +97,22 @@ class SolicitudesController extends Controller
         }
 
         $validator = Validator::make($req->all(),trans('validation.solicitudes.solicitar'),trans('validation.solicitudes.solicitar.messages'));
-        if($validator->fails()){
-            SupabaseService::LOG('Error en solicitud','Error en validacion');
+        if($validator->fails())
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
-        }
+
 
 
         $verificarSolicitudPendiente = SolicitudCredito::where('cliente_id',$user->cliente->id)->where('tipo',1)->where('estado_id',5)->latest()->first();
         if($verificarSolicitudPendiente)
-        {
-            SupabaseService::LOG('Error en solicitud','Tiene una solicitud pendiente');
             return response()->json(['success'=>false,'message'=>'Ya tiene una solicitud con contrato pendiente.'],400);
-        }
+
 
 
         try {
             $request = (array) $req->all();
             $clienteUpdated = Cliente::find($user->cliente->id);
             $clienteUpdated->update($request);
+
             $clienteUpdated['email'] = $user->email;
 
             $departamento = Departamento::find($req->departamento_id);
@@ -136,10 +135,9 @@ class SolicitudesController extends Controller
 
             $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
 
-            if(!$solicitud->success){
-                SupabaseService::LOG('Error en solicitud infinita',$solicitud);
+            if(!$solicitud->success)
                 return response()->json(['success'=>false,'message'=>$solicitud->message],400);
-            }
+
             $noti = new PushExpoService();
             $tokens = $user->notitokens();
             $noti->send($tokens, 'Solicitud de crédito', $solicitud->estado,[
@@ -161,6 +159,17 @@ class SolicitudesController extends Controller
                 'tipo'=>1,
                 'importe'=>0
             ]);
+            if($solicitud->id === 5){
+                Informacion::create([
+                    'user_id'=>$user->id,
+                    'title'=>'Crédito aprobado',
+                    'description'=>'Para activar tu línea acercate a un PUNTO FARMA',
+                    'text'=>'Para activar tu línea acercate a un PUNTO FARMA',
+                    'active'=>1,
+                    'leido'=>0,
+                    'general'=>0,
+                ]);
+            }
             $results = [
                 'estado_id'=>$solicitud->id,
                 'estado'=>$solicitud->estado,
