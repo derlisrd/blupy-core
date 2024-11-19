@@ -18,6 +18,35 @@ class CuentasController extends Controller
         $this->farmaService = new FarmaService();
     }
 
+    public function tarjetaBlupyDigital(string $cedula){
+        $results = [];
+        $resInfinita = (object) $this->infinitaService->ListarTarjetasPorDoc($cedula);
+        $infinita = (object)$resInfinita->data;
+        if(property_exists( $infinita,'Tarjetas')){
+            foreach ($infinita->Tarjetas as $val) {
+                array_push($results, [
+                    'id'=>2,
+                    'descripcion'=>'Blupy crédito digital',
+                    'otorgadoPor'=>'Mi crédito S.A.',
+                    'tipo'=>1,
+                    'bloqueo'=> $val['MTBloq'] === "" ? false : true,
+                    'condicion'=>'Contado',
+                    'condicionVenta'=>1,
+                    'cuenta' => $val['MaeCtaId'],
+                    'principal'=>$val['MTTipo'] === 'P',
+                    'adicional'=> $val['MTTipo'] === 'A',
+                    'numeroTarjeta'=>$val['MTNume'],
+                    'linea' => (int)$val['MTLinea'],
+                    'pagoMinimo'=> (int) $val['MCPagMin'],
+                    'deuda' => (int) $val['MTSaldo'],
+                    'disponible' => (int) $val['MTLinea'] - (int) $val['MTSaldo'],
+                    'alianzas' => []
+                ]);
+            }
+        }
+        return count($results) > 0 ? $results[0] : null;
+    }
+
     public function tarjetas(string $cedula){
         $results = [];
         $resInfinita = (object) $this->infinitaService->ListarTarjetasPorDoc($cedula);

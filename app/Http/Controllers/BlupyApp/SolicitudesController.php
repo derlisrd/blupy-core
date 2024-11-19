@@ -271,7 +271,7 @@ class SolicitudesController extends Controller
             $cliente['email'] = $user->email;
 
             $tarjetasConsultas = new CuentasPrivate();
-            $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula);
+            $tarjetas = $tarjetasConsultas->tarjetaBlupyDigital($cliente->cedula);
 
             /* $infinitaAdicional = $this->adicionalEnInfinita($cliente,$datoDelAdicional,$req->maectaid);
 
