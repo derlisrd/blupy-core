@@ -33,6 +33,8 @@ class CuentasController extends Controller
                     'condicion'=>'Contado',
                     'condicionVenta'=>1,
                     'cuenta' => $val['MaeCtaId'],
+                    'principal'=>$val['MTTipo'] === 'P',
+                    'adicional'=> $val['MTTipo'] === 'A',
                     'numeroTarjeta'=>$val['MTNume'],
                     'linea' => (int)$val['MTLinea'],
                     'pagoMinimo'=> (int) $val['MCPagMin'],
