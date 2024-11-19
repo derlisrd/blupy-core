@@ -276,12 +276,18 @@ class SolicitudesController extends Controller
                 return response()->json(['success'=>false,'message'=>'Error tarjeta no encontrada'],404);
 
             $tarjetaObject = (object) $tarjetas;
+
+            if((string)$req->maectaid !== $tarjetaObject->cuenta)
+                return response()->json(['success'=>false,'message'=>'Error tarjeta no pertenece a cuenta'],403);
+
+
+
             if($tarjetaObject->linea < (int)$req->limite)
                 return response()->json(['success'=>false,'message'=>'Error, limite excedido'],403);
 
 
 
-            /* $infinitaAdicional = $this->adicionalEnInfinita($cliente,$datoDelAdicional,$req->maectaid);
+            $infinitaAdicional = $this->adicionalEnInfinita($cliente,$datoDelAdicional,$req->maectaid);
 
             if( ! $infinitaAdicional->success ){
                 return response()->json(['success'=>false,'message'=>$infinitaAdicional->message],400);
@@ -306,7 +312,7 @@ class SolicitudesController extends Controller
                 'estado_id'=> 3,
                 'importe'=>$req->limite,
                 'tipo' => 2
-            ]); */
+            ]);
             return response()->json(['success'=>true,'message'=>'Adicional ingresado correctamente','tarjetas'=>$tarjetas]);
         } catch (\Throwable $th) {
             SupabaseService::LOG('error_adicional',$th->getMessage());
