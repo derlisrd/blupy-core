@@ -272,6 +272,14 @@ class SolicitudesController extends Controller
 
             $tarjetasConsultas = new CuentasPrivate();
             $tarjetas = $tarjetasConsultas->tarjetaBlupyDigital($cliente->cedula);
+            if($tarjetas === null)
+                return response()->json(['success'=>false,'message'=>'Error tarjeta no encontrada'],404);
+
+            $tarjetaObject = (object) $tarjetas;
+            if($tarjetaObject->linea < (int)$req->limite)
+                return response()->json(['success'=>false,'message'=>'Error, limite excedido'],403);
+
+
 
             /* $infinitaAdicional = $this->adicionalEnInfinita($cliente,$datoDelAdicional,$req->maectaid);
 
