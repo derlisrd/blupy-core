@@ -269,12 +269,12 @@ class SolicitudesController extends Controller
         $cliente = $user->cliente;
         $cliente['email'] = $user->email;
 
-        $infinitaAmpliacion = $this->adicionalEnInfinita($cliente,$datoDelAdicional,$req->maectaid);
+        /* $infinitaAdicional = $this->adicionalEnInfinita($cliente,$datoDelAdicional,$req->maectaid);
 
-        if( ! $infinitaAmpliacion->success ){
-            return response()->json(['success'=>false,'message'=>$infinitaAmpliacion->message],400);
+        if( ! $infinitaAdicional->success ){
+            return response()->json(['success'=>false,'message'=>$infinitaAdicional->message],400);
         }
-        $res = $infinitaAmpliacion->results;
+        $res = $infinitaAdicional->results;
 
         Adicional::create([
             'cliente_id'=>$cliente->id,
@@ -294,7 +294,7 @@ class SolicitudesController extends Controller
             'estado_id'=> 3,
             'importe'=>$req->limite,
             'tipo' => 2
-        ]);
+        ]); */
         return response()->json(['success'=>true,'message'=>'Adicional ingresado correctamente']);
         } catch (\Throwable $th) {
             SupabaseService::LOG('error_adicional',$th->getMessage());
