@@ -112,7 +112,7 @@ class CuentasController extends Controller
             $periodo = isset($req->periodo) ? $req->periodo : $fechaActual->format('m-Y');
             if(isset($req->cuenta)){
                 //infinita
-                $resInfinita = (object) $this->infinitaService->movimientosPorFecha($req->cuenta,$periodo);
+                $resInfinita = (object) $this->infinitaService->movimientosPorFecha($req->cuenta,$periodo,$req->numero_tarjeta);
                 $infinita = (object) $resInfinita->data;
                 if(property_exists($infinita,'Tarj')){
                     $movimientos = isset($infinita->Tarj['Mov']) ? $infinita->Tarj['Mov'] : [];

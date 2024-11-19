@@ -26,8 +26,8 @@ class InfinitaService
         return $this->get('ExtractoCerrado',['Maectaid' => $Maectaid,'Mtnume'=>$Mtnume,'Periodo' => $Periodo]);
     }
 
-    public function movimientosPorFecha(String $cuenta, String $periodo){
-        return $this->get('TarjMovimPorFecha',['Maectaid'=>$cuenta,'Periodo'=>$periodo,'Mtnume'=>"1"]);
+    public function movimientosPorFecha(String $cuenta, String $periodo, String $numeroTarjeta){
+        return $this->get('TarjMovimPorFecha',['Maectaid'=>$cuenta,'Periodo'=>$periodo,'Mtnume'=>$numeroTarjeta]);
     }
 
     public function TraerDatosCliente($cliid){
