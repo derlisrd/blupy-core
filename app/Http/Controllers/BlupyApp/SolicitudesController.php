@@ -295,7 +295,7 @@ class SolicitudesController extends Controller
             'importe'=>$req->limite,
             'tipo' => 2
         ]); */
-        return response()->json(['success'=>true,'message'=>'Adicional ingresado correctamente']);
+        return response()->json(['success'=>true,'message'=>'Adicional ingresado correctamente','results'=>$datoDelAdicional]);
         } catch (\Throwable $th) {
             SupabaseService::LOG('error_adicional',$th->getMessage());
             return response()->json(['success'=>false,'message'=>'Error de servidor'],500);
