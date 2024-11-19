@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Private\CuentasController as CuentasPrivate;
 
 class SolicitudesController extends Controller
 {
@@ -241,61 +242,64 @@ class SolicitudesController extends Controller
 
     public function agregarAdicional(Request $req){
         try {
+
             $validator = Validator::make($req->all(),trans('validation.solicitudes.adicional'),trans('validation.solicitudes.adicional.messages'));
-        if($validator->fails())
-            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+            if($validator->fails())
+                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
-        $adicional = Adicional::where('cedula',$req->cedula)->first();
+            $adicional = Adicional::where('cedula',$req->cedula)->first();
+            if($adicional)
+                return response()->json(['success'=>false,'message'=>'Adicional ya existe en la base de datos'], 400);
 
-        if($adicional)
-            return response()->json(['success'=>false,'message'=>'Adicional ya existe en la base de datos'], 400);
 
+            $nombres = $this->separarNombres( $req->nombres );
+            $apellidos = $this->separarNombres( $req->apellidos );
 
-        $nombres = $this->separarNombres( $req->nombres );
-        $apellidos = $this->separarNombres( $req->apellidos );
+            $datoDelAdicional = [
+                'cedula'=>$req->cedula,
+                'nombre1'=>$nombres[0],
+                'nombre2'=>$nombres[1],
+                'apellido1'=>$apellidos[0],
+                'apellido2'=>$apellidos[1],
+                'limite'=>(int)$req->limite,
+                'telefono'=>$req->celular,
+                'direccion'=>$req->direccion
+            ];
 
-        $datoDelAdicional = [
-            'cedula'=>$req->cedula,
-            'nombre1'=>$nombres[0],
-            'nombre2'=>$nombres[1],
-            'apellido1'=>$apellidos[0],
-            'apellido2'=>$apellidos[1],
-            'limite'=>(int)$req->limite,
-            'telefono'=>$req->celular,
-            'direccion'=>$req->direccion
-        ];
+            $user = $req->user();
+            $cliente = $user->cliente;
+            $cliente['email'] = $user->email;
 
-        $user = $req->user();
-        $cliente = $user->cliente;
-        $cliente['email'] = $user->email;
+            $tarjetasConsultas = new CuentasPrivate();
+            $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula);
 
-        /* $infinitaAdicional = $this->adicionalEnInfinita($cliente,$datoDelAdicional,$req->maectaid);
+            /* $infinitaAdicional = $this->adicionalEnInfinita($cliente,$datoDelAdicional,$req->maectaid);
 
-        if( ! $infinitaAdicional->success ){
-            return response()->json(['success'=>false,'message'=>$infinitaAdicional->message],400);
-        }
-        $res = $infinitaAdicional->results;
+            if( ! $infinitaAdicional->success ){
+                return response()->json(['success'=>false,'message'=>$infinitaAdicional->message],400);
+            }
+            $res = $infinitaAdicional->results;
 
-        Adicional::create([
-            'cliente_id'=>$cliente->id,
-            'cedula'=>$req->cedula,
-            'nombres'=>$req->nombres,
-            'celular'=>$req->celular,
-            'apellidos'=>$req->apellidos,
-            'limite'=>$req->limite,
-            'direccion'=>$req->direccion,
-            'mae_cuenta_id'=>$req->maectaid
-        ]);
+            Adicional::create([
+                'cliente_id'=>$cliente->id,
+                'cedula'=>$req->cedula,
+                'nombres'=>$req->nombres,
+                'celular'=>$req->celular,
+                'apellidos'=>$req->apellidos,
+                'limite'=>$req->limite,
+                'direccion'=>$req->direccion,
+                'mae_cuenta_id'=>$req->maectaid
+            ]);
 
-        SolicitudCredito::create([
-            'cliente_id' => $cliente->id,
-            'codigo' => $res->SolId,
-            'estado' => trim($res->SolEstado),
-            'estado_id'=> 3,
-            'importe'=>$req->limite,
-            'tipo' => 2
-        ]); */
-        return response()->json(['success'=>true,'message'=>'Adicional ingresado correctamente','results'=>$datoDelAdicional]);
+            SolicitudCredito::create([
+                'cliente_id' => $cliente->id,
+                'codigo' => $res->SolId,
+                'estado' => trim($res->SolEstado),
+                'estado_id'=> 3,
+                'importe'=>$req->limite,
+                'tipo' => 2
+            ]); */
+            return response()->json(['success'=>true,'message'=>'Adicional ingresado correctamente','tarjetas'=>$tarjetas]);
         } catch (\Throwable $th) {
             SupabaseService::LOG('error_adicional',$th->getMessage());
             return response()->json(['success'=>false,'message'=>'Error de servidor'],500);
