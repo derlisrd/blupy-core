@@ -35,7 +35,7 @@ return [
     'movimientos'=>[
         'periodo'=>['nullable', 'regex:/^\d{2}-\d{4}$/'],
         'cuenta'=>'nullable|numeric',
-        'numero_tarjeta'=>'nullable|numeric',
+        'numero_tarjeta'=>'nullable',
         'messages'=>[
             'periodo.regex'=>'El periodo es debe ser (MM-AAAA).',
             'cuenta.numeric'=>'La cuenta debe ser número'
