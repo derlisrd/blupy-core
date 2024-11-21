@@ -308,7 +308,7 @@ class SolicitudesController extends Controller
             SolicitudCredito::create([
                 'cliente_id' => $cliente->id,
                 'codigo' => $res->solicitudId,
-                'estado' => trim($res->SolEstado),
+                'estado' => trim($res->solicitudEstado),
                 'estado_id'=> 3,
                 'importe'=>$req->limite,
                 'tipo' => 2
