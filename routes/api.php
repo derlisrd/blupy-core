@@ -86,6 +86,7 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/sucursales-cercanas',[FarmaController::class,'sucursalesCercanas'])->name('api_sucursales_cercanas');
 
     Route::get('/mis-descuentos',[ClienteController::class,'misDescuentos'])->name('api_mis_descuentos');
+    Route::get('/mis-adicionales',[ClienteController::class,'misAdicionales'])->name('api_mis_adicionales');
 
     Route::post('/vincular-vendedor',[VendedorController::class,'vincular'])->name('api_vincular_vendedor');
 });

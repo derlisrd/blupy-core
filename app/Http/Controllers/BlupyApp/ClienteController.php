@@ -27,4 +27,15 @@ class ClienteController extends Controller
             ]
         ]);
     }
+
+    public function misAdicionales(Request $req){
+        $user = $req->user();
+        $cliente = $user->cliente;
+        $results = $cliente->adicional;
+
+        return response()->json([
+            'success'=>true,
+            'results'=>$results
+        ]);
+    }
 }
