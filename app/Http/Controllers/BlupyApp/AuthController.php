@@ -231,11 +231,21 @@ class AuthController extends Controller
     CHECK TOKEN VALIDO
     ----------------------------*/
 
-    public function checkToken(){
+    public function checkToken(Request $req){
         try {
             JWTAuth::check(JWTAuth::getToken());
+            $tokenHeader = $req->header('Authorization');
+            $token = str_replace("Bearer ", "", $tokenHeader);
+            $user = $req->user();
+            $cliente = $user->cliente;
+            $tarjetasConsultas = new CuentasPrivate();
+            $adicional = Adicional::whereCedula($cliente->cedula)->first();
+            $esAdicional = $adicional ? true : false;
+            $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula);
             return response()->json([
-                'success'=>true, 'message'=>'valid'
+                'success'=>true,
+                'message'=>'Valido',
+                'results'=>$this->userInfo($cliente,$token,$tarjetas,$esAdicional)
             ]);
         } catch (\Throwable $th) {
             return response()->json(['success'=>false,'message'=>'Error de servidor'],500);
