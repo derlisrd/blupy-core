@@ -2,7 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Models\Cliente;
 use App\Models\SolicitudCredito;
+use App\Models\Tarjeta;
+use App\Services\InfinitaService;
 use App\Services\SupabaseService;
 use App\Traits\SolicitudesInfinitaTraits;
 use Illuminate\Bus\Queueable;
@@ -31,15 +34,35 @@ class ActualizarSolicitudesJobs implements ShouldQueue
     public function handle(): void
     {
         try {
+            $infinitaService = new InfinitaService();
             foreach($this->codigos as $codigo){
                 $results = $this->consultarEstadoSolicitudInfinita($codigo);
                 if($results && $results['id'] != 5){
-                    SolicitudCredito::where('codigo',$codigo)->update(
+                    $solicitud_actualizada = SolicitudCredito::where('codigo',$codigo)->update(
                         [
                             'estado_id'=>$results['id'],
                             'estado'=>$results['estado']
                         ]
                     );
+                    $cliente = Cliente::find($solicitud_actualizada->cliente_id);
+                    $clienteId = $cliente->id;
+                    $resInfinita = (object) $infinitaService->ListarTarjetasPorDoc($cliente->cedula);
+                    $infinitaData = (object)$resInfinita->data;
+                    if(property_exists($infinitaData,'Tarjetas')){
+                        $tarjeta = ($infinitaData->Tarjetas[0]);
+                        $tarjeta = Tarjeta::create(
+                            [
+                                'cliente_id'=>$clienteId,
+                                'cuenta'=>$tarjeta['MaeCtaId'],
+                                'tipo' => $tarjeta['MTTipo'] === 'P' ? 1 : 2,
+                                'numero' => $tarjeta['MTNume'],
+                                'linea' =>$tarjeta['MTLinea'],
+                                'bloqueo' => $tarjeta['MTBloq'] === '' ? 0 : 1,
+                                'motivo_bloqueo' => $tarjeta['MotBloqNom']
+                            ]
+                        );
+                    }
+
                 }
             }
         } catch (\Throwable $th) {

@@ -5,3 +5,4 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/actualizar-tarjetas',[JobsManualesController::class,'actualizarTarjetas']);
+Route::get('/actualizar-perfiles-funcionarios',[JobsManualesController::class,'actualizarTarjetas']);
