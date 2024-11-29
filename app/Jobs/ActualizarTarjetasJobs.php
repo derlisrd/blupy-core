@@ -32,28 +32,39 @@ class ActualizarTarjetasJobs implements ShouldQueue
 
     public function handle(): void
     {
-        $solicitudes = Cliente::select('clientes.id','clientes.cedula');
+
+
+        $jsonArchivo = json_decode(file_get_contents(public_path('tarjetas.json')), true);
+
+        // Verificar si el JSON fue leído correctamente
+        if ($jsonArchivo === null) {
+            throw new \Exception('Error al leer o decodificar el archivo JSON');
+        }
         $infinitaService = new InfinitaService();
-        Log::info($solicitudes->count());
-        foreach($solicitudes->get() as $sol){
-            $cedula = ($sol['cedula']);
-            $clienteId = $sol['id'];
-            $resInfinita = (object) $infinitaService->ListarTarjetasPorDoc($cedula);
-            $infinitaData = (object)$resInfinita->data;
-            if(property_exists($infinitaData,'Tarjetas')){
-                $tarjeta = ($infinitaData->Tarjetas[0]);
-                $tarjeta = Tarjeta::firstOrCreate(
-                    ['cliente_id' => $clienteId], // Condición correcta como array asociativo
-                    [
-                        'cliente_id'=>$clienteId,
-                        'cuenta'=>$tarjeta['MaeCtaId'],
-                        'tipo' => $tarjeta['MTTipo'] === 'P' ? 1 : 2,
-                        'numero' => $tarjeta['MTNume'],
-                        'linea' =>$tarjeta['MTLinea'],
-                        'bloqueo' => $tarjeta['MTBloq'] === '' ? 0 : 1,
-                        'motivo_bloqueo' => $tarjeta['MotBloqNom']
-                    ]
-                );
+        foreach($jsonArchivo as $sol){
+            $cliente = Cliente::where('cedula',$sol['cedula'])->first();
+            if($cliente){
+                $cedula = ($sol['cedula']);
+                $clienteId = $cliente->id;
+                $resInfinita = (object) $infinitaService->ListarTarjetasPorDoc($cedula);
+                $infinitaData = (object)$resInfinita->data;
+                if(property_exists($infinitaData,'Tarjetas')){
+                    $tarjeta = ($infinitaData->Tarjetas[0]);
+                    $tarjeta = Tarjeta::firstOrCreate(
+                        ['cliente_id' => $clienteId], // Condición correcta como array asociativo
+                        [
+                            'cliente_id'=>$clienteId,
+                            'cuenta'=>$tarjeta['MaeCtaId'],
+                            'tipo' => $tarjeta['MTTipo'] === 'P' ? 1 : 2,
+                            'numero' => $tarjeta['MTNume'],
+                            'linea' =>$tarjeta['MTLinea'],
+                            'bloqueo' => $tarjeta['MTBloq'] === '' ? 0 : 1,
+                            'motivo_bloqueo' => $tarjeta['MotBloqNom']
+                        ]
+                    );
+                }
+            } else{
+                Log::info($sol['cedula']);
             }
         }
 
