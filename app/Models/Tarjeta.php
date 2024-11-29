@@ -13,7 +13,9 @@ class Tarjeta extends Model
         'cuenta',
         'tipo',
         'numero',
-        'linea'
+        'linea',
+        'bloqueo',
+        'motivo_bloqueo'
     ];
 
     public function cliente(){

@@ -109,4 +109,8 @@ return [
         'table' => 'failed_jobs',
     ],
 
+    'worker' => [
+        'timeout' => 300, // Ajusta según sea necesario
+    ],
+
 ];
