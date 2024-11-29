@@ -32,7 +32,7 @@ class ActualizarTarjetasJobs implements ShouldQueue
 
     public function handle(): void
     {
-        $solicitudes = Cliente::join('solicitud_creditos as s','s.cliente_id','=','clientes.id')->where('s.tipo',1)->where('s.estado_id','=',7)->select('clientes.id','clientes.cedula');
+        $solicitudes = Cliente::select('clientes.id','clientes.cedula');
         $infinitaService = new InfinitaService();
         Log::info($solicitudes->count());
         foreach($solicitudes->get() as $sol){
