@@ -17,4 +17,7 @@ class JobsManualesController extends Controller
         UpdatePerfilJobs::dispatch()->onConnection('database');
         return response()->json(['success'=>true,'message'=>'Actualizando perfiles en 2do plano.']);
     }
+    public function concluido(){
+        return response()->json(['success'=>false,'message'=>'Job ya ha sido procesado.'],400);
+    }
 }
