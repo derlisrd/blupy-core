@@ -177,7 +177,7 @@ class AuthController extends Controller
                 $credentials = ['email'=>$user->email, 'password'=>$password];
                 $token = JWTAuth::attempt($credentials);
                 if($token){
-                    /* if($user->rol == 0){
+                    if($user->rol == 0){
                         $dispositoDeConfianza = $user->devices
                         ->where('desktop',$req->desktop)
                         ->where('web',$req->web)
@@ -195,7 +195,7 @@ class AuthController extends Controller
                             ]);
                         }
                         $dispositoDeConfianza->update(['updated_at'=>date('Y-m-d H:i:s')]);
-                    } */
+                    }
 
 
                     $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s') ]);
