@@ -57,8 +57,9 @@ class QRController extends Controller
                 ACTUALIZAR EN FARMA
                 */
                 $farmaService = new FarmaService();
-                $farmaService->actualizarPedidosQR($data->results['id']);
-
+                $actualizarFarma = $farmaService->actualizarPedidosQR($data->results['id']);
+                Log::info($data->results['id']);
+                Log::info($actualizarFarma);
             }
 
 
