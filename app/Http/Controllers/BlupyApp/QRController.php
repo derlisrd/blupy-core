@@ -56,8 +56,14 @@ class QRController extends Controller
                 /*
                 ACTUALIZAR EN FARMA
                 */
+                $datasResults = $data->results;
                 $farmaService = new FarmaService();
-                $actualizarFarma = $farmaService->actualizarPedidosQR($data->results['id']);
+                $actualizarFarma = $farmaService->actualizarPedidosQR(
+                    $datasResults['id'],
+                    $datasResults['numero_cuenta'],
+                    $datasResults['numero_tarjeta'],
+                    $datasResults['numero_movimiento']
+                );
                 Log::info($data->results['id']);
                 Log::info($actualizarFarma);
             }

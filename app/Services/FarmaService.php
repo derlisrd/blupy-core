@@ -24,8 +24,8 @@ class FarmaService
         return $this->get('cliente/getCliente',['documento' => $cedula]);
     }
 
-    public function actualizarPedidosQR(String $codigo){
-        return $this->post('pedidosqr/autorizar',['codigo' => $codigo]);
+    public function actualizarPedidosQR($codigo, $numero_cuenta, $numero_tarjeta, $movimiento){
+        return $this->post('pedidosqr/autorizar',['codigo' => $codigo,'numero_cuenta'=>$numero_cuenta,'numero_tarjeta'=>$numero_tarjeta,'movimiento'=>$movimiento]);
     }
     public function movimientos(String $cedula, String $periodo){
         return $this->get('cliente/getMovimientos',['documento' => $cedula, 'periodo' =>$periodo]);
