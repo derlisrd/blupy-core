@@ -5,6 +5,7 @@ namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
 use App\Models\Notificacion;
 use App\Services\BlupyQrService;
+use App\Services\FarmaService;
 use App\Services\InfinitaService;
 use App\Services\PushExpoService;
 use App\Services\SupabaseService;
@@ -30,9 +31,7 @@ class QRController extends Controller
             $parametrosPorArray = [
                 'id' => $req->id,
                 'documento' => $cliente->cedula,
-
                 'numeroCuenta' => $req->numeroCuenta,
-
                 'numeroTarjeta' =>$req->numeroTarjeta,
                 'telefono' => $req->telefono,
                 'ip' => $req->ip(),
@@ -44,7 +43,6 @@ class QRController extends Controller
             $data = (object) $blupy['data'];
 
             if (property_exists($data, 'results')) {
-
                 $noti = new PushExpoService();
                 $tokens = $user->notitokens();
                 $noti->send($tokens, 'Compra en comercio', 'Se ha registrado una compra en comercio',[]);
@@ -54,7 +52,19 @@ class QRController extends Controller
                     'title' => 'Compra en comercio',
                     'body' => $data->results['info']
                 ]);
+
+                /*
+                ACTUALIZAR EN FARMA
+                */
+                $farmaService = new FarmaService();
+                $farmaService->actualizarPedidosQR($data->results['id']);
+
             }
+
+
+
+
+
             return response()->json([
                 'success' => $data->success,
                 'message' => $data->message

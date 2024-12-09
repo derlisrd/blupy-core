@@ -24,6 +24,9 @@ class FarmaService
         return $this->get('cliente/getCliente',['documento' => $cedula]);
     }
 
+    public function actualizarPedidosQR(String $codigo){
+        return $this->post('pedidosqr/autorizar',['codigo' => $codigo]);
+    }
     public function movimientos(String $cedula, String $periodo){
         return $this->get('cliente/getMovimientos',['documento' => $cedula, 'periodo' =>$periodo]);
     }
@@ -40,6 +43,21 @@ class FarmaService
 
 
 
+    private function post(String $endpoint,Array $parametros) {
+        try {
+            $response = Http::withHeaders($this->header)->post($this->url . '/' . $endpoint, $parametros);
+            $json = $response->json();
+            return [
+                'data'=>$json,
+                'status'=>$response->status()
+            ];
+        } catch (RequestException $e) {
+            return [
+                'status' => $e->response ? $e->response->status() : null,
+                'data' => $e->response ? $e->response->json() : null,
+            ];
+        }
+    }
     private function get(String $endpoint,Array $parametros) {
         try {
             $response = Http::withHeaders($this->header)->get($this->url . '/' . $endpoint, $parametros);
