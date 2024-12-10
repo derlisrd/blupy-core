@@ -45,24 +45,26 @@ class ActualizarSolicitudesJobs implements ShouldQueue
                         ]
                     );
                     $cliente = Cliente::find($solicitud_actualizada->cliente_id);
-                    $clienteId = $cliente->id;
-                    $resInfinita = (object) $infinitaService->ListarTarjetasPorDoc($cliente->cedula);
-                    $infinitaData = (object)$resInfinita->data;
-                    if(property_exists($infinitaData,'Tarjetas')){
-                        $tarjeta = ($infinitaData->Tarjetas[0]);
-                        $tarjeta = Tarjeta::create(
-                            [
-                                'cliente_id'=>$clienteId,
-                                'cuenta'=>$tarjeta['MaeCtaId'],
-                                'tipo' => $tarjeta['MTTipo'] === 'P' ? 1 : 2,
-                                'numero' => $tarjeta['MTNume'],
-                                'linea' =>$tarjeta['MTLinea'],
-                                'bloqueo' => $tarjeta['MTBloq'] === '' ? 0 : 1,
-                                'motivo_bloqueo' => $tarjeta['MotBloqNom']
-                            ]
-                        );
+                    if($cliente){
+                        $clienteId = $cliente->id;
+                        $resInfinita = (object) $infinitaService->ListarTarjetasPorDoc($cliente->cedula);
+                        $infinitaData = (object)$resInfinita->data;
+                        if(property_exists($infinitaData,'Tarjetas')){
+                            $tarjeta = ($infinitaData->Tarjetas[0]);
+                            $tarjeta = Tarjeta::create(
+                                [
+                                    'cliente_id'=>$clienteId,
+                                    'cuenta'=>$tarjeta['MaeCtaId'],
+                                    'tipo' => $tarjeta['MTTipo'] === 'P' ? 1 : 2,
+                                    'numero' => $tarjeta['MTNume'],
+                                    'linea' =>$tarjeta['MTLinea'],
+                                    'bloqueo' => $tarjeta['MTBloq'] === '' ? 0 : 1,
+                                    'motivo_bloqueo' => $tarjeta['MotBloqNom']
+                                ]
+                            );
+                        }
                     }
-
+                    Log::info($solicitud_actualizada->cliente_id);
                 }
             }
         } catch (\Throwable $th) {
