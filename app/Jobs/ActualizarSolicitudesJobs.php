@@ -44,7 +44,7 @@ class ActualizarSolicitudesJobs implements ShouldQueue
                             'estado'=>$results['estado']
                         ]
                     );
-                    $cliente = Cliente::find($solicitud_actualizada->cliente_id);
+                    /* $cliente = Cliente::find($solicitud_actualizada->cliente_id);
                     if($cliente){
                         $clienteId = $cliente->id;
                         $resInfinita = (object) $infinitaService->ListarTarjetasPorDoc($cliente->cedula);
@@ -63,8 +63,8 @@ class ActualizarSolicitudesJobs implements ShouldQueue
                                 ]
                             );
                         }
-                    }
-                    Log::info($solicitud_actualizada->cliente_id);
+                    } */
+                    Log::info($solicitud_actualizada);
                 }
             }
         } catch (\Throwable $th) {
