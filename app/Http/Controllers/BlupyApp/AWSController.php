@@ -57,6 +57,7 @@ class AWSController extends Controller
             $extraidoCedula = (int)strstr($scaned, $req->cedula);
             $cedula = (int) $req->cedula;
 
+            SupabaseService::LOG('scaneo',$scaned);
             $message = '';
             $success = true;
             $status = 200;
