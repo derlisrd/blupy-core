@@ -53,7 +53,7 @@ class QRController extends Controller
                     'body' => $data->results['info']
                 ]);
 
-                $datasResults = $data->results;
+                /* $datasResults = $data->results;
 
                     $farmaService = new FarmaService();
                     $farmaRes = $farmaService->actualizarPedidosQR(
@@ -64,7 +64,7 @@ class QRController extends Controller
                     );
                 Log::info($farmaRes);
 
-                Log::info($datasResults);
+                Log::info($datasResults); */
 
             }
 
