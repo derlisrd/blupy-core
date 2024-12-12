@@ -26,8 +26,7 @@ class InformacionesController extends Controller
 
     public function infoLista(Request $req){
         $user = $req->user();
-        $results = Informacion::where('user_id', $user->id)
-        ->where('id', $req->id)->get();
+        $results = Informacion::where('user_id', $user->id)->get();
         return response()->json([
             'success'=>true,
             'results'=>$results
