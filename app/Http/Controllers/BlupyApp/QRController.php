@@ -53,14 +53,14 @@ class QRController extends Controller
                     'body' => $data->results['info']
                 ]);
 
-                $datasResults = (object) $data->results;
-                if(property_exists($datasResults, 'farma') && $datasResults->farma ==='1' && $datasResults->web ==='0'){
+                $datasResults = $data->results;
+                if($datasResults['farma'] ==='1' && $datasResults['web'] ==='0'){
                     $farmaService = new FarmaService();
                     $farmaService->actualizarPedidosQR(
-                        (String)$datasResults->id,
-                        $datasResults->numero_cuenta,
-                        $datasResults->numero_tarjeta,
-                        $datasResults->numero_movimiento
+                        (String)$datasResults['id'],
+                        $datasResults['numero_cuenta'],
+                        $datasResults['numero_tarjeta'],
+                        $datasResults['numero_movimiento']
                     );
                 }
 
