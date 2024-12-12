@@ -57,7 +57,7 @@ class User extends Authenticatable implements JWTSubject
     }
     public function info(){
         $id = $this->id;
-        $info = Informacion::where('user_id', $id)->where('active',1)->latest()->first();
+        $info = Informacion::where('user_id', $id)->where('active',1)->where('leido',0)->latest()->first();
         return $info;
     }
 

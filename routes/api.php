@@ -44,7 +44,9 @@ Route::get('/verificar-version',[VersionController::class,'verificarVersion'])->
 
 Route::middleware('auth:api')->group(function(){
 
-    Route::get('/info',[InformacionesController::class,'InfoPopUpInicial'])->name('api_info');
+    Route::get('/info',[InformacionesController::class,'infoPopUpInicial'])->name('api_info');
+    Route::get('/info-lista',[InformacionesController::class,'infoLista'])->name('api_info');
+    Route::put('/marcar-info-leida',[InformacionesController::class,'marcarInfoLeida'])->name('api_info');
 
     Route::get('/mis-dispositivos',[CuentasController::class,'misDispositivos'])->name('api_mis_dispositivos');
     Route::delete('/eliminar-dispositivo',[CuentasController::class,'eliminarDispositivo'])->name('api_eliminar_dispositivo');
