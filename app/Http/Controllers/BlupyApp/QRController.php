@@ -54,7 +54,7 @@ class QRController extends Controller
                 ]);
 
                 $datasResults = $data->results;
-                if($datasResults['farma'] ==='1' && $datasResults['web'] ==='0'){
+
                     $farmaService = new FarmaService();
                     $farmaRes = $farmaService->actualizarPedidosQR(
                         (String)$datasResults['id'],
@@ -63,7 +63,7 @@ class QRController extends Controller
                         $datasResults['numero_movimiento']
                     );
                 Log::info($farmaRes);
-                }
+
                 Log::info($datasResults);
 
             }
