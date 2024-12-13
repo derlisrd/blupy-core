@@ -17,6 +17,6 @@ class Adicional extends Model
         'direccion',
         'celular',
         'cliente_id',
-        'mae_cuenta_id'
+        'cuenta'
     ];
 }

@@ -277,7 +277,7 @@ class SolicitudesController extends Controller
 
             $tarjetaObject = (object) $tarjetas;
 
-            if((string)$req->maectaid !== $tarjetaObject->cuenta)
+            if((string)$req->cuenta !== $tarjetaObject->cuenta)
                 return response()->json(['success'=>false,'message'=>'Error tarjeta no pertenece a cuenta'],403);
 
 
@@ -287,7 +287,7 @@ class SolicitudesController extends Controller
 
 
 
-            $infinitaAdicional = $this->adicionalEnInfinita($cliente,$datoDelAdicional,$req->maectaid);
+            $infinitaAdicional = $this->adicionalEnInfinita($cliente,$datoDelAdicional,$req->cuenta);
 
             if( ! $infinitaAdicional->success ){
                 return response()->json(['success'=>false,'message'=>$infinitaAdicional->message],400);
@@ -302,7 +302,7 @@ class SolicitudesController extends Controller
                 'apellidos'=>$req->apellidos,
                 'limite'=>$req->limite,
                 'direccion'=>$req->direccion,
-                'mae_cuenta_id'=>$req->maectaid
+                'cuenta'=>$req->cuenta
             ]);
 
             SolicitudCredito::create([

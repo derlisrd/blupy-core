@@ -33,11 +33,11 @@ class InformacionesController extends Controller
         ]);
     }
 
-    public function marcarInfoLeida(Request $req){
+    public function marcarInfoLeida(Request $req, $id){
         $user = $req->user();
         Informacion::where('user_id', $user->id)
-        ->where('id', $req->id)
-        ->update(['leido' => true]);
+        ->where('id', $id)
+        ->update(['leido' => true, 'active'=>0]);
 
 
         return response()->json([
