@@ -89,6 +89,7 @@ Route::middleware('auth:api')->group(function(){
 
     Route::get('/mis-descuentos',[ClienteController::class,'misDescuentos'])->name('api_mis_descuentos');
     Route::get('/mis-adicionales',[ClienteController::class,'misAdicionales'])->name('api_mis_adicionales');
+    Route::get('/mis-adicionales-tarjeta',[ClienteController::class,'tarjeta'])->name('api_mis_adicionales_tarjetas');
 
     Route::post('/vincular-vendedor',[VendedorController::class,'vincular'])->name('api_vincular_vendedor');
 });
