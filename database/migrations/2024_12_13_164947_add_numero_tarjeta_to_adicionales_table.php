@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('adicionales', function (Blueprint $table) {
-            $table->integer('numero_tarjeta')->nullable()->after('cuenta');
+            $table->integer('numero_tarjeta')->nullable()->after('mae_cuenta_id');
+            $table->renameColumn('mae_cuenta_id', 'cuenta');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('adicionales', function (Blueprint $table) {
             $table->dropColumn('numero_tarjeta');
+            $table->renameColumn('cuenta', 'mae_cuenta_id');
         });
     }
 };

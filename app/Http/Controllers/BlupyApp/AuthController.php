@@ -197,8 +197,8 @@ class AuthController extends Controller
                         $dispositoDeConfianza->update(['updated_at'=>date('Y-m-d H:i:s')]);
                     }
 
-
-                    $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s') ]);
+                    $version = $req->version ?? null;
+                    $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s'), 'version'=>$version ]);
 
                     $tarjetasConsultas = new CuentasPrivate();
                     $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula);
