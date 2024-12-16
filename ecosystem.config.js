@@ -3,7 +3,7 @@ module.exports = {
       {
         name: 'laravel-queue-worker',
         script: 'artisan',
-        args: 'queue:work --tries=3',
+        args: 'queue:work',
         interpreter: 'php',
         watch: false,
       },

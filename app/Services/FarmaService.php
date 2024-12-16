@@ -40,7 +40,9 @@ class FarmaService
         return $this->get('ventas/porcliente',['fecha'=>$fecha,'documento'=>$documento]);
     }
 
-
+    public function ingresarContrato($documento){
+        return $this->post('contratos-blupy/ingresar',['documento'=>$documento]);
+    }
 
 
     private function post(String $endpoint,Array $parametros) {
