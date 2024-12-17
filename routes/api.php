@@ -78,6 +78,8 @@ Route::middleware('auth:api')->group(function(){
 
     Route::get('/consultar-qr/{id}',[QRController::class,'consultar'])->name('api_consultar_qr');
     Route::post('/autorizar-qr',[QRController::class,'autorizar'])->name('api_autorizar_qr');
+    Route::post('/autorizar-sin-qr',[QRController::class,'autorizarSinQR'])->name('api_autorizar_sin_qr');
+
 
     Route::get('/ciudades',[ConsultasController::class,'ciudades'])->name('api_ciudades');
     Route::get('/barrios-por-ciudad/{idCiudad}',[ConsultasController::class,'barriosPorCiudad'])->name('api_barrios_por_ciudad');
