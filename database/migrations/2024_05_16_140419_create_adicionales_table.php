@@ -20,7 +20,7 @@ return new class extends Migration
             $table->bigInteger('limite');
             $table->string('direccion');
             $table->string('celular');
-            $table->string('cuenta')->nullable();
+            $table->string('mae_cuenta_id')->nullable();
             $table->timestamps();
             $table->foreign('cliente_id')->references('id')->on('clientes');
         });
