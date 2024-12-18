@@ -9,13 +9,20 @@ use Illuminate\Support\Str;
 use Aws\Rekognition\RekognitionClient;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AWSController extends Controller
 {
     public function scanearDocumento(Request $req){
         $validator = Validator::make($req->all(),trans('validation.verify.scan'),trans('validation.verify.scan.messages'));
 
-        if($validator->fails()) return response()->json(['success' => false, 'message' => $validator->errors()->first()],400);
+        if($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()],400);
+
+        $ip = $req->ip();
+        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 6,function() {});
+        if (!$executed)
+            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
         try {
             $amazon = new RekognitionClient([
