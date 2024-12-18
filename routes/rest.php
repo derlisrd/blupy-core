@@ -28,6 +28,8 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     //Route::get('/cliente/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])->name('rest_cliente_restablecer_contrasena');
     Route::get('/cliente/ficha/{id}',[ClientesController::class,'ficha'])->name('rest_cliente_ficha');
 
+    Route::put('/actualizar-ficha-funcionario',[ClientesController::class,'actualizarFuncionario'])->name('rest_actualizar_ficha_funcionario');
+
 
 
     Route::post('enviar-notificacion',[NotificacionesController::class,'enviarNotificacion'])->name('rest_enviar_notificacion');

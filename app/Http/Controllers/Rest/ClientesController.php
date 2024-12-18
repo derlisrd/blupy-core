@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Services\FarmaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ClientesController extends Controller
@@ -111,6 +113,35 @@ class ClientesController extends Controller
             'success'=>true,
             'total'=>$clientes->count(),
             'results'=>$clientes->get()
+        ]);
+    }
+
+    public function actualizarFuncionario(Request $req){
+
+        $validator = Validator::make($req->all(),['cedula'=>'required']);
+        if($validator->fails())
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+
+        $farma = new FarmaService();
+        $res = (object)$farma->cliente($req->cedula);
+        $dataFarma = (object)$res->data;
+
+        $farmaResult = null;
+
+        if(property_exists($dataFarma,'result')){
+            $result = $dataFarma->result;
+            if(count($result)>0){
+                $farmaResult = $result[0];
+                $esFuncionario = $farmaResult['esFuncionario'] === "N" ? 0 : 1;
+               Cliente::where('cedula',$req->cedula)->update([
+                'funcionario'=>$esFuncionario
+               ]);
+            }
+        }
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'Actualizado'
         ]);
     }
 
