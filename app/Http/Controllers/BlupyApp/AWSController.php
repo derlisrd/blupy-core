@@ -19,7 +19,7 @@ class AWSController extends Controller
 
         try {
             $amazon = new RekognitionClient([
-                'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+                'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
                 'version' => 'latest',
             ]);
             $base64Image = explode(";base64,", $req->fotofrontal64);
