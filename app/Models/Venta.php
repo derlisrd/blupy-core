@@ -20,6 +20,7 @@ class Venta extends Model
         'forma_codigo',
         'descripcion',
         'sucursal',
+        'codigo_sucursal',
         'fecha',
         'forma_venta',
         'documento'
