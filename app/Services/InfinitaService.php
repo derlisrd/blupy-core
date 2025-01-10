@@ -167,7 +167,7 @@ class InfinitaService
 
     private function datosCliente($cliente,$productoId,$adicionales,$solicitudDeLinea,$cuentaNumero){
         $adicionalesObject = $adicionales ? $adicionales  : [];
-        $cliente =  (object)[
+        $datosClienteInfinita =  (object)[
             "wSolicitud" => (object)[
                 "SolProdId"=> $productoId, // 171 registro 172 solicitud de credito 173 adicional 174 ampliacion
                 "SolTcTip"=> $productoId == 173 ? "A" : "P", // A adicional P principal
@@ -251,7 +251,7 @@ class InfinitaService
             "Proceso"=> 2
         ];
         SupabaseService::LOG('datos_cliente',$cliente);
-        return $cliente;
+        return $datosClienteInfinita;
     }
 
 
