@@ -199,7 +199,6 @@ class SolicitudesController extends Controller
             $validator = Validator::make($req->all(),trans('validation.solicitudes.ampliacion'),trans('validation.solicitudes.ampliacion.messages'));
             if($validator->fails())
                 return response()->json(['success' => false,'message' => $validator->errors()->first()], 400);
-
             $user = $req->user();
             $cliente = $user->cliente;
             $cliente['email'] = $user['email'];
@@ -207,8 +206,9 @@ class SolicitudesController extends Controller
             $nroCuenta = $req->numeroCuenta;
             $fotoIngreso = $req->fotoIngreso;
             $fotoAnde = $req->fotoAnde;
-
-
+            if ($cliente->created_at->diffInDays(Carbon::now()) < 90) {
+                return response()->json(['success' => false, 'message' => 'No puede solicitar ampliación. Debe tener al menos 3 meses de antigüedad.'], 403);
+            }
 
             $datosAenviar = $cliente;
 
