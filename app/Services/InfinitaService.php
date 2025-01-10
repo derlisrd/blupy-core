@@ -170,7 +170,7 @@ class InfinitaService
         $cliente =  (object)[
             "wSolicitud" => (object)[
                 "SolProdId"=> $productoId, // 171 registro 172 solicitud de credito 173 adicional 174 ampliacion
-                "SolTcTip"=> $productoId == 173 ? "A" : "P",
+                "SolTcTip"=> $productoId == 173 ? "A" : "P", // A adicional P principal
                 "SolApe1"=> $cliente->apellido_primero,
                 "SolApe2"=> $cliente->apellido_segundo ?? "",
                 "SolCed"=> $cliente->cedula,
@@ -250,7 +250,7 @@ class InfinitaService
             ],
             "Proceso"=> 2
         ];
-        //SupabaseService::LOG('datos_cliente',$cliente);
+        SupabaseService::LOG('datos_cliente',$cliente);
         return $cliente;
     }
 
