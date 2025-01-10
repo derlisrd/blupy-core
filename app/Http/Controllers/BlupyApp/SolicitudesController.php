@@ -207,7 +207,27 @@ class SolicitudesController extends Controller
             $nroCuenta = $req->numeroCuenta;
             $fotoIngreso = $req->fotoIngreso;
             $fotoAnde = $req->fotoAnde;
-            $ampliacion = (object) $this->ampliacionEnInfinita($cliente,$lineaSolicitada,$nroCuenta,$fotoIngreso,$fotoAnde);
+
+
+
+            $datosAenviar = $cliente;
+
+            $departamento = Departamento::find($cliente->departamento_id);
+            $ciudad = Ciudad::find($cliente->ciudad_id);
+            $barrio = Barrio::find($cliente->barrio_id);
+
+            $departamento_empresa = Departamento::find($cliente->empresa_departamento_id);
+            $ciudad_empresa = Ciudad::find($cliente->empresa_ciudad_id);
+
+            $datosAenviar['departamento_id'] = $departamento->codigo;
+            $datosAenviar['ciudad_id'] = $ciudad->codigo;
+            $datosAenviar['barrio_id'] = $barrio->codigo;
+
+            $datosAenviar['empresa_departamento_id'] = $departamento_empresa->codigo;
+            $datosAenviar['empresa_ciudad_id'] = $ciudad_empresa->codigo;
+
+
+            $ampliacion = (object) $this->ampliacionEnInfinita($datosAenviar,$lineaSolicitada,$nroCuenta,$fotoIngreso,$fotoAnde);
             SupabaseService::LOG('core_ampliacion_176',$ampliacion);
             if(!$ampliacion->success){
                 SupabaseService::LOG('core_ampliacion_178',$ampliacion);
