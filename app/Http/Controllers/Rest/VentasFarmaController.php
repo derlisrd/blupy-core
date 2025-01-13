@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Validator;
 
 class VentasFarmaController extends Controller{
 
+
+
+
     public function ventasDelMes(Request $request){
         $inicioMes = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
         $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
@@ -27,7 +30,7 @@ class VentasFarmaController extends Controller{
 
     public function ventasPorSucursal(Request $request){
         $validator = Validator::make($request->all(), [
-            'sucursal_id' => 'required|integer'
+            'punto' => 'required|integer'
         ]);
         $inicioMes = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
         $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
@@ -35,7 +38,7 @@ class VentasFarmaController extends Controller{
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-        $sucursal = Sucursal::find($request->sucursal_id);
+        $sucursal = Sucursal::where('punto',$request->punto)->first();
 
         if (!$sucursal)
             return response()->json(['success' => false, 'message' => 'La sucursal no existe'], 404);
