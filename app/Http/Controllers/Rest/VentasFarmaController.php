@@ -46,6 +46,7 @@ class VentasFarmaController extends Controller{
         $results = Venta::whereBetween('fecha',[$inicioMes,$finMes])
         ->where('codigo_sucursal', $sucursal->codigo)
         ->get();
+
         return response()->json([
             'success'=>true,
             'results'=>$results
