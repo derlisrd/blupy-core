@@ -32,8 +32,9 @@ class VentasFarmaController extends Controller{
         $validator = Validator::make($request->all(), [
             'punto' => 'required|integer'
         ]);
-        $inicioMes = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
-        $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
+        $fechaDesde = $request->input('desde') . ' 00:00:00' ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+        $fechaHasta = $request->input('hasta') . ' 23:59:59' ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
+
 
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
@@ -43,7 +44,7 @@ class VentasFarmaController extends Controller{
         if (!$sucursal)
             return response()->json(['success' => false, 'message' => 'La sucursal no existe'], 404);
 
-        $results = Venta::whereBetween('fecha',[$inicioMes,$finMes])
+        $results = Venta::whereBetween('fecha',[$fechaDesde,$fechaHasta])
         ->where('codigo_sucursal', $sucursal->codigo)
         ->get();
 
