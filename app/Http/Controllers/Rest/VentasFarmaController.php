@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Rest;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcesarVentasDelDiaFarmaJobs;
 use App\Models\Cliente;
+use App\Models\Sucursal;
 use App\Models\Venta;
 use App\Services\FarmaService;
 use Carbon\Carbon;
@@ -18,6 +19,30 @@ class VentasFarmaController extends Controller{
         $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
 
         $results = Venta::whereBetween('fecha',[$inicioMes,$finMes])->get();
+        return response()->json([
+            'success'=>true,
+            'results'=>$results
+        ]);
+    }
+
+    public function ventasPorSucursal(Request $request){
+        $validator = Validator::make($request->all(), [
+            'sucursal_id' => 'required|integer'
+        ]);
+        $inicioMes = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
+        $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
+
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        $sucursal = Sucursal::find($request->sucursal_id);
+
+        if (!$sucursal)
+            return response()->json(['success' => false, 'message' => 'La sucursal no existe'], 404);
+
+        $results = Venta::whereBetween('fecha',[$inicioMes,$finMes])
+        ->where('codigo_sucursal', $sucursal->codigo)
+        ->get();
         return response()->json([
             'success'=>true,
             'results'=>$results

@@ -57,6 +57,8 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
     Route::get('/ventas-del-mes',[VentasFarmaController::class,'ventasDelMes']);
 
+    Route::get('/ventas-por-sucursal',[VentasFarmaController::class,'ventasPorSucursal'])->name('rest_ventas_por_sucursal');
+
     Route::get('/ventas-tickets',[VentasFarmaController::class,'tickets'])->name('rest_ventas_tickets');
 });
 
