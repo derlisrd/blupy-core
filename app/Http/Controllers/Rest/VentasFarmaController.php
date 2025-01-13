@@ -30,11 +30,15 @@ class VentasFarmaController extends Controller{
 
     public function ventasPorSucursal(Request $request){
         $validator = Validator::make($request->all(), [
-            'punto' => 'required|integer'
+            'punto' => 'required|integer',
+            'desde' => 'nullable|date_format:Y-m-d',
+            'hasta' => 'nullable|date_format:Y-m-d'
         ]);
-        $fechaDesde = $request->input('desde') . ' 00:00:00' ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
-        $fechaHasta = $request->input('hasta') . ' 23:59:59' ?? Carbon::now()->endOfDay()->format('Y-m-d H:i:s');
+        $fechaDesde = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d');
+        $fechaHasta = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d');
 
+        $inicio = $fechaDesde . ' 00:00:00';
+        $fin = $fechaHasta . ' 23:59:59';
 
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
@@ -44,7 +48,7 @@ class VentasFarmaController extends Controller{
         if (!$sucursal)
             return response()->json(['success' => false, 'message' => 'La sucursal no existe'], 404);
 
-        $results = Venta::whereBetween('fecha',[$fechaDesde,$fechaHasta])
+        $results = Venta::whereBetween('fecha',[$inicio,$fin])
         ->where('codigo_sucursal', $sucursal->codigo)
         ->get();
 
