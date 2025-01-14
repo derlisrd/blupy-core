@@ -33,38 +33,59 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
     {
         $farmaService = new FarmaService();
 
-        $res = (object)$farmaService->ventasRendidas($this->fecha);
-        $data = (object) $res->data;
-        if (property_exists($data, 'result')) {
-            $ventas = $data->result;
-            foreach ($ventas as $v) {
-                $venta = Venta::where('codigo', $v['ventCodigo'])->first();
-                if (!$venta) {
-                    $date = Carbon::parse($v['ventFecha'],'UTC');
-                    $date->setTimezone('America/Asuncion');
-                    $fechaFormateada = $date->format('Y-m-d H:i:s');
-                    $cliente = Cliente::where('cedula', $v['cedula'])->first();
-                    $cliente_id = $cliente ? $cliente->id : null;
-                    $ventaCreada = Venta::create([
-                        'cliente_id' => $cliente_id,
-                        'codigo' => $v['ventCodigo'],
-                        'documento' => $v['cedula'],
-                        'adicional' => $v['clieCodigoAdicional'],
-                        'factura_numero' => $v['ventNumero'],
-                        'importe' => $v['ventTotBruto'],
-                        'descuento' => $v['ventTotDescuento'],
-                        'importe_final' => $v['ventTotNeto'],
-                        'forma_pago' => $v['frpaAbreviatura'],
-                        'forma_codigo' => $v['frpaCodigo'],
-                        'descripcion' => null,
-                        'sucursal' => $v['estrDescripcion'],
-                        'codigo_sucursal'=> $v['estrCodigo'],
-                        'fecha' => $fechaFormateada,
-                        'forma_venta' => $v['ventTipo']
-                    ]);
+        try {
+            $startDate = Carbon::create(2023, 6, 14);
+            $endDate = Carbon::now();
+
+            while ($startDate->lte($endDate)) {
+                $fechaAver = $startDate->format('Y-m-d');
+                $res = (object)$farmaService->ventasRendidas($fechaAver);
+                $data = (object) $res->data;
+                if (property_exists($data, 'result')) {
+                    $ventas = $data->result;
+                    $codigosVentas = array_column($ventas, 'ventCodigo');
+                    $ventasExistentes = Venta::whereIn('codigo', $codigosVentas)->pluck('codigo')->toArray();
+
+                    $nuevasVentas = array_filter($ventas, function ($venta) use ($ventasExistentes) {
+                        return !in_array($venta['ventCodigo'], $ventasExistentes);
+                    });
+                    $insertData = array_map(function ($v) {
+                        $fechaFormateada = Carbon::parse($v['ventFecha'], 'UTC')
+                            ->setTimezone('America/Asuncion')
+                            ->format('Y-m-d H:i:s');
+
+                        $cliente = Cliente::where('cedula', $v['cedula'])->first();
+                        $cliente_id = $cliente ? $cliente->id : null;
+
+                        return [
+                            'cliente_id' => $cliente_id,
+                            'codigo' => $v['ventCodigo'],
+                            'documento' => $v['cedula'],
+                            'adicional' => $v['clieCodigoAdicional'],
+                            'factura_numero' => $v['ventNumero'],
+                            'importe' => $v['ventTotBruto'],
+                            'descuento' => $v['ventTotDescuento'],
+                            'importe_final' => $v['ventTotNeto'],
+                            'forma_pago' => $v['frpaAbreviatura'],
+                            'forma_codigo' => $v['frpaCodigo'],
+                            'descripcion' => null,
+                            'sucursal' => $v['estrDescripcion'],
+                            'codigo_sucursal' => $v['estrCodigo'],
+                            'fecha' => $fechaFormateada,
+                            'forma_venta' => $v['ventTipo'],
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }, $nuevasVentas);
+                    Venta::insert($insertData);
                 }
+                $startDate->addDay();
             }
+        } catch (\Exception $e) {
+            SupabaseService::LOG('error', "Error crítico: {$e->getMessage()}");
         }
+
+
 
         SupabaseService::LOG('schedule_plano','ingresadas fecha '.$this->fecha);
     }

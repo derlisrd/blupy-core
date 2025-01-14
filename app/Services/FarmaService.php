@@ -21,6 +21,9 @@ class FarmaService
         ];
     }
 
+    public function clientePorCodigo(String $codigo){
+        return $this->get('cliente/getClienteCodigo',['codigo' => $codigo]);
+    }
     public function cliente(String $cedula){
         return $this->get('cliente/getCliente',['documento' => $cedula]);
     }

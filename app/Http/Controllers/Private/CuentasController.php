@@ -47,7 +47,7 @@ class CuentasController extends Controller
         return count($results) > 0 ? $results[0] : null;
     }
 
-    public function tarjetas(string $cedula){
+    public function tarjetas(string $cedula, int $extranjero){
         $results = [];
         $resInfinita = (object) $this->infinitaService->ListarTarjetasPorDoc($cedula);
         $infinita = (object)$resInfinita->data;
@@ -76,6 +76,7 @@ class CuentasController extends Controller
         }
 
         $resFarma = (object)$this->farmaService->cliente($cedula);
+
         $farma = (object) $resFarma->data;
 
         if(property_exists( $farma,'result')){
