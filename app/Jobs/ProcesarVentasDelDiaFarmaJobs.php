@@ -34,7 +34,7 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
         $farmaService = new FarmaService();
 
         try {
-            $startDate = Carbon::create(2024, 11, 28);
+            $startDate = Carbon::create(2025, 1, 3);
             $endDate = Carbon::now();
 
             while ($startDate->lte($endDate)) {
