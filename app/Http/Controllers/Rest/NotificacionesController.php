@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Rest;
 
-use Illuminate\Support\Facades\Http;
+
 use App\Http\Controllers\Controller;
 use App\Jobs\EnviarEmailJobs;
 use App\Jobs\NotificacionesJobs;
@@ -10,6 +10,7 @@ use App\Models\Device;
 use App\Models\User;
 use App\Services\PushExpoService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
@@ -53,10 +54,23 @@ class NotificacionesController extends Controller
                 'message'=> $validator->errors()->first()
             ], 400);
         }
+
+        $datos = [
+            'title' => $req->title,
+            'text' => $req->text
+        ];
         $tokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
-        $emails = User::whereNotNull('email')->where('rol',0)->pluck('email')->toArray();
-        NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database')->onQueue('notificaciones');;
-        EnviarEmailJobs::dispatch($req->title,$req->text,$emails)->onConnection('database');
+        //$emails = User::whereNotNull('email')->where('rol',0)->pluck('email')->toArray();
+        NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database')->onQueue('notificaciones');
+
+
+        DB::table('users')->select('email')->whereNotNull('email')->chunk(100, function ($emails) use ($datos) {
+            foreach ($emails as $user) {
+                EnviarEmailJobs::dispatch($datos['title'], $datos['text'], $user->email);
+            }
+        });
+
+
         return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano']);
     }
 
