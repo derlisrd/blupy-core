@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Rest;
 
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
+use App\Jobs\EnviarEmailJobs;
 use App\Jobs\NotificacionesJobs;
 use App\Models\Device;
 use App\Models\User;
@@ -53,8 +54,10 @@ class NotificacionesController extends Controller
             ], 400);
         }
         $tokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
-        NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database');
-        return response()->json(['success'=>true,'message'=>'Notificaciones enviadas']);
+        $emails = User::whereNotNull('email')->where('rol',0)->pluck('email')->toArray();
+        NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database')->onQueue('notificaciones');;
+        EnviarEmailJobs::dispatch($req->title,$req->text,$emails)->onConnection('database');
+        return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano']);
     }
 
     public function enviarNotificacionSelectiva(Request $req){

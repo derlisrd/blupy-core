@@ -60,7 +60,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{!! asset('assets/img/logo.png') !!}" alt="Blupy Logo">
+            <img src="{!! asset('assets/img/logo.png') !!}" alt="Blupy Credito Digital">
             <h1>¡Feliz Cumpleaños, {{ $nombre ?? '' }}!</h1>
         </div>
         <div class="content">
