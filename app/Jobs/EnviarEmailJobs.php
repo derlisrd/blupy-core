@@ -15,15 +15,15 @@ class EnviarEmailJobs implements ShouldQueue
 
     public $text;
     public $title;
-    public $emails;
+    public $email;
     /**
      * Create a new job instance.
      */
-    public function __construct($title,$text,$emails)
+    public function __construct($title,$text,$email)
     {
         $this->text = $text;
         $this->title = $title;
-        $this->emails = $emails;
+        $this->email = $email;
     }
 
     /**
@@ -34,18 +34,11 @@ class EnviarEmailJobs implements ShouldQueue
         try {
         $asunto = $this->title;
         $params = ['title'=>$this->title,'text'=>$this->text];
-        foreach ($this->emails as $email) {
-            $datos = [
-                'email'=>$email,
-                'asunto'=>$asunto
-            ];
-            Mail::send('email.notificacion', $params, function ($message) use($datos) {
+        $datos = ['asunto'=>$asunto,'email'=>$this->email];
+        Mail::send('email.notificacion', $params, function ($message) use($datos) {
                 $message->subject($datos['asunto']);
                 $message->to($datos['email']);
-            });
-        }
-
-
+        });
 
         } catch (\Throwable $th) {
             throw $th;
