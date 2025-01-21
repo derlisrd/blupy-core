@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Rest;
 
 
 use App\Http\Controllers\Controller;
-use App\Jobs\EnviarEmailJobs;
 use App\Jobs\NotificacionesJobs;
 use App\Models\Device;
 use App\Models\User;
@@ -37,7 +36,7 @@ class NotificacionesController extends Controller
             return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito', 'results'=>$to, 'user'=>$user]);
 
         } catch (\Throwable $th) {
-            Log::error($th);
+            throw $th;
             return response()->json(['success'=>false,'message'=>'Error de servidor. No se pudo enviar.'],500);
         }
     }
@@ -59,22 +58,8 @@ class NotificacionesController extends Controller
             'text' => $req->text
         ];
         $tokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
-        //$emails = User::whereNotNull('email')->where('rol',0)->pluck('email')->toArray();
+
         NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database')->onQueue('notificaciones');
-
-
-        /* User::whereNotNull('email')
-        ->where('rol', 0)
-        ->chunk(500, function ($users) use ($datos) {
-            foreach ($users as $user) {
-                if (!empty($user->email)) { //
-                    EnviarEmailJobs::dispatch($datos['title'], $datos['text'], $user->email);
-                }
-            }
-        }); */
-
-
-
         return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano']);
     }
 
