@@ -23,6 +23,9 @@ class BlupyQrService
     public function consultarQR($codigo_id_qr){
         return $this->get('cliente/consultar-qr/'.$codigo_id_qr,[]);
     }
+    public function consultarPorDocumento($documento){
+        return $this->get('consultar-documento/'.$documento,[]);
+    }
 
     public function autorizarQR(Array $params){
         $data = (object)[

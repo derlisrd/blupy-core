@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BlupyApp\AuthController;
+use App\Http\Controllers\BlupyApp\AutorizacionesQRController;
 use App\Http\Controllers\BlupyApp\AWSController;
 use App\Http\Controllers\BlupyApp\ClienteController;
 use App\Http\Controllers\BlupyApp\ConsultasController;
@@ -42,6 +43,9 @@ Route::get('/enviame-codigo-sms',[ValidacionesController::class,'enviameCodigoSM
 
 Route::get('/verificar-version',[VersionController::class,'verificarVersion'])->name('api_verificar_version');
 
+
+
+
 Route::middleware('auth:api')->group(function(){
 
     Route::get('/info',[InformacionesController::class,'infoPopUpInicial'])->name('api_info');
@@ -78,7 +82,8 @@ Route::middleware('auth:api')->group(function(){
 
     Route::get('/consultar-qr/{id}',[QRController::class,'consultar'])->name('api_consultar_qr');
     Route::post('/autorizar-qr',[QRController::class,'autorizar'])->name('api_autorizar_qr');
-    Route::post('/autorizar-sin-qr',[QRController::class,'autorizarSinQR'])->name('api_autorizar_sin_qr');
+    //Route::post('/autorizar-sin-qr',[QRController::class,'autorizarSinQR'])->name('api_autorizar_sin_qr');
+    Route::get('/solicitar-autorizacion-compra',[AutorizacionesQRController::class,'solicitarAutorizacion'])->name('api_solicitar_compra');
 
 
     Route::get('/ciudades',[ConsultasController::class,'ciudades'])->name('api_ciudades');
