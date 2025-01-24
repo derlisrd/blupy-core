@@ -30,6 +30,7 @@ class AutorizacionesQRController extends Controller
                 'success' => $data->success,
                 'message' => $data->message
             ], $blupy['status']);
+            ///return response()->json(['cedula'=>$cliente->cedula]);
 
         }catch(\Exception $e){
             throw $e;

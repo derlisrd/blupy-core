@@ -21,6 +21,8 @@ use App\Http\Controllers\Public\VersionController;
 use Illuminate\Support\Facades\Route;
 
 
+
+
 Route::post('/login',[AuthController::class,'login'])->name('api_login');
 Route::post('/confirmar-nuevo-dispositivo',[DeviceController::class,'confirmarNuevoDispositivo'])->name('api_confirmar_nuevo_dispositivo');
 Route::post('/codigo-nuevo-dispositivo',[DeviceController::class,'codigoNuevoDispositivo'])->name('api_codigo_nuevo_dispositivo');
@@ -100,5 +102,6 @@ Route::middleware('auth:api')->group(function(){
 
     Route::post('/vincular-vendedor',[VendedorController::class,'vincular'])->name('api_vincular_vendedor');
 });
+
 
 
