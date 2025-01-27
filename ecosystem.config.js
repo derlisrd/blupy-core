@@ -6,13 +6,6 @@ module.exports = {
         args: 'queue:work',
         interpreter: 'php',
         watch: false,
-      },
-/*       {
-        name: 'laravel-scheduler',
-        script: 'artisan',
-        args: 'schedule:run',
-        interpreter: 'php',
-        watch: false,
-      } */
+      }
     ]
   };
