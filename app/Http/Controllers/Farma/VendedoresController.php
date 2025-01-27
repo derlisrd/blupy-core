@@ -31,6 +31,8 @@ class VendedoresController extends Controller
 
         $vendedor = Vendedor::where('cedula',$r->cedula)->first();
         if($vendedor){
+            $vendedor->qr_generado = $vendedor->qr_generado + 1;
+            $vendedor->save();
             return response()->json([
                 'success'=>true,
                 'message'=> '',
