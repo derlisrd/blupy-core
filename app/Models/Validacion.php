@@ -15,6 +15,7 @@ class Validacion extends Model
         'celular',
         'codigo',
         'forma',
-        'valido'
+        'valido',
+        'origen'
     ];
 }

@@ -42,7 +42,7 @@ class DatosController extends Controller
             $randomNumber = random_int(100000, 999999);
             $emailService = new EmailService();
             $emailService->enviarEmail($req->email,"[".$randomNumber."]Blupy confirmar email",'email.validar',['code'=>$randomNumber]);
-            $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email,'cliente_id'=>$cliente->id]);
+            $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email,'cliente_id'=>$cliente->id,'origen'=>'cambioemail']);
 
             return response()->json(['success' =>true,'results'=>null,'message'=>'Hemos enviado un email con el codigo']);
 
@@ -127,7 +127,7 @@ class DatosController extends Controller
             $mensaje = $randomNumber." es tu codigo de verificacion de BLUPY. ". $hora  ;
             $tigoService->enviarSms($req->celular,$mensaje);
 
-            Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->celular,'cliente_id'=>$cliente->id]);
+            Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->celular,'cliente_id'=>$cliente->id,'origen'=>'cambiocelular']);
 
             return response()->json(['success' =>true,'results'=>null,'message'=>'Mensaje enviado']);
         } catch (\Throwable $th) {

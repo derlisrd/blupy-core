@@ -58,7 +58,7 @@ class ValidacionesController extends Controller
 
             $randomNumber = random_int(100000, 999999);
             $this->enviarEmail($req->email,$randomNumber);
-            $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email]);
+            $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email,'origen'=>'email']);
 
             return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Email enviado']);
 
@@ -120,7 +120,7 @@ class ValidacionesController extends Controller
 
             $randomNumber = random_int(100000, 999999);
             $this->enviarMensajeDeTexto($req->celular,$randomNumber);
-            $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->celular]);
+            $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->celular,'origen'=>'celular']);
 
             return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Mensaje enviado']);
         } catch (\Throwable $th) {

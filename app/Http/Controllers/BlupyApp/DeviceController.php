@@ -32,7 +32,7 @@ class DeviceController extends Controller
                 $emailService = new EmailService();
                 $cliente = $user->cliente;
                 $emailService->enviarEmail($req->email,"[".$randomNumber."]Blupy confirmar dispositivo",'email.validarDispositivo',['code'=>$randomNumber]);
-                $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email,'cliente_id'=>$cliente->id]);
+                $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email,'cliente_id'=>$cliente->id,'origen'=>'dispositivo']);
                 $id = $validacion->id;
             }
 

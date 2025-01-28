@@ -290,7 +290,7 @@ class AuthController extends Controller
             'ip'=>$req->ip()
         ];
         $emailService->enviarEmail($email,"[".$randomNumber."]Blupy confirmar dispositivo",'email.validarDispositivo',$datos);
-        $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$email,'cliente_id'=>$clienteId]);
+        $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$email,'cliente_id'=>$clienteId,'origen'=>'dispositivo']);
         return $validacion->id;
     }
 

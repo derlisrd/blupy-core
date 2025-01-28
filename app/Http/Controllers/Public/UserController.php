@@ -51,12 +51,12 @@ class UserController extends Controller
                 $forma = $this->ocultarParcialmenteEmail($user->email);
                 $emailService = new EmailService();
                 $emailService->enviarEmail($user->email,'Blupy: recupera tu contraseña','email.recuperarcontrasena',['code'=>$randomNumber]);
-                $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$user->email,'cliente_id'=>$cliente->id]);
+                $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$user->email,'cliente_id'=>$cliente->id,'origen'=>'recuperar']);
             }
             if($req->forma == 1){
                 $forma = $this->ocultarParcialmenteTelefono($user->cliente->celular);
                 $this->enviarMensajeDeTextoRecuperacion($user->cliente->celular,$randomNumber);
-                $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$cliente->celular,'cliente_id'=>$cliente->id]);
+                $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$cliente->celular,'cliente_id'=>$cliente->id,'origen'=>'recuperar']);
             }
 
             return response()->json([
