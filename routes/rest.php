@@ -61,15 +61,20 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::get('/ventas-por-sucursal',[VentasFarmaController::class,'ventasPorSucursal'])->name('rest_ventas_por_sucursal');
 
     Route::get('/ventas-tickets',[VentasFarmaController::class,'tickets'])->name('rest_ventas_tickets');
+
+
+    Route::prefix('ventas')->group(function(){
+        Route::get('/comparar-meses',[InformesVentasController::class,'compararMeses'])->name('rest_comparar_meses');
+        Route::get('/top-sucursales-tickets',[InformesVentasController::class,'topSucursalesTickets'])->name('rest_top_sucursales_tickets');
+        Route::get('/top-sucursales-ingresos',[InformesVentasController::class,'topSucursalesIngresos'])->name('rest_top_sucursales_ingresos');
+        Route::get('/dia-mas-venta',[InformesVentasController::class,'diaMasVenta'])->name('rest_dia_mas_ventas');
+        Route::get('/mes-mas-venta',[InformesVentasController::class,'mesMayorFacturacion'])->name('rest_mes_mas_ventas');
+        Route::get('/forma-pago',[InformesVentasController::class,'formaPago'])->name('rest_forma_pago');
+    });
+
+
+
 });
 
 
-Route::prefix('ventas')->group(function(){
-    Route::get('/comparar-meses',[InformesVentasController::class,'compararMeses'])->name('rest_comparar_meses');
-    Route::get('/top-sucursales-tickets',[InformesVentasController::class,'topSucursalesTickets'])->name('rest_top_sucursales_tickets');
-    Route::get('/top-sucursales-ingresos',[InformesVentasController::class,'topSucursalesIngresos'])->name('rest_top_sucursales_ingresos');
-    Route::get('/dia-mas-venta',[InformesVentasController::class,'diaMasVenta'])->name('rest_dia_mas_ventas');
-    Route::get('/mes-mas-venta',[InformesVentasController::class,'mesMayorFacturacion'])->name('rest_mes_mas_ventas');
-    Route::get('/forma-pago',[InformesVentasController::class,'formaPago'])->name('rest_forma_pago');
-});
 
