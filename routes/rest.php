@@ -50,20 +50,24 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
     Route::post('/actualizar-perfiles',[UsersController::class,'actualizarPerfiles'])->name('rest_actualizar_perfiles');
 
-    Route::get('/ventas-totales',[VentasFarmaController::class,'ventasTotales'])->name('rest_ventas_totales');
-    Route::get('/actualizar-ventas-dia',[VentasFarmaController::class,'ventasDiaFarmaJob'])->name('rest_actualizar_ventas_dia');
-    Route::get('/ventas-dia-farma',[VentasFarmaController::class,'ventasDiaFarma'])->name('rest_ventas_dia_farma');
-    Route::get('/ventas-hoy-farma',[VentasFarmaController::class,'actualizarListaVentasDeHoy'])->name('rest_ventas_hoy_farma');
-    Route::get('/porcentaje-uso',[VentasFarmaController::class,'porcentajeDeUsoBlupy'])->name('rest_porcentaje_uso');
 
-    Route::get('/ventas-del-mes',[VentasFarmaController::class,'ventasDelMes']);
 
-    Route::get('/ventas-por-sucursal',[VentasFarmaController::class,'ventasPorSucursal'])->name('rest_ventas_por_sucursal');
+
 
     Route::get('/ventas-tickets',[VentasFarmaController::class,'tickets'])->name('rest_ventas_tickets');
 
 
     Route::prefix('ventas')->group(function(){
+
+        Route::get('/totales',[VentasFarmaController::class,'ventasTotales'])->name('rest_ventas_totales');
+        Route::get('/actualizar-del-dia',[VentasFarmaController::class,'ventasDiaFarmaJob'])->name('rest_actualizar_ventas_dia');
+        Route::get('/dia-farma',[VentasFarmaController::class,'ventasDiaFarma'])->name('rest_ventas_dia_farma');
+        Route::get('/hoy',[VentasFarmaController::class,'actualizarListaVentasDeHoy'])->name('rest_ventas_hoy_farma');
+        Route::get('/porcentaje-uso',[VentasFarmaController::class,'porcentajeDeUsoBlupy'])->name('rest_porcentaje_uso');
+
+        Route::get('/del-mes',[VentasFarmaController::class,'ventasDelMes']);
+
+        Route::get('/por-sucursal',[VentasFarmaController::class,'ventasPorSucursal'])->name('rest_ventas_por_sucursal');
         Route::get('/comparar-meses',[InformesVentasController::class,'compararMeses'])->name('rest_comparar_meses');
         Route::get('/top-sucursales-tickets',[InformesVentasController::class,'topSucursalesTickets'])->name('rest_top_sucursales_tickets');
         Route::get('/top-sucursales-ingresos',[InformesVentasController::class,'topSucursalesIngresos'])->name('rest_top_sucursales_ingresos');
