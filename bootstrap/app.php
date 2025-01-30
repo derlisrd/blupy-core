@@ -116,7 +116,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->renderable(function (ErrorException $e){
             return response()->json([
                 'success'=>false,
-                'message'=> 'Error de servidor',
+                'message'=> 'Error de servidor. '. $e->getMessage(),
             ],500);
         });
 
