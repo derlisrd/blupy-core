@@ -86,15 +86,21 @@ class InformesVentasController extends Controller
         $sucursalMayorFacturacion = Venta::selectRaw("sucursal, SUM(importe) as total_facturacion, COUNT(*) as tickets")
             ->groupBy('sucursal')
             ->orderByDesc('total_facturacion')
-            ->first();
+            ->take(10)
+            ->get();
+        $topSucursal1 = $sucursalMayorFacturacion->sortByDesc('total_facturacion')->first();
 
         return response()->json([
             'success' => true,
-            'results' => $sucursalMayorFacturacion ? [
-                'sucursal' => $sucursalMayorFacturacion->sucursal,
-                'tickets' => $sucursalMayorFacturacion->tickets,
-                'total_facturacion' => (int) $sucursalMayorFacturacion->total_facturacion
-            ] : null
+            'results' =>
+            [
+                'top' => $sucursalMayorFacturacion,
+                'top_sucursal' => $topSucursal1 ? [
+                    'sucursal' => $topSucursal1->sucursal,
+                    'tickets' => $topSucursal1->tickets,
+                    'total_facturacion' => (int) $topSucursal1->total_facturacion
+                ] : null
+            ]
         ]);
     }
 
