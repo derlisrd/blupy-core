@@ -66,18 +66,18 @@ class InformesVentasController extends Controller
             ->take(10)
             ->get();
         // Sucursal con más ventas (tickets) en cada mes
-        $topSucursal1 = $ventas1->sortByDesc('tickets')->first();
-
+        //$topSucursal1 = $ventas1->sortByDesc('tickets')->first();
+        /* [
+            'top' => $ventas1,
+            'top_sucursal' => $topSucursal1 ? [
+                'sucursal' => $topSucursal1->sucursal,
+                'tickets' => $topSucursal1->tickets,
+                'total' => (int) $topSucursal1->total
+            ] : null
+        ] */
         return response()->json([
             'success' => true,
-            'results' => [
-                'top' => $ventas1,
-                'top_sucursal' => $topSucursal1 ? [
-                    'sucursal' => $topSucursal1->sucursal,
-                    'tickets' => $topSucursal1->tickets,
-                    'total' => (int) $topSucursal1->total
-                ] : null
-            ]
+            'results' => $ventas1
         ]);
     }
 
@@ -88,19 +88,19 @@ class InformesVentasController extends Controller
             ->orderByDesc('total_facturacion')
             ->take(10)
             ->get();
-        $topSucursal1 = $sucursalMayorFacturacion->sortByDesc('total_facturacion')->first();
-
+        //$topSucursal1 = $sucursalMayorFacturacion->sortByDesc('total_facturacion')->first();
+        /* [
+            'top' => $sucursalMayorFacturacion,
+            'top_sucursal' => $topSucursal1 ? [
+                'sucursal' => $topSucursal1->sucursal,
+                'tickets' => $topSucursal1->tickets,
+                'total_facturacion' => (int) $topSucursal1->total_facturacion
+            ] : null
+        ] */
         return response()->json([
             'success' => true,
             'results' =>
-            [
-                'top' => $sucursalMayorFacturacion,
-                'top_sucursal' => $topSucursal1 ? [
-                    'sucursal' => $topSucursal1->sucursal,
-                    'tickets' => $topSucursal1->tickets,
-                    'total_facturacion' => (int) $topSucursal1->total_facturacion
-                ] : null
-            ]
+            $sucursalMayorFacturacion
         ]);
     }
 
