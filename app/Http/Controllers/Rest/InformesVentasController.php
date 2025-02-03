@@ -14,18 +14,28 @@ class InformesVentasController extends Controller
     {
 
         $validator = Validator::make($req->all(), [
-            'fecha1' => ['required', 'regex:/^(0[1-9]|1[0-2])\-\d{4}$/'], // MM/YYYY
-            'fecha2' => ['required', 'regex:/^(0[1-9]|1[0-2])\-\d{4}$/']  // MM/YYYY
+            'fecha1' => ['nullable', 'regex:/^(0[1-9]|1[0-2])\-\d{4}$/'], // MM-YYYY
+            'fecha2' => ['nullable', 'regex:/^(0[1-9]|1[0-2])\-\d{4}$/']  // MM-YYYY
         ]);
 
-        if ($validator->fails())
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first()
-            ]);
+            ],400);
+        }
 
-        $fecha1 = explode('-', $req->fecha1);
-        $fecha2 = explode('-', $req->fecha2);
+        // Obtener el mes actual y el mes anterior
+        $currentMonth = Carbon::now()->format('m-Y');
+        $previousMonth = Carbon::now()->subMonth()->format('m-Y');
+
+        // Asignar fechas si son nulas o no existen
+        $fecha1 = $req->fecha1 ?? $previousMonth;
+        $fecha2 = $req->fecha2 ?? $currentMonth;
+
+        // Convertir las fechas en objetos Carbon
+        $fecha1 = explode('-', $fecha1);
+        $fecha2 = explode('-', $fecha2);
 
         $fecha1_inicio = Carbon::createFromDate($fecha1[1], $fecha1[0], 1)->startOfDay()->format('Y-m-d H:i:s'); // Primer día
         $fecha1_fin = Carbon::createFromDate($fecha1[1], $fecha1[0], 1)->endOfMonth()->endOfDay()->format('Y-m-d H:i:s');; // Último día
