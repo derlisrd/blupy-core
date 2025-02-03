@@ -53,7 +53,7 @@ class AutorizacionesQRController extends Controller
         $validator = Validator::make($req->all(), [
             'id' => 'required',
             'numeroCuenta' => 'required',
-            'numeroTarjeta' => 'required',
+            'numeroTarjeta' => 'nullable',
             'password' => 'required',
         ],[
             'id.required' => 'ID requerido.',
