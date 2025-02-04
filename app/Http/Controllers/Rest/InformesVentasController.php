@@ -71,9 +71,10 @@ class InformesVentasController extends Controller
     public function topSucursalesTickets()
     {
         // Agrupar ventas por sucursal para ambos meses
-        $ventas1 = Venta::selectRaw('sucursal, COUNT(*) as tickets, SUM(importe) as total')
-            ->groupBy('sucursal')
+        $ventas1 = Venta::selectRaw('codigo_sucursal,sucursal, COUNT(*) as tickets, SUM(importe) as total')
+            ->groupBy('codigo_sucursal','sucursal')
             ->take(10)
+            ->orderByDesc('tickets')
             ->get();
         // Sucursal con más ventas (tickets) en cada mes
         //$topSucursal1 = $ventas1->sortByDesc('tickets')->first();
@@ -93,8 +94,8 @@ class InformesVentasController extends Controller
 
     public function topSucursalesIngresos()
     {
-        $sucursalMayorFacturacion = Venta::selectRaw("sucursal, SUM(importe) as total_facturacion, COUNT(*) as tickets")
-            ->groupBy('sucursal')
+        $sucursalMayorFacturacion = Venta::selectRaw("codigo_sucursal,sucursal, SUM(importe) as total_facturacion, COUNT(*) as tickets")
+            ->groupBy('sucursal','codigo_sucursal')
             ->orderByDesc('total_facturacion')
             ->take(10)
             ->get();
