@@ -22,7 +22,7 @@ class InformesVentasController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first()
-            ],400);
+            ], 400);
         }
 
         // Obtener el mes actual y el mes anterior
@@ -68,50 +68,51 @@ class InformesVentasController extends Controller
         ]);
     }
 
-    public function topSucursalesTickets()
+    public function topSucursalesTickets(Request $request)
     {
-        // Agrupar ventas por sucursal para ambos meses
-        $ventas1 = Venta::selectRaw('codigo_sucursal,sucursal, COUNT(*) as tickets, SUM(importe) as total')
-            ->groupBy('codigo_sucursal','sucursal')
-            ->take(10)
+        // Obtener mes y año del request
+        $mes = $request->mes; // Ejemplo: 8 para agosto
+        $ano = $request->mes; // Ejemplo: 2024
+
+        // Construir la consulta base
+        $query = Venta::selectRaw('codigo_sucursal, sucursal, COUNT(*) as tickets, SUM(importe) as total')
+            ->groupBy('codigo_sucursal', 'sucursal')
             ->orderByDesc('tickets')
-            ->get();
-        // Sucursal con más ventas (tickets) en cada mes
-        //$topSucursal1 = $ventas1->sortByDesc('tickets')->first();
-        /* [
-            'top' => $ventas1,
-            'top_sucursal' => $topSucursal1 ? [
-                'sucursal' => $topSucursal1->sucursal,
-                'tickets' => $topSucursal1->tickets,
-                'total' => (int) $topSucursal1->total
-            ] : null
-        ] */
+            ->take(10);
+
+        // Si se proporcionan mes y año, filtrar por ese mes
+        if ($mes && $ano) {
+            $query->whereYear('fecha', $ano)
+                ->whereMonth('fecha', $mes);
+        }
+
+        $ventas = $query->get();
+
         return response()->json([
             'success' => true,
-            'results' => $ventas1
+            'results' => $ventas
         ]);
     }
 
-    public function topSucursalesIngresos()
+    public function topSucursalesIngresos(Request $request)
     {
-        $sucursalMayorFacturacion = Venta::selectRaw("codigo_sucursal,sucursal, SUM(importe) as total_facturacion, COUNT(*) as tickets")
-            ->groupBy('sucursal','codigo_sucursal')
+        $mes = $request->mes; // Ejemplo: 8 para agosto
+        $ano = $request->ano; // Ejemplo: 2024
+
+        $query = Venta::selectRaw("codigo_sucursal,sucursal, SUM(importe) as total_facturacion, COUNT(*) as tickets")
+            ->groupBy('sucursal', 'codigo_sucursal')
             ->orderByDesc('total_facturacion')
-            ->take(10)
-            ->get();
-        //$topSucursal1 = $sucursalMayorFacturacion->sortByDesc('total_facturacion')->first();
-        /* [
-            'top' => $sucursalMayorFacturacion,
-            'top_sucursal' => $topSucursal1 ? [
-                'sucursal' => $topSucursal1->sucursal,
-                'tickets' => $topSucursal1->tickets,
-                'total_facturacion' => (int) $topSucursal1->total_facturacion
-            ] : null
-        ] */
+            ->take(10);
+
+        if ($mes && $ano) {
+            $query->whereYear('fecha', $ano)
+                ->whereMonth('fecha', $mes);
+        }
+
+        $query = $query->get();
         return response()->json([
             'success' => true,
-            'results' =>
-            $sucursalMayorFacturacion
+            'results' => $query
         ]);
     }
 
