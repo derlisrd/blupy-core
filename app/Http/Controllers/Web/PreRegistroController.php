@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Services\EmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -28,6 +29,12 @@ class PreRegistroController extends Controller
                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
                 'Content-Type' => 'application/json',
             ])->post(env('SUPABASE_URL') . '/rest/v1/preregistros', [
+                'nombres' => $request->nombres,
+                'apellidos' => $request->apellidos,
+                'cedula' => $request->cedula,
+            ]);
+            $emailService = new EmailService();
+            $emailService->enviarEmail('atencionalcliente@blupy.com.py', 'Registro exitoso de alianza', 'web.notificacionregistro', [
                 'nombres' => $request->nombres,
                 'apellidos' => $request->apellidos,
                 'cedula' => $request->cedula,
