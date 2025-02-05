@@ -57,7 +57,7 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/mis-dispositivos',[CuentasController::class,'misDispositivos'])->name('api_mis_dispositivos');
     Route::delete('/eliminar-dispositivo',[CuentasController::class,'eliminarDispositivo'])->name('api_eliminar_dispositivo');
 
-    Route::get('/notificaciones',[NotificacionesController::class,'porUser'])->name('api_notificaciones');
+    Route::get('/notificaciones',[NotificacionesController::class,'NotificacionesPorUser'])->name('api_notificaciones');
 
     Route::post('/check-token',[AuthController::class,'checkToken'])->name('api_check_token');
     Route::put('/refresh-token',[AuthController::class,'refreshToken'])->name('api_refresh_token');

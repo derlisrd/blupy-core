@@ -8,10 +8,12 @@ use Illuminate\Http\Request;
 
 class NotificacionesController extends Controller
 {
-    public function porUser(Request $req){
+    public function NotificacionesPorUser(Request $req){
         try {
             $user = $req->user();
-            $results = Notificacion::where('user_id',$user->id)->orderBy('id', 'desc')->get();
+            $results = Notificacion::where('user_id',$user->id)
+            ->take(10)
+            ->orderBy('id', 'desc')->get();
 
             return response()->json([
                 'success'=>true,
