@@ -11,3 +11,5 @@ use Illuminate\Support\Facades\Route;
 /* Route::get('/sumardeudas',[JobsManualesController::class,'sumarDeudas']);
 Route::get('/extraercedula',[JobsManualesController::class,'extraerCedula']);
 Route::get('/clientescondeudas',[JobsManualesController::class,'clientesConDeudas']); */
+
+

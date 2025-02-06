@@ -194,7 +194,10 @@ class AuthController extends Controller
                                 'message'=>'Nuevo dispositivo. Ingresa el código que enviamos a tu correo '.$pistaEmail.' para verificar, puede tardar unos minutos. Revisa tus carpetas de spam y correos no deseados, por si acaso.'
                             ]);
                         }
-                        $dispositoDeConfianza->update(['updated_at'=>date('Y-m-d H:i:s')]);
+                        $dispositoDeConfianza->update([
+                            'updated_at'=>date('Y-m-d H:i:s'),
+                            'version'=>$req->version
+                        ]);
                     }
 
                     $version = $req->version ?? null;
