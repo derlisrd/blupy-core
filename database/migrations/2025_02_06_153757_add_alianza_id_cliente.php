@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('clientes', function (Blueprint $table) {
-            $table->foreignId('alianza_id')->nullable()->constrained('alianzas')->after('id');
+            $table->bigInteger('alianza_id')->unsigned()->nullable()->after('id');
+            $table->foreign('alianza_id')->references('id')->on('alianzas');
         });
     }
 
