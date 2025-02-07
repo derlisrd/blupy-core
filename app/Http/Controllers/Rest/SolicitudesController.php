@@ -51,7 +51,7 @@ class SolicitudesController extends Controller
     */
     public function aprobar(Request $req){
         $codigo = $req->codigo;
-        $solicitud = SolicitudCredito::where('codigo',$codigo)->first();
+        $solicitud = SolicitudCredito::where('codigo',$codigo)->where('estado_id',5)->first();
         if(!$solicitud){
             return response()->json([
                 'success'=>false,
