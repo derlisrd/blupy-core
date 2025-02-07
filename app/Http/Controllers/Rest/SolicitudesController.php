@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Rest;
 use App\Http\Controllers\Controller;
 use App\Jobs\ActualizarSolicitudesJobs;
 use App\Models\Cliente;
+use App\Models\Informacion;
 use App\Models\SolicitudCredito;
 use App\Models\User;
 use App\Traits\SolicitudesInfinitaTraits;
@@ -59,11 +60,14 @@ class SolicitudesController extends Controller
         }
 
         $res = $this->aprobarSolicitudInfinita($codigo);
+        $user = User::where('cliente_id',$solicitud->cliente_id)->first();
 
         if($res->success){
             $solicitud->estado = 'Vigente';
             $solicitud->estado_id = 7;
             $solicitud->save();
+            $info = Informacion::where('user_id',$user->id)->where('codigo_info',1)->first();
+            $info->delete();
         }
 
         return response()->json([

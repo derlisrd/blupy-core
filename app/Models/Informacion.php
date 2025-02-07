@@ -10,6 +10,7 @@ class Informacion extends Model
     use HasFactory;
     protected $table = 'informaciones';
     protected $fillable = [
+        'codigo_info',
         'user_id',
         'title',
         'description',

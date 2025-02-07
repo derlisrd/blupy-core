@@ -163,6 +163,7 @@ class SolicitudesController extends Controller
             if($solicitud->id === 5){
                 Informacion::create([
                     'user_id'=>$user->id,
+                    'codigo_info'=>1,
                     'title'=>'Crédito aprobado',
                     'description'=>'Para activar tu línea acercate a un PUNTO FARMA',
                     'text'=>'Para activar tu línea acercate a un PUNTO FARMA',
