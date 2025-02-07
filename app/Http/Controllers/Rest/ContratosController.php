@@ -23,10 +23,12 @@ class ContratosController extends Controller
         if(!$res->success)
             return response()->json(['success'=>false,'message'=>'No se encontraron contratos para el documento ingresado'], 404);
         $cliente = Cliente::where('cedula',$documento)->select('foto_ci_frente','cedula','id')->first();
-        if($cliente){
-            $res->results['cliente'] = $cliente;
-        }
+        $results = [
+            'contratos'=>$res->results,
+            'cliente'=>$cliente
+        ];
 
-        return response()->json(['success'=>true,'results'=>$res->results],$res->status);
+
+        return response()->json(['success'=>true,'results'=>$results],$res->status);
     }
 }
