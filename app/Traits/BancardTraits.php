@@ -33,7 +33,7 @@ trait BancardTraits
 
     public function pagarDeudaPorDocumento($documento,$cuenta,$importe){
         $infinitaService = new InfinitaService();
-        $res = (object)$infinitaService->PagoTarjeta($documento,$cuenta,$importe);
+        $res = (object)$infinitaService->PagoTarjeta($documento,$cuenta,$importe,'PAGO RED INFONET');
         $data = (object) $res->data;
 
         if( property_exists($data,'MovCajNro') && (int)($data->MovCajNro) > 0)

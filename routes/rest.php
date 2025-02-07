@@ -3,6 +3,7 @@
 use App\Http\Controllers\Rest\AuthController;
 use App\Http\Controllers\Rest\ClientesController;
 use App\Http\Controllers\Rest\ConsultasController;
+use App\Http\Controllers\Rest\ContratosController;
 use App\Http\Controllers\Rest\InformesVentasController;
 use App\Http\Controllers\Rest\NotificacionesController;
 use App\Http\Controllers\Rest\SolicitudesController;
@@ -46,6 +47,9 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::prefix('solicitudes')->group(function(){
         Route::get('/',[SolicitudesController::class,'index'])->name('rest_solicitudes');
         Route::post('/aprobar',[SolicitudesController::class,'aprobar'])->name('rest_aprobar_solicitud');
+    });
+    Route::prefix('contratos')->group(function(){
+        Route::get('/consulta',[ContratosController::class,'consultaContratoPorDocFarma'])->name('rest_contratos');
     });
 
 

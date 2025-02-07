@@ -28,6 +28,10 @@ class FarmaService
         return $this->get('cliente/getCliente',['documento' => $cedula]);
     }
 
+    public function MiCreditoContratosPorDocumento(String $documento){
+        return $this->get('micredito-contratos/',['documento' => $documento]);
+    }
+
     public function actualizarPedidosQR($codigo, $numero_cuenta, $numero_tarjeta, $movimiento){
         return $this->post('pedidosqr/autorizar',['codigo' => $codigo,'numero_cuenta'=>$numero_cuenta,'numero_tarjeta'=>$numero_tarjeta,'movimiento'=>$movimiento]);
     }
