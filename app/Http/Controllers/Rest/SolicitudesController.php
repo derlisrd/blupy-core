@@ -45,6 +45,37 @@ class SolicitudesController extends Controller
     }
     /*
     ==============================================================================================================
+    APROBAR DESDE INFINITA
+    ==============================================================================================================
+    */
+    public function aprobar(Request $req){
+        $codigo = $req->codigo;
+        $solicitud = SolicitudCredito::where('codigo',$codigo)->first();
+        if(!$solicitud){
+            return response()->json([
+                'success'=>false,
+                'message'=>'Solicitud no existe.'
+            ],404);
+        }
+
+        $res = $this->aprobarSolicitudInfinita($codigo);
+
+        if($res->success){
+            $solicitud->estado = 'Vigente';
+            $solicitud->estado_id = 7;
+            $solicitud->save();
+        }
+
+        return response()->json([
+            'success'=> $res->success,
+            'message'=>$res->message,
+            'results'=>$solicitud
+        ],$res->status);
+    }
+
+
+    /*
+    ==============================================================================================================
     ACTUALIZAR SOLICITUD DESDE INFINITA
     ==============================================================================================================
     */

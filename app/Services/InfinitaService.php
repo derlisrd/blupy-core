@@ -39,8 +39,7 @@ class InfinitaService
         return $this->get('ListarTarjetasPorDoc',['Mtdocu' => $cedula]);
     }
 
-    public function listarProfesiones()
-    {
+    public function listarProfesiones(){
         return $this->get('ListarProfesiones',[]);
     }
 
@@ -52,16 +51,24 @@ class InfinitaService
         ]);
     }
 
-    public function listarTiposLaboral()
-    {
+    public function listarTiposLaboral(){
         return $this->get('ListarTiposLaboral',[]);
     }
 
-    public function PagoTarjeta ($documento,$cuenta,$importe){
+    public function AprobarSolicitud($codigo){
+        $data = (object)[
+            "SolId"=>$codigo,
+            "Proc" => 7
+        ];
+        return $this->post('LiqSolicitud',$data);
+    }
+
+    public function PagoTarjeta ($documento,$cuenta,$importe,$descripcion){
         $data = (object)[
             "Documento"=>$documento,
             "Cuenta"=>$cuenta,
-            "Importe"=>$importe
+            "Importe"=>$importe,
+            "Descripcion"=>$descripcion
         ];
         return $this->post('PagoTarjeta',$data);
     }

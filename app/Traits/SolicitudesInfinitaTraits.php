@@ -9,6 +9,21 @@ use Illuminate\Support\Facades\Log;
 trait SolicitudesInfinitaTraits
 {
 
+    public function aprobarSolicitudInfinita(string $codigo){
+        $infinitaService = new InfinitaService();
+        $res = (object) $infinitaService->AprobarSolicitud($codigo);
+        $data = (object) $res->data;
+        $results = ['success'=>false,'message'=>null,'status'=>400];
+        if($data && property_exists($data, 'Messages')){
+            $results = [
+                'success'=> $data->Messages[0]['Id'] == 'OK',
+                'message'=>$data->Messages[0]['Description'],
+                'status' => $data->Messages[0]['Id'] == 'OK' ? 200 : 400
+            ];
+        }
+        return (object) $results;
+    }
+
 
     public function consultarEstadoSolicitudInfinita(string $codigo){
         $infinitaService = new InfinitaService();
