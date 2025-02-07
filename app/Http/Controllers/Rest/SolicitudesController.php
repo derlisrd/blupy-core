@@ -8,6 +8,8 @@ use App\Models\Cliente;
 use App\Models\Informacion;
 use App\Models\SolicitudCredito;
 use App\Models\User;
+use App\Services\EmailService;
+use App\Services\PushExpoService;
 use App\Traits\SolicitudesInfinitaTraits;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -66,6 +68,14 @@ class SolicitudesController extends Controller
             $solicitud->estado = 'Vigente';
             $solicitud->estado_id = 7;
             $solicitud->save();
+            $notificacion = new PushExpoService();
+            //$emailService = new EmailService();
+            $to = $user->notitokens();
+            $notificacion->send(
+                $to,
+                '¡Contrato Activo!',
+                'Su contrato está activo, su línea está lista para usarse.',[]
+            );
             $info = Informacion::where('user_id',$user->id)->where('codigo_info',1)->first();
             $info->delete();
         }
