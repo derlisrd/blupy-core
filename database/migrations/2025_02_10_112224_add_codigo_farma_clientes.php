@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('clientes', function (Blueprint $table) {
-            $table->string('codigo_farma')->nullable();
-            $table->boolean('extranjero')->default(false);
+            $table->string('codigo_farma')->after('funcionario')->nullable();
         });
     }
 
@@ -24,7 +23,6 @@ return new class extends Migration
     {
         Schema::table('clientes', function (Blueprint $table) {
             $table->dropColumn('codigo_farma');
-            $table->dropColumn('extranjero');
         });
     }
 };
