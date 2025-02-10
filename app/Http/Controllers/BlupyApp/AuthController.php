@@ -203,7 +203,7 @@ class AuthController extends Controller
                     $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s'), 'version'=>$version ]);
 
                     $tarjetasConsultas = new CuentasPrivate();
-                    $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula,$cliente->extranjero, $cliente->codigo_farma);
+                    $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula,$cliente->extranjero, $cliente->codigo_farma ?? '');
                     return response()->json([
                         'success'=>true,
                         'message'=>'Ha ingresado',
