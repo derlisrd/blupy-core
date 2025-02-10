@@ -75,7 +75,13 @@ class CuentasController extends Controller
             }
         }
 
-        $resFarma = (object)$this->farmaService->cliente($cedula);
+        if(!$extranjero){
+            $resFarma = (object)$this->farmaService->cliente($cedula);
+        }
+
+        if($extranjero){
+            $resFarma = (object) $this->farmaService->clientePorCodigo($cedula);
+        }
 
         $farma = (object) $resFarma->data;
 
@@ -119,4 +125,6 @@ class CuentasController extends Controller
 
         return $results;
     }
+
+
 }
