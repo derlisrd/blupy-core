@@ -76,11 +76,11 @@ class CuentasController extends Controller
         }
 
         if($extranjero == 1){
-            $resFarma = (object)$this->farmaService->cliente($cedula);
+            $resFarma = (object)$this->farmaService->clientePorCodigo($cedula);
         }
 
         if($extranjero == 0){
-            $resFarma = (object) $this->farmaService->clientePorCodigo($cedula);
+            $resFarma = (object) $this->farmaService->cliente($cedula);
         }
 
         $farma = (object) $resFarma->data;
