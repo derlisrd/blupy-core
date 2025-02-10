@@ -52,39 +52,43 @@ class SolicitudesController extends Controller
     ==============================================================================================================
     */
     public function aprobar(Request $req){
-        $codigo = $req->codigo;
-        $solicitud = SolicitudCredito::where('codigo',$codigo)->where('estado_id',5)->first();
-        if(!$solicitud){
+        try {
+            $codigo = $req->codigo;
+            $solicitud = SolicitudCredito::where('codigo',$codigo)->where('estado_id',5)->first();
+            if(!$solicitud){
+                return response()->json([
+                    'success'=>false,
+                    'message'=>'Solicitud no existe.'
+                ],404);
+            }
+
+            $res = $this->aprobarSolicitudInfinita($codigo);
+            $user = User::where('cliente_id',$solicitud->cliente_id)->first();
+
+            if($res->success){
+                $solicitud->estado = 'Vigente';
+                $solicitud->estado_id = 7;
+                $solicitud->save();
+                $notificacion = new PushExpoService();
+                //$emailService = new EmailService();
+                $to = $user->notitokens();
+                $notificacion->send(
+                    $to,
+                    '¡Contrato Activo!',
+                    'Su contrato está activo, su línea está lista para usarse.',[]
+                );
+                $info = Informacion::where('user_id',$user->id)->where('codigo_info',1)->first();
+                $info->delete();
+            }
+
             return response()->json([
-                'success'=>false,
-                'message'=>'Solicitud no existe.'
-            ],404);
+                'success'=> $res->success,
+                'message'=>$res->message,
+                'results'=>$solicitud
+            ],$res->status);
+        } catch (\Throwable $th) {
+            throw $th;
         }
-
-        $res = $this->aprobarSolicitudInfinita($codigo);
-        $user = User::where('cliente_id',$solicitud->cliente_id)->first();
-
-        if($res->success){
-            $solicitud->estado = 'Vigente';
-            $solicitud->estado_id = 7;
-            $solicitud->save();
-            $notificacion = new PushExpoService();
-            //$emailService = new EmailService();
-            $to = $user->notitokens();
-            $notificacion->send(
-                $to,
-                '¡Contrato Activo!',
-                'Su contrato está activo, su línea está lista para usarse.',[]
-            );
-            $info = Informacion::where('user_id',$user->id)->where('codigo_info',1)->first();
-            $info->delete();
-        }
-
-        return response()->json([
-            'success'=> $res->success,
-            'message'=>$res->message,
-            'results'=>$solicitud
-        ],$res->status);
     }
 
 
