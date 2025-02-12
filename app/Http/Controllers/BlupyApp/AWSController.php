@@ -107,6 +107,140 @@ class AWSController extends Controller
         }
     }
 
+
+    public function scanFace(Request $req){
+        $validator = Validator::make($req->all(),[
+            'selfie64' => 'required|string',
+            'cedula' => 'required|numeric'
+        ]);
+
+        if($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()],400);
+
+        $ip = $req->ip();
+        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 6,function() {});
+        if (!$executed)
+            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+        try {
+            $amazon = new RekognitionClient([
+                'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
+                'version' => 'latest',
+            ]);
+            $base64Image = explode(";base64,", $req->selfie64);
+            $explodeImage = explode("image/", $base64Image[0]);
+            $imageType = $explodeImage[1];
+            $image_base64 = base64_decode($base64Image[1]);
+            $imageName = $req->cedula . '_selfie.'.$imageType;
+            $imagePath = public_path('clientes/' .$imageName);
+            file_put_contents($imagePath, $image_base64);
+            $image = fopen($imagePath, "r");
+            $bytes = fread($image, filesize($imagePath));
+            fclose($image);
+
+            $analysis = $amazon->detectFaces(['Image'=> ['Bytes' => $bytes],'Attributes' => ['ALL']]);
+            $results = $analysis['FaceDetails'][0];
+
+
+            if(!$results){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo subir la imagen (1)'
+                ], 400);
+            }
+            $smile = $results['Smile']['Value'];
+            $smileConfidence = $results['Smile']['Confidence'];
+            $eyeOpen = $results['EyesOpen']['Value'];
+            $eyeOpenConfidence = $results['EyesOpen']['Confidence'];
+
+            if(!$smile || $smileConfidence <80){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sonríe muy poco o no sonríe. Verifique la foto.'
+                ], 400);
+            }
+            if(!$eyeOpen || $eyeOpenConfidence <80){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cierra los ojos. Verifique la foto.'
+                ], 400);
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Imagen subida correctamente.'
+            ]);
+        }
+        catch (\Throwable $th) {
+            Log::error($th);
+            return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
+        }
+    }
+
+
+    public function scanSelfieWithIdCard(Request $req){
+        $validator = Validator::make($req->all(),[
+            'selfie64' => 'required|string',
+            'cedula' => 'required|numeric'
+        ]);
+
+        if($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()],400);
+
+        $ip = $req->ip();
+        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 6,function() {});
+        if (!$executed)
+            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+        try {
+            $amazon = new RekognitionClient([
+                'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
+                'version' => 'latest',
+            ]);
+            $base64Image = explode(";base64,", $req->selfie64);
+            $explodeImage = explode("image/", $base64Image[0]);
+            $imageType = $explodeImage[1];
+            $image_base64 = base64_decode($base64Image[1]);
+            $imageName = $req->cedula . '_selfie.'.$imageType;
+            $imagePath = public_path('clientes/' .$imageName);
+            file_put_contents($imagePath, $image_base64);
+            $image = fopen($imagePath, "r");
+            $bytes = fread($image, filesize($imagePath));
+            fclose($image);
+
+            $etiquetas = $amazon->detectLabels(['Image'=> ['Bytes' => $bytes],'MaxLabels' => 20]);
+            $labels = $etiquetas['Labels'];
+
+            $requiredLabels = ['Document', 'Id Cards', 'Face'];
+            $foundLabels = collect($labels)->filter(function ($label) use ($requiredLabels) {
+                return in_array($label['Name'], $requiredLabels);
+            });
+
+            $document = collect($labels)->firstWhere('Name', 'Document');
+            $idCard = collect($labels)->firstWhere('Name', 'Id Cards');
+            $face = collect($labels)->firstWhere('Name', 'Face');
+
+            $documentValid = $document && $document['Confidence'] > 80;
+            $idCardValid = $idCard && $idCard['Confidence'] > 80;
+            $faceValid = $face && $face['Confidence'] > 80;
+
+            if (!$documentValid || !$idCardValid || !$faceValid) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Imagen inválida: No contiene cédula y rostro con confianza alta.',
+                ],400);
+            }
+
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Imagen subida correctamente.',
+            ]);
+        }
+        catch (\Throwable $th) {
+            Log::error($th);
+            return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
+        }
+
+    }
+
     private function CleanText($name){
         setlocale(LC_ALL, 'en_US');
         $name = iconv('utf-8', 'ASCII//TRANSLIT', $name);

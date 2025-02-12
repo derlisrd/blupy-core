@@ -26,4 +26,7 @@ trait ContratosBlupyFarmaTraits
             'status' => $status
         ];
     }
+    public function consultarContratoPorCodigo(){
+
+    }
 }

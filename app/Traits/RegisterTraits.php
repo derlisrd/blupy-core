@@ -142,16 +142,16 @@ trait RegisterTraits
 
 
 
-    public function guardarCedulaImagenBase64(String $imagenBase64, String $cedula){
+    public function guardarCedulaImagenBase64(String $imagenBase64, String $cedula, int $tipo){
         $path = null;
         if (preg_match('/^data:image\/(\w+);base64,/', $imagenBase64, $matches)) {
             $extension = $matches[1]; // La extensión de la imagen (e.g., jpeg, png)
             $imagenBase64 = substr($imagenBase64, strpos($imagenBase64, ',') + 1); // Eliminar el prefijo
-
+            $tipoFoto = $tipo === 1 ? 'cedula' : 'selfie';
             // Decodificar la imagen base64
             $imagen = base64_decode($imagenBase64);
             $imager = new ImageManager(Driver::class);
-            $imageName = 'cedula_' . $cedula . '.' . $extension;
+            $imageName = $tipoFoto.'_'. $cedula . '.' . $extension;
             $publicPath = public_path('clientes/' . $imageName);
             $imager->read($imagen)->scale(800)->save($publicPath);
 

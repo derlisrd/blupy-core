@@ -27,8 +27,18 @@ class ContratosController extends Controller
             'contratos'=>$res->results,
             'cliente'=>$cliente
         ];
-
-
         return response()->json(['success'=>true,'results'=>$results],$res->status);
     }
+
+    public function consultarPorContratoFarma(Request $req){
+        $validator = Validator::make($req->all(),['contrato'=>'required']);
+        if($validator->fails())
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+        $contrato = $req->contrato;
+
+
+
+    }
+
+
 }
