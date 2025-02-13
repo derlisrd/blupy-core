@@ -10,6 +10,7 @@ class Cliente extends Model
     use HasFactory;
     protected $table = 'clientes';
     protected $fillable = [
+        'cliid',
         'nombre_primero',
         'nombre_segundo',
         'apellido_primero',
@@ -18,8 +19,8 @@ class Cliente extends Model
         'cedula',
         'foto_ci_frente',
         'foto_ci_dorso',
+        'selfie',
         'celular',
-        'cliid',
         'departamento',
         'departamento_id',
         'ciudad',

@@ -81,9 +81,12 @@ trait SolicitudesInfinitaTraits
         $infinitaService = new InfinitaService();
         $res = (object)$infinitaService->solicitudLineaDeCredito($cliente);
         $resultadoInfinitaObject = (object) $res->data;
-        $resultado = ['success'=>false, 'message'=>'Error en la solicitud'];
+        $resultado = ['success'=>false, 'message'=>'Error en la solicitud','estado'=>null,'codigo'=>null,'id'=>null];
         SupabaseService::LOG('ingresar solicitud',$res->data);
         if(property_exists($resultadoInfinitaObject,'CliId')){
+            if($resultadoInfinitaObject->CliId == '0'){
+                $resultado = ['success'=>false, 'message'=> $resultadoInfinitaObject->Messages[0]['Description'] ,'estado'=>null,'codigo'=>null,'id'=>null];
+            }
             if($resultadoInfinitaObject->CliId !== '0'){
                 $codigoSolicitud = $resultadoInfinitaObject->SolId;
                 $estadoId = 11;

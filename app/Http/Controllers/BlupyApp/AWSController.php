@@ -164,6 +164,7 @@ class AWSController extends Controller
                     'message' => 'Cierra los ojos. Verifique la foto.'
                 ], 400);
             }
+            unlink($imagePath);
             return response()->json([
                 'success' => true,
                 'message' => 'Imagen subida correctamente.'
@@ -176,7 +177,7 @@ class AWSController extends Controller
     }
 
 
-    public function scanSelfieWithIdCard(Request $req){
+    public function scanSelfieCedula(Request $req){
         $validator = Validator::make($req->all(),[
             'selfie64' => 'required|string',
             'cedula' => 'required|numeric'
@@ -186,7 +187,7 @@ class AWSController extends Controller
             return response()->json(['success' => false, 'message' => $validator->errors()->first()],400);
 
         $ip = $req->ip();
-        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 6,function() {});
+        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 5,function() {});
         if (!$executed)
             return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
         try {
@@ -194,11 +195,12 @@ class AWSController extends Controller
                 'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
                 'version' => 'latest',
             ]);
+
             $base64Image = explode(";base64,", $req->selfie64);
             $explodeImage = explode("image/", $base64Image[0]);
             $imageType = $explodeImage[1];
             $image_base64 = base64_decode($base64Image[1]);
-            $imageName = $req->cedula . '_selfie.'.$imageType;
+            $imageName = $req->cedula . '_selfie_ci.'.$imageType;
             $imagePath = public_path('clientes/' .$imageName);
             file_put_contents($imagePath, $image_base64);
             $image = fopen($imagePath, "r");
@@ -207,11 +209,6 @@ class AWSController extends Controller
 
             $etiquetas = $amazon->detectLabels(['Image'=> ['Bytes' => $bytes],'MaxLabels' => 20]);
             $labels = $etiquetas['Labels'];
-
-            $requiredLabels = ['Document', 'Id Cards', 'Face'];
-            $foundLabels = collect($labels)->filter(function ($label) use ($requiredLabels) {
-                return in_array($label['Name'], $requiredLabels);
-            });
 
             $document = collect($labels)->firstWhere('Name', 'Document');
             $idCard = collect($labels)->firstWhere('Name', 'Id Cards');
@@ -224,11 +221,11 @@ class AWSController extends Controller
             if (!$documentValid || !$idCardValid || !$faceValid) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Imagen inválida: No contiene cédula y rostro con confianza alta.',
+                    'message' => 'Imagen inválida: No contiene cédula y/o rostro con confianza alta.',
                 ],400);
             }
 
-
+            unlink($imagePath);
             return response()->json([
                 'success' => true,
                 'message' => 'Imagen subida correctamente.',
@@ -240,6 +237,22 @@ class AWSController extends Controller
         }
 
     }
+
+    private function getImageBytes(string $imageBase64,string $keyImage){
+
+        $base64Image = explode(";base64,", $imageBase64);
+        $explodeImage = explode("image/", $base64Image[0]);
+        $imageType = $explodeImage[1];
+        $image_base64 = base64_decode($base64Image[1]);
+        $imageName = $keyImage . '.'.$imageType;
+        $imagePath = public_path('clientes/' .$imageName);
+        file_put_contents($imagePath, $image_base64);
+        $image = fopen($imagePath, "r");
+        $bytes = fread($image, filesize($imagePath));
+        fclose($image);
+        return $bytes;
+    }
+
 
     private function CleanText($name){
         setlocale(LC_ALL, 'en_US');

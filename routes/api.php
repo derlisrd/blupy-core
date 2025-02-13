@@ -35,7 +35,7 @@ Route::post('/restablecer-contrasena',[UserPublic::class,'restablecerContrasena'
 Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDocumento'])->name('api_verificar_documento');
 
 Route::post('/scan',[AWSController::class,'scanearDocumento'])->name('api_scan');
-Route::post('/scan-face',[AWSController::class,'scanSelfieWithIdCard'])->name('api_scan_face');
+Route::post('/scan-selfie',[AWSController::class,'scanSelfieCedula'])->name('api_scan_selfie_id_card');
 
 Route::post('/validar-email',[ValidacionesController::class,'validarEmail'])->name('api_validar_email');
 Route::post('/confirmar-email',[ValidacionesController::class,'confirmarEmail'])->name('api_confirmar_email');

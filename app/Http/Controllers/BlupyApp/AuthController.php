@@ -40,9 +40,8 @@ class AuthController extends Controller
             // guardar cedula en nuestros servidores las fotos estan en base64
             $fotoCiFrente = $this->guardarCedulaImagenBase64($req->fotocedulafrente, $req->cedula . '_frente',1);
             $fotoCiDorso = $this->guardarCedulaImagenBase64($req->fotocedulafrente, $req->cedula . '_dorso',1);
-            $fotoSelfie = $this->guardarCedulaImagenBase64($req->fotoselfie, $req->cedula,0);
 
-            if($fotoCiDorso == null || $fotoCiFrente == null || $fotoSelfie == null)
+            if($fotoCiDorso == null || $fotoCiFrente == null)
                 return response()->json(['success'=>false,'message'=>'Hay un error con la imagen de la cedula'],400);
 
 
@@ -61,7 +60,6 @@ class AuthController extends Controller
 
             $datosCliente = [
                 'cedula'=>$req->cedula,
-                'foto_selfie'=>$fotoSelfie,
                 'foto_ci_frente'=>$fotoCiFrente,
                 'foto_ci_dorso'=>$fotoCiDorso,
                 'nombre_primero'=>$nombres[0],

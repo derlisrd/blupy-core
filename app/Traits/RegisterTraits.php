@@ -147,14 +147,28 @@ trait RegisterTraits
         if (preg_match('/^data:image\/(\w+);base64,/', $imagenBase64, $matches)) {
             $extension = $matches[1]; // La extensión de la imagen (e.g., jpeg, png)
             $imagenBase64 = substr($imagenBase64, strpos($imagenBase64, ',') + 1); // Eliminar el prefijo
-            $tipoFoto = $tipo === 1 ? 'cedula' : 'selfie';
             // Decodificar la imagen base64
             $imagen = base64_decode($imagenBase64);
             $imager = new ImageManager(Driver::class);
-            $imageName = $tipoFoto.'_'. $cedula . '.' . $extension;
+            $imageName = 'cedula_'. $cedula . '.' . $extension;
             $publicPath = public_path('clientes/' . $imageName);
             $imager->read($imagen)->scale(800)->save($publicPath);
 
+            return $imageName; // Opcional: retornar el path de la imagen guardada
+        }
+        return $path;
+    }
+    public function guardarSelfieImagenBase64(String $imagenBase64, String $cedula){
+        $path = null;
+        if (preg_match('/^data:image\/(\w+);base64,/', $imagenBase64, $matches)) {
+            $extension = $matches[1]; // La extensión de la imagen (e.g., jpeg, png)
+            $imagenBase64 = substr($imagenBase64, strpos($imagenBase64, ',') + 1); // Eliminar el prefijo
+            // Decodificar la imagen base64
+            $imagen = base64_decode($imagenBase64);
+            $imager = new ImageManager(Driver::class);
+            $imageName = 'selfie_'. $cedula . '.' . $extension;
+            $publicPath = public_path('clientes/' . $imageName);
+            $imager->read($imagen)->scale(800)->save($publicPath);
             return $imageName; // Opcional: retornar el path de la imagen guardada
         }
         return $path;

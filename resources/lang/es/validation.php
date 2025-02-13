@@ -176,7 +176,6 @@ return [
             'password' => 'required|confirmed|min:8',
             'fotocedulafrente'=>'required',
             'fotoceduladorso'=>'required',
-            'fotoselfie'=>'required',
             'fecha_nacimiento' => 'required|date_format:Y-m-d',
             'celular'=>'required',
             'desktop'=>'required|boolean',
@@ -191,7 +190,6 @@ return [
                 'email.email'=>'Email debe tener formato ejemplo@ejemplo.com',
                 'fotocedulafrente.required'=>'La foto de cedula(frente) es requerida.',
                 'fotoceduladorso.required'=>'La Foto de cedula(dorso) es requerida.',
-                'fotoselfie.required'=>'La Foto tipo selfie es requerida.',
                 'password.required'=>'Contraseña es requerida.',
                 'password.min'=>'Contraseña debe tener al menos 8 caracteres.',
                 'password.confirmed' => 'La confirmación de la contraseña no coincide.',
@@ -321,6 +319,7 @@ return [
             'empresa_departamento_id'=>'required',
             'empresa_ciudad_id'=>'required',
             'tipo_empresa_id'=>'required',
+            'selfie'=>'required',
             'messages'=>[
                 'latitud_direccion.required'=>'Latitud es obligatorio.',
                 'longitud_direccion.required'=>'Longitud es obligatorio.',
@@ -344,7 +343,8 @@ return [
                 'empresa_telefono.required'=>'Telefono de empresa es obligatorio.',
                 'empresa_departamento_id.required'=>'Departamento de la empresa es obligatorio.',
                 'empresa_ciudad_id.required'=>'Ciudad de la empresa es obligatorio.',
-                'tipo_empresa_id.required'=>'Tipo de empresa es obligatorio.'
+                'tipo_empresa_id.required'=>'Tipo de empresa es obligatorio.',
+                'selfie.required'=>'Foto selfie con cédula es obligatoria.',
             ]
         ],
     ],

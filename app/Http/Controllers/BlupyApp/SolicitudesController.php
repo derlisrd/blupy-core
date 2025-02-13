@@ -110,11 +110,8 @@ class SolicitudesController extends Controller
 
 
         try {
-            $request = (array) $req->all();
-            $clienteUpdated = Cliente::find($user->cliente->id);
-            $clienteUpdated->update($request);
+            $cliente = $user->cliente;
 
-            $clienteUpdated['email'] = $user->email;
 
             $departamento = Departamento::find($req->departamento_id);
             $ciudad = Ciudad::find($req->ciudad_id);
@@ -123,21 +120,84 @@ class SolicitudesController extends Controller
             $departamento_empresa = Departamento::find($req->empresa_departamento_id);
             $ciudad_empresa = Ciudad::find($req->empresa_ciudad_id);
 
-            $datosAenviar = $clienteUpdated;
+            $datosAenviar = (object) [
+                'cedula' => $cliente->cedula,
+                'apellido_primero' => $cliente->apellido_primero,
+                'apellido_segundo' => $cliente->apellido_segundo,
+                'nombre_primero' => $cliente->nombre_primero,
+                'nombre_segundo' => $cliente->nombre_segundo,
+                'fecha_nacimiento' => $cliente->fecha_nacimiento,
+                'celular' => $cliente->celular,
+                'latitud_direccion' => $req->latitud_direccion,
+                'longitud_direccion' => $req->longitud_direccion,
+                'departamento_id' => $req->departamento_id,
+                'ciudad_id' => $req->ciudad_id,
+                'ciudad' => $req->ciudad,
+                'barrio_id' => $req->barrio_id,
+                'barrio' => $req->barrio,
+                'calle' => $req->calle,
+                'referencia_direccion' => $req->referencia_direccion,
+                'profesion_id' => $req->profesion_id,
+                'salario' => $req->salario,
+                'antiguedad_laboral' => $req->antiguedad_laboral,
+                'antiguedad_laboral_mes' => $req->antiguedad_laboral_mes,
+                'empresa' => $req->empresa,
+                'empresa_direccion' => $req->empresa_direccion,
+                'empresa_telefono' => $req->empresa_telefono,
+                'empresa_departamento_id' => $req->empresa_departamento_id,
+                'empresa_ciudad_id' => $req->empresa_ciudad_id,
+                'empresa_ciudad' => $req->empresa_ciudad,
+                'tipo_empresa_id' => $req->tipo_empresa_id,
+                'solicitud_credito' => 1,
+                'direccion_completado' => 1,
+                'email' => $user->email,
+                'ciudad_id' => $ciudad->codigo,
+                'departamento_id' => $departamento->codigo,
+                'barrio_id' => $barrio->codigo,
+                'empresa_ciudad_id' => $ciudad_empresa->codigo,
+                'empresa_departamento_id' => $departamento_empresa->codigo,
+            ];
 
-            $datosAenviar['departamento_id'] = $departamento->codigo;
-            $datosAenviar['ciudad_id'] = $ciudad->codigo;
-            $datosAenviar['barrio_id'] = $barrio->codigo;
-
-            $datosAenviar['empresa_departamento_id'] = $departamento_empresa->codigo;
-            $datosAenviar['empresa_ciudad_id'] = $ciudad_empresa->codigo;
 
 
+
+            $imagenSelfie = $this->guardarSelfieImagenBase64($req->selfie, $cliente->cedula);
+
+            if($imagenSelfie == null)
+                return response()->json(['success'=>false,'message'=>'No se pudo guardar la selfie.'],400);
 
             $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
-
             if(!$solicitud->success)
                 return response()->json(['success'=>false,'message'=>$solicitud->message],400);
+
+
+
+
+            $cliente->update([
+                'latitud_direccion' => $req->latitud_direccion,
+                'longitud_direccion' => $req->longitud_direccion,
+                'departamento_id' => $req->departamento_id,
+                'ciudad_id' => $req->ciudad_id,
+                'ciudad' => $req->ciudad,
+                'barrio_id' => $req->barrio_id,
+                'barrio' => $req->barrio,
+                'calle' => $req->calle,
+                'referencia_direccion' => $req->referencia_direccion,
+                'profesion_id' => $req->profesion_id,
+                'salario' => $req->salario,
+                'antiguedad_laboral' => $req->antiguedad_laboral,
+                'antiguedad_laboral_mes' => $req->antiguedad_laboral_mes,
+                'empresa' => $req->empresa,
+                'empresa_direccion' => $req->empresa_direccion,
+                'empresa_telefono' => $req->empresa_telefono,
+                'empresa_departamento_id' => $req->empresa_departamento_id,
+                'empresa_ciudad_id' => $req->empresa_ciudad_id,
+                'empresa_ciudad' => $req->empresa_ciudad,
+                'tipo_empresa_id' => $req->tipo_empresa_id,
+                'solicitud_credito' => 1,
+                'direccion_completado' => 1,
+                'selfie' => $imagenSelfie,
+            ]);
 
             $noti = new PushExpoService();
             $tokens = $user->notitokens();
@@ -153,7 +213,7 @@ class SolicitudesController extends Controller
             ]);
 
             SolicitudCredito::create([
-                'cliente_id'=>$user->cliente->id,
+                'cliente_id'=>$cliente->id,
                 'estado_id'=>$solicitud->id,
                 'estado'=>$solicitud->estado,
                 'codigo'=>$solicitud->codigo,
