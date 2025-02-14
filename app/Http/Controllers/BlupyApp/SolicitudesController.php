@@ -163,6 +163,8 @@ class SolicitudesController extends Controller
 
             $imagenSelfie = $this->guardarSelfieImagenBase64($req->selfie, $cliente->cedula);
 
+
+
             if($imagenSelfie == null)
                 return response()->json(['success'=>false,'message'=>'No se pudo guardar la selfie.'],400);
 
@@ -170,7 +172,8 @@ class SolicitudesController extends Controller
             if(!$solicitud->success)
                 return response()->json(['success'=>false,'message'=>$solicitud->message],400);
 
-
+            // enviar selfie
+            $this->enviarSelfieInfinita($cliente->cedula, $imagenSelfie);
 
 
             $cliente->update([
