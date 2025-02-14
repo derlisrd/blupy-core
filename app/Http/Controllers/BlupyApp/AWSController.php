@@ -221,7 +221,7 @@ class AWSController extends Controller
             if (!$documentValid || !$idCardValid || !$faceValid) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Imagen inválida: No contiene cédula y/o rostro con confianza alta.',
+                    'message' => 'Imagen inválida: Tome una selfie con su cédula.',
                 ],400);
             }
 
