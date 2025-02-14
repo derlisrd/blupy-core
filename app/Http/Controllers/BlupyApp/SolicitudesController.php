@@ -173,7 +173,7 @@ class SolicitudesController extends Controller
                 return response()->json(['success'=>false,'message'=>$solicitud->message],400);
 
             // enviar selfie
-            $this->enviarSelfieInfinita($cliente->cedula, $imagenSelfie);
+            $this->enviarSelfieInfinita($cliente->cedula, $req->selfie);
 
 
             $cliente->update([
