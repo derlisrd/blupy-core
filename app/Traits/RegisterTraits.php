@@ -75,7 +75,6 @@ trait RegisterTraits
 
     public function enviarSelfieInfinita(String $cedula, String $foto){
         $infinitaService = new InfinitaService();
-        $foto1 = preg_replace('#data:image/[^;]+;base64,#', '', $foto);
         $infinitaService->enviarSelfie($cedula,$foto);
     }
     public function enviarFotoCedulaInfinita(String $cedula, String $fotoFrontal, String $fotoDorsal){
