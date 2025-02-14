@@ -274,7 +274,7 @@ return [
             'limite'=>'required|numeric|min:0',
             'direccion'=>'required',
             'celular'=>'required',
-            'maectaid'=>'required|numeric',
+            'cuenta'=>'required|numeric',
             'messages'=>[
                 'cedula.unique'=>'Cedula no disponible.',
                 'cedula.required'=>'La cedula es obligatoria.',

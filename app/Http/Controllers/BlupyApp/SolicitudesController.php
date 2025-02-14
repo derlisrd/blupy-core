@@ -256,7 +256,7 @@ class SolicitudesController extends Controller
 
 
     /**********************************************************************
-     * AUMENTO ampliacion aumentar solicitud aum adicional solicitar aumentar
+     * AUMENTO ampliacion aumentar solicitud aum  solicitar aumentar
     ************************************************************************/
     public function solicitarAmpliacion(Request $req){
         try {
