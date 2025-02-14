@@ -179,7 +179,7 @@ class AWSController extends Controller
 
     public function scanSelfieCedula(Request $req){
         $validator = Validator::make($req->all(),[
-            'selfie64' => 'required|string',
+            'selfie' => 'required|string',
             'cedula' => 'required|numeric'
         ]);
 
@@ -196,7 +196,7 @@ class AWSController extends Controller
                 'version' => 'latest',
             ]);
 
-            $base64Image = explode(";base64,", $req->selfie64);
+            $base64Image = explode(";base64,", $req->selfie);
             $explodeImage = explode("image/", $base64Image[0]);
             $imageType = $explodeImage[1];
             $image_base64 = base64_decode($base64Image[1]);
