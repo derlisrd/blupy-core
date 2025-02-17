@@ -219,6 +219,7 @@ class AWSController extends Controller
             $faceValid = $face && $face['Confidence'] > 80;
 
             if (!$documentValid || !$idCardValid || !$faceValid) {
+                SupabaseService::LOG('Error al escanear selfie', $labels);
                 return response()->json([
                     'success' => true,
                     'message' => 'Imagen inválida: Tome una selfie con su cédula.',
