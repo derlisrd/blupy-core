@@ -30,6 +30,7 @@ class QRController extends Controller
 
             $parametrosPorArray = [
                 'id' => $req->id,
+                'extranjero' => $cliente->extranjero,
                 'documento' => $cliente->cedula,
                 'numeroCuenta' => $req->numeroCuenta,
                 'numeroTarjeta' => $req->numeroTarjeta,
