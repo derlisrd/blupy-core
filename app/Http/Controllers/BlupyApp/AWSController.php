@@ -216,7 +216,7 @@ class AWSController extends Controller
 
             $documentValid = $document && $document['Confidence'] > 80;
             $idCardValid = $idCard && $idCard['Confidence'] > 80;
-            $faceValid = $face && $face['Confidence'] > 80;
+            $faceValid = $face && $face['Confidence'] > 70;
 
             if (!$documentValid || !$idCardValid || !$faceValid) {
                 SupabaseService::LOG('Error al escanear selfie', $labels);
