@@ -109,6 +109,7 @@ class QRController extends Controller
             $user = $req->user();
             $cliente = $user->cliente;
             Log::info($cliente);
+            SupabaseService::LOG('Compra commercio 46', 'Compra QR ' . $cliente->cedula);
             if (!Hash::check($req->password, $user->password))
                 return response()->json(['success' => false, 'message' => 'Contraseña incorrecta.'], 401);
 
@@ -131,7 +132,7 @@ class QRController extends Controller
                 $noti = new PushExpoService();
                 $tokens = $user->notitokens();
                 $noti->send($tokens, 'Compra en comercio', 'Se ha registrado una compra en comercio', []);
-                SupabaseService::LOG('Compra commercio 46', 'Compra QR ' . $cliente->cedula);
+
                 Notificacion::create([
                     'user_id' => $user->id,
                     'title' => 'Compra en comercio',
