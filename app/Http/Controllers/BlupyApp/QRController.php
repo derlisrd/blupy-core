@@ -39,6 +39,7 @@ class QRController extends Controller
                 'localizacion' => $req->localizacion,
                 'adicional' => $req->adicional,
             ];
+            Log::info($parametrosPorArray);
             $blupy = $this->webserviceBlupyQRCore
                 ->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];

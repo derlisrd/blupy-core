@@ -251,7 +251,11 @@ class AWSController extends Controller
         $image = fopen($imagePath, "r");
         $bytes = fread($image, filesize($imagePath));
         fclose($image);
-        return $bytes;
+        return [
+            'bytes' => $bytes,
+            'imagePath' => $imagePath,
+            'imageName' => $imageName,
+        ];
     }
 
 
