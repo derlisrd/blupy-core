@@ -19,7 +19,7 @@ class ClientesController extends Controller
     public function __construct()
     {
         $this->campos = ['clientes.id','u.name','u.id as user_id','cedula','celular','u.email','cliid as id_micredito','asofarma','funcionario','solicitud_credito','foto_ci_frente',
-        'clientes.created_at','u.active','u.vendedor_id'];
+        'clientes.created_at','u.active','u.vendedor_id','clientes.extranjero','clientes.selfie'];
     }
 
     /*
