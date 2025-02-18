@@ -108,7 +108,7 @@ class QRController extends Controller
         try {
             $user = $req->user();
             $cliente = $user->cliente;
-
+            Log::info($cliente);
             if (!Hash::check($req->password, $user->password))
                 return response()->json(['success' => false, 'message' => 'Contraseña incorrecta.'], 401);
 
@@ -123,7 +123,7 @@ class QRController extends Controller
                     'adicional' => $req->adicional,
                     'extranjero' => $cliente->extranjero,
                 ];
-                Log::info($parametrosPorArray);
+
             $blupy = $this->webserviceBlupyQRCore->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
 
