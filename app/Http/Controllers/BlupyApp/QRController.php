@@ -30,7 +30,6 @@ class QRController extends Controller
 
             $parametrosPorArray = [
                 'id' => $req->id,
-                'extranjero' => $cliente->extranjero,
                 'documento' => $cliente->cedula,
                 'numeroCuenta' => $req->numeroCuenta,
                 'numeroTarjeta' => $req->numeroTarjeta,
@@ -38,8 +37,8 @@ class QRController extends Controller
                 'ip' => $req->ip(),
                 'localizacion' => $req->localizacion,
                 'adicional' => $req->adicional,
+                'extranjero' => $cliente->extranjero,
             ];
-            Log::info($parametrosPorArray);
             $blupy = $this->webserviceBlupyQRCore
                 ->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
@@ -122,6 +121,7 @@ class QRController extends Controller
                 'ip' => $req->ip(),
                 'localizacion' => $req->localizacion,
                 'adicional' => $req->adicional,
+                'extranjero' => $cliente->extranjero,
             ];
             $blupy = $this->webserviceBlupyQRCore->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
