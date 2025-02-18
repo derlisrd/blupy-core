@@ -112,17 +112,17 @@ class QRController extends Controller
             if (!Hash::check($req->password, $user->password))
                 return response()->json(['success' => false, 'message' => 'Contraseña incorrecta.'], 401);
 
-            $parametrosPorArray = [
-                'id' => $req->id,
-                'documento' => $cliente->cedula,
-                'numeroCuenta' => $req->numeroCuenta,
-                'numeroTarjeta' => $req->numeroTarjeta,
-                'telefono' => $req->telefono,
-                'ip' => $req->ip(),
-                'localizacion' => $req->localizacion,
-                'adicional' => $req->adicional,
-                'extranjero' => $cliente->extranjero,
-            ];
+                $parametrosPorArray = [
+                    'id' => $req->id,
+                    'documento' => $cliente->cedula,
+                    'numeroCuenta' => $req->numeroCuenta,
+                    'numeroTarjeta' => $req->numeroTarjeta,
+                    'telefono' => $req->telefono,
+                    'ip' => $req->ip(),
+                    'localizacion' => $req->localizacion,
+                    'adicional' => $req->adicional,
+                    'extranjero' => $cliente->extranjero,
+                ];
             $blupy = $this->webserviceBlupyQRCore->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
 
