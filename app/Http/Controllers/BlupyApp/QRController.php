@@ -108,7 +108,6 @@ class QRController extends Controller
         try {
             $user = $req->user();
             $cliente = $user->cliente;
-            Log::info($cliente);
             SupabaseService::LOG('Compra commercio 46', 'Compra QR ' . $cliente->cedula);
             if (!Hash::check($req->password, $user->password))
                 return response()->json(['success' => false, 'message' => 'Contraseña incorrecta.'], 401);

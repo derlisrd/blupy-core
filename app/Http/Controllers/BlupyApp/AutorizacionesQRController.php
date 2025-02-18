@@ -83,6 +83,7 @@ class AutorizacionesQRController extends Controller
                 'ip' => $req->ip(),
                 'localizacion' => $req->localizacion,
                 'adicional' => $req->adicional,
+                'extranjero' => $cliente->extranjero,
             ];
             $blupyQrService = new BlupyQrService();
             $blupy = $blupyQrService->autorizarQR($parametrosPorArray);
