@@ -123,6 +123,7 @@ class QRController extends Controller
                     'adicional' => $req->adicional,
                     'extranjero' => $cliente->extranjero,
                 ];
+                Log::info($parametrosPorArray);
             $blupy = $this->webserviceBlupyQRCore->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
 
