@@ -43,7 +43,8 @@ class SolicitudesController extends Controller
             'c.asofarma',
             'c.solicitud_credito',
             'c.funcionario',
-            'c.solicitud_credito'
+            'c.solicitud_credito',
+            'c.selfie'
         ];
     }
     /*
