@@ -7,8 +7,12 @@ use Illuminate\Support\Facades\Log;
 
 class SupabaseService
 {
+    private string $url;
+    private string $apiKey;
 
     public function __construct(){
+        $this->url = env('SUPABASE_API_KEY');
+        $this->apiKey = env('SUPABASE_API_KEY');
     }
 
     public static function LOG($origen, $detalles){
