@@ -151,7 +151,7 @@ class JobsManualesController extends Controller
 
     public function ingresarVentas(){
         $farmaService = new FarmaService();
-        $hoy = Carbon::yesterday()->format('Y-m-d');
+        $hoy = Carbon::now()->format('Y-m-d');
             $res = (object)$farmaService->ventasRendidas($hoy);
             $data = (object) $res->data;
             if (property_exists($data, 'result')) {
