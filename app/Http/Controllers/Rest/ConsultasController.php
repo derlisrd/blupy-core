@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cliente;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
 use Illuminate\Http\Request;
@@ -15,6 +16,8 @@ class ConsultasController extends Controller
 
         if($validator->fails())
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+
+        $cliente = Cliente::where('cedula',$req->cedula)->first();
 
         $infinita = new InfinitaService();
         $farma = new FarmaService();
@@ -42,7 +45,8 @@ class ConsultasController extends Controller
             'message'=>'',
             'results'=>[
                 'farma'=>$farmaResult,
-                'micredito'=>$infinitaResult
+                'micredito'=>$infinitaResult,
+                'cliente'=>$cliente
             ]
         ]);
     }
