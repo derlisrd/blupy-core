@@ -162,26 +162,34 @@ class JobsManualesController extends Controller
                         ->setTimezone('America/Asuncion')
                         ->format('Y-m-d H:i:s');
 
-                        $cliente = Cliente::where('cedula', $v['cedula'])->first();
-                        $cliente_id = $cliente ? $cliente->id : null;
+                        // Obtener todos los clientes en una sola consulta
+                        $cedulas = collect($ventas)->pluck('cedula')->unique();
+                        $clientes = Cliente::whereIn('cedula', $cedulas)->pluck('id', 'cedula');
 
-                        $valor = [
-                            'cliente_id' => $cliente_id,
-                            'codigo' => $v['ventCodigo'],
-                            'documento' => $v['cedula'],
-                            'adicional' => $v['clieCodigoAdicional'],
-                            'factura_numero' => $v['ventNumero'],
-                            'importe' => $v['ventTotBruto'],
-                            'descuento' => $v['ventTotDescuento'],
-                            'importe_final' => $v['ventTotNeto'],
-                            'forma_pago' => $v['frpaAbreviatura'],
-                            'forma_codigo' => $v['frpaCodigo'],
-                            'sucursal' => $v['estrDescripcion'],
-                            'codigo_sucursal' => $v['estrCodigo'],
-                            'fecha' => $fechaFormateada,
-                            'forma_venta' => $v['ventTipo'],
-                        ];
-                        SupabaseService::ventas($valor);
+                        $ventasProcesadas = [];
+                        foreach ($ventas as $v) {
+                            $ventasProcesadas[] = [
+                                'cliente_id' => $clientes[$v['cedula']] ?? null,
+                                'codigo' => $v['ventCodigo'],
+                                'documento' => $v['cedula'],
+                                'adicional' => $v['clieCodigoAdicional'],
+                                'factura_numero' => $v['ventNumero'],
+                                'importe' => $v['ventTotBruto'],
+                                'descuento' => $v['ventTotDescuento'],
+                                'importe_final' => $v['ventTotNeto'],
+                                'forma_pago' => $v['frpaAbreviatura'],
+                                'forma_codigo' => $v['frpaCodigo'],
+                                'sucursal' => $v['estrDescripcion'],
+                                'codigo_sucursal' => $v['estrCodigo'],
+                                'fecha' => Carbon::parse($v['ventFecha'], 'UTC')
+                                    ->setTimezone('America/Asuncion')
+                                    ->format('Y-m-d H:i:s'),
+                                'forma_venta' => $v['ventTipo'],
+                            ];
+                        }
+                        if (!empty($ventasProcesadas)) {
+                            SupabaseService::ventas($ventasProcesadas);
+                        }
                     }
 
 
