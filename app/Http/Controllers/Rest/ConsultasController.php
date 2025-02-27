@@ -44,9 +44,9 @@ class ConsultasController extends Controller
             'success'=>true,
             'message'=>'',
             'results'=>[
+                'registro'=>$cliente ? true : false,
                 'farma'=>$farmaResult,
                 'micredito'=>$infinitaResult,
-                'cliente'=>$cliente
             ]
         ]);
     }
