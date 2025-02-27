@@ -162,7 +162,7 @@ class JobsManualesController extends Controller
                         ->setTimezone('America/Asuncion')
                         ->format('Y-m-d H:i:s');
 
-                        $cliente = Cliente::where('cedula', $v['cedula'])->select('id')->first();
+                        $cliente = Cliente::where('cedula', $v['cedula'])->first();
                         $cliente_id = $cliente ? $cliente->id : null;
 
                         $valor = [
