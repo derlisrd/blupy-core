@@ -8,12 +8,11 @@ use App\Models\Cliente;
 use App\Models\Informacion;
 use App\Models\SolicitudCredito;
 use App\Models\User;
-use App\Services\EmailService;
 use App\Services\PushExpoService;
 use App\Traits\SolicitudesInfinitaTraits;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+
 
 class SolicitudesController extends Controller
 {
@@ -44,7 +43,11 @@ class SolicitudesController extends Controller
             'c.solicitud_credito',
             'c.funcionario',
             'c.solicitud_credito',
-            'c.selfie'
+            'c.selfie',
+            'c.salario',
+            'c.empresa',
+            'c.latitud_direccion',
+            'c.longitud_direccion'
         ];
     }
     /*
@@ -52,21 +55,22 @@ class SolicitudesController extends Controller
     APROBAR DESDE INFINITA
     ==============================================================================================================
     */
-    public function aprobar(Request $req){
+    public function aprobar(Request $req)
+    {
         try {
             $codigo = $req->codigo;
-            $solicitud = SolicitudCredito::where('codigo',$codigo)->where('estado_id',5)->first();
-            if(!$solicitud){
+            $solicitud = SolicitudCredito::where('codigo', $codigo)->where('estado_id', 5)->first();
+            if (!$solicitud) {
                 return response()->json([
-                    'success'=>false,
-                    'message'=>'Solicitud no existe.'
-                ],404);
+                    'success' => false,
+                    'message' => 'Solicitud no existe.'
+                ], 404);
             }
 
             $res = $this->aprobarSolicitudInfinita($codigo);
-            $user = User::where('cliente_id',$solicitud->cliente_id)->first();
+            $user = User::where('cliente_id', $solicitud->cliente_id)->first();
 
-            if($res->success){
+            if ($res->success) {
                 $solicitud->estado = 'Vigente';
                 $solicitud->estado_id = 7;
                 $solicitud->save();
@@ -76,17 +80,18 @@ class SolicitudesController extends Controller
                 $notificacion->send(
                     $to,
                     '¡Contrato Activo!',
-                    'Su contrato está activo, su línea está lista para usarse.',[]
+                    'Su contrato está activo, su línea está lista para usarse.',
+                    []
                 );
-                $info = Informacion::where('user_id',$user->id)->where('codigo_info',1)->first();
+                $info = Informacion::where('user_id', $user->id)->where('codigo_info', 1)->first();
                 $info->delete();
             }
 
             return response()->json([
-                'success'=> $res->success,
-                'message'=>$res->message,
-                'results'=>$solicitud
-            ],$res->status);
+                'success' => $res->success,
+                'message' => $res->message,
+                'results' => $solicitud
+            ], $res->status);
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -99,37 +104,39 @@ class SolicitudesController extends Controller
     ==============================================================================================================
     */
 
-    public function actualizarSolicitudes(Request $req){
+    public function actualizarSolicitudes(Request $req)
+    {
 
-      try {
+        try {
 
-        $pendientes = SolicitudCredito::where('estado_id', 5)->pluck('codigo')->toArray();
-        ActualizarSolicitudesJobs::dispatch($pendientes)->onConnection('database');
-        return response()->json([
-            'success'=>true,
-            'message'=>'Actualizando solicitudes en segundo plano.'
-        ]);
-      } catch (\Throwable $th) {
-        throw $th;
-        return response()->json(['success'=>false,'message'=>'Error de servidor. BQS64'],500);
-      }
+            $pendientes = SolicitudCredito::where('estado_id', 5)->pluck('codigo')->toArray();
+            ActualizarSolicitudesJobs::dispatch($pendientes)->onConnection('database');
+            return response()->json([
+                'success' => true,
+                'message' => 'Actualizando solicitudes en segundo plano.'
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+            return response()->json(['success' => false, 'message' => 'Error de servidor. BQS64'], 500);
+        }
     }
 
 
-    public function actualizarSolicitud(Request $request){
+    public function actualizarSolicitud(Request $request)
+    {
 
         $codigo = $request->codigo;
-        $solicitud = SolicitudCredito::where('codigo',$codigo)->first();
-        if(!$solicitud){
+        $solicitud = SolicitudCredito::where('codigo', $codigo)->first();
+        if (!$solicitud) {
             return response()->json([
-                'success'=>false,
-                'message'=>'Solicitud no existe.'
-            ],404);
+                'success' => false,
+                'message' => 'Solicitud no existe.'
+            ], 404);
         }
 
         $res = $this->actualizarSolicitudInfinita($codigo);
 
-        if($res->success){
+        if ($res->success) {
             $solicitud->estado = $res->estado;
             $solicitud->estado_id = $res->id;
             $solicitud->save();
@@ -137,11 +144,10 @@ class SolicitudesController extends Controller
 
 
         return response()->json([
-            'success'=>true,
-            'message'=>'Actualizada',
-            'results'=>$solicitud
+            'success' => true,
+            'message' => 'Actualizada',
+            'results' => $solicitud
         ]);
-
     }
 
     /*
@@ -149,22 +155,23 @@ class SolicitudesController extends Controller
     SOLICITUDES DEL MES, POR DIA Y SEMANA
     ==============================================================================================================
     */
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         try {
-            $desde = ($request->desde ?? date('Y-m-01')).' 00:00:00';
-            $hasta = ($request->hasta ?? date('Y-m-t')).' 23:59:59';
+            $desde = ($request->desde ?? date('Y-m-01')) . ' 00:00:00';
+            $hasta = ($request->hasta ?? date('Y-m-t')) . ' 23:59:59';
 
             $data = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
-                ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
-                ->join('users as u','u.cliente_id','=','c.id')
-                ->where('solicitud_creditos.tipo','>',0)
-                ->whereBetween('solicitud_creditos.created_at',[$desde,$hasta])
+                ->join('clientes as c', 'c.id', '=', 'solicitud_creditos.cliente_id')
+                ->join('users as u', 'u.cliente_id', '=', 'c.id')
+                ->where('solicitud_creditos.tipo', '>', 0)
+                ->whereBetween('solicitud_creditos.created_at', [$desde, $hasta])
                 ->select($this->camposSolicitud);
 
             return response()->json([
-                'success'=>true,
-                'total'=>$data->count(),
-                'results'=>$data->get()
+                'success' => true,
+                'total' => $data->count(),
+                'results' => $data->get()
             ]);
         } catch (\Throwable $th) {
             throw $th;
@@ -176,33 +183,34 @@ class SolicitudesController extends Controller
     BUSCAR
     ==============================================================================================================
     */
-    public function buscar(Request $request){
+    public function buscar(Request $request)
+    {
 
         $buscar = $request->buscar;
 
         $limite = 25;
         $page =  0;
         $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
-        ->where('u.name', 'like', '%' . $buscar. '%')
-        ->where('solicitud_creditos.tipo','>',0)
-        ->orWhere('c.cedula', 'like', '%' . $buscar . '%')
-        ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
-        ->join('users as u','u.cliente_id','=','c.id')
-        ->offset($page * $limite )
-        ->limit($limite)
-        ->select($this->camposSolicitud)
-        ->get();
+            ->where('u.name', 'like', '%' . $buscar . '%')
+            ->where('solicitud_creditos.tipo', '>', 0)
+            ->orWhere('c.cedula', 'like', '%' . $buscar . '%')
+            ->join('clientes as c', 'c.id', '=', 'solicitud_creditos.cliente_id')
+            ->join('users as u', 'u.cliente_id', '=', 'c.id')
+            ->offset($page * $limite)
+            ->limit($limite)
+            ->select($this->camposSolicitud)
+            ->get();
 
         $total = SolicitudCredito::count();
         $pages = (int)($total / $limite) - 1;
 
         return response()->json([
-            'success'=>true,
-            'total'=>$total,
-            'pages'=>$pages,
-            'current'=>(int)$page,
-            'limit'=> (int) $limite,
-            'results'=>$soli
+            'success' => true,
+            'total' => $total,
+            'pages' => $pages,
+            'current' => (int)$page,
+            'limit' => (int) $limite,
+            'results' => $soli
         ]);
     }
     /*
@@ -211,35 +219,36 @@ class SolicitudesController extends Controller
     ==============================================================================================================
     */
 
-    public function filtros (Request $request){
+    public function filtros(Request $request)
+    {
 
         $estado_id = $request->estado_id;
-        $desde = ($request->desde ?? date('Y-m-01')).' 00:00:00';
-        $hasta = ($request->hasta ?? date('Y-m-t')).' 23:59:59';
+        $desde = ($request->desde ?? date('Y-m-01')) . ' 00:00:00';
+        $hasta = ($request->hasta ?? date('Y-m-t')) . ' 23:59:59';
         $asofarma = ($request->asofarma) ?? '0';
         $funcionario = ($request->funcionario) ?? '0';
 
-        if(!$estado_id){
-            $results = SolicitudCredito::where('solicitud_creditos.tipo','>',0)
-            ->whereBetween('solicitud_creditos.created_at',[$desde,$hasta])
-            ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
-            ->join('users as u','u.cliente_id','=','c.id')
-            ->select($this->camposSolicitud);
+        if (!$estado_id) {
+            $results = SolicitudCredito::where('solicitud_creditos.tipo', '>', 0)
+                ->whereBetween('solicitud_creditos.created_at', [$desde, $hasta])
+                ->join('clientes as c', 'c.id', '=', 'solicitud_creditos.cliente_id')
+                ->join('users as u', 'u.cliente_id', '=', 'c.id')
+                ->select($this->camposSolicitud);
         }
-        if($estado_id){
-            $results = SolicitudCredito::where('solicitud_creditos.tipo','>',0)
-            ->where('estado_id',$estado_id)
-            ->whereBetween('solicitud_creditos.created_at',[$desde,$hasta])
-            ->join('clientes as c','c.id', '=', 'solicitud_creditos.cliente_id')
-            ->join('users as u','u.cliente_id','=','c.id')
-            ->select($this->camposSolicitud);
+        if ($estado_id) {
+            $results = SolicitudCredito::where('solicitud_creditos.tipo', '>', 0)
+                ->where('estado_id', $estado_id)
+                ->whereBetween('solicitud_creditos.created_at', [$desde, $hasta])
+                ->join('clientes as c', 'c.id', '=', 'solicitud_creditos.cliente_id')
+                ->join('users as u', 'u.cliente_id', '=', 'c.id')
+                ->select($this->camposSolicitud);
         }
 
         return response()->json([
-            'tipo'=>$request->tipo,
-            'success'=>true,
-            'total'=>$results->count(),
-            'results'=>$results->get()
+            'tipo' => $request->tipo,
+            'success' => true,
+            'total' => $results->count(),
+            'results' => $results->get()
         ]);
     }
 
@@ -248,7 +257,8 @@ class SolicitudesController extends Controller
     SOLICITUDES Y REGISTROS TOTALES DEL MES, POR DIA Y SEMANA
     ==============================================================================================================
     */
-    public function totales (Request $request){
+    public function totales(Request $request)
+    {
         $inicioMes = $request->input('desde') ?? Carbon::now()->startOfMonth()->format('Y-m-d H:i:s');
         $finMes = $request->input('hasta') ?? Carbon::now()->endOfDay()->format('Y-m-d');
 
@@ -271,124 +281,123 @@ class SolicitudesController extends Controller
 
 
 
-        $funcionarios = Cliente::where('funcionario',1)->where('asofarma',0)->count();
-        $externos = Cliente::where('funcionario',0)->where('asofarma',0)->count();
-        $asociaciones = Cliente::where('funcionario',0)->where('asofarma',1)->count();
+        $funcionarios = Cliente::where('funcionario', 1)->where('asofarma', 0)->count();
+        $externos = Cliente::where('funcionario', 0)->where('asofarma', 0)->count();
+        $asociaciones = Cliente::where('funcionario', 0)->where('asofarma', 1)->count();
 
-        $registrosFuncionarioMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$finMes ])->where('funcionario',1)->where('asofarma',0)->count();
-        $registrosAsoMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$finMes ])->where('funcionario',0)->where('asofarma',1)->count();
-        $registrosDigitalMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$finMes  ])->where('funcionario',0)->where('asofarma',0)->count();
-        $registrosDelMes = Cliente::whereBetween('created_at',[$fechaInicioMes,$finMes])->count();
-        $registrosSemana = Cliente::whereBetween('created_at',[$lunes,$domingo])->count();
-        $registrosHoy = Cliente::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->count();
-        $registrosAyer = Cliente::whereBetween('created_at',[$ayer.$primeraHora, $ayer . $ultimaHora])->count();
+        $registrosFuncionarioMes = Cliente::whereBetween('created_at', [$fechaInicioMes, $finMes])->where('funcionario', 1)->where('asofarma', 0)->count();
+        $registrosAsoMes = Cliente::whereBetween('created_at', [$fechaInicioMes, $finMes])->where('funcionario', 0)->where('asofarma', 1)->count();
+        $registrosDigitalMes = Cliente::whereBetween('created_at', [$fechaInicioMes, $finMes])->where('funcionario', 0)->where('asofarma', 0)->count();
+        $registrosDelMes = Cliente::whereBetween('created_at', [$fechaInicioMes, $finMes])->count();
+        $registrosSemana = Cliente::whereBetween('created_at', [$lunes, $domingo])->count();
+        $registrosHoy = Cliente::whereBetween('created_at', [$hoy . ' 00:00:00', $hoy . ' 23:59:59'])->count();
+        $registrosAyer = Cliente::whereBetween('created_at', [$ayer . $primeraHora, $ayer . $ultimaHora])->count();
         $registroDelAnio = Cliente::whereYear('created_at', $yearDeMes)->count();
 
-        $solicitudesRechazadas = SolicitudCredito::where('tipo',1)->where('estado_id',11)->count();
-        $rechazadosHoy = SolicitudCredito::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->where('estado_id',11)->count();
-        $rechazadosSemana = SolicitudCredito::whereBetween('created_at',[$lunes,$domingo])->where('tipo',1)->where('estado_id',11)->count();
-        $rechazadosMes = SolicitudCredito::whereBetween('created_at',[$fechaInicioMes,$finMes])->where('tipo',1)->where('estado_id',11)->count();
-        $rechazadosDelAnio = SolicitudCredito::whereYear('created_at', $yearDeMes)->where('tipo',1)->where('estado_id',11)->count();
+        $solicitudesRechazadas = SolicitudCredito::where('tipo', 1)->where('estado_id', 11)->count();
+        $rechazadosHoy = SolicitudCredito::whereBetween('created_at', [$hoy . ' 00:00:00', $hoy . ' 23:59:59'])->where('tipo', 1)->where('estado_id', 11)->count();
+        $rechazadosSemana = SolicitudCredito::whereBetween('created_at', [$lunes, $domingo])->where('tipo', 1)->where('estado_id', 11)->count();
+        $rechazadosMes = SolicitudCredito::whereBetween('created_at', [$fechaInicioMes, $finMes])->where('tipo', 1)->where('estado_id', 11)->count();
+        $rechazadosDelAnio = SolicitudCredito::whereYear('created_at', $yearDeMes)->where('tipo', 1)->where('estado_id', 11)->count();
 
-        $solicitudesFuncionarios = Cliente::where('s.tipo',1)->where('clientes.funcionario',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
-        $solicitudesFuncionariosVigentes = Cliente::where('s.tipo',1)->where('s.estado_id',7)->where('clientes.funcionario',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
+        $solicitudesFuncionarios = Cliente::where('s.tipo', 1)->where('clientes.funcionario', 1)->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')->count();
+        $solicitudesFuncionariosVigentes = Cliente::where('s.tipo', 1)->where('s.estado_id', 7)->where('clientes.funcionario', 1)->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')->count();
         $solicitudesFuncionariosVigentesMes = Cliente::where('s.tipo', 1)
             ->where('s.estado_id', 7)
             ->where('clientes.funcionario', 1)
-            ->whereBetween('s.updated_at',[$fechaInicioMes,$finMes])
+            ->whereBetween('s.updated_at', [$fechaInicioMes, $finMes])
             ->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')
             ->count();
 
-        $solicitudesAsociaciones = Cliente::where('s.tipo',1)->where('clientes.asofarma',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
-        $solicitudesAsociacionesVigentes = Cliente::where('s.tipo',1)->where('s.estado_id',7)->where('clientes.asofarma',1)->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')->count();
+        $solicitudesAsociaciones = Cliente::where('s.tipo', 1)->where('clientes.asofarma', 1)->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')->count();
+        $solicitudesAsociacionesVigentes = Cliente::where('s.tipo', 1)->where('s.estado_id', 7)->where('clientes.asofarma', 1)->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')->count();
         $solicitudesAsociacionesVigentesMes = Cliente::where('s.tipo', 1)
-        ->where('s.estado_id', 7)
-        ->where('clientes.asofarma', 1)
-        ->whereBetween('s.updated_at',[$fechaInicioMes,$finMes])
-        ->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')
-        ->count();
+            ->where('s.estado_id', 7)
+            ->where('clientes.asofarma', 1)
+            ->whereBetween('s.updated_at', [$fechaInicioMes, $finMes])
+            ->join('solicitud_creditos as s', 'clientes.id', '=', 's.cliente_id')
+            ->count();
 
 
-        $solicitudesTotales = SolicitudCredito::where('tipo',1)->where('estado_id','<>',null)->count();
-        $solicitudesHoy = SolicitudCredito::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->count();
-        $solicitudesAyer = SolicitudCredito::whereBetween('created_at',[$ayer.$primeraHora, $ayer . $ultimaHora])->where('tipo',1)->count();
-        $solicitudesSemana = SolicitudCredito::whereBetween('created_at',[$lunes,$domingo])->where('tipo',1)->count();
-        $solicitudesMes = SolicitudCredito::where('tipo',1)->whereBetween('created_at',[$fechaInicioMes,$finMes])->count();
+        $solicitudesTotales = SolicitudCredito::where('tipo', 1)->where('estado_id', '<>', null)->count();
+        $solicitudesHoy = SolicitudCredito::whereBetween('created_at', [$hoy . ' 00:00:00', $hoy . ' 23:59:59'])->where('tipo', 1)->count();
+        $solicitudesAyer = SolicitudCredito::whereBetween('created_at', [$ayer . $primeraHora, $ayer . $ultimaHora])->where('tipo', 1)->count();
+        $solicitudesSemana = SolicitudCredito::whereBetween('created_at', [$lunes, $domingo])->where('tipo', 1)->count();
+        $solicitudesMes = SolicitudCredito::where('tipo', 1)->whereBetween('created_at', [$fechaInicioMes, $finMes])->count();
 
-        $solicitudesPendientes = SolicitudCredito::whereBetween('created_at',[$fechaHace60Dias.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->where('estado_id',5)->count();
-        $pendientesHoy = SolicitudCredito::whereBetween('created_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->where('estado_id',5)->count();
-        $pendientesSemana = SolicitudCredito::whereBetween('created_at',[$lunes,$domingo])->where('tipo',1)->where('estado_id',5)->count();
-        $pendientesMes = SolicitudCredito::where('tipo',1)->whereBetween('created_at',[$fechaInicioMes,$finMes])->where('estado_id',5)->count();
+        $solicitudesPendientes = SolicitudCredito::whereBetween('created_at', [$fechaHace60Dias . ' 00:00:00', $hoy . ' 23:59:59'])->where('tipo', 1)->where('estado_id', 5)->count();
+        $pendientesHoy = SolicitudCredito::whereBetween('created_at', [$hoy . ' 00:00:00', $hoy . ' 23:59:59'])->where('tipo', 1)->where('estado_id', 5)->count();
+        $pendientesSemana = SolicitudCredito::whereBetween('created_at', [$lunes, $domingo])->where('tipo', 1)->where('estado_id', 5)->count();
+        $pendientesMes = SolicitudCredito::where('tipo', 1)->whereBetween('created_at', [$fechaInicioMes, $finMes])->where('estado_id', 5)->count();
 
 
-        $solicitudVigentes = SolicitudCredito::where('tipo',1)->where('estado_id',7)->count();
+        $solicitudVigentes = SolicitudCredito::where('tipo', 1)->where('estado_id', 7)->count();
 
-        $solicitudVigentesExternosMes = SolicitudCredito::
-          join('clientes','clientes.id','=','solicitud_creditos.cliente_id')
-        ->where('clientes.funcionario',0)
-        ->where('clientes.asofarma',0)
-        ->whereBetween('solicitud_creditos.updated_at',[$fechaInicioMes,$finMes])
-        ->where('tipo',1)->where('estado_id',7)->count();
+        $solicitudVigentesExternosMes = SolicitudCredito::join('clientes', 'clientes.id', '=', 'solicitud_creditos.cliente_id')
+            ->where('clientes.funcionario', 0)
+            ->where('clientes.asofarma', 0)
+            ->whereBetween('solicitud_creditos.updated_at', [$fechaInicioMes, $finMes])
+            ->where('tipo', 1)->where('estado_id', 7)->count();
 
-        $vigentesHoy = SolicitudCredito::whereBetween('updated_at',[$hoy.' 00:00:00',$hoy . ' 23:59:59'])->where('tipo',1)->where('estado_id',7)->count();
-        $vigentesSemana = SolicitudCredito::whereBetween('updated_at',[$lunes,$domingo])->where('tipo',1)->where('estado_id',7)->count();
-        $vigentesMes = SolicitudCredito::whereBetween('updated_at',[$fechaInicioMes,$finMes])->where('tipo',1)->where('estado_id',7)->count();
-        $vigentesDelAnio = SolicitudCredito::whereYear('created_at', $yearDeMes)->where('tipo',1)->where('estado_id',7)->count();
-        $porcentajeDeRechazo = number_format( ($solicitudesRechazadas  * 100 / $solicitudesTotales),2 );
+        $vigentesHoy = SolicitudCredito::whereBetween('updated_at', [$hoy . ' 00:00:00', $hoy . ' 23:59:59'])->where('tipo', 1)->where('estado_id', 7)->count();
+        $vigentesSemana = SolicitudCredito::whereBetween('updated_at', [$lunes, $domingo])->where('tipo', 1)->where('estado_id', 7)->count();
+        $vigentesMes = SolicitudCredito::whereBetween('updated_at', [$fechaInicioMes, $finMes])->where('tipo', 1)->where('estado_id', 7)->count();
+        $vigentesDelAnio = SolicitudCredito::whereYear('created_at', $yearDeMes)->where('tipo', 1)->where('estado_id', 7)->count();
+        $porcentajeDeRechazo = number_format(($solicitudesRechazadas  * 100 / $solicitudesTotales), 2);
 
         return response()->json([
-            'success'=>true,
-            'results'=>[
-                'registrosTotales'=>$registros,
-                'registrosAyer'=>$registrosAyer,
-                'registrosHoy'=>$registrosHoy,
-                'registrosSemana'=>$registrosSemana,
-                'registrosMes'=>$registrosDelMes,
-                'registrosMesFuncionarios'=>$registrosFuncionarioMes,
-                'registrosMesAso'=>$registrosAsoMes,
-                'registrosMesDigital'=>$registrosDigitalMes,
+            'success' => true,
+            'results' => [
+                'registrosTotales' => $registros,
+                'registrosAyer' => $registrosAyer,
+                'registrosHoy' => $registrosHoy,
+                'registrosSemana' => $registrosSemana,
+                'registrosMes' => $registrosDelMes,
+                'registrosMesFuncionarios' => $registrosFuncionarioMes,
+                'registrosMesAso' => $registrosAsoMes,
+                'registrosMesDigital' => $registrosDigitalMes,
 
-                'registroDelAnio' =>$registroDelAnio,
+                'registroDelAnio' => $registroDelAnio,
 
-                'funcionarios'=>$funcionarios,
-                'asociaciones'=>$asociaciones,
-                'externos'=>$externos,
+                'funcionarios' => $funcionarios,
+                'asociaciones' => $asociaciones,
+                'externos' => $externos,
 
-                'solicitudesPendientes'=>$solicitudesPendientes,
-                'pendientesHoy'=>$pendientesHoy,
-                'pendientesSemana'=>$pendientesSemana,
-                'pendientesMes'=>$pendientesMes,
+                'solicitudesPendientes' => $solicitudesPendientes,
+                'pendientesHoy' => $pendientesHoy,
+                'pendientesSemana' => $pendientesSemana,
+                'pendientesMes' => $pendientesMes,
 
-                'solicitudesVigentes'=>$solicitudVigentes,
-                'vigentesHoy'=>$vigentesHoy,
-                'vigentesSemana'=>$vigentesSemana,
-                'vigentesMes'=>$vigentesMes,
-                'vigentesDelAnio'=>$vigentesDelAnio,
+                'solicitudesVigentes' => $solicitudVigentes,
+                'vigentesHoy' => $vigentesHoy,
+                'vigentesSemana' => $vigentesSemana,
+                'vigentesMes' => $vigentesMes,
+                'vigentesDelAnio' => $vigentesDelAnio,
 
-                'solicitudesRechazadas'=>$solicitudesRechazadas,
-                'rechazadosHoy'=>$rechazadosHoy,
-                'rechazadosSemana'=>$rechazadosSemana,
-                'rechazadosMes'=>$rechazadosMes,
-                'rechazadosDelAnio'=>$rechazadosDelAnio,
+                'solicitudesRechazadas' => $solicitudesRechazadas,
+                'rechazadosHoy' => $rechazadosHoy,
+                'rechazadosSemana' => $rechazadosSemana,
+                'rechazadosMes' => $rechazadosMes,
+                'rechazadosDelAnio' => $rechazadosDelAnio,
 
-                'porcentajeRechazo'=>$porcentajeDeRechazo,
+                'porcentajeRechazo' => $porcentajeDeRechazo,
 
-                'solicitudesTotales'=>$solicitudesTotales,
-                'solicitudesAyer'=>$solicitudesAyer,
-                'solicitudesHoy'=>$solicitudesHoy,
-                'solicitudesSemana'=>$solicitudesSemana,
-                'solicitudesMes'=>$solicitudesMes,
+                'solicitudesTotales' => $solicitudesTotales,
+                'solicitudesAyer' => $solicitudesAyer,
+                'solicitudesHoy' => $solicitudesHoy,
+                'solicitudesSemana' => $solicitudesSemana,
+                'solicitudesMes' => $solicitudesMes,
 
-                'solicitudesFuncionariosVigentesMes'=>$solicitudesFuncionariosVigentesMes,
+                'solicitudesFuncionariosVigentesMes' => $solicitudesFuncionariosVigentesMes,
 
-                'solicitudesAsociacionesVigentesMes'=>$solicitudesAsociacionesVigentesMes,
+                'solicitudesAsociacionesVigentesMes' => $solicitudesAsociacionesVigentesMes,
 
-                'solicitudVigentesExternosMes'=>$solicitudVigentesExternosMes,
+                'solicitudVigentesExternosMes' => $solicitudVigentesExternosMes,
 
-                'solicitudesFuncionarios'=>$solicitudesFuncionarios,
-                'solicitudesFuncionariosVigentes'=>$solicitudesFuncionariosVigentes,
-                'solicitudesAsociaciones'=>$solicitudesAsociaciones,
-                'solicitudesAsociacionesVigentes'=>$solicitudesAsociacionesVigentes,
+                'solicitudesFuncionarios' => $solicitudesFuncionarios,
+                'solicitudesFuncionariosVigentes' => $solicitudesFuncionariosVigentes,
+                'solicitudesAsociaciones' => $solicitudesAsociaciones,
+                'solicitudesAsociacionesVigentes' => $solicitudesAsociacionesVigentes,
 
             ]
         ]);
