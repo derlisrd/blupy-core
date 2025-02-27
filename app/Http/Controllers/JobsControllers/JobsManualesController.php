@@ -5,6 +5,7 @@ namespace App\Http\Controllers\JobsControllers;
 use App\Http\Controllers\Controller;
 use App\Jobs\ActualizarTarjetasJobs;
 use App\Jobs\UpdatePerfilJobs;
+use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
@@ -142,5 +143,26 @@ class JobsManualesController extends Controller
         File::put($rutaSalida, json_encode($deudas, JSON_PRETTY_PRINT));
 
         return response()->json(['success'=>true]);
+    }
+
+
+    public function ingresarVentas(){
+        // ejemplo
+        $venta = [
+            'cliente_id'=>1,
+            'codigo'=>'123456',
+            'documento'=>'123456789',
+            'adicional'=>'adicion_a',
+            'factura_numero'=>'123456789',
+            'importe'=>100,
+            'descuento'=>10,
+            'importe_final'=>90,
+            'forma_codigo'=>'1',
+            'forma_pago'=>'blupy digital',
+            'sucursal'=> 'punto farma 234',
+            'forma_venta'=>'forma_venta',
+            'fecha'=>'2023-11-10 12:34:56',
+        ];
+        SupabaseService::ventas($venta);
     }
 }

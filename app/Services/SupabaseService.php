@@ -27,4 +27,17 @@ class SupabaseService
             return false;
         }
     }
+    public static function ventas(array $datas){
+        try {
+            Http::withHeaders([
+                'apikey' => env('SUPABASE_API_KEY'),
+                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                'Content-Type' => 'application/json',
+            ])->post(env('SUPABASE_URL') . '/rest/v1/ventas', $datas);
+            return true;
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return false;
+        }
+    }
 }
