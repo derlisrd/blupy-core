@@ -5,7 +5,10 @@ namespace App\Http\Controllers\JobsControllers;
 use App\Http\Controllers\Controller;
 use App\Jobs\ActualizarTarjetasJobs;
 use App\Jobs\UpdatePerfilJobs;
+use App\Models\Cliente;
+use App\Services\FarmaService;
 use App\Services\SupabaseService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
@@ -147,23 +150,43 @@ class JobsManualesController extends Controller
 
 
     public function ingresarVentas(){
-        // ejemplo
-        $venta = [
-            'cliente_id'=>1,
-            'codigo'=>'123456',
-            'documento'=>'123456789',
-            'adicional'=>'adicion_a',
-            'factura_numero'=>'123456789',
-            'importe'=>100,
-            'descuento'=>10,
-            'importe_final'=>90,
-            'forma_codigo'=>'1',
-            'forma_pago'=>'blupy digital',
-            'sucursal'=> 'punto farma 234',
-            'forma_venta'=>'forma_venta',
-            'fecha'=>'2023-11-10 12:34:56',
-        ];
-        SupabaseService::ventas($venta);
+        $farmaService = new FarmaService();
+        $hoy = Carbon::yesterday()->format('Y-m-d');
+            $res = (object)$farmaService->ventasRendidas($hoy);
+            $data = (object) $res->data;
+            if (property_exists($data, 'result')) {
+                    $ventas = $data->result;
+
+                    foreach($ventas as $v){
+                        $fechaFormateada = Carbon::parse($v['ventFecha'], 'UTC')
+                        ->setTimezone('America/Asuncion')
+                        ->format('Y-m-d H:i:s');
+
+                        $cliente = Cliente::where('cedula', $v['cedula'])->select('id')->first();
+                        $cliente_id = $cliente ? $cliente->id : null;
+
+                        $valor = [
+                            'cliente_id' => $cliente_id,
+                            'codigo' => $v['ventCodigo'],
+                            'documento' => $v['cedula'],
+                            'adicional' => $v['clieCodigoAdicional'],
+                            'factura_numero' => $v['ventNumero'],
+                            'importe' => $v['ventTotBruto'],
+                            'descuento' => $v['ventTotDescuento'],
+                            'importe_final' => $v['ventTotNeto'],
+                            'forma_pago' => $v['frpaAbreviatura'],
+                            'forma_codigo' => $v['frpaCodigo'],
+                            'sucursal' => $v['estrDescripcion'],
+                            'codigo_sucursal' => $v['estrCodigo'],
+                            'fecha' => $fechaFormateada,
+                            'forma_venta' => $v['ventTipo'],
+                        ];
+                        SupabaseService::ventas($valor);
+                    }
+
+
+
+        }
         return response()->json(['success'=>true]);
     }
 }
