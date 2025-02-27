@@ -158,9 +158,7 @@ class JobsManualesController extends Controller
                     $ventas = $data->result;
 
                     foreach($ventas as $v){
-                        $fechaFormateada = Carbon::parse($v['ventFecha'], 'UTC')
-                        ->setTimezone('America/Asuncion')
-                        ->format('Y-m-d H:i:s');
+
 
                         // Obtener todos los clientes en una sola consulta
                         $cedulas = collect($ventas)->pluck('cedula')->unique();
