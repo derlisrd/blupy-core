@@ -164,5 +164,6 @@ class JobsManualesController extends Controller
             'fecha'=>'2023-11-10 12:34:56',
         ];
         SupabaseService::ventas($venta);
+        return response()->json(['success'=>true]);
     }
 }
