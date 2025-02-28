@@ -233,11 +233,11 @@ class ClientesController extends Controller
         ]);
     }
 
-    public function actualizarFotoCedula(Request $request){
+    public function actualizarFotoCedula(Request $request,$id){
 
 
         $validator = Validator::make(
-            $request->all(),
+            ['id' => $id, 'foto_cedula' => $request->foto_cedula],
             [
                 'id' => 'required|exists:clientes,id',
                 'foto_cedula' => 'required|image|mimes:jpeg,png,jpg|max:2048'
