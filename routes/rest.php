@@ -26,7 +26,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
     Route::prefix('clientes')->group(function(){
         Route::get('/',[ClientesController::class,'index'])->name('rest_clientes');
-        Route::post('/actualizar-foto-cedula',[ClientesController::class,'actualizarFotoCedula'])->name('rest_actualizar_foto_cedula');
+        Route::post('/actualizar-foto-cedula/{id}',[ClientesController::class,'actualizarFotoCedula'])->name('rest_actualizar_foto_cedula');
     });
     Route::post('/clientes-filtros',[ClientesController::class,'filtros'])->name('rest_clientes_filtros');
     Route::get('/cliente',[ClientesController::class,'buscar'])->name('rest_cliente');
