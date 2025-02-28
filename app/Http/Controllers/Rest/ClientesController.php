@@ -246,7 +246,8 @@ class ClientesController extends Controller
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-        $cliente = Cliente::find($request->id);
+        try{
+            $cliente = Cliente::find($request->id);
         $imagen = $request->file('foto_cedula');
         $extension = $imagen->getClientOriginalExtension();
 
@@ -257,7 +258,20 @@ class ClientesController extends Controller
         // Procesar y guardar la imagen
         $imager->read($imagen->getPathname())->scale(800)->save($publicPath);
 
-        return response()->json(['message' => 'Imagen subida correctamente', 'path' => asset('clientes/' . $imageName)]);
+        return response()->json([
+            'message' => 'Imagen subida correctamente',
+            'success' => true,
+            'results' => [
+            'path' => asset('clientes/' . $imageName)]
+        ]);
+        }
+        catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al subir la imagen. '. $e->getMessage(),
+                'success' => false,
+                'results' => null
+            ],500);
+        }
 
     }
 
