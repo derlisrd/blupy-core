@@ -259,6 +259,9 @@ class ClientesController extends Controller
         // Procesar y guardar la imagen
         $imager->read($imagen->getPathname())->scale(800)->save($publicPath);
 
+        $cliente->foto_ci_frente = $imageName;
+        $cliente->save();
+
         return response()->json([
             'message' => 'Imagen subida correctamente',
             'success' => true,
