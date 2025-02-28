@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
-use App\Services\FarmaService;
 use App\Traits\ContratosBlupyFarmaTraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
