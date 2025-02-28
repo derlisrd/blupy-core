@@ -9,7 +9,8 @@ use App\Models\User;
 use App\Services\FarmaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Validator;
 
 class ClientesController extends Controller
@@ -231,4 +232,33 @@ class ClientesController extends Controller
             'results' => $clients
         ]);
     }
+
+    public function actualizarFotoCedula(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'id' => 'required|exists:clientes,id',
+                'foto_cedula' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+            ]
+        );
+
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        $cliente = Cliente::find($request->id);
+        $imagen = $request->file('foto_cedula');
+        $extension = $imagen->getClientOriginalExtension();
+
+        $imageName = 'cedula_' . $cliente->cedula . '.' . $extension;
+        $publicPath = public_path('clientes/' . $imageName);
+
+        $imager = new ImageManager(new Driver());
+        // Procesar y guardar la imagen
+        $imager->read($imagen->getPathname())->scale(800)->save($publicPath);
+
+        return response()->json(['message' => 'Imagen subida correctamente', 'path' => asset('clientes/' . $imageName)]);
+
+    }
+
 }
