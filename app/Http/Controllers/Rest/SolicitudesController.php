@@ -186,7 +186,7 @@ class SolicitudesController extends Controller
     public function buscar(Request $request)
     {
 
-        $buscar = $request->buscar;
+        $buscar = $request->q;
 
         $limite = 25;
         $page =  0;

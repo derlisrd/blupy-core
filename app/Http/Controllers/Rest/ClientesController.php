@@ -125,7 +125,7 @@ class ClientesController extends Controller
     public function buscar(Request $req)
     {
 
-        $buscar = $req->buscar;
+        $buscar = $req->q;
         $clientes = Cliente::join('users as u', 'u.cliente_id', '=', 'clientes.id')
             ->orderBy('created_at', 'DESC')
             ->where('clientes.cedula', 'like', '%' . $buscar . '%')
