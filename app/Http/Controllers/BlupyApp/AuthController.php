@@ -184,7 +184,7 @@ class AuthController extends Controller
                         ->where('desktop',$req->desktop)
                         ->where('web',$req->web)
                         ->where('device',$req->device)
-                        ->where('notitoken',$req->notitoken)
+                        ->where('devicetoken',$req->devicetoken)
                         ->first();
                         if(!$dispositoDeConfianza){
                             $pistaEmail =  $user->email;//$this->ocultarParcialmenteEmail($user->email);
