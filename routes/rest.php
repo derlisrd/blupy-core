@@ -20,6 +20,9 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
     Route::get('/check',[AuthController::class,'checkToken'])->name('rest_check_token');
 
+    Route::prefix('estadisticas')->group(function(){
+
+    });
 
 
     Route::prefix('clientes')->group(function(){
