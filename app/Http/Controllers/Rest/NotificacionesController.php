@@ -9,12 +9,11 @@ use App\Models\Device;
 use App\Models\User;
 use App\Services\PushExpoService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class NotificacionesController extends Controller
 {
-    public function enviarNotificacion(Request $req){
+    public function individual(Request $req){
         $validator = Validator::make($req->all(),['id'=>'required|exists:users,id','title'=>'required','body'=>'required']);
         if($validator->fails())
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
@@ -22,7 +21,7 @@ class NotificacionesController extends Controller
         try {
             $user = User::find($req->id);
             $notificacion = new PushExpoService();
-            $to = $user->notitokens();
+            $to = Device::where('user_id', $req->id)->whereNotNull('notitoken')->pluck('notitoken')->toArray();
             $notificacion->send(
                 $to,
                 $req->title,
@@ -41,7 +40,7 @@ class NotificacionesController extends Controller
         }
     }
 
-    public function enviarNotificacionesMasivas(Request $req){
+    public function difusion(Request $req){
         $validator = Validator::make($req->all(), [
             'title' => 'required',
             'text' => 'required'
@@ -59,11 +58,11 @@ class NotificacionesController extends Controller
         ];
         $tokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
 
-        NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database');
-        return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano']);
+        //NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database');
+        return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano','results'=>$tokens]);
     }
 
-    public function enviarNotificacionSelectiva(Request $req){
+    public function selectiva(Request $req){
 
     }
 }

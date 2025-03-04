@@ -16,6 +16,8 @@ class Device extends Model
     protected $fillable = [
         'user_id',
         'device',
+        'os',
+        'devicetoken',
         'model',
         'web',
         'desktop',

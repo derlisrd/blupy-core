@@ -105,6 +105,8 @@ class AuthController extends Controller
             Device::create([
                 'user_id'=>$user->id,
                 'notitoken'=>$req->notitoken,
+                'os'=>$req->os,
+                'devicetoken'=>$req->devicetoken,
                 'version'=>$req->version,
                 'device'=>$req->device,
                 'model'=>$req->model,

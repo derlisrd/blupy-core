@@ -51,6 +51,8 @@ class DeviceController extends Controller
             $id = $req->id;
             $codigo = $req->codigo;
             $ip = $req->ip();
+            $devicetoken = $req->devicetoken;
+            $os = $req->os;
             $notitoken = $req->notitoken;
             $device = $req->device;
             $web = $req->web ? 1 : 0;
@@ -75,6 +77,8 @@ class DeviceController extends Controller
             Device::create([
                 'device'=>$device,
                 'notitoken'=>$notitoken,
+                'devicetoken'=>$devicetoken,
+                'os'=>$os,
                 'user_id'=>$user->id,
                 'web'=>$web,
                 'model'=>$model,
