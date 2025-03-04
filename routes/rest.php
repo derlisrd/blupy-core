@@ -37,10 +37,14 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::put('/actualizar-ficha-funcionario',[ClientesController::class,'actualizarFuncionario'])->name('rest_actualizar_ficha_funcionario');
 
 
+    Route::prefix('/notificacion')->group(function(){
+        Route::post('/enviar',[NotificacionesController::class,'enviarNotificacion'])->name('rest_enviar_notificacion');
+        Route::post('/enviar-masivas',[NotificacionesController::class,'enviarNotificacionesMasivas'])->name('rest_enviar_notificaciones_masivas');
+        Route::post('/individual',[NotificacionesController::class,'enviarNotificacionSelectiva'])->name('rest_enviar_notificacion_selectiva');
+    });
 
-    Route::post('enviar-notificacion',[NotificacionesController::class,'enviarNotificacion'])->name('rest_enviar_notificacion');
-    Route::post('/enviar-notificaciones-masivas',[NotificacionesController::class,'enviarNotificacionesMasivas'])->name('rest_enviar_notificaciones_masivas');
-    Route::post('/enviar-notificacion-selectiva',[NotificacionesController::class,'enviarNotificacionSelectiva'])->name('rest_enviar_notificacion_selectiva');
+
+
 
 
 
@@ -55,6 +59,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
         Route::put('/actualizar-solicitudes',[SolicitudesController::class,'actualizarSolicitudes'])->name('rest_actualizar_solicitudes');
         Route::get('/actualizar-solicitud',[SolicitudesController::class,'actualizarSolicitud'])->name('rest_actualizar_solicitud');
     });
+
     Route::prefix('contratos')->group(function(){
         Route::get('/consulta',[ContratosController::class,'consultaContratoPorDocFarma'])->name('rest_contratos');
     });
