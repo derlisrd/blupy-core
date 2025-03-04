@@ -151,8 +151,8 @@ class VentasFarmaController extends Controller{
         $fechaHoy = Carbon::now()->format('Y-m-d');
 
         $farmaService = new FarmaService();
-        $res = (object)$farmaService->ventasRendidas($fechaHoy);
-        $data = (object) $res->data;
+        $res = $farmaService->ventasRendidas($fechaHoy);
+        $data = (object) $res['data'];
         $results = [];
         if (property_exists($data, 'result')) {
            $results = $data->result;
