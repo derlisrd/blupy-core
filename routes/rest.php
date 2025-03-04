@@ -4,6 +4,7 @@ use App\Http\Controllers\Rest\AuthController;
 use App\Http\Controllers\Rest\ClientesController;
 use App\Http\Controllers\Rest\ConsultasController;
 use App\Http\Controllers\Rest\ContratosController;
+use App\Http\Controllers\Rest\EstadisticasController;
 use App\Http\Controllers\Rest\InformesVentasController;
 use App\Http\Controllers\Rest\NotificacionesController;
 use App\Http\Controllers\Rest\SolicitudesController;
@@ -21,7 +22,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::get('/check',[AuthController::class,'checkToken'])->name('rest_check_token');
 
     Route::prefix('estadisticas')->group(function(){
-
+        Route::get('/totales',[EstadisticasController::class,'totales']);
     });
 
 
