@@ -21,7 +21,12 @@ class ContratosController extends Controller
         $res = $this->consultarContratoBlupyPorDocumentoEnFarma($documento);
         if(!$res->success)
             return response()->json(['success'=>false,'message'=>'No se encontraron contratos para el documento ingresado'], 404);
-        $cliente = Cliente::where('cedula',$documento)->select('foto_ci_frente','cedula','id','selfie','nombre_primero','apellido_primero','celular')->first();
+
+        $cliente = Cliente::where('clientes.cedula',$documento)
+        ->where('s.tipo','=',1)
+        ->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')
+        ->select('clientes.foto_ci_frente','clientes.cedula','clientes.id','clientes.selfie','clientes.nombre_primero',
+        'clientes.apellido_primero','clientes.celular','s.tipo','s.estado')->first();
         $results = [
             'contratos'=>$res->results,
             'cliente'=>$cliente
