@@ -62,7 +62,7 @@ class SolicitudesController extends Controller
             if (!$solicitud) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Solicitud no existe.'
+                    'message' => 'Solicitud no existe o ya fue aprobada.'
                 ], 404);
             }
 

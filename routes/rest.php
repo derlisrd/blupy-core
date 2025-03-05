@@ -5,11 +5,10 @@ use App\Http\Controllers\Rest\ClientesController;
 use App\Http\Controllers\Rest\ConsultasController;
 use App\Http\Controllers\Rest\ContratosController;
 use App\Http\Controllers\Rest\EstadisticasController;
-use App\Http\Controllers\Rest\InformesVentasController;
 use App\Http\Controllers\Rest\NotificacionesController;
 use App\Http\Controllers\Rest\SolicitudesController;
 use App\Http\Controllers\Rest\UsersController;
-use App\Http\Controllers\Rest\VentasFarmaController;
+use App\Http\Controllers\Rest\VentasController;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
 
@@ -85,26 +84,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
 
 
-    Route::prefix('ventas')->group(function(){
 
-        Route::get('/tickets',[VentasFarmaController::class,'tickets'])->name('rest_ventas_tickets');
-        Route::get('/totales',[VentasFarmaController::class,'ventasTotales'])->name('rest_ventas_totales');
-        Route::get('/actualizar-del-dia',[VentasFarmaController::class,'ventasDiaFarmaJob'])->name('rest_actualizar_ventas_dia');
-        Route::get('/dia-farma',[VentasFarmaController::class,'ventasDiaFarma'])->name('rest_ventas_dia_farma');
-        Route::get('/hoy',[VentasFarmaController::class,'actualizarListaVentasDeHoy'])->name('rest_ventas_hoy_farma');
-        Route::get('/porcentaje-uso',[VentasFarmaController::class,'porcentajeDeUsoBlupy'])->name('rest_porcentaje_uso');
-
-        Route::get('/del-mes',[VentasFarmaController::class,'ventasDelMes']);
-
-        Route::get('/por-sucursal',[VentasFarmaController::class,'ventasPorSucursal'])->name('rest_ventas_por_sucursal');
-
-        Route::get('/comparar-meses',[InformesVentasController::class,'compararMeses'])->name('rest_comparar_meses');
-        Route::get('/top-sucursales-tickets',[InformesVentasController::class,'topSucursalesTickets'])->name('rest_top_sucursales_tickets');
-        Route::get('/top-sucursales-ingresos',[InformesVentasController::class,'topSucursalesIngresos'])->name('rest_top_sucursales_ingresos');
-        Route::get('/dia-mas-venta',[InformesVentasController::class,'diaMasVenta'])->name('rest_dia_mas_ventas');
-        Route::get('/mes-mas-venta',[InformesVentasController::class,'mesMayorFacturacion'])->name('rest_mes_mas_ventas');
-        Route::get('/forma-pago',[InformesVentasController::class,'formaPago'])->name('rest_forma_pago');
-    });
 
 
 
@@ -112,4 +92,6 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
 
 
-
+Route::prefix('ventas')->group(function(){
+    Route::get('/',[VentasController::class,'ventas'])->name('rest_ventas');
+});

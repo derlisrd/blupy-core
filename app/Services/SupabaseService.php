@@ -31,7 +31,7 @@ class SupabaseService
             return false;
         }
     }
-    public static function ventas(array $datas)
+    public static function ingresarVentas(array $datas)
     {
         try {
             $response = Http::withHeaders([
@@ -49,6 +49,30 @@ class SupabaseService
         } catch (\Throwable $th) {
             Log::error('Excepción en SupabaseService::ventas: ' . $th->getMessage());
             return false;
+        }
+    }
+
+    public static function obtenerVentas()
+    {
+        try {
+            $response = Http::withHeaders([
+                'apikey' => env('SUPABASE_API_KEY'),
+                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                'Content-Type' => 'application/json',
+            ])->get(env('SUPABASE_URL') . '/rest/v1/ventas',[
+                'select' => '*',
+                'order' => 'fecha.desc',
+            ]);
+
+            if ($response->failed()) {
+                Log::error('Error al obtener ventas de Supabase: ' . $response->body());
+                return null;
+            }
+
+            return $response->json();
+        } catch (\Throwable $th) {
+            Log::error('Excepción en SupabaseService::obtenerVentas: ' . $th->getMessage());
+            return null;
         }
     }
 }
