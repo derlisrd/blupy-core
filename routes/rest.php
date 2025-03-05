@@ -64,8 +64,9 @@ Route::middleware(Authenticate::using('api'))->group(function(){
         Route::get('/actualizar-solicitud',[SolicitudesController::class,'actualizarSolicitud'])->name('rest_actualizar_solicitud');
     });
 
-    Route::prefix('contratos')->group(function(){
-        Route::get('/consulta',[ContratosController::class,'consultaContratoPorDocFarma'])->name('rest_contratos');
+    Route::prefix('contrato')->group(function(){
+        Route::get('/cedula',[ContratosController::class,'contratoPorDocumento'])->name('rest_contratos');
+        Route::get('/codigo',[ContratosController::class,'contratoPorCodigo'])->name('rest_contratos');
     });
 
 

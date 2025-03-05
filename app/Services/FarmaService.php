@@ -31,6 +31,9 @@ class FarmaService
     public function MiCreditoContratosPorDocumento(String $documento){
         return $this->get('micredito-contratos/',['documento' => $documento]);
     }
+    public function MiCreditoContratosPorCodigo(String $codigo){
+        return $this->get('micredito-contratos/',['codigo' => $codigo]);
+    }
 
     public function actualizarPedidosQR($codigo, $numero_cuenta, $numero_tarjeta, $movimiento){
         return $this->post('pedidosqr/autorizar',['codigo' => $codigo,'numero_cuenta'=>$numero_cuenta,'numero_tarjeta'=>$numero_tarjeta,'movimiento'=>$movimiento]);

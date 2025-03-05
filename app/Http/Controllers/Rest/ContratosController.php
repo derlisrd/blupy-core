@@ -12,7 +12,7 @@ class ContratosController extends Controller
 {
     use ContratosBlupyFarmaTraits;
 
-    public function consultaContratoPorDocFarma(Request $req){
+    public function contratoPorDocumento(Request $req){
         $validator = Validator::make($req->all(),['documento'=>'required']);
         if($validator->fails())
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
@@ -26,7 +26,7 @@ class ContratosController extends Controller
         ->where('s.tipo','=',1)
         ->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')
         ->select('clientes.foto_ci_frente','clientes.cedula','clientes.id','clientes.selfie','clientes.nombre_primero',
-        'clientes.apellido_primero','clientes.celular','s.tipo','s.estado')->first();
+        'clientes.apellido_primero','clientes.celular','s.tipo','s.estado','s.codigo')->first();
         $results = [
             'contratos'=>$res->results,
             'cliente'=>$cliente
@@ -34,12 +34,26 @@ class ContratosController extends Controller
         return response()->json(['success'=>true,'results'=>$results],$res->status);
     }
 
-    public function consultarPorContratoFarma(Request $req){
-        $validator = Validator::make($req->all(),['contrato'=>'required']);
+    public function contratoPorCodigo(Request $req){
+        $validator = Validator::make($req->all(),['codigo'=>'required']);
         if($validator->fails())
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
-        $contrato = $req->contrato;
 
+        $codigo = $req->codigo;
+        $res = $this->consultarContratoPorCodigo($codigo);
+        if(!$res->success)
+            return response()->json(['success'=>false,'message'=>'No se encontraron contratos para el documento ingresado'], 404);
+
+        $cliente = Cliente::where('s.codigo',$codigo)
+        ->where('s.tipo','=',1)
+        ->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')
+        ->select('clientes.foto_ci_frente','clientes.cedula','clientes.id','clientes.selfie','clientes.nombre_primero',
+        'clientes.apellido_primero','clientes.celular','s.tipo','s.estado','s.codigo')->first();
+        $results = [
+            'contratos'=>$res->results,
+            'cliente'=>$cliente
+        ];
+        return response()->json(['success'=>true,'results'=>$results],$res->status);
 
 
     }
