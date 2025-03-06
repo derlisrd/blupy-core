@@ -187,6 +187,7 @@ class AuthController extends Controller
                         ->where('devicetoken',$req->devicetoken)
                         ->first();
                         if(!$dispositoDeConfianza){
+                            SupabaseService::LOG('newDevice ',$req->cedula);
                             $pistaEmail =  $user->email;//$this->ocultarParcialmenteEmail($user->email);
                             $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id,$req);
                             return response()->json([
