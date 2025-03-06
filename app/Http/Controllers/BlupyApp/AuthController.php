@@ -179,7 +179,7 @@ class AuthController extends Controller
                 $credentials = ['email'=>$user->email, 'password'=>$password];
                 $token = JWTAuth::attempt($credentials);
                 if($token){
-                    /* if($user->rol == 0){
+                    if($user->rol == 0){
                         $dispositoDeConfianza = $user->devices
                         ->where('desktop',$req->desktop)
                         ->where('web',$req->web)
@@ -187,20 +187,20 @@ class AuthController extends Controller
                         ->where('devicetoken',$req->devicetoken)
                         ->first();
                         if(!$dispositoDeConfianza){
-                            SupabaseService::LOG('newDevice ',$req->cedula);
+                            SupabaseService::LOG('newDevice',$req->cedula);
                             $pistaEmail =  $user->email;//$this->ocultarParcialmenteEmail($user->email);
                             $idValidacion = $this->enviarEmaildispositivoInusual($user->email,$cliente->id,$req);
                             return response()->json([
                                 'success'=>true,
                                 'results'=>null,
                                 'id'=> $idValidacion,
-                                'message'=>'Nuevo dispositivo. Ingresa el código que enviamos a tu correo '.$pistaEmail.' para verificar, puede tardar unos minutos. Revisa tus carpetas de spam y correos no deseados, por si acaso.'
+                                'message'=>'Enviamos código a '.$pistaEmail.' , puede tardar unos minutos. Revisa también las carpetas de spam o correo no deseado.'
                             ]);
                         }
                         $dispositoDeConfianza->update([
                             'version'=>$req->version
                         ]);
-                    } */
+                    }
 
                     $version = $req->version ?? null;
                     $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s'), 'version'=>$version ]);
