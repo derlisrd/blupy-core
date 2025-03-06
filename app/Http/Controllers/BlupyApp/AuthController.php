@@ -194,7 +194,7 @@ class AuthController extends Controller
                                 'success'=>true,
                                 'results'=>null,
                                 'id'=> $idValidacion,
-                                'message'=>'Enviamos código a '.$pistaEmail.' , puede tardar unos minutos. Revisa también las carpetas de spam o correo no deseado.'
+                                'message'=>'Código enviado a '.$pistaEmail.' , puede tardar unos minutos. Revisa también el spam o correo no deseado.'
                             ]);
                         }
                         $dispositoDeConfianza->update([
