@@ -58,7 +58,7 @@ class NotificacionesController extends Controller
         ];
         $tokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
 
-        //NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database');
+        NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database');
         return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano','results'=>$tokens]);
     }
 
