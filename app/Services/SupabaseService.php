@@ -52,17 +52,14 @@ class SupabaseService
         }
     }
 
-    public static function obtenerVentas()
+    public static function obtenerVentas(array $querys)
     {
         try {
             $response = Http::withHeaders([
                 'apikey' => env('SUPABASE_API_KEY'),
                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
                 'Content-Type' => 'application/json',
-            ])->get(env('SUPABASE_URL') . '/rest/v1/ventas',[
-                'select' => '*',
-                'order' => 'fecha.desc',
-            ]);
+            ])->get(env('SUPABASE_URL') . '/rest/v1/ventas',$querys);
 
             if ($response->failed()) {
                 Log::error('Error al obtener ventas de Supabase: ' . $response->body());

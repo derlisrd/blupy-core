@@ -9,13 +9,19 @@ use Illuminate\Support\Facades\Log;
 
 class VentasController extends Controller
 {
-    public function ventas(){
+    public function ventasMesDigital(){
         try {
-            $ventas = SupabaseService::obtenerVentas();
-            Log::info($ventas);
-            return response()->json($ventas);
+            $queries = [
+
+            ];
+            $res = SupabaseService::obtenerVentas($queries);
+            if ($res) {
+                return response()->json(['success' => true, 'results'=>$res]);
+            }
+            return response()->json(['success' => true, 'results'=>null],400);
         } catch (\Throwable $th) {
-            throw $th;
+            Log::error('Error en ventasMesDigital: ' . $th->getMessage());
+            return response()->json(['success'=>false,'message'=>'Error de servidor'],500);
         }
     }
 }
