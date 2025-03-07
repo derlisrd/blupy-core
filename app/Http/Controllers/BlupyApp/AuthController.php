@@ -184,6 +184,7 @@ class AuthController extends Controller
                         $dispositoDeConfianza = $user->devices
                         ->where('desktop',$req->desktop)
                         ->where('web',$req->web)
+                        ->where('device',$req->device)
                         ->where('devicetoken',$req->devicetoken)
                         ->first();
                         if(!$dispositoDeConfianza){
