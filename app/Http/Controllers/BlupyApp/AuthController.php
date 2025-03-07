@@ -172,6 +172,9 @@ class AuthController extends Controller
                 if($user->active == 0)
                     return response()->json(['success'=>false,'message'=>'Cuenta inhabilitada o bloqueada temporalmente. Contacte con soporte.'], 400);
 
+                if($req->version === null || $req->version !=='2.6.4'){
+                    return response()->json(['success'=>false, 'message'=>'Por favor actualiza tu app.'],400);
+                }
 
                 $adicional = Adicional::whereCedula($req->cedula)->first();
                 $esAdicional = $adicional ? true : false;
@@ -205,9 +208,7 @@ class AuthController extends Controller
                     $version = $req->version ?? null;
                     $user->update(['intentos'=> 0, 'ultimo_ingreso'=>  date('Y-m-d H:i:s'), 'version'=>$version ]);
 
-                    if($version === null || $version !=='2.6.4'){
-                        return response()->json(['success'=>false, 'message'=>'Por favor actualiza tu app.'],400);
-                    }
+
 
                     $tarjetasConsultas = new CuentasPrivate();
                     $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula,$cliente->extranjero, $cliente->codigo_farma ?? '');
