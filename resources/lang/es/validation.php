@@ -157,15 +157,13 @@ return [
             'password'=>'required',
             'desktop'=>'required|boolean',
             'web'=>'required|boolean',
-            'device'=>'required',
             'messages'=>[
                 'cedula.required'=>'Cédula es requerida.',
                 "password.required"=>"Contraseña es requerida.",
                 "desktop.required"=>"Tipo de dispositivo es obligatorio. (desktop)",
                 "desktop.boolean"=>"Tipo de dispositivo es boleano.",
                 "web.required"=>"SistemaOS de ingreso es obligatorio. (web)",
-                "web.boolean"=>"SistemaOS de ingreso es boleano.",
-                "device.required"=>"Dispositivo es obligatorio (device)"
+                "web.boolean"=>"SistemaOS de ingreso es boleano."
                 ]
             ],
         "register"=>[
