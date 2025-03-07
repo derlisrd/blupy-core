@@ -172,9 +172,7 @@ class AuthController extends Controller
                 if($user->active == 0)
                     return response()->json(['success'=>false,'message'=>'Cuenta inhabilitada o bloqueada temporalmente. Contacte con soporte.'], 400);
 
-                if($req->version === null || $req->version !=='2.6.4'){
-                    return response()->json(['success'=>false, 'message'=>'Por favor actualiza tu app.'],400);
-                }
+
 
                 $adicional = Adicional::whereCedula($req->cedula)->first();
                 $esAdicional = $adicional ? true : false;
@@ -186,7 +184,6 @@ class AuthController extends Controller
                         $dispositoDeConfianza = $user->devices
                         ->where('desktop',$req->desktop)
                         ->where('web',$req->web)
-                        ->where('device',$req->device)
                         ->where('devicetoken',$req->devicetoken)
                         ->first();
                         if(!$dispositoDeConfianza){
