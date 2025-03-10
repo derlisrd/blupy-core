@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
+use App\Models\Venta;
 use App\Services\FarmaService;
-use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -13,6 +13,35 @@ class VentasController extends Controller
 {
     public function index(Request $req){
 
+    }
+
+    public function acumulados(Request $req){
+        $acumuladoTotal = Venta::sum('importe_final');
+
+        $acumuladoBlupyDigital = Venta::where('forma_codigo','135')->sum('importe_final');
+        $acumuladoBlupy3CuotasDigital = Venta::where('forma_codigo','139')->sum('importe_final');
+
+        $acumuladoBlupy1Dia = Venta::where('forma_codigo','129')->sum('importe_final');
+
+        $acumuladoBlupy3Cuotas = Venta::where('forma_codigo','127')->sum('importe_final');
+        $acumuladoBlupy3CuotasAso = Venta::where('forma_codigo','140')->sum('importe_final');
+        $acumuladoBlupy4CuotasAso = Venta::where('forma_codigo','136')->sum('importe_final');
+
+        return response()->json(
+            [
+                'success' => true,
+                'message' => 'Acumulados',
+                'results' => [
+                    'total' => $acumuladoTotal,
+                    'blupyDigital' => $acumuladoBlupyDigital,
+                    'blupy1Dia' => $acumuladoBlupy1Dia,
+                    'blupy3Cuotas' => $acumuladoBlupy3Cuotas,
+                    'blupy3CuotasAso' => $acumuladoBlupy3CuotasAso,
+                    'blupy3CuotasDigital' => $acumuladoBlupy3CuotasDigital,
+                    'blupy4CuotasAso' => $acumuladoBlupy4CuotasAso,
+                ]
+            ]
+        );
     }
 
     public function porCodigo(Request $req){

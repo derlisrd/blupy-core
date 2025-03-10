@@ -12,8 +12,5 @@ class NotificationService
         //
     }
 
-    public function sendNotification($message){
-
-    }
 
 }
