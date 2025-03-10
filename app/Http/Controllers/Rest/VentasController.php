@@ -32,13 +32,13 @@ class VentasController extends Controller
                 'success' => true,
                 'message' => 'Acumulados',
                 'results' => [
-                    'total' => $acumuladoTotal,
-                    'blupyDigital' => $acumuladoBlupyDigital,
-                    'blupy1Dia' => $acumuladoBlupy1Dia,
-                    'blupy3Cuotas' => $acumuladoBlupy3Cuotas,
-                    'blupy3CuotasAso' => $acumuladoBlupy3CuotasAso,
-                    'blupy3CuotasDigital' => $acumuladoBlupy3CuotasDigital,
-                    'blupy4CuotasAso' => $acumuladoBlupy4CuotasAso,
+                    'total' => (int)$acumuladoTotal,
+                    'blupyDigital' => (int)$acumuladoBlupyDigital,
+                    'blupy1Dia' => (int)$acumuladoBlupy1Dia,
+                    'blupy3Cuotas' => (int)$acumuladoBlupy3Cuotas,
+                    'blupy3CuotasAso' => (int)$acumuladoBlupy3CuotasAso,
+                    'blupy3CuotasDigital' => (int)$acumuladoBlupy3CuotasDigital,
+                    'blupy4CuotasAso' => (int)$acumuladoBlupy4CuotasAso,
                 ]
             ]
         );
