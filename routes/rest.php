@@ -31,11 +31,11 @@ Route::middleware(Authenticate::using('api'))->group(function(){
         Route::post('/filtros',[ClientesController::class,'filtros'])->name('rest_clientes_filtros');
         Route::get('/buscar',[ClientesController::class,'buscar'])->name('rest_clientes_buscar');
         Route::get('/ficha/{id}',[ClientesController::class,'ficha'])->name('rest_cliente_ficha');
+        Route::get('/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])->name('rest_cliente_restablecer_contrasena');
     });
 
 
 
-    //Route::get('/cliente/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])->name('rest_cliente_restablecer_contrasena');
 
     Route::put('/actualizar-ficha-funcionario',[ClientesController::class,'actualizarFuncionario'])->name('rest_actualizar_ficha_funcionario');
 
@@ -85,6 +85,11 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
 
 
+    Route::prefix('ventas')->group(function(){
+        Route::get('/',[VentasController::class,'index'])->name('rest_ventas');
+        Route::get('/por-codigo',[VentasController::class,'porCodigo'])->name('rest_venta_por_codigo');
+        Route::get('/por-factura',[VentasController::class,'porFactura'])->name('rest_venta_por_factura');
+    });
 
 
 
@@ -93,6 +98,3 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
 
 
-Route::prefix('ventas')->group(function(){
-    Route::get('/',[VentasController::class,'ventas'])->name('rest_ventas');
-});

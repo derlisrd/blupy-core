@@ -21,6 +21,12 @@ class FarmaService
         ];
     }
 
+    public function ventaPorCodigo(String $codigo){
+        return $this->get('ventas/codigo',['codigo' => $codigo]);
+    }
+    public function ventaPorFactura(String $factura){
+        return $this->get('ventas/factura',['factura' => $factura]);
+    }
     public function clientePorCodigo(String $codigo){
         return $this->get('cliente/getClienteCodigo',['codigo' => $codigo]);
     }
