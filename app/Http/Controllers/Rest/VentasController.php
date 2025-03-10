@@ -16,37 +16,47 @@ class VentasController extends Controller
     }
 
     public function porCodigo(Request $req){
-        $validator  = Validator::make($req->all(), ['codigo' => 'required']);
-        if ($validator->fails())
-            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+        try {
+            $validator  = Validator::make($req->all(), ['codigo' => 'required']);
+            if ($validator->fails())
+                return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-        $farma = new FarmaService();
-        $res = $farma->ventaPorCodigo($req->codigo);
+            $farma = new FarmaService();
+            $res = $farma->ventaPorCodigo($req->codigo);
 
-        $venta = (object) $res['data'];
+            $venta = (object) $res['data'];
 
-        if(property_exists($venta,'result')){
-            return response()->json(['success' => true, 'message' => $venta->result],$venta->status);
+            if(property_exists($venta,'result')){
+                return response()->json(['success' => true, 'message' => $venta->result],$venta->status);
+            }
+
+            return response()->json(['success' => false, 'message' => 'Hubo un error de servidor.'],500);
+        } catch (\Throwable $th) {
+            throw $th;
         }
-
-        return response()->json(['success' => false, 'message' => 'Hubo un error de servidor.'],500);
 
     }
     public function porFactura(Request $req){
-        $validator  = Validator::make($req->all(), ['factura' => 'required']);
+        try {
+            $validator  = Validator::make($req->all(), ['factura' => 'required']);
 
-        if ($validator->fails())
-            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+            if ($validator->fails())
+                return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-        $farma = new FarmaService();
-        $res = $farma->ventaPorFactura($req->factura);
+            $farma = new FarmaService();
+            $res = $farma->ventaPorFactura($req->factura);
 
-        $venta = (object) $res['data'];
+            $venta = (object) $res['data'];
 
-        if(property_exists($venta,'result')){
-            return response()->json(['success' => true, 'message' => $venta->result],$venta->status);
+            if(property_exists($venta,'result')){
+                return response()->json(['success' => true, 'message' => $venta->result],$venta->status);
+            }
+            return response()->json(['success' => false, 'message' => 'Hubo un error de servidor.'],500);
+
+        } catch (\Throwable $th) {
+            throw $th;
         }
 
-        return response()->json(['success' => false, 'message' => 'Hubo un error de servidor.'],500);
+
     }
 }
