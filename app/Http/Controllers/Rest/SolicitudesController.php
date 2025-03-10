@@ -190,9 +190,8 @@ class SolicitudesController extends Controller
         $limite = 25;
         $page =  0;
         $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
-            ->where('u.name', 'like', '%' . $buscar . '%')
             ->where('solicitud_creditos.tipo', '>', 0)
-            ->orWhere('c.cedula', 'like', '%' . $buscar . '%')
+            ->where('c.cedula', 'like', '%' . $buscar . '%')
             ->join('clientes as c', 'c.id', '=', 'solicitud_creditos.cliente_id')
             ->join('users as u', 'u.cliente_id', '=', 'c.id')
             ->offset($page * $limite)
