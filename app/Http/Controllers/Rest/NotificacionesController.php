@@ -15,25 +15,17 @@ use Illuminate\Support\Facades\Validator;
 class NotificacionesController extends Controller
 {
     public function individual(Request $req){
-        $validator = Validator::make($req->all(),['id'=>'required|exists:users,id','title'=>'required','body'=>'required']);
+        $validator = Validator::make($req->all(),[
+            'device_id'=>'required|exists:devices,id',
+            'title'=>'required',
+            'body'=>'required']);
         if($validator->fails())
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         try {
             $user = User::find($req->id);
-            $notificacion = new PushExpoService();
-            $to = Device::where('user_id', $req->id)->whereNotNull('notitoken')->pluck('notitoken')->toArray();
-            $notificacion->send(
-                $to,
-                $req->title,
-                $req->body,
-                [
-                    'info'=>'notificaciones',
-                    'body'=>$req->body,
-                    'title'=>$req->title
-                ]
-            );
-            return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito', 'results'=>$to, 'user'=>$user]);
+            $toDevice = Device::where('id',$user->device_id)->first();
+            return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito', 'results'=>$toDevice]);
 
         } catch (\Throwable $th) {
             throw $th;
