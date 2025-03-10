@@ -27,7 +27,7 @@ class VentasController extends Controller
             $venta = (object) $res['data'];
 
             if(property_exists($venta,'result')){
-                return response()->json(['success' => true, 'message' => $venta->result],$res['status']);
+                return response()->json(['success' => true, 'message'=>'Ventas', 'results' => $venta->result],$res['status']);
             }
 
             return response()->json(['success' => false, 'message' => 'Hubo un error de servidor.'],500);
@@ -49,7 +49,7 @@ class VentasController extends Controller
             $venta = (object) $res['data'];
 
             if(property_exists($venta,'result')){
-                return response()->json(['success' => true, 'message' => $venta->result],$res['status']);
+                return response()->json(['success' => true, 'message'=>'Ventas', 'results' => $venta->result],$res['status']);
             }
             return response()->json(['success' => false, 'message' => 'Hubo un error de servidor.'],500);
 
