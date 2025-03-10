@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\NotificacionesJobs;
+use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\User;
 use App\Services\PushExpoService;
@@ -63,6 +64,31 @@ class NotificacionesController extends Controller
     }
 
     public function selectiva(Request $req){
+
+    }
+
+    public function ficha(Request $req){
+        $validator = Validator::make($req->all(),['cedula'=>'required']);
+        if($validator->fails())
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+
+        $cliente = Cliente::where('cedula',$req->cedula)->first();
+
+        if(!$cliente){
+            return response()->json(['success'=>false,'message'=>'Cliente no existe'],404);
+        }
+        $user = $cliente->user;
+        $devices = Device::where('user_id',$user->id)->get();
+        $results = [
+            'cliente_id'=>$cliente->id,
+            'user_id'=>$user->id,
+            'name'=>$user->name,
+            'email'=>$user->email,
+            'celular'=>$cliente->celular,
+            'cedula'=>$cliente->cedula,
+            'devices'=>$devices
+        ];
+        return response()->json(['success'=>true,'message'=>'Datos del cliente','results'=>$results]);
 
     }
 }
