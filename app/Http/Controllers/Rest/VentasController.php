@@ -21,7 +21,8 @@ class VentasController extends Controller
         $acumuladoBlupyDigital = Venta::where('forma_codigo','135')->sum('importe_final');
         $acumuladoBlupy3CuotasDigital = Venta::where('forma_codigo','139')->sum('importe_final');
 
-        $acumuladoBlupy1Dia = Venta::where('forma_codigo','129')->sum('importe_final');
+        $acumuladoBlupy1DiaFuncionarios = Venta::where('forma_codigo','129')->whereNull('adicional')->sum('importe_final');
+        $acumuladoBlupy1DiaAlianzas = Venta::where('forma_codigo','129')->whereNotNull('adicional')->sum('importe_final');
 
         $acumuladoBlupy3Cuotas = Venta::where('forma_codigo','127')->sum('importe_final');
         $acumuladoBlupy3CuotasAso = Venta::where('forma_codigo','140')->sum('importe_final');
@@ -34,7 +35,8 @@ class VentasController extends Controller
                 'results' => [
                     'total' => (int)$acumuladoTotal,
                     'blupyDigital' => (int)$acumuladoBlupyDigital,
-                    'blupy1Dia' => (int)$acumuladoBlupy1Dia,
+                    'blupy1DiaFuncionarios' => (int)$acumuladoBlupy1DiaFuncionarios,
+                    'blupy1DiaAlianzas' => (int)$acumuladoBlupy1DiaAlianzas,
                     'blupy3Cuotas' => (int)$acumuladoBlupy3Cuotas,
                     'blupy3CuotasAso' => (int)$acumuladoBlupy3CuotasAso,
                     'blupy3CuotasDigital' => (int)$acumuladoBlupy3CuotasDigital,
