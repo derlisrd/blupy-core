@@ -156,23 +156,23 @@ class AuthController extends Controller
         try {
             $validator = Validator::make($req->all(),trans('validation.auth.login'), trans('validation.auth.login.messages'));
 
-            if($validator->fails())
-                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+            if($validator->fails()) return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
             $ip = $req->ip();
-            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 10,function() {});
-            if (!$executed)
-                return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+            $executed = RateLimiter::attempt($ip,$perTwoMinutes = 6,function() {});
+            if (!$executed) return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
 
             $cedula = $req->cedula; $password = $req->password;
             $cliente = Cliente::where('cedula',$cedula)->first();
-            if($cliente){
+
+            if(!$cliente) return response()->json(['success'=>false,'message'=>'Usuario no existe. Registrese'], 404);
+
+
+
+
                 $user =  $cliente->user;
 
-                if($user->active == 0)
-                    return response()->json(['success'=>false,'message'=>'Cuenta inhabilitada o bloqueada temporalmente. Contacte con soporte.'], 400);
-
-
+                if($user->active == 0) return response()->json(['success'=>false,'message'=>'Cuenta inhabilitada o bloqueada temporalmente. Contacte con soporte.'], 400);
 
                 $adicional = Adicional::whereCedula($req->cedula)->first();
                 $esAdicional = $adicional ? true : false;
@@ -218,14 +218,15 @@ class AuthController extends Controller
                         ]
                     );
                 }
-                $user->update(['intentos'=> $user->intentos + 1]);
-            }
+
+
+            $user->update(['intentos'=> $user->intentos + 1]);
             return response()->json([
-                'success'=>false, 'message'=>'Error. La cédula '.$req->cedula.' no existe o la contraseña es incorrecta.'
+                'success'=>false, 'message'=>'Error. La contraseña es incorrecta.'
             ],401);
 
         } catch (\Throwable $th) {
-            SupabaseService::LOG('login_core',$th);
+            SupabaseService::LOG('login_core',$th->getMessage());
             throw $th;
             return response()->json(['success'=>false,'message'=>"Error de servidor"],500);
         }
