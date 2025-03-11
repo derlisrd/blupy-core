@@ -21,3 +21,5 @@ yarn-error.log
 composer.lock
 
 /examples
+*.p8
+.p8
