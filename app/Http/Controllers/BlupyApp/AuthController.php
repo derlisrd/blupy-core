@@ -170,7 +170,9 @@ class AuthController extends Controller
 
             if (!$cliente) return response()->json(['success' => false, 'message' => 'Usuario no existe. Registrese'], 404);
 
-            if($req->version !== '2.6.4'){
+            $version = $req->version ?? null;
+
+            if($version !== '2.6.4'){
                 return response()->json(['success' => false, 'message' => 'Por favor actualice su app para mayor seguridad'], 400);
             }
 
@@ -186,7 +188,7 @@ class AuthController extends Controller
             $token = JWTAuth::attempt($credentials);
             if ($token) {
                 if ($user->rol == 0) {
-                    $dispositoDeConfianza = Device::where('user_id', $user->id)
+                    $dispositoDeConfianza = $user->devices
                         ->where('desktop', $req->desktop)
                         ->where('web', $req->web)
                         ->where('device', $req->device)
@@ -203,12 +205,14 @@ class AuthController extends Controller
                             'message' => 'Código enviado a ' . $pistaEmail . ' , puede tardar unos minutos. Revisa también el spam o correo no deseado.'
                         ]);
                     }
+                    $dispositoDeConfianza->update([
+                        'version' => $version
+                    ]);
                 }
 
-                $version = $req->version ?? null;
+
                 $user->update(['intentos' => 0, 'ultimo_ingreso' =>  date('Y-m-d H:i:s'), 'version' => $version]);
-                $dispositoDeConfianza->version = $version;
-                $dispositoDeConfianza->save();
+
 
 
                 $tarjetasConsultas = new CuentasPrivate();
