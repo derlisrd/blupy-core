@@ -204,12 +204,10 @@ class AuthController extends Controller
                         ]);
                     }
                 }
-                $dispositoDeConfianza->update([
-                    'version' => $req->version,
-                ]);
+
                 $version = $req->version ?? null;
                 $user->update(['intentos' => 0, 'ultimo_ingreso' =>  date('Y-m-d H:i:s'), 'version' => $version]);
-
+                $dispositoDeConfianza->update([ 'version' => $version]);
 
 
                 $tarjetasConsultas = new CuentasPrivate();
