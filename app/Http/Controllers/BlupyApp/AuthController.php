@@ -172,7 +172,7 @@ class AuthController extends Controller
 
             $version = $req->version ?? null;
 
-            if($version !== '2.6.4'){
+            if($version == '2.5.8') {
                 return response()->json(['success' => false, 'message' => 'Por favor actualice su app para mayor seguridad'], 400);
             }
 
