@@ -171,7 +171,7 @@ class AuthController extends Controller
             if (!$cliente) return response()->json(['success' => false, 'message' => 'Usuario no existe. Registrese'], 404);
 
             if($req->version !== '2.6.4'){
-                return response()->json(['success' => false, 'message' => 'Actualice la aplicación'], 400);
+                return response()->json(['success' => false, 'message' => 'Por favor actualice su app para mayor seguridad'], 400);
             }
 
 
