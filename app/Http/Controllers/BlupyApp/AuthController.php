@@ -206,7 +206,8 @@ class AuthController extends Controller
                         ]);
                     }
                     $dispositoDeConfianza->update([
-                        'version' => $version
+                        'version' => $version,
+                        'updated_at' => now()
                     ]);
                 }
 
