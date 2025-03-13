@@ -31,14 +31,11 @@ class SupabaseService
             return false;
         }
     }
-    public static function uploadImageSelfies($imagePath, $filename){
+    public static function uploadImageSelfies($base64Image, $filename){
         try {
-            if (!file_exists($imagePath)) {
-                Log::error('Error: Imagen no encontrada en ' . $imagePath);
-                return false;
-            }
+            $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $base64Image);
+            $imageData = base64_decode($base64Image);
 
-            $image = file_get_contents($imagePath);
 
             $bucketName = 'selfies';
             $url = env('SUPABASE_URL') . '/storage/v1/object/' . $bucketName . '/' . $filename;
@@ -46,8 +43,8 @@ class SupabaseService
             $response = Http::withHeaders([
                 'apikey' => env('SUPABASE_API_KEY'),
                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-                'Content-Type' => 'application/octet-stream; charset=binary'
-            ])->put($url, $image);
+                'Content-Type' => 'application/octet-stream',
+            ])->put($url, $imageData);
 
             if ($response->failed()) {
                 Log::error('Error al subir imagen a Supabase: ' . $response->body());
