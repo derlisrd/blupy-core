@@ -42,6 +42,7 @@ class SupabaseService
             $url = env('SUPABASE_URL') . '/storage/v1/object/' . $bucketName . '/' . $filename;
 
             $imageContent = file_get_contents($imagePath);
+            $imageContent = mb_convert_encoding($imageContent, 'UTF-8', 'UTF-8');
 
             $response = Http::withHeaders([
                 'apikey' => env('SUPABASE_API_KEY'),
