@@ -222,7 +222,7 @@ class AWSController extends Controller
                 SupabaseService::LOG('Error al escanear selfie', $labels);
                 return response()->json([
                     'success' => true,
-                    'message' => 'Imagen inválida: Tome una selfie con su cédula.',
+                    'message' => 'Error. Tome una foto nítida, bien iluminada, con su cédula visible y sin cubrir su rostro.',
                 ],400);
             }
 
