@@ -57,7 +57,7 @@ class SupabaseService
         $storageUrl = env('SUPABASE_URL') . '/storage/v1/object/';
 
         // Bucket donde se guardará la imagen
-        $bucketName = 'tu_bucket_name';
+        $bucketName = 'selfies';
 
         try {
             // Crear un stream del archivo para subirlo
