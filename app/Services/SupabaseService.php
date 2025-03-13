@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class SupabaseService
 {
@@ -12,7 +13,7 @@ class SupabaseService
 
     public function __construct()
     {
-        $this->url = env('SUPABASE_API_KEY');
+        $this->url = env('SUPABASE_URL');
         $this->apiKey = env('SUPABASE_API_KEY');
     }
 
@@ -33,36 +34,71 @@ class SupabaseService
             return false;
         }
     }
-    public static function uploadImageSelfies($imageData, $fileName)
+    public static function uploadImageSelfies($base64Image)
     {
 
+
+        // Eliminar prefijo si existe (ej: "data:image/jpeg;base64,")
+        $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $base64Image);
+
+        // Decodificar la imagen
+        $imageData = base64_decode($base64Image);
+
+        // Generar un nombre de archivo único
+        $fileName = 'image_' . time() . '.jpg';
+
+        // Guardar la imagen temporalmente en el almacenamiento local
+        $tempPath = 'temp/' . $fileName;
+        Storage::put($tempPath, $imageData);
+
+        // Obtener la ruta completa del archivo
+        $tempFilePath = Storage::path($tempPath);
 
         // URL del endpoint de storage de Supabase
         $storageUrl = env('SUPABASE_URL') . '/storage/v1/object/';
 
         // Bucket donde se guardará la imagen
-        $bucketName = 'selfies';
+        $bucketName = 'tu_bucket_name';
 
         try {
-            // Subir la imagen como datos binarios sin intentar convertirlos en JSON
+            // Crear un stream del archivo para subirlo
+            $fileStream = fopen($tempFilePath, 'r');
+
+            // Subir la imagen usando el stream del archivo
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
                 'Content-Type' => 'application/octet-stream'
-            ])->withBody(
-                $imageData,
-                'application/octet-stream'
-            )->put(
-                $storageUrl . $bucketName . '/' . $fileName
+            ])->put(
+                $storageUrl . $bucketName . '/' . $fileName,
+                $fileStream
             );
+
+            // Cerrar el stream
+            fclose($fileStream);
+
+            // Eliminar el archivo temporal
+            Storage::delete($tempPath);
 
             if ($response->successful()) {
                 // Construir la URL pública de la imagen
                 $publicUrl = env('SUPABASE_URL') . '/storage/v1/object/public/' . $bucketName . '/' . $fileName;
 
-                return true;
+                return response()->json([
+                    'success' => true,
+                    'url' => $publicUrl
+                ]);
             }
-            return false;
+
+            return response()->json([
+                'success' => false,
+                'error' => $response->json() ?: $response->body()
+            ], 400);
         } catch (\Exception $e) {
+            // Asegúrate de eliminar el archivo temporal incluso si hay un error
+            if (Storage::exists($tempPath)) {
+                Storage::delete($tempPath);
+            }
+
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage()
