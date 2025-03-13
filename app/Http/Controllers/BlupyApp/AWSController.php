@@ -186,10 +186,14 @@ class AWSController extends Controller
         if($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()],400);
 
-        $ip = $req->ip();
-        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 5,function() {});
-        if (!$executed)
-            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+            $ip = $req->ip();
+            $rateKey = "scanSelfie:$ip";
+
+            if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 2 minutos.'], 429);
+            }
+            RateLimiter::hit($rateKey, 120);
+
         try {
             $amazon = new RekognitionClient([
                 'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
@@ -219,7 +223,6 @@ class AWSController extends Controller
             $faceValid = $face && $face['Confidence'] > 70;
 
             if (!$documentValid || !$idCardValid || !$faceValid) {
-                SupabaseService::LOG('Error al escanear selfie', $labels);
                 SupabaseService::uploadImageSelfies($image_base64, $imageName);
                 unlink($imagePath);
                 return response()->json([

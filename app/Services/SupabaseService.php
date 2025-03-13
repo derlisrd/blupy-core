@@ -31,24 +31,18 @@ class SupabaseService
             return false;
         }
     }
-    public static function uploadImageSelfies($imagePath, $filename){
+    public static function uploadImageSelfies($image, $filename){
         try {
-            if (!file_exists($imagePath)) {
-                Log::error('El archivo de imagen no existe: ' . $imagePath);
-                return false;
-            }
+
 
             $bucketName = 'selfies';
             $url = env('SUPABASE_URL') . '/storage/v1/object/' . $bucketName . '/' . $filename;
-
-            $imageContent = file_get_contents($imagePath);
-            $imageContent = mb_convert_encoding($imageContent, 'UTF-8', 'UTF-8');
 
             $response = Http::withHeaders([
                 'apikey' => env('SUPABASE_API_KEY'),
                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
                 'Content-Type' => 'application/octet-stream',
-            ])->put($url, $imageContent);
+            ])->put($url, $image);
 
             if ($response->failed()) {
                 Log::error('Error al subir imagen a Supabase: ' . $response->body());
