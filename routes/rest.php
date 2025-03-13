@@ -69,8 +69,10 @@ Route::middleware(Authenticate::using('api'))->group(function(){
         Route::get('/codigo',[ContratosController::class,'contratoPorCodigo'])->name('rest_contratos');
     });
 
-
-    Route::get('/consultas/cliente',[ConsultasController::class,'clienteFarmaMiCredito'])->name('rest_consulta_cliente');
+    Route::prefix('/consultas')->group(function(){
+        Route::get('/cliente/documento',[ConsultasController::class,'clienteFarmaMiCredito'])->name('rest_consulta_cliente');
+        Route::get('/cliente/codigo',[ConsultasController::class,'clienteFarmaPorCodigo'])->name('rest_consulta_cliente');
+    });
 
 
 

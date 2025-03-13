@@ -50,4 +50,37 @@ class ConsultasController extends Controller
             ]
         ]);
     }
+
+    public function clienteFarmaPorCodigo(Request $req){
+        $validator = Validator::make($req->only(['codigo']),['codigo'=>'required']);
+
+        if($validator->fails())
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+
+
+        $farma = new FarmaService();
+
+
+
+        $res = (object)$farma->clientePorCodigo($req->cedula);
+        $dataFarma = (object)$res->data;
+
+        $farmaResult = null;
+
+        if(property_exists($dataFarma,'result')){
+            $result = $dataFarma->result;
+            if(count($result)>0){
+                $farmaResult = $result[0];
+            }
+        }
+        return response()->json([
+            'success'=>true,
+            'message'=>'',
+            'results'=>[
+                'registro'=>true,
+                'farma'=>$farmaResult,
+                'micredito'=>null,
+            ]
+        ]);
+    }
 }
