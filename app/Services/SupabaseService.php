@@ -38,13 +38,13 @@ class SupabaseService
     {
 
         $base64Image = explode(";base64,", $base64ImageParam);
-            $explodeImage = explode("image/", $base64Image[0]);
-            $imageType = $explodeImage[1];
-            $imageData = base64_decode($base64Image[1]);
+        $explodeImage = explode("image/", $base64Image[0]);
+        $imageType = $explodeImage[1];
+        $imageData = base64_decode($base64Image[1]);
 
 
         // Generar un nombre de archivo único
-        $fileName = 'a_selfie_ci.'.$imageType;
+        $fileName = 'a_selfie_ci.' . $imageType;
 
         // Guardar la imagen temporalmente en el almacenamiento local
         $tempPath = 'temp/' . $fileName;
@@ -61,24 +61,28 @@ class SupabaseService
 
         try {
             // Crear un stream del archivo para subirlo
-            $fileStream = fopen($tempFilePath, 'r');
+            $fileContents = file_get_contents($tempFilePath);
 
-            // Subir la imagen usando el stream del archivo
+            // Subir la imagen usando el contenido del archivo
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
                 'Content-Type' => 'application/octet-stream'
-            ])->put(
-                $storageUrl . $bucketName . '/' . $fileName,
-                $fileStream
+            ])->withBody(
+                $fileContents,
+                'application/octet-stream'
+            )->put(
+                $storageUrl . $bucketName . '/' . $fileName
             );
-
-            // Cerrar el stream
-            fclose($fileStream);
 
             // Eliminar el archivo temporal
             Storage::delete($tempPath);
 
-            return true;
+            if ($response->successful()) {
+                return true;
+            } else {
+                Log::error('Error en la respuesta de Supabase: ' . $response->body());
+                return false;
+            }
         } catch (\Exception $e) {
             // Asegúrate de eliminar el archivo temporal incluso si hay un error
             if (Storage::exists($tempPath)) {
