@@ -66,12 +66,13 @@ class SupabaseService
             // Subir la imagen usando el contenido del archivo
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-                'Content-Type' => 'application/octet-stream'
-            ])->withBody(
-                $fileContents,
-                'application/octet-stream'
-            )->put(
-                $storageUrl . $bucketName . '/' . $fileName
+                'Content-Type' => 'application/json'
+            ])->post(
+                env('SUPABASE_URL') . '/storage/v1/object/' . $bucketName . '/' . $fileName,
+                [
+                    'contentType' => 'image/jpeg',
+                    'data' => base64_encode(file_get_contents($tempFilePath))
+                ]
             );
 
             // Eliminar el archivo temporal
