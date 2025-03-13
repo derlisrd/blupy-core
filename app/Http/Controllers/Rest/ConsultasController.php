@@ -62,7 +62,7 @@ class ConsultasController extends Controller
 
 
 
-        $res = (object)$farma->clientePorCodigo($req->cedula);
+        $res = (object)$farma->clientePorCodigo($req->codigo);
         $dataFarma = (object)$res->data;
 
         $farmaResult = null;
