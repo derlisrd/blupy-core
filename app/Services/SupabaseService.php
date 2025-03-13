@@ -31,6 +31,35 @@ class SupabaseService
             return false;
         }
     }
+    public static function uploadImageSelfies($imagePath, $filename){
+        try {
+            if (!file_exists($imagePath)) {
+                Log::error('El archivo de imagen no existe: ' . $imagePath);
+                return false;
+            }
+
+            $bucketName = 'selfies';
+            $url = env('SUPABASE_URL') . '/storage/v1/object/' . $bucketName . '/' . $filename;
+
+            $imageContent = file_get_contents($imagePath);
+
+            $response = Http::withHeaders([
+                'apikey' => env('SUPABASE_API_KEY'),
+                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                'Content-Type' => 'application/octet-stream',
+            ])->put($url, $imageContent);
+
+            if ($response->failed()) {
+                Log::error('Error al subir imagen a Supabase: ' . $response->body());
+                return false;
+            }
+            return true;
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return false;
+        }
+    }
+
     public static function ingresarVentas(array $datas)
     {
         try {
