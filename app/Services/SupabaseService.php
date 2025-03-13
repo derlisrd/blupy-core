@@ -31,9 +31,14 @@ class SupabaseService
             return false;
         }
     }
-    public static function uploadImageSelfies($image, $filename){
+    public static function uploadImageSelfies($imagePath, $filename){
         try {
+            if (!file_exists($imagePath)) {
+                Log::error('Error: Imagen no encontrada en ' . $imagePath);
+                return false;
+            }
 
+            $image = file_get_contents($imagePath);
 
             $bucketName = 'selfies';
             $url = env('SUPABASE_URL') . '/storage/v1/object/' . $bucketName . '/' . $filename;
