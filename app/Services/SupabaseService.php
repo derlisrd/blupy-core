@@ -46,7 +46,7 @@ class SupabaseService
             $response = Http::withHeaders([
                 'apikey' => env('SUPABASE_API_KEY'),
                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-                'Content-Type' => 'application/octet-stream',
+                'Content-Type' => 'application/octet-stream; charset=binary'
             ])->put($url, $image);
 
             if ($response->failed()) {
