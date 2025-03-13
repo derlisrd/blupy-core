@@ -34,7 +34,7 @@ class AWSController extends Controller
             $imageType = $explodeImage[1];
             $image_base64 = base64_decode($base64Image[1]);
             $imageName = $req->cedula . '_front.'.$imageType;
-            $imagePath = public_path('clientes/' .$imageName);
+            $imagePath = public_path('clientes/tmp/' .$imageName);
             file_put_contents($imagePath, $image_base64);
             $image = fopen($imagePath, "r");
             $bytes = fread($image, filesize($imagePath));
