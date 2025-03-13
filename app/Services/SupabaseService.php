@@ -60,7 +60,7 @@ class SupabaseService
     }
 
     // Generar un nombre de archivo único
-    $fileName = 'image_' . time() . '.jpg';
+    $fileName = 'image_' . time() . '.jpeg';
 
     // URL del endpoint de storage de Supabase
     $storageUrl = env('SUPABASE_URL') . '/storage/v1/object/';
