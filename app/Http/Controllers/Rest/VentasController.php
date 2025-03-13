@@ -53,6 +53,7 @@ class VentasController extends Controller
                 'success' => true,
                 'message' => 'Acumulados del mes actual',
                 'results' => [
+                    'periodo' => $periodo,
                     'total' => (int)$acumuladoTotal,
                     'blupyDigital' => (int)$acumuladoBlupyDigital,
                     'blupy1DiaFuncionarios' => (int)$acumuladoBlupy1DiaFuncionarios,
