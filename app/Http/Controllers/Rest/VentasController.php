@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class VentasController extends Controller
 {
@@ -70,36 +71,54 @@ class VentasController extends Controller
     }
 
 
-    public function acumulados(Request $req)
+    public function acumulados()
     {
+        // Una sola consulta para obtener todos los acumulados por forma_codigo
+        $acumuladosPorForma = Venta::select('forma_codigo', DB::raw('SUM(importe_final) as total'))
+            ->groupBy('forma_codigo')
+            ->get()
+            ->keyBy('forma_codigo');
+
+        // Una consulta separada para el caso especial de forma_codigo 129 con adicional nulo o no nulo
+        $acumuladosFuncionariosAlianzas = Venta::select(
+                'forma_codigo',
+                DB::raw('CASE WHEN adicional IS NULL THEN "funcionarios" ELSE "alianzas" END as tipo'),
+                DB::raw('SUM(importe_final) as total')
+            )
+            ->where('forma_codigo', '129')
+            ->groupBy('forma_codigo', DB::raw('CASE WHEN adicional IS NULL THEN "funcionarios" ELSE "alianzas" END'))
+            ->get();
+
+        // Extraer los valores para funcionarios y alianzas
+        $acumuladoBlupy1DiaFuncionarios = 0;
+        $acumuladoBlupy1DiaAlianzas = 0;
+
+        foreach ($acumuladosFuncionariosAlianzas as $item) {
+            if ($item->tipo == 'funcionarios') {
+                $acumuladoBlupy1DiaFuncionarios = (int)$item->total;
+            } else {
+                $acumuladoBlupy1DiaAlianzas = (int)$item->total;
+            }
+        }
+
+        // Calcular el total general
         $acumuladoTotal = Venta::sum('importe_final');
 
-        $acumuladoBlupyDigital = Venta::where('forma_codigo', '135')->sum('importe_final');
-        $acumuladoBlupy3CuotasDigital = Venta::where('forma_codigo', '139')->sum('importe_final');
-
-        $acumuladoBlupy1DiaFuncionarios = Venta::where('forma_codigo', '129')->whereNull('adicional')->sum('importe_final');
-        $acumuladoBlupy1DiaAlianzas = Venta::where('forma_codigo', '129')->whereNotNull('adicional')->sum('importe_final');
-
-        $acumuladoBlupy3Cuotas = Venta::where('forma_codigo', '127')->sum('importe_final');
-        $acumuladoBlupy3CuotasAso = Venta::where('forma_codigo', '140')->sum('importe_final');
-        $acumuladoBlupy4CuotasAso = Venta::where('forma_codigo', '136')->sum('importe_final');
-
-        return response()->json(
-            [
-                'success' => true,
-                'message' => 'Acumulados',
-                'results' => [
-                    'total' => (int)$acumuladoTotal,
-                    'blupyDigital' => (int)$acumuladoBlupyDigital,
-                    'blupy1DiaFuncionarios' => (int)$acumuladoBlupy1DiaFuncionarios,
-                    'blupy1DiaAlianzas' => (int)$acumuladoBlupy1DiaAlianzas,
-                    'blupy3Cuotas' => (int)$acumuladoBlupy3Cuotas,
-                    'blupy3CuotasAso' => (int)$acumuladoBlupy3CuotasAso,
-                    'blupy3CuotasDigital' => (int)$acumuladoBlupy3CuotasDigital,
-                    'blupy4CuotasAso' => (int)$acumuladoBlupy4CuotasAso,
-                ]
+        return response()->json([
+            'success' => true,
+            'message' => 'Acumulados',
+            'results' => [
+                'periodo' => null,
+                'total' => (int)$acumuladoTotal,
+                'blupyDigital' => (int)($acumuladosPorForma['135']->total ?? 0),
+                'blupy1DiaFuncionarios' => $acumuladoBlupy1DiaFuncionarios,
+                'blupy1DiaAlianzas' => $acumuladoBlupy1DiaAlianzas,
+                'blupy3Cuotas' => (int)($acumuladosPorForma['127']->total ?? 0),
+                'blupy3CuotasAso' => (int)($acumuladosPorForma['140']->total ?? 0),
+                'blupy3CuotasDigital' => (int)($acumuladosPorForma['139']->total ?? 0),
+                'blupy4CuotasAso' => (int)($acumuladosPorForma['136']->total ?? 0),
             ]
-        );
+        ]);
     }
 
     public function porCodigo(Request $req)
