@@ -37,61 +37,6 @@ class SupabaseService
     public static function uploadImageSelfies($base64ImageParam)
     {
 
-        $base64Image = explode(";base64,", $base64ImageParam);
-        $explodeImage = explode("image/", $base64Image[0]);
-        $imageType = $explodeImage[1];
-        $imageData = base64_decode($base64Image[1]);
-
-
-        // Generar un nombre de archivo único
-        $fileName = 'a_selfie_ci.' . $imageType;
-
-        // Guardar la imagen temporalmente en el almacenamiento local
-        $tempPath = 'temp/' . $fileName;
-        Storage::put($tempPath, $imageData);
-
-        // Obtener la ruta completa del archivo
-        $tempFilePath = Storage::path($tempPath);
-
-        // URL del endpoint de storage de Supabase
-        $storageUrl = env('SUPABASE_URL') . '/storage/v1/object/';
-
-        // Bucket donde se guardará la imagen
-        $bucketName = 'selfies';
-
-        try {
-            // Crear un stream del archivo para subirlo
-            $fileContents = file_get_contents($tempFilePath);
-
-            // Subir la imagen usando el contenido del archivo
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-                'Content-Type' => 'application/json'
-            ])->post(
-                env('SUPABASE_URL') . '/storage/v1/object/' . $bucketName . '/' . $fileName,
-                [
-                    'contentType' => 'image/jpeg',
-                    'data' => base64_encode(file_get_contents($tempFilePath))
-                ]
-            );
-
-            // Eliminar el archivo temporal
-            Storage::delete($tempPath);
-
-            if ($response->successful()) {
-                return true;
-            } else {
-                Log::error('Error en la respuesta de Supabase: ' . $response->body());
-                return false;
-            }
-        } catch (\Exception $e) {
-            // Asegúrate de eliminar el archivo temporal incluso si hay un error
-            if (Storage::exists($tempPath)) {
-                Storage::delete($tempPath);
-            }
-            Log::error('Error al subir la imagen: ' . $e->getMessage());
-            return false;
-        }
     }
 
     public static function ingresarVentas(array $datas)
