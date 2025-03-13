@@ -34,18 +34,17 @@ class SupabaseService
             return false;
         }
     }
-    public static function uploadImageSelfies($base64Image)
+    public static function uploadImageSelfies($base64ImageParam)
     {
 
+        $base64Image = explode(";base64,", $base64ImageParam);
+            $explodeImage = explode("image/", $base64Image[0]);
+            $imageType = $explodeImage[1];
+            $imageData = base64_decode($base64Image[1]);
 
-        // Eliminar prefijo si existe (ej: "data:image/jpeg;base64,")
-        $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $base64Image);
-
-        // Decodificar la imagen
-        $imageData = base64_decode($base64Image);
 
         // Generar un nombre de archivo único
-        $fileName = 'image_' . time() . '.jpg';
+        $fileName = 'a_selfie_ci.'.$imageType;
 
         // Guardar la imagen temporalmente en el almacenamiento local
         $tempPath = 'temp/' . $fileName;
@@ -79,30 +78,14 @@ class SupabaseService
             // Eliminar el archivo temporal
             Storage::delete($tempPath);
 
-            if ($response->successful()) {
-                // Construir la URL pública de la imagen
-                $publicUrl = env('SUPABASE_URL') . '/storage/v1/object/public/' . $bucketName . '/' . $fileName;
-
-                return response()->json([
-                    'success' => true,
-                    'url' => $publicUrl
-                ]);
-            }
-
-            return response()->json([
-                'success' => false,
-                'error' => $response->json() ?: $response->body()
-            ], 400);
+            return true;
         } catch (\Exception $e) {
             // Asegúrate de eliminar el archivo temporal incluso si hay un error
             if (Storage::exists($tempPath)) {
                 Storage::delete($tempPath);
             }
-
-            return response()->json([
-                'success' => false,
-                'error' => $e->getMessage()
-            ], 500);
+            Log::error('Error al subir la imagen: ' . $e->getMessage());
+            return false;
         }
     }
 
