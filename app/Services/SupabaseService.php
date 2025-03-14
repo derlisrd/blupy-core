@@ -41,7 +41,7 @@ class SupabaseService
                 $supabaseBucket = 'selfies'; // El nombre de tu bucket en Supabase
                 $supabaseApiUrl = "{$supabaseUrl}/storage/v1/object/{$supabaseBucket}/";
 
-                Http::withHeaders([
+                $response = Http::withHeaders([
                     'apikey' => env('SUPABASE_API_KEY'),
                     'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
                 ])->attach(
@@ -50,7 +50,7 @@ class SupabaseService
                     $fileName,
                     ['Content-Type' => 'image/' . $imageType]
                 )->post($supabaseApiUrl);
-
+                Log::info($response);
             return true;
         } catch (\Throwable $th) {
             throw $th;
