@@ -43,7 +43,7 @@ class SupabaseService
 
                 $response = Http::withHeaders([
                     'apikey' => env('SUPABASE_API_KEY'),
-                    'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
                 ])->attach(
                     'file',
                     file_get_contents($imagePath),
