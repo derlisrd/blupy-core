@@ -37,9 +37,8 @@ class SupabaseService
     public static function uploadImageSelfies($fileName,$imagePath,$imageType)
     {
         try {
-            $supabaseUrl = env('SUPABASE_URL');
-                $supabaseBucket = 'selfies'; // El nombre de tu bucket en Supabase
-                $supabaseApiUrl = env('SUPABASE_URL'). "/storage/v1/object/selfies";
+
+                $supabaseApiUrl = env('SUPABASE_URL'). "/storage/v1/selfies";
 
                 $response = Http::withHeaders([
                     'apikey' => env('SUPABASE_API_KEY'),
