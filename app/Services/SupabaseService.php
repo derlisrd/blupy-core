@@ -39,7 +39,7 @@ class SupabaseService
         try {
             $supabaseUrl = env('SUPABASE_URL');
                 $supabaseBucket = 'selfies'; // El nombre de tu bucket en Supabase
-                $supabaseApiUrl = "{$supabaseUrl}/storage/v1/object/{$supabaseBucket}/";
+                $supabaseApiUrl = env('SUPABASE_URL'). "/storage/v1/object/selfies";
 
                 $response = Http::withHeaders([
                     'apikey' => env('SUPABASE_API_KEY'),
