@@ -31,7 +31,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
         Route::post('/filtros',[ClientesController::class,'filtros'])->name('rest_clientes_filtros');
         Route::get('/buscar',[ClientesController::class,'buscar'])->name('rest_clientes_buscar');
         Route::get('/ficha/{id}',[ClientesController::class,'ficha'])->name('rest_cliente_ficha');
-        Route::get('/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])->name('rest_cliente_restablecer_contrasena');
+        Route::put('/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])->name('rest_cliente_restablecer_contrasena');
     });
 
 
@@ -75,14 +75,6 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     });
 
 
-
-
-
-
-    Route::prefix('users')->group(function(){
-        Route::post('/actualizar-perfiles',[UsersController::class,'actualizarPerfiles'])->name('rest_actualizar_perfiles');
-        Route::post('/restablecer-contrasena',[UsersController::class,'restablecerContrasena'])->name('rest_restablecer_contrasena');
-    });
 
 
 
