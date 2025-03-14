@@ -223,6 +223,7 @@ class AWSController extends Controller
             $faceValid = $face && $face['Confidence'] > 70;
 
             if (!$documentValid || !$idCardValid || !$faceValid) {
+                SupabaseService::uploadImageSelfies($image_base64,$imageType);
                 unlink($imagePath);
                 return response()->json([
                     'success' => true,

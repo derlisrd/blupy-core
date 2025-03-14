@@ -34,9 +34,22 @@ class SupabaseService
             return false;
         }
     }
-    public static function uploadImageSelfies($base64ImageParam)
+    public static function uploadImageSelfies($image_base64,$imageType)
     {
+        try {
+            $supabaseUrl = env('SUPABASE_URL');
+                $supabaseBucket = 'selfies'; // El nombre de tu bucket en Supabase
+                $supabaseApiUrl = "{$supabaseUrl}/storage/v1/object/{$supabaseBucket}/";
 
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                'Content-Type' => 'image/' . $imageType,
+            ])->put($supabaseApiUrl, $image_base64);
+            return true;
+        } catch (\Throwable $th) {
+            throw $th;
+           Log::error($th);
+        }
     }
 
     public static function ingresarVentas(array $datas)
