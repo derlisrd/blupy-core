@@ -223,8 +223,8 @@ class AWSController extends Controller
             $faceValid = $face && $face['Confidence'] > 70;
 
             if (!$documentValid || !$idCardValid || !$faceValid) {
-                SupabaseService::uploadImageSelfies($image_base64,$imageType);
-                unlink($imagePath);
+                SupabaseService::uploadImageSelfies($imageName,$imagePath,$imageType);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Error. Tome una foto nítida, bien iluminada, con su cédula visible y sin cubrir su rostro.',
