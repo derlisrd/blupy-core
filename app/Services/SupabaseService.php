@@ -48,7 +48,7 @@ class SupabaseService
             return true;
         } catch (\Throwable $th) {
             throw $th;
-           Log::error($th);
+           Log::error($th->getMessage());
         }
     }
 
