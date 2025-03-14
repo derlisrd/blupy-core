@@ -161,8 +161,12 @@ class AuthController extends Controller
             if ($validator->fails()) return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
             $ip = $req->ip();
-            $executed = RateLimiter::attempt($ip, $perTwoMinutes = 6, function () {});
-            if (!$executed) return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 500);
+            $rateKey = "login:$ip";
+
+            if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
+            }
+            RateLimiter::hit($rateKey, 60);
 
             $cedula = $req->cedula;
             $password = $req->password;

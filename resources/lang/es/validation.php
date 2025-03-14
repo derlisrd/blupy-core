@@ -55,7 +55,6 @@ return [
             'desktop'=>'required|boolean',
             'confianza'=>'boolean',
             'web'=>'required|boolean',
-            'device'=>'required',
             'messages'=>[
                 'codigo.required'=>'Codigo es obligatorio.',
                 "id.required"=>"Id es obligatorio.",
@@ -63,7 +62,6 @@ return [
                 "desktop.boolean"=>"Tipo de dispositivo es boleano.",
                 "web.required"=>"SistemaOS de ingreso es obligatorio. (web)",
                 "web.boolean"=>"SistemaOS de ingreso es boleano.",
-                "device.required"=>"Dispositivo es obligatorio (device)",
                 "confianza.boolean"=>"Confianza de ingreso es boleano.",
                 ]
         ],
