@@ -38,7 +38,7 @@ class SupabaseService
     {
         try {
 
-                $supabaseApiUrl = env('SUPABASE_URL'). "/storage/v1/object/selfies/".'imagename.jpg';
+                $supabaseApiUrl = env('SUPABASE_URL'). "/storage/v1/object/selfies/".$fileName;
 
                 $response = Http::withHeaders([
                     'apikey' => env('SUPABASE_API_KEY'),
