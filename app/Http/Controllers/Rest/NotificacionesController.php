@@ -8,6 +8,7 @@ use App\Jobs\NotificacionesJobs;
 use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\User;
+use App\Services\NotificationService;
 use App\Services\PushExpoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -25,7 +26,15 @@ class NotificacionesController extends Controller
         try {
             $user = User::find($req->id);
             $toDevice = Device::where('id',$user->device_id)->first();
-            return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito', 'results'=>$toDevice]);
+
+            $notiService = new NotificationService();
+            $res = $notiService->sendPush([
+                'tokens' => [$toDevice->devicetoken],
+                'title' => $req->title,
+                'body' => $req->body
+            ]);
+
+            return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito', 'results'=>$res]);
 
         } catch (\Throwable $th) {
             throw $th;

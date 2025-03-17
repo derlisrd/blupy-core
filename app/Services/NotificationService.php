@@ -12,12 +12,16 @@ class NotificationService
 
     }
 
-    public function sendIndividualPushNotification($data){
+    public function sendPush(array $data){
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'x-api-key' => env('PUSH_SERVICE_API_KEY')
-            ])->post(env('PUSH_SERVICE_URL') . '/send-notification', $data);
+            ])->post(env('PUSH_SERVICE_URL') . '/send-notification',[
+                'tokens' => [$data['tokens']],
+                'title' => $data['title'],
+                'body' => $data['body']
+            ]);
             return $response;
 
         } catch (\Throwable $th) {
