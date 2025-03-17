@@ -58,10 +58,22 @@ class NotificacionesController extends Controller
             'title' => $req->title,
             'text' => $req->text
         ];
-        $tokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
+        //$tokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();\
+        //NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database');
+        $androidDevices = Device::where('os', 'android')
+                       ->whereNotNull('devicetoken')
+                       ->pluck('devicetoken')
+                       ->toArray();
 
-        NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database');
-        return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano']);
+$iosDevices = Device::where('os', 'ios')
+                    ->whereNotNull('devicetoken')
+                    ->pluck('devicetoken')
+                    ->toArray();
+
+        return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano','results'=>[
+            'android'=>$androidDevices,
+            'ios'=>$iosDevices
+        ]]);
     }
 
     public function selectiva(Request $req){
