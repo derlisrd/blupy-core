@@ -34,7 +34,7 @@ class NotificacionesController extends Controller
                 'type' => $toDevice->os,
             ]);
 
-            return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito', 'results'=>$res]);
+            return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito', 'results'=>$res['data']],$res['status']);
 
         } catch (\Throwable $th) {
             throw $th;
