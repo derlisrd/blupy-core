@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 
@@ -23,10 +24,18 @@ class NotificationService
                 'body' => $data['body'],
                 'type' => $data['type'],
             ]);
-            return $response;
+            $json = $response->json();
+            return [
+                'data'=>$json,
+                'status'=>$response->status()
+            ];
 
-        } catch (\Throwable $th) {
-            throw $th;
+        } catch (RequestException $e) {
+            throw $e;
+            return [
+                'status' => $e->response ? $e->response->status() : 500,
+                'data' => $e->response ? $e->response->json() : null,
+            ];
         }
     }
 
