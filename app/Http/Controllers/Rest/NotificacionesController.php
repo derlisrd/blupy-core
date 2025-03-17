@@ -24,8 +24,7 @@ class NotificacionesController extends Controller
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
         try {
-            $user = User::find($req->id);
-            $toDevice = Device::where('id',$user->device_id)->first();
+            $toDevice = Device::find($req->device_id);
 
             $notiService = new NotificationService();
             $res = $notiService->sendPush([
