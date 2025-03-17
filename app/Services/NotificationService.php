@@ -20,7 +20,8 @@ class NotificationService
             ])->post(env('PUSH_SERVICE_URL') . '/send-notification',[
                 'tokens' => [$data['tokens']],
                 'title' => $data['title'],
-                'body' => $data['body']
+                'body' => $data['body'],
+                'type' => $data['type'],
             ]);
             return $response;
 

@@ -31,7 +31,8 @@ class NotificacionesController extends Controller
             $res = $notiService->sendPush([
                 'tokens' => [$toDevice->devicetoken],
                 'title' => $req->title,
-                'body' => $req->body
+                'body' => $req->body,
+                'type' => $toDevice->os,
             ]);
 
             return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito', 'results'=>$res]);
