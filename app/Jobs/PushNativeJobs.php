@@ -6,6 +6,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class PushNativeJobs implements ShouldQueue
 {
@@ -46,6 +47,7 @@ class PushNativeJobs implements ShouldQueue
             }
 
         } catch (RequestException $e) {
+            Log::error('Error al enviar notificaciones', ['error' => $e->getMessage()]);
             throw $e;
         }
     }
