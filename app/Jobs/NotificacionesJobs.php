@@ -49,6 +49,7 @@ class NotificacionesJobs implements ShouldQueue
                     ]
                 ]);
             }
+            Log::info('Notificaciones expo enviadas con exito');
         } catch (\Throwable $th) {
             SupabaseService::LOG('Notificaciones','Error en enviar notificaciones');
         }

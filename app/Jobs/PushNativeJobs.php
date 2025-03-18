@@ -45,7 +45,7 @@ class PushNativeJobs implements ShouldQueue
                 ]);
                 $json = $response->json();
             }
-
+            Log::info('Notificaciones nativas enviadas con exito');
         } catch (RequestException $e) {
             Log::error('Error al enviar notificaciones', ['error' => $e->getMessage()]);
             throw $e;
