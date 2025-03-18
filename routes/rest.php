@@ -89,7 +89,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
         Route::get('/',[VentasController::class,'index'])->name('rest_ventas');
         Route::get('/acumulados',[VentasController::class,'acumulados'])->name('rest_ventas_acumulados');
         Route::get('/acumulados-mes',[VentasController::class,'acumuladosMes'])->name('rest_ventas_acumulados_mes');
-        Route::get('/acumulados-mes-forma',[VentasController::class,'acumuladosMesForma'])->name('rest_ventas_acumulados_mes');
+        Route::get('/periodo-forma',[VentasController::class,'periodoForma'])->name('rest_ventas_periodo_forma');
         Route::get('/por-codigo',[VentasController::class,'porCodigo'])->name('rest_venta_por_codigo');
         Route::get('/por-factura',[VentasController::class,'porFactura'])->name('rest_venta_por_factura');
     });

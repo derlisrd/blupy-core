@@ -13,20 +13,20 @@ use Illuminate\Support\Facades\DB;
 
 class VentasController extends Controller
 {
-    public function acumuladosMesForma(Request $req)
+    public function periodoForma(Request $req)
     {
         $validator = Validator::make($req->all(), [
             'periodo' => 'nullable|date_format:Y-m',
             'forma_codigo' => 'nullable|numeric',
-            'alianza' => 'boolean'
+            'alianza' => 'nullable|numeric|in:0,1',
         ]);
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
         // Si no hay periodo, responder con error
-        if (!$req->has('periodo') || !$req->periodo) {
+        if (!$req->has('periodo') || !$req->periodo)
             return response()->json(['success' => false, 'message' => 'Periodo es requerido'], 400);
-        }
+
 
         // Si no hay forma_codigo, responder con error
         if (!$req->has('forma_codigo')) {
@@ -44,7 +44,7 @@ class VentasController extends Controller
             ->where('forma_codigo', $req->forma_codigo);
 
         // Aplicar filtro de alianza
-        if ($req->alianza) {
+        if ($req->alianza === '1') {
             $query->whereNotNull('adicional');
         } else {
             $query->whereNull('adicional');
