@@ -18,10 +18,13 @@ class AuthController extends Controller
         if($validator->fails())
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
-        $ip = $req->ip();
-        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 5,function() {});
-        if (!$executed)
-            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+            $ip = $req->ip();
+            $rateKey = "loginrest:$ip";
+
+            if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
+            }
+            RateLimiter::hit($rateKey, 60);
 
         $user = User::where('email',$req->email)->where('rol',1)->first();
         if(!$user)

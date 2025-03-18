@@ -29,23 +29,29 @@ class UpdatePerfilJobs implements ShouldQueue
     public function handle(): void
     {
         $farmaService = new FarmaService();
-        $clientes = Cliente::where('funcionario',0)->get();
-        $funcionario = 0;
+        $clientes = Cliente::where('funcionario', 1)->cursor();
 
-        foreach ($clientes as $key => $val) {
-            $res = (object)$farmaService->cliente($val);
-            $data = (object)$res->data;
-            if(property_exists($data,'result')){
-                $result = $data->result;
-                if(count($result)>0){
-                    $dato = (object)$result[0];
-                    $funcionario = $dato->esFuncionario == "N" ? 0 : 1;
-                    $cliente = Cliente::find($val['id']);
-                    $cliente->funcionario = $funcionario;
-                    $cliente->save();
+        foreach ($clientes as $cliente) {
+            try {
+                $res = $farmaService->cliente($cliente);
+
+                if (!isset($res['data']['result']) || empty($res['data']['result'])) {
+                    continue;
                 }
-            }
 
+                $esFuncionario = $res['data']['result'][0]['esFuncionario'] ?? null;
+
+                if ($esFuncionario !== null) {
+                    $funcionario = $esFuncionario == "N" ? 0 : 1;
+
+                    // Actualizar directamente sin recuperar el modelo completo
+                    Cliente::where('id', $cliente->id)
+                          ->update(['funcionario' => $funcionario]);
+                }
+            } catch (\Exception $e) {
+                // Manejar el error o registrarlo
+                Log::error("Error al procesar cliente ID {$cliente->id}: " . $e->getMessage());
+            }
         }
     }
 }
