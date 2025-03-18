@@ -33,6 +33,17 @@ class NotificacionesController extends Controller
                 'body' => $req->body,
                 'type' => $toDevice->os,
             ]);
+            $expoService = new PushExpoService();
+            $expoService->send(
+                [$toDevice->notitoken],
+                $req->title,
+                $req->body,
+                [
+                    'info'=>'notificaciones',
+                    'title'=>$req->title,
+                    'body'=>$req->body
+                ]
+            );
 
             return response()->json(['success'=>true,'message'=>'Notificacion enviada con exito', 'results'=>$res['data']],$res['status']);
 
@@ -65,7 +76,7 @@ class NotificacionesController extends Controller
                        ->pluck('devicetoken')
                        ->toArray();
 
-$iosDevices = Device::where('os', 'ios')
+        $iosDevices = Device::where('os', 'ios')
                     ->whereNotNull('devicetoken')
                     ->pluck('devicetoken')
                     ->toArray();

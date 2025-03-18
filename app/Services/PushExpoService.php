@@ -20,9 +20,10 @@ class PushExpoService
                     'body' => $body,
                     'data' => $data
                 ]);
-            //SupabaseService::LOG('Notificacion',$response);
+            return  $response->json();
         } catch (\Throwable $th) {
             return false;
+            throw $th;
         }
     }
 }
