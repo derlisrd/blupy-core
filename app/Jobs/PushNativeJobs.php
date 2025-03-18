@@ -2,15 +2,17 @@
 
 namespace App\Jobs;
 
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Http\Client\RequestException;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class PushNativeJobs implements ShouldQueue
 {
-    use Queueable;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     public $body;
     public $title;
     public $tokens;
@@ -46,9 +48,9 @@ class PushNativeJobs implements ShouldQueue
                 $json = $response->json();
             }
             Log::info('Notificaciones nativas enviadas con exito');
-        } catch (RequestException $e) {
-            Log::error('Error al enviar notificaciones', ['error' => $e->getMessage()]);
-            throw $e;
+        } catch (\Throwable $th) {
+            Log::error('Error al enviar notificaciones', ['error' => $th->getMessage()]);
+            throw $th;
         }
     }
 }
