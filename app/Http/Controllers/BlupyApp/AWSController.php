@@ -218,9 +218,9 @@ class AWSController extends Controller
             $idCard = collect($labels)->firstWhere('Name', 'Id Cards');
             $face = collect($labels)->firstWhere('Name', 'Face');
 
-            $documentValid = $document && $document['Confidence'] > 80;
-            $idCardValid = $idCard && $idCard['Confidence'] > 80;
-            $faceValid = $face && $face['Confidence'] > 70;
+            $documentValid = $document && $document['Confidence'] > 70;
+            $idCardValid = $idCard && $idCard['Confidence'] > 70;
+            $faceValid = $face && $face['Confidence'] > 60;
 
             if (!$documentValid || !$idCardValid || !$faceValid) {
                 SupabaseService::uploadImageSelfies($imageName,$imagePath,$imageType);
