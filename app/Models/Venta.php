@@ -23,7 +23,8 @@ class Venta extends Model
         'codigo_sucursal',
         'fecha',
         'forma_venta',
-        'documento'
+        'documento',
+        'operacion'
     ];
     protected $hidden = [
         'created_at',

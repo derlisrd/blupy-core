@@ -29,61 +29,6 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
         $this->fecha = $fecha;
     }
 
-/*     public function handle()
-    {
-        try {
-            $farmaService = new FarmaService();
-            $res = $farmaService->ventasRendidas($this->fecha);
-            $data = (object) $res['data'];
-
-            if (property_exists($data, 'result')) {
-                $ventas = $data->result;
-                $cedulasClientes = array_unique(array_column($ventas, 'cedula'));
-                $clientes = Cliente::whereIn('cedula', $cedulasClientes)
-                    ->pluck('id', 'cedula')
-                    ->toArray();
-                // Preparar datos para la inserción en Supabase
-                $insertData = [];
-                foreach ($ventas as $venta) {
-                    $fechaFormateada = Carbon::parse($venta['ventFecha'], 'UTC')
-                        ->setTimezone('America/Asuncion')
-                        ->format('Y-m-d H:i:s');
-                    $cliente_id = $clientes[$venta['cedula']] ?? null;
-                    $insertData[] = [
-                        'cliente_id' => $cliente_id,
-                        'codigo' => $venta['ventCodigo'], // Campo único en Supabase
-                        'documento' => $venta['cedula'],
-                        'adicional' => $venta['clieCodigoAdicional'],
-                        'factura_numero' => $venta['ventNumero'],
-                        'importe' => $venta['ventTotBruto'],
-                        'descuento' => $venta['ventTotDescuento'],
-                        'importe_final' => $venta['ventTotNeto'],
-                        'forma_pago' => $venta['frpaAbreviatura'],
-                        'forma_codigo' => $venta['frpaCodigo'],
-                        'descripcion' => null,
-                        'sucursal' => $venta['estrDescripcion'],
-                        'codigo_sucursal' => $venta['estrCodigo'],
-                        'fecha' => $fechaFormateada,
-                        'forma_venta' => $venta['ventTipo'],
-                        'created_at' => now()->toDateTimeString(),
-                        'updated_at' => now()->toDateTimeString(),
-                    ];
-                }
-
-                // Insertar en Supabase en lotes
-                if (!empty($insertData)) {
-                    foreach (array_chunk($insertData, 500) as $chunk) {
-                        SupabaseService::ingresarVentas($chunk);
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            SupabaseService::LOG('error', "Error crítico: {$e->getMessage()}");
-        }
-
-        SupabaseService::LOG('schedule_plano', 'ingresadas fecha ' . $this->fecha);
-    } */
-
     public function handle()
     {
         try {
@@ -130,6 +75,7 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
                             'forma_pago' => $venta['frpaAbreviatura'],
                             'forma_codigo' => $venta['frpaCodigo'],
                             'descripcion' => null,
+                            'operacion' => $venta['ticoCodigo'],
                             'sucursal' => $venta['estrDescripcion'],
                             'codigo_sucursal' => $venta['estrCodigo'],
                             'fecha' => $fechaFormateada,

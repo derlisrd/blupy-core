@@ -5,6 +5,7 @@ use App\Http\Controllers\Rest\ClientesController;
 use App\Http\Controllers\Rest\ConsultasController;
 use App\Http\Controllers\Rest\ContratosController;
 use App\Http\Controllers\Rest\EstadisticasController;
+use App\Http\Controllers\Rest\JobsManualesController;
 use App\Http\Controllers\Rest\NotificacionesController;
 use App\Http\Controllers\Rest\SolicitudesController;
 use App\Http\Controllers\Rest\UsersController;
@@ -48,7 +49,11 @@ Route::middleware(Authenticate::using('api'))->group(function(){
 
 
 
-
+    Route::prefix('jobs')->group(function(){
+        Route::post('/update-perfil-funcionarios',[JobsManualesController::class,'updatePerfilFuncionarios'])->name('rest_update_perfil_funcionarios');
+        Route::post('/update-perfil-alianzas',[JobsManualesController::class,'updatePerfilAlianzas'])->name('rest_update_perfil_alianzas');
+        Route::post('/update-sucursales-farma',[JobsManualesController::class,'updateSucursalesFarma'])->name('rest_update_sucursales_farma');
+    });
 
 
 
