@@ -35,7 +35,9 @@ Route::middleware(Authenticate::using('api'))->group(function(){
         Route::put('/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])->name('rest_cliente_restablecer_contrasena');
     });
 
-
+    Route::prefix('micredito')->group(function(){
+        Route::get('/movimientos',[ClientesController::class,'micredito'])->name('rest_micredito');
+    });
 
 
     Route::put('/actualizar-ficha-funcionario',[ClientesController::class,'actualizarFuncionario'])->name('rest_actualizar_ficha_funcionario');
@@ -87,6 +89,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
         Route::get('/',[VentasController::class,'index'])->name('rest_ventas');
         Route::get('/acumulados',[VentasController::class,'acumulados'])->name('rest_ventas_acumulados');
         Route::get('/acumulados-mes',[VentasController::class,'acumuladosMes'])->name('rest_ventas_acumulados_mes');
+        Route::get('/acumulados-mes-forma',[VentasController::class,'acumuladosMesForma'])->name('rest_ventas_acumulados_mes');
         Route::get('/por-codigo',[VentasController::class,'porCodigo'])->name('rest_venta_por_codigo');
         Route::get('/por-factura',[VentasController::class,'porFactura'])->name('rest_venta_por_factura');
     });

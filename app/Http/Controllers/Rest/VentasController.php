@@ -13,7 +13,50 @@ use Illuminate\Support\Facades\DB;
 
 class VentasController extends Controller
 {
-    public function index(Request $req) {}
+    public function acumuladosMesForma(Request $req)
+    {
+        $validator = Validator::make($req->all(), [
+            'periodo' => 'nullable|date_format:Y-m',
+            'forma_codigo' => 'nullable|numeric',
+            'alianza' => 'boolean'
+        ]);
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        // Si no hay periodo, responder con error
+        if (!$req->has('periodo') || !$req->periodo) {
+            return response()->json(['success' => false, 'message' => 'Periodo es requerido'], 400);
+        }
+
+        // Si no hay forma_codigo, responder con error
+        if (!$req->has('forma_codigo')) {
+            return response()->json(['success' => false, 'message' => 'forma_codigo es requerido'], 400);
+        }
+
+        // Crear fechas una sola vez
+        $carbon = Carbon::createFromFormat('Y-m', $req->periodo);
+        $fechaInicio = $carbon->copy()->startOfMonth()->format('Y-m-d');
+        $fechaFin = $carbon->copy()->endOfMonth()->format('Y-m-d');
+
+        // Construir la consulta más eficiente
+        $query = Venta::select('id', 'codigo', 'factura_numero','documento','forma_codigo','importe_final','sucursal','operacion','fecha') // Solo columnas necesarias
+            ->whereBetween('fecha', [$fechaInicio, $fechaFin])
+            ->where('forma_codigo', $req->forma_codigo);
+
+        // Aplicar filtro de alianza
+        if ($req->alianza) {
+            $query->whereNotNull('adicional');
+        } else {
+            $query->whereNull('adicional');
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Acumulados',
+            'results' => $query->get()
+        ]);
+    }
+
 
     public function acumuladosMes(Request $req)
     {
@@ -47,8 +90,8 @@ class VentasController extends Controller
             $acumuladoBlupy1DiaAlianzas = (clone $query)->where('forma_codigo', '129')->whereNotNull('adicional')->sum('importe_final');
 
             $acumuladoBlupy3Cuotas = (clone $query)->where('forma_codigo', '127')->sum('importe_final');
-            $acumuladoBlupy3CuotasAso = (clone $query)->where('forma_codigo', '140')->sum('importe_final');
-            $acumuladoBlupy4CuotasAso = (clone $query)->where('forma_codigo', '136')->sum('importe_final');
+            $acumuladoBlupy3CuotasAlianza = (clone $query)->where('forma_codigo', '140')->sum('importe_final');
+            $acumuladoBlupy4CuotasAlianza = (clone $query)->where('forma_codigo', '136')->sum('importe_final');
 
             return response()->json([
                 'success' => true,
@@ -56,13 +99,48 @@ class VentasController extends Controller
                 'results' => [
                     'periodo' => $periodo,
                     'total' => (int)$acumuladoTotal,
-                    'blupyDigital' => (int)$acumuladoBlupyDigital,
-                    'blupy1DiaFuncionarios' => (int)$acumuladoBlupy1DiaFuncionarios,
-                    'blupy1DiaAlianzas' => (int)$acumuladoBlupy1DiaAlianzas,
-                    'blupy3Cuotas' => (int)$acumuladoBlupy3Cuotas,
-                    'blupy3CuotasAso' => (int)$acumuladoBlupy3CuotasAso,
-                    'blupy3CuotasDigital' => (int)$acumuladoBlupy3CuotasDigital,
-                    'blupy4CuotasAso' => (int)$acumuladoBlupy4CuotasAso,
+                    'blupyDigital' => [
+                        'total' => (int)$acumuladoBlupyDigital,
+                        'codigo' => 135,
+                        'alianza' => false,
+                        'descripcion' => 'Blupy Digital'
+                    ],
+                    'blupy1DiaFuncionarios' => [
+                        'total' => (int)$acumuladoBlupy1DiaFuncionarios,
+                        'codigo' => 129,
+                        'alianza' => false,
+                        'descripcion' => 'Blupy 1 día Funcionarios'
+                    ],
+                    'blupy1DiaAlianzas' => [
+                        'total' => (int)$acumuladoBlupy1DiaAlianzas,
+                        'codigo' => 129,
+                        'alianza' => true,
+                        'descripcion' => 'Blupy 1 día Alianzas'
+                    ],
+                    'blupy3Cuotas' => [
+                        'total' => (int)$acumuladoBlupy3Cuotas,
+                        'codigo' => 127,
+                        'alianza' => false,
+                        'descripcion' => 'Blupy 3 cuotas'
+                    ],
+                    'blupy3CuotasAlianza' => [
+                        'total' => (int)$acumuladoBlupy3CuotasAlianza,
+                        'codigo' => 140,
+                        'alianza' => true,
+                        'descripcion' => 'Blupy 3 cuotas Alianzas'
+                    ],
+                    'blupy3CuotasDigital' => [
+                        'total' => (int)$acumuladoBlupy3CuotasDigital,
+                        'codigo' => 139,
+                        'alianza' => false,
+                        'descripcion' => 'Blupy 3 cuotas Digital'
+                    ],
+                    'blupy4CuotasAlianza' => [
+                        'total' => (int)$acumuladoBlupy4CuotasAlianza,
+                        'codigo' => 136,
+                        'alianza' => true,
+                        'descripcion' => 'Blupy 4 cuotas Alianzas'
+                    ],
                 ]
             ]);
         } catch (\Throwable $th) {
@@ -81,10 +159,10 @@ class VentasController extends Controller
 
         // Una consulta separada para el caso especial de forma_codigo 129 con adicional nulo o no nulo
         $acumuladosFuncionariosAlianzas = Venta::select(
-                'forma_codigo',
-                DB::raw('CASE WHEN adicional IS NULL THEN "funcionarios" ELSE "alianzas" END as tipo'),
-                DB::raw('SUM(importe_final) as total')
-            )
+            'forma_codigo',
+            DB::raw('CASE WHEN adicional IS NULL THEN "funcionarios" ELSE "alianzas" END as tipo'),
+            DB::raw('SUM(importe_final) as total')
+        )
             ->where('forma_codigo', '129')
             ->groupBy('forma_codigo', DB::raw('CASE WHEN adicional IS NULL THEN "funcionarios" ELSE "alianzas" END'))
             ->get();
