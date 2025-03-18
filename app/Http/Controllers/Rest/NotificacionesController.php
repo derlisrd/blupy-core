@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\NotificacionesJobs;
+use App\Jobs\PushNativeJobs;
 use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\User;
@@ -58,38 +59,38 @@ class NotificacionesController extends Controller
             'title' => 'required',
             'text' => 'required'
         ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'success'=>false,
-                'message'=> $validator->errors()->first()
-            ], 400);
+        if ($validator->fails())
+            return response()->json(['success'=>false,'message'=> $validator->errors()->first()], 400);
+
+        try {
+            $datos = [
+                'title' => $req->title,
+                'text' => $req->text
+            ];
+
+            $expotokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
+
+            $androidDevices = Device::where('os', 'android')
+                           ->whereNotNull('devicetoken')
+                           ->pluck('devicetoken')
+                           ->toArray();
+
+            $iosDevices = Device::where('os', 'ios')
+                        ->whereNotNull('devicetoken')
+                        ->pluck('devicetoken')
+                        ->toArray();
+            NotificacionesJobs::dispatch($req->title,$req->text,$expotokens)->onConnection('database');
+            PushNativeJobs::dispatch($req->title,$req->text,$androidDevices,'android')->onConnection('database');
+            PushNativeJobs::dispatch($req->title,$req->text,$iosDevices,'ios')->onConnection('database');
+            return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano']);
+        } catch (\Throwable $th) {
+            throw $th;
         }
 
-        $datos = [
-            'title' => $req->title,
-            'text' => $req->text
-        ];
-        //$tokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();\
-        //NotificacionesJobs::dispatch($req->title,$req->text,$tokens)->onConnection('database');
-        $androidDevices = Device::where('os', 'android')
-                       ->whereNotNull('devicetoken')
-                       ->pluck('devicetoken')
-                       ->toArray();
-
-        $iosDevices = Device::where('os', 'ios')
-                    ->whereNotNull('devicetoken')
-                    ->pluck('devicetoken')
-                    ->toArray();
-
-        return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano','results'=>[
-            'android'=>$androidDevices,
-            'ios'=>$iosDevices
-        ]]);
-    }
-
-    public function selectiva(Request $req){
 
     }
+
+
 
     public function ficha(Request $req){
         $validator = Validator::make($req->all(),['cedula'=>'required']);
