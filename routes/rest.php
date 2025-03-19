@@ -55,6 +55,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
         Route::post('/update-perfil-funcionarios',[JobsManualesController::class,'updatePerfilFuncionarios'])->name('rest_update_perfil_funcionarios');
         Route::post('/update-perfil-alianzas',[JobsManualesController::class,'updatePerfilAlianzas'])->name('rest_update_perfil_alianzas');
         Route::post('/update-sucursales-farma',[JobsManualesController::class,'updateSucursalesFarma'])->name('rest_update_sucursales_farma');
+        Route::post('/update-ventas-farma',[JobsManualesController::class,'updateVentasFarma'])->name('rest_update_ventas_farma');
     });
 
 
