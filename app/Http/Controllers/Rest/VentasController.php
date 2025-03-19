@@ -39,7 +39,7 @@ class VentasController extends Controller
         $fechaFin = $carbon->copy()->endOfMonth()->format('Y-m-d');
 
         // Construir la consulta más eficiente
-        $query = Venta::select('id', 'codigo', 'factura_numero','documento','forma_codigo','importe_final','sucursal','operacion','fecha') // Solo columnas necesarias
+        $query = Venta::select('id', 'codigo', 'factura_numero','documento','forma_codigo','importe_final','sucursal','operacion','fecha','adicional') // Solo columnas necesarias
             ->whereBetween('fecha', [$fechaInicio, $fechaFin])
             ->where('forma_codigo', $req->forma_codigo);
 
@@ -52,7 +52,7 @@ class VentasController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Acumulados',
+            'message' => 'Ventas',
             'results' => $query->get()
         ]);
     }
