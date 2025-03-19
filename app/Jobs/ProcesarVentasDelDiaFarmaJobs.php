@@ -62,7 +62,7 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
                             ->format('Y-m-d H:i:s');
 
                         $cliente_id = $clientes[$venta['cedula']] ?? null;
-
+                        $importe = $venta['ticoCodigo'] == 'FADE' ? $venta['ventTotNeto'] : $venta['ventTotNeto'] * (-1);
                         $insertData[] = [
                             'cliente_id' => $cliente_id,
                             'codigo' => $venta['ventCodigo'],
@@ -71,7 +71,7 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
                             'factura_numero' => $venta['ventNumero'],
                             'importe' => $venta['ventTotBruto'],
                             'descuento' => $venta['ventTotDescuento'],
-                            'importe_final' => $venta['ventTotNeto'],
+                            'importe_final' => $importe,
                             'forma_pago' => $venta['frpaAbreviatura'],
                             'forma_codigo' => $venta['frpaCodigo'],
                             'descripcion' => null,

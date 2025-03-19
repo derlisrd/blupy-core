@@ -67,7 +67,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
         Route::get('/filtros',[SolicitudesController::class,'filtros'])->name('rest_solicitudes_filtros');
         Route::post('/aprobar',[SolicitudesController::class,'aprobar'])->name('rest_aprobar_solicitud');
         Route::put('/actualizar-solicitudes',[SolicitudesController::class,'actualizarSolicitudes'])->name('rest_actualizar_solicitudes');
-        Route::get('/actualizar-solicitud',[SolicitudesController::class,'actualizarSolicitud'])->name('rest_actualizar_solicitud');
+        Route::put('/actualizar-solicitud',[SolicitudesController::class,'actualizarSolicitud'])->name('rest_actualizar_solicitud');
     });
 
     Route::prefix('contrato')->group(function(){

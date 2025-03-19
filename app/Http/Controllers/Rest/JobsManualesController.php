@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ActualizarSucursalesFarmaJobs;
+use App\Jobs\ProcesarVentasDelDiaFarmaJobs;
 use App\Jobs\UpdatePerfilJobs;
-// use Illuminate\Http\Request;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class JobsManualesController extends Controller
 {
@@ -13,16 +15,27 @@ class JobsManualesController extends Controller
     {
         UpdatePerfilJobs::dispatch();
 
-        return response()->json(['success'=>true,'message' => 'Job encolado para actualizar perfiles']);
+        return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar perfiles']);
     }
     public function updatePerfilAlianzas()
     {
         //UpdatePerfilJobs::dispatch();
 
-        return response()->json(['success'=>true,'message' => 'Job encolado para actualizar perfiles de alianzas']);
+        return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar perfiles de alianzas']);
     }
     public function updateSucursalesFarma(){
         ActualizarSucursalesFarmaJobs::dispatch();
-        return response()->json(['success'=>true,'message' => 'Job encolado para actualizar sucursales']);
+        return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar sucursales']);
+    }
+
+    public function updateVentasFarma(Request $request){
+        $validator = Validator::make($request->all(), [
+            'fecha' => 'required|date_format:Y-m-d',
+        ]);
+        if ($validator->fails())
+            return response()->json(['success'=>false,'message' => $validator->errors()->first()], 400);
+
+        ProcesarVentasDelDiaFarmaJobs::dispatch($request->fecha);
+        return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar ventas']);
     }
 }
