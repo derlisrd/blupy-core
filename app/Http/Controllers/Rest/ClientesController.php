@@ -125,18 +125,36 @@ class ClientesController extends Controller
     public function buscar(Request $req)
     {
 
-        $buscar = $req->q;
+        $buscar = trim($req->q ?? '');
+
+
+        if (empty($buscar)) {
+            return response()->json([
+                'success' => true,
+                'total' => 0,
+                'results' => []
+            ]);
+        }
         $clientes = Cliente::join('users as u', 'u.cliente_id', '=', 'clientes.id')
-            ->orderBy('created_at', 'DESC')
-            ->where('clientes.cedula', 'like', '%' . $buscar . '%')
-            ->orWhere('u.name', 'like', '%' . $buscar . '%')
             ->select($this->campos);
+
+        // Aplicar filtros de búsqueda dentro de un grupo para evitar comportamientos inesperados
+        $clientes->where(function ($query) use ($buscar) {
+            $query->where('clientes.cedula', 'like', '%' . $buscar . '%')
+                ->orWhere('u.name', 'like', '%' . $buscar . '%');
+        });
+
+        $clientes->orderBy('clientes.created_at', 'DESC');
+
+        // Obtener resultados una sola vez para mejorar rendimiento
+        $resultados = $clientes->get();
+        $total = count($resultados);
 
 
         return response()->json([
             'success' => true,
-            'total' => $clientes->count(),
-            'results' => $clientes->get()
+            'total' => $total,
+            'results' => $resultados
         ]);
     }
 
@@ -148,8 +166,8 @@ class ClientesController extends Controller
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
         $farma = new FarmaService();
-        $res = (object)$farma->cliente($req->cedula);
-        $dataFarma = (object)$res->data;
+        $res = $farma->cliente($req->cedula);
+        $dataFarma = (object)$res['data'];
 
         $farmaResult = null;
 
@@ -225,7 +243,7 @@ class ClientesController extends Controller
     public function ficha(Request $request)
     {
 
-        $clients = Cliente::find($request->id);
+        $clients = Cliente::findorFail($request->id);
 
         return response()->json([
             'success' => true,
@@ -233,7 +251,8 @@ class ClientesController extends Controller
         ]);
     }
 
-    public function actualizarFotoCedula(Request $request,$id){
+    public function actualizarFotoCedula(Request $request, $id)
+    {
 
 
         $validator = Validator::make(
@@ -247,36 +266,34 @@ class ClientesController extends Controller
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-        try{
+        try {
             $cliente = Cliente::find($request->id);
-        $imagen = $request->file('foto_cedula');
-        $extension = $imagen->getClientOriginalExtension();
+            $imagen = $request->file('foto_cedula');
+            $extension = $imagen->getClientOriginalExtension();
 
-        $imageName = 'cedula_' . $cliente->cedula . '.' . $extension;
-        $publicPath = public_path('clientes/' . $imageName);
+            $imageName = 'cedula_' . $cliente->cedula . '.' . $extension;
+            $publicPath = public_path('clientes/' . $imageName);
 
-        $imager = new ImageManager(new Driver());
-        // Procesar y guardar la imagen
-        $imager->read($imagen->getPathname())->scale(800)->save($publicPath);
+            $imager = new ImageManager(new Driver());
+            // Procesar y guardar la imagen
+            $imager->read($imagen->getPathname())->scale(800)->save($publicPath);
 
-        $cliente->foto_ci_frente = $imageName;
-        $cliente->save();
+            $cliente->foto_ci_frente = $imageName;
+            $cliente->save();
 
-        return response()->json([
-            'message' => 'Imagen subida correctamente',
-            'success' => true,
-            'results' => [
-            'path' => asset('clientes/' . $imageName)]
-        ]);
-        }
-        catch (\Exception $e) {
             return response()->json([
-                'message' => 'Error al subir la imagen. '. $e->getMessage(),
+                'message' => 'Imagen subida correctamente',
+                'success' => true,
+                'results' => [
+                    'path' => asset('clientes/' . $imageName)
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al subir la imagen. ' . $e->getMessage(),
                 'success' => false,
                 'results' => null
-            ],500);
+            ], 500);
         }
-
     }
-
 }

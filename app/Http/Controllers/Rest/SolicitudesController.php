@@ -185,30 +185,32 @@ class SolicitudesController extends Controller
     public function buscar(Request $request)
     {
 
-        $buscar = $request->q;
+        $buscar = trim($request->q ?? '');
 
-        $limite = 25;
-        $page =  0;
-        $soli = SolicitudCredito::orderBy('solicitud_creditos.id', 'desc')
-            ->where('solicitud_creditos.tipo', '>', 0)
-            ->where('c.cedula', 'like', '%' . $buscar . '%')
-            ->join('clientes as c', 'c.id', '=', 'solicitud_creditos.cliente_id')
-            ->join('users as u', 'u.cliente_id', '=', 'c.id')
-            ->offset($page * $limite)
-            ->limit($limite)
-            ->select($this->camposSolicitud)
-            ->get();
 
-        $total = SolicitudCredito::count();
-        $pages = (int)($total / $limite) - 1;
+        if(empty($buscar)) {
+            return response()->json([
+                'success' => true,
+                'total' => 0,
+                'results' => []
+            ]);
+        }
+
+        $query = SolicitudCredito::join('clientes as c', 'c.id', '=', 'solicitud_creditos.cliente_id')
+        ->join('users as u', 'u.cliente_id', '=', 'c.id')
+        ->where('solicitud_creditos.tipo', '>', 0)
+        ->where('c.cedula', 'like', '%' . $buscar . '%')
+        ->orderBy('solicitud_creditos.id', 'desc')
+        ->select($this->camposSolicitud);
+
+        $total = $query->count();
+        $resultados = $query->get();
 
         return response()->json([
             'success' => true,
+            'message' => 'Solicitudes',
             'total' => $total,
-            'pages' => $pages,
-            'current' => (int)$page,
-            'limit' => (int) $limite,
-            'results' => $soli
+            'results' => $resultados
         ]);
     }
     /*
