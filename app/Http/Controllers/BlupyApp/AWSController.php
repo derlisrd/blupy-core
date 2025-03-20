@@ -19,10 +19,14 @@ class AWSController extends Controller
         if($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()],400);
 
-        $ip = $req->ip();
-        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 6,function() {});
-        if (!$executed)
-            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+            $ip = $req->ip();
+            $rateKey = "scanCedula:$ip";
+
+            if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 2 minutos.'], 429);
+            }
+            RateLimiter::hit($rateKey, 120);
+
 
         try {
             $amazon = new RekognitionClient([
@@ -117,10 +121,14 @@ class AWSController extends Controller
         if($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()],400);
 
-        $ip = $req->ip();
-        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 6,function() {});
-        if (!$executed)
-            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+            $ip = $req->ip();
+            $rateKey = "scanFace:$ip";
+
+            if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 2 minutos.'], 429);
+            }
+            RateLimiter::hit($rateKey, 120);
+
         try {
             $amazon = new RekognitionClient([
                 'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
