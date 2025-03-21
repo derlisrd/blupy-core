@@ -39,7 +39,8 @@ class ClientesController extends Controller
             'clientes.salario',
             'clientes.empresa',
             'clientes.latitud_direccion',
-            'clientes.longitud_direccion'
+            'clientes.longitud_direccion',
+            'clientes.codigo_farma'
         ];
     }
 
