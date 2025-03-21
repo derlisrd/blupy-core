@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Adicional;
 use App\Models\Barrio;
 use App\Models\Ciudad;
-use App\Models\Cliente;
 use App\Models\Departamento;
 use App\Models\Informacion;
 use App\Models\Notificacion;
@@ -26,18 +25,21 @@ class SolicitudesController extends Controller
 {
     use RegisterTraits, SolicitudesInfinitaTraits, Helpers;
 
-
-    public function solicitudes(Request $req){
-        $validator = Validator::make($req->all(),trans('validation.solicitudes.listar'),trans('validation.solicitudes.listar.messages'));
-        if($validator->fails())
-            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+    /**
+     * LISTA DE SOLICITUDES
+     */
+    public function solicitudes(Request $req)
+    {
+        $validator = Validator::make($req->all(), trans('validation.solicitudes.listar'), trans('validation.solicitudes.listar.messages'));
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
         $user = $req->user();
 
         $desde = isset($req->fechaDesde) ? $req->fechaDesde : Carbon::now()->startOfMonth()->format('Y-m-d');
         $hasta = isset($req->fechaHasta) ? $req->fechaHasta : Carbon::now()->format('Y-m-d');
 
-        $results = $this->listaSolicitudes($user->cliente->cedula,$desde,$hasta);
+        $results = $this->listaSolicitudes($user->cliente->cedula, $desde, $hasta);
         // $results = SolicitudCredito::where([
         //     ['cliente_id','=',$user->cliente->id],
         //     ['tipo','>',0]
@@ -45,24 +47,25 @@ class SolicitudesController extends Controller
         // ->select('id','estado','codigo','created_at as fecha','tipo')
         // ->get();
         return response()->json([
-            'success'=>true,
-            'results'=>$results
+            'success' => true,
+            'results' => $results
         ]);
     }
 
 
-    public function verificarEstadoSolicitud(Request $req){
+    public function verificarEstadoSolicitud(Request $req)
+    {
         $user = $req->user();
         $cliente = $user->cliente;
-        $solicitudes = SolicitudCredito::where('cliente_id',$cliente->id)->where('tipo',1)->latest()->first();
+        $solicitudes = SolicitudCredito::where('cliente_id', $cliente->id)->where('tipo', 1)->latest()->first();
 
-        if($solicitudes){
+        if ($solicitudes) {
 
-            if($solicitudes->estado_id == 7 || $solicitudes->estado_id == 5 ){
+            if ($solicitudes->estado_id == 7 || $solicitudes->estado_id == 5) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Su solicitud ya ingresó o yá esta activa. Verifique en sus solicitudes.'
-                ],400);
+                ], 400);
             }
 
 
@@ -70,42 +73,39 @@ class SolicitudesController extends Controller
             $fechaActual = Carbon::now();
             $cantidadDias = $fechaSolicitud->diffInDays($fechaActual);
 
-            if($cantidadDias < 2){
+            if ($cantidadDias < 2) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'
-                ],403);
+                ], 403);
             }
         }
-        return response()->json(['success'=>true, 'message'=>'Puede ingresar una nueva solicitud']);
-
+        return response()->json(['success' => true, 'message' => 'Puede ingresar una nueva solicitud']);
     }
 
-    public function contratoPendiente(Request $req){
-
-    }
 
 
     /**********************************************************************
      * solicitar credito sol linea credito
-    ************************************************************************/
-    public function solicitarCredito(Request $req){
+     ************************************************************************/
+    public function solicitarCredito(Request $req)
+    {
         $user = $req->user();
         $fechaSolicitud = $this->verificarSolicitud($user->cliente->id);
 
-        if(!$fechaSolicitud){
-            return response()->json(['success' => false, 'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'],403);
+        if (!$fechaSolicitud) {
+            return response()->json(['success' => false, 'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'], 403);
         }
 
-        $validator = Validator::make($req->all(),trans('validation.solicitudes.solicitar'),trans('validation.solicitudes.solicitar.messages'));
-        if($validator->fails())
-            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+        $validator = Validator::make($req->all(), trans('validation.solicitudes.solicitar'), trans('validation.solicitudes.solicitar.messages'));
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
 
 
-        $verificarSolicitudPendiente = SolicitudCredito::where('cliente_id',$user->cliente->id)->where('tipo',1)->where('estado_id',5)->latest()->first();
-        if($verificarSolicitudPendiente)
-            return response()->json(['success'=>false,'message'=>'Ya tiene una solicitud con contrato pendiente.'],400);
+        $verificarSolicitudPendiente = SolicitudCredito::where('cliente_id', $user->cliente->id)->where('tipo', 1)->where('estado_id', 5)->latest()->first();
+        if ($verificarSolicitudPendiente)
+            return response()->json(['success' => false, 'message' => 'Ya tiene una solicitud con contrato pendiente.'], 400);
 
 
 
@@ -165,12 +165,12 @@ class SolicitudesController extends Controller
 
 
 
-            if($imagenSelfie == null)
-                return response()->json(['success'=>false,'message'=>'No se pudo guardar la selfie.'],400);
+            if ($imagenSelfie == null)
+                return response()->json(['success' => false, 'message' => 'No se pudo guardar la selfie.'], 400);
 
             $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
-            if(!$solicitud->success)
-                return response()->json(['success'=>false,'message'=>$solicitud->message],400);
+            if (!$solicitud->success)
+                return response()->json(['success' => false, 'message' => $solicitud->message], 400);
 
             // enviar selfie
             $this->enviarSelfieInfinita($cliente->cedula, $req->selfie);
@@ -204,45 +204,62 @@ class SolicitudesController extends Controller
 
 
             Notificacion::create([
-                'user_id'=>$user->id,
-                'title'=> 'Solicitud de crédito',
+                'user_id' => $user->id,
+                'title' => 'Solicitud de crédito',
                 'body' => $solicitud->estado
             ]);
 
             SolicitudCredito::create([
-                'cliente_id'=>$cliente->id,
-                'estado_id'=>$solicitud->id,
-                'estado'=>$solicitud->estado,
-                'codigo'=>$solicitud->codigo,
-                'tipo'=>1,
-                'importe'=>0
+                'cliente_id' => $cliente->id,
+                'estado_id' => $solicitud->id,
+                'estado' => $solicitud->estado,
+                'codigo' => $solicitud->codigo,
+                'tipo' => 1,
+                'importe' => 0
             ]);
-            if($solicitud->id === 5){
+            $titulo = '¡Solicitud de crédito!';
+            $descripcion = 'Tu solicitud de crédito ha sido enviada. ¡Estamos procesando tu solicitud! 🥳';
+            if ($solicitud->id === 5) {
+                $titulo = '¡Crédito aprobado, felicidades! 🎉 ';
+                $descripcion = 'Tu solicitud de crédito ha sido aprobada. ¡Celebremos este logro! 🥳';
                 Informacion::create([
-                    'user_id'=>$user->id,
-                    'codigo_info'=>1,
-                    'title'=>'Crédito aprobado',
-                    'description'=>'Para activar tu línea acercate a un PUNTO FARMA',
-                    'text'=>'Para activar tu línea acercate a un PUNTO FARMA',
-                    'active'=>1,
-                    'leido'=>0,
-                    'general'=>0,
+                    'user_id' => $user->id,
+                    'codigo_info' => 1,
+                    'title' => $titulo,
+                    'description' => $descripcion,
+                    'text' => $descripcion,
+                    'active' => 1,
+                    'leido' => 0,
+                    'general' => 0,
                 ]);
             }
+            $devicesTokens = $user->devices;
+            $expoService = new PushExpoService();
+
+            $expoService->send(
+                [$devicesTokens],
+                $titulo,
+                $descripcion,
+                [
+                    'info' => 'notificaciones',
+                    'title' => $titulo,
+                    'body' => $descripcion
+                ]
+            );
             $results = [
-                'estado_id'=>$solicitud->id,
-                'estado'=>$solicitud->estado,
-                'codigo'=>$solicitud->codigo
+                'estado_id' => $solicitud->id,
+                'estado' => $solicitud->estado,
+                'codigo' => $solicitud->codigo
             ];
             return response()->json([
-                'success'=>true,
-                'results'=>$results,
-                'message'=>'Solicitud ingresada correctamente.']);
-
+                'success' => true,
+                'results' => $results,
+                'message' => 'Solicitud ingresada correctamente.'
+            ]);
         } catch (\Throwable $th) {
             Log::error($th);
-            SupabaseService::LOG($th->getMessage(),$th);
-            return response()->json(['success'=>false,'message'=>'Hubo un error con el servidor. Contacte con nosotros por favor.'],500);
+            SupabaseService::LOG($th->getMessage(), $th);
+            return response()->json(['success' => false, 'message' => 'Hubo un error con el servidor. Contacte con nosotros por favor.'], 500);
         }
     }
 
@@ -251,12 +268,13 @@ class SolicitudesController extends Controller
 
     /**********************************************************************
      * AUMENTO ampliacion aumentar solicitud aum  solicitar aumentar
-    ************************************************************************/
-    public function solicitarAmpliacion(Request $req){
+     ************************************************************************/
+    public function solicitarAmpliacion(Request $req)
+    {
         try {
-            $validator = Validator::make($req->all(),trans('validation.solicitudes.ampliacion'),trans('validation.solicitudes.ampliacion.messages'));
-            if($validator->fails())
-                return response()->json(['success' => false,'message' => $validator->errors()->first()], 400);
+            $validator = Validator::make($req->all(), trans('validation.solicitudes.ampliacion'), trans('validation.solicitudes.ampliacion.messages'));
+            if ($validator->fails())
+                return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
             $user = $req->user();
             $cliente = $user->cliente;
             $cliente['email'] = $user['email'];
@@ -285,11 +303,11 @@ class SolicitudesController extends Controller
             $datosAenviar['empresa_ciudad_id'] = $ciudad_empresa->codigo;
 
 
-            $ampliacion = (object) $this->ampliacionEnInfinita($datosAenviar,$lineaSolicitada,$nroCuenta,$fotoIngreso,$fotoAnde);
-            SupabaseService::LOG('core_ampliacion_176',$ampliacion);
-            if(!$ampliacion->success){
-                SupabaseService::LOG('core_ampliacion_178',$ampliacion);
-                return response()->json(['success'=>false,'message'=>$ampliacion->message],400);
+            $ampliacion = (object) $this->ampliacionEnInfinita($datosAenviar, $lineaSolicitada, $nroCuenta, $fotoIngreso, $fotoAnde);
+            SupabaseService::LOG('core_ampliacion_176', $ampliacion);
+            if (!$ampliacion->success) {
+                SupabaseService::LOG('core_ampliacion_178', $ampliacion);
+                return response()->json(['success' => false, 'message' => $ampliacion->message], 400);
             }
 
 
@@ -297,16 +315,15 @@ class SolicitudesController extends Controller
                 'cliente_id' => $cliente->id,
                 'codigo' => $ampliacion->codigo,
                 'estado' => $ampliacion->estado,
-                'estado_id'=> 3,
-                'importe'=>$lineaSolicitada,
+                'estado_id' => 3,
+                'importe' => $lineaSolicitada,
                 'tipo' => 3
             ]);
-            return response()->json(['success'=>true,'message'=>'La ampliación de la línea ha ingresado con éxito.']);
-
+            return response()->json(['success' => true, 'message' => 'La ampliación de la línea ha ingresado con éxito.']);
         } catch (\Throwable $th) {
             Log::error($th);
-            SupabaseService::LOG('core_ampliacion_194',$th->getMessage());
-            return response()->json(['success'=>false,'message'=>'Error de servidor']);
+            SupabaseService::LOG('core_ampliacion_194', $th->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error de servidor']);
         }
     }
 
@@ -316,32 +333,33 @@ class SolicitudesController extends Controller
 
     /******************************************************
      * ADICIONAL AGREGAR adiciona adi adicional solicitar adicional
-    *******************************************************/
+     *******************************************************/
 
-    public function agregarAdicional(Request $req){
+    public function agregarAdicional(Request $req)
+    {
         try {
 
-            $validator = Validator::make($req->all(),trans('validation.solicitudes.adicional'),trans('validation.solicitudes.adicional.messages'));
-            if($validator->fails())
-                return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+            $validator = Validator::make($req->all(), trans('validation.solicitudes.adicional'), trans('validation.solicitudes.adicional.messages'));
+            if ($validator->fails())
+                return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-            $adicional = Adicional::where('cedula',$req->cedula)->first();
-            if($adicional)
-                return response()->json(['success'=>false,'message'=>'Adicional ya existe en la base de datos'], 400);
+            $adicional = Adicional::where('cedula', $req->cedula)->first();
+            if ($adicional)
+                return response()->json(['success' => false, 'message' => 'Adicional ya existe en la base de datos'], 400);
 
 
-            $nombres = $this->separarNombres( $req->nombres );
-            $apellidos = $this->separarNombres( $req->apellidos );
+            $nombres = $this->separarNombres($req->nombres);
+            $apellidos = $this->separarNombres($req->apellidos);
 
             $datoDelAdicional = [
-                'cedula'=>$req->cedula,
-                'nombre1'=>$nombres[0],
-                'nombre2'=>$nombres[1],
-                'apellido1'=>$apellidos[0],
-                'apellido2'=>$apellidos[1],
-                'limite'=>(int)$req->limite,
-                'telefono'=>$req->celular,
-                'direccion'=>$req->direccion
+                'cedula' => $req->cedula,
+                'nombre1' => $nombres[0],
+                'nombre2' => $nombres[1],
+                'apellido1' => $apellidos[0],
+                'apellido2' => $apellidos[1],
+                'limite' => (int)$req->limite,
+                'telefono' => $req->celular,
+                'direccion' => $req->direccion
             ];
 
             $user = $req->user();
@@ -350,51 +368,51 @@ class SolicitudesController extends Controller
 
             $tarjetasConsultas = new CuentasPrivate();
             $tarjetas = $tarjetasConsultas->tarjetaBlupyDigital($cliente->cedula);
-            if($tarjetas === null)
-                return response()->json(['success'=>false,'message'=>'Error tarjeta no encontrada'],404);
+            if ($tarjetas === null)
+                return response()->json(['success' => false, 'message' => 'Error tarjeta no encontrada'], 404);
 
             $tarjetaObject = (object) $tarjetas;
 
-            if((string)$req->cuenta !== $tarjetaObject->cuenta)
-                return response()->json(['success'=>false,'message'=>'Error tarjeta no pertenece a cuenta'],403);
+            if ((string)$req->cuenta !== $tarjetaObject->cuenta)
+                return response()->json(['success' => false, 'message' => 'Error tarjeta no pertenece a cuenta'], 403);
 
 
 
-            if($tarjetaObject->linea < (int)$req->limite)
-                return response()->json(['success'=>false,'message'=>'Error, limite excedido'],403);
+            if ($tarjetaObject->linea < (int)$req->limite)
+                return response()->json(['success' => false, 'message' => 'Error, limite excedido'], 403);
 
 
 
-            $infinitaAdicional = $this->adicionalEnInfinita($cliente,$datoDelAdicional,$req->cuenta);
+            $infinitaAdicional = $this->adicionalEnInfinita($cliente, $datoDelAdicional, $req->cuenta);
 
-            if( ! $infinitaAdicional->success ){
-                return response()->json(['success'=>false,'message'=>$infinitaAdicional->message],400);
+            if (! $infinitaAdicional->success) {
+                return response()->json(['success' => false, 'message' => $infinitaAdicional->message], 400);
             }
             $res = $infinitaAdicional->results;
 
             Adicional::create([
-                'cliente_id'=>$cliente->id,
-                'cedula'=>$req->cedula,
-                'nombres'=>$req->nombres,
-                'celular'=>$req->celular,
-                'apellidos'=>$req->apellidos,
-                'limite'=>$req->limite,
-                'direccion'=>$req->direccion,
-                'cuenta'=>$req->cuenta
+                'cliente_id' => $cliente->id,
+                'cedula' => $req->cedula,
+                'nombres' => $req->nombres,
+                'celular' => $req->celular,
+                'apellidos' => $req->apellidos,
+                'limite' => $req->limite,
+                'direccion' => $req->direccion,
+                'cuenta' => $req->cuenta
             ]);
 
             SolicitudCredito::create([
                 'cliente_id' => $cliente->id,
                 'codigo' => $res->solicitudId,
                 'estado' => trim($res->solicitudEstado),
-                'estado_id'=> 3,
-                'importe'=>$req->limite,
+                'estado_id' => 3,
+                'importe' => $req->limite,
                 'tipo' => 2
             ]);
-            return response()->json(['success'=>true,'message'=>'Adicional ingresado correctamente','tarjetas'=>$tarjetas]);
+            return response()->json(['success' => true, 'message' => 'Adicional ingresado correctamente', 'tarjetas' => $tarjetas]);
         } catch (\Throwable $th) {
-            SupabaseService::LOG('error_adicional',$th->getMessage());
-            return response()->json(['success'=>false,'message'=>'Error de servidor'],500);
+            SupabaseService::LOG('error_adicional', $th->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error de servidor'], 500);
         }
     }
 
@@ -402,10 +420,11 @@ class SolicitudesController extends Controller
 
 
 
-    private function verificarSolicitud ($id) : bool{
-        $verificarSolicitud = SolicitudCredito::where('cliente_id',$id)->where('tipo',1)->latest()->first();
+    private function verificarSolicitud($id): bool
+    {
+        $verificarSolicitud = SolicitudCredito::where('cliente_id', $id)->where('tipo', 1)->latest()->first();
 
-        if($verificarSolicitud){
+        if ($verificarSolicitud) {
             $fechaActual = Carbon::now();
             $fechaCarbon = Carbon::parse($verificarSolicitud->created_at);
             $diferenciaEnDias = $fechaCarbon->diffInDays($fechaActual);
@@ -413,7 +432,4 @@ class SolicitudesController extends Controller
         }
         return true;
     }
-
-
-
 }
