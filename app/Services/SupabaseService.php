@@ -37,8 +37,8 @@ class SupabaseService
     public static function uploadImageSelfies($fileName,$imagePath,$imageType)
     {
         try {
-
-                $supabaseApiUrl = env('SUPABASE_URL'). "/storage/v1/object/selfies/".$fileName;
+               $name = time().'_'.$fileName;
+                $supabaseApiUrl = env('SUPABASE_URL'). "/storage/v1/object/selfies/".$name;
 
                 $response = Http::withHeaders([
                     'apikey' => env('SUPABASE_API_KEY'),
@@ -49,11 +49,11 @@ class SupabaseService
                     $fileName,
                     ['Content-Type' => 'image/' . $imageType]
                 )->post($supabaseApiUrl);
-                Log::info($response);
+
             return true;
         } catch (\Throwable $th) {
+            Log::error($th->getMessage());
             throw $th;
-           Log::error($th->getMessage());
         }
     }
 
