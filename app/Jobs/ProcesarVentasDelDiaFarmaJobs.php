@@ -33,7 +33,7 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
     {
         try {
             $farmaService = new FarmaService();
-            $res = $farmaService->ventasRendidas($this->fecha);
+            $res = $farmaService->ventasDeFecha($this->fecha);
             $data = (object) $res['data'];
 
             if (property_exists($data, 'result')) {

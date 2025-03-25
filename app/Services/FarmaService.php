@@ -53,6 +53,9 @@ class FarmaService
     public function ventasRendidas($fecha){
         return $this->get('ventas/deldia',['fecha'=>$fecha]);
     }
+    public function ventasDeFecha($fecha){
+        return $this->get('ventas/deldia-cubo',['fecha'=>$fecha]);
+    }
     public function ventasRendidasPorCliente($fecha,$documento){
         return $this->get('ventas/porcliente',['fecha'=>$fecha,'documento'=>$documento]);
     }
