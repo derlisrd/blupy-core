@@ -153,6 +153,7 @@ class VentasController extends Controller
     {
         // Una sola consulta para obtener todos los acumulados por forma_codigo
         $acumuladosPorForma = Venta::select('forma_codigo', DB::raw('SUM(importe_final) as total'))
+            ->where('operacion','<>','DEVO')
             ->groupBy('forma_codigo')
             ->get()
             ->keyBy('forma_codigo');
@@ -163,6 +164,7 @@ class VentasController extends Controller
             DB::raw('CASE WHEN adicional IS NULL THEN "funcionarios" ELSE "alianzas" END as tipo'),
             DB::raw('SUM(importe_final) as total')
         )
+            ->where('operacion','<>','DEVO')
             ->where('forma_codigo', '129')
             ->groupBy('forma_codigo', DB::raw('CASE WHEN adicional IS NULL THEN "funcionarios" ELSE "alianzas" END'))
             ->get();
