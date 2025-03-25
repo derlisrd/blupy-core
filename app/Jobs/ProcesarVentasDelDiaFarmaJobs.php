@@ -67,7 +67,7 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
                             'cliente_id' => $cliente_id,
                             'codigo' => $venta['ventCodigo'],
                             'documento' => $venta['cedula'],
-                            'adicional' => $venta['codigoAdicional'],
+                            'adicional' => $venta['clieCodigoAdicional'],
                             'factura_numero' => $venta['ventNumero'],
                             'importe' => $venta['ventTotBruto'],
                             'descuento' => $venta['ventTotDescuento'],
