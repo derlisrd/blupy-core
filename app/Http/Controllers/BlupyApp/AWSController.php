@@ -106,7 +106,7 @@ class AWSController extends Controller
                 'message'=>$message
             ],$status);
         } catch (\Throwable $th) {
-            Log::error($th);
+            Log::error($th->getMessage());
             return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
         }
     }
@@ -179,7 +179,7 @@ class AWSController extends Controller
             ]);
         }
         catch (\Throwable $th) {
-            Log::error($th);
+            Log::error($th->getMessage());
             return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
         }
     }
@@ -246,7 +246,7 @@ class AWSController extends Controller
             ]);
         }
         catch (\Throwable $th) {
-            Log::error($th);
+            Log::error($th->getMessage());
             return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
         }
 
