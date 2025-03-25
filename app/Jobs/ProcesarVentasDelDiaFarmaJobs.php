@@ -62,24 +62,24 @@ class ProcesarVentasDelDiaFarmaJobs implements ShouldQueue
                             ->format('Y-m-d H:i:s');
 
                         $cliente_id = $clientes[$venta['cedula']] ?? null;
-                        $importe = $venta['ticoCodigo'] == 'FADE' ? $venta['ventTotNeto'] : $venta['ventTotNeto'] * (-1);
+                        $importe = $venta['ventOperacion'] == 'VENT' ? $venta['ventTotNeto'] : $venta['ventTotNeto'] * (-1);
                         $insertData[] = [
                             'cliente_id' => $cliente_id,
                             'codigo' => $venta['ventCodigo'],
                             'documento' => $venta['cedula'],
-                            'adicional' => $venta['clieCodigoAdicional'],
+                            'adicional' => $venta['codigoAdicional'],
                             'factura_numero' => $venta['ventNumero'],
                             'importe' => $venta['ventTotBruto'],
                             'descuento' => $venta['ventTotDescuento'],
                             'importe_final' => $importe,
-                            'forma_pago' => $venta['frpaAbreviatura'],
+                            'forma_pago' => $venta['frpaDescripcion'],
                             'forma_codigo' => $venta['frpaCodigo'],
                             'descripcion' => null,
-                            'operacion' => $venta['ticoCodigo'],
+                            'operacion' => $venta['ventOperacion'],
                             'sucursal' => $venta['estrDescripcion'],
                             'codigo_sucursal' => $venta['estrCodigo'],
                             'fecha' => $fechaFormateada,
-                            'forma_venta' => $venta['ventTipo'],
+                            'forma_venta' => $venta['ventOperacion'],
                             'created_at' => now(),
                             'updated_at' => now(),
                         ];
