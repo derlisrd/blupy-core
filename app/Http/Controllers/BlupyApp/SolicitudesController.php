@@ -321,9 +321,10 @@ class SolicitudesController extends Controller
             ]);
             return response()->json(['success' => true, 'message' => 'La ampliación de la línea ha ingresado con éxito.']);
         } catch (\Throwable $th) {
-            Log::error($th);
+            //Log::error($th);
             SupabaseService::LOG('core_ampliacion_194', $th->getMessage());
-            return response()->json(['success' => false, 'message' => 'Error de servidor']);
+
+            return response()->json(['success' => false, 'message' => 'Error de servidor. Contacto con atención al cliente'],500);
         }
     }
 
