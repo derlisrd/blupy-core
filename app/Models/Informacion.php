@@ -20,5 +20,8 @@ class Informacion extends Model
         'active',
         'leido',
         'general',
+        'aso',
+        'farma',
+        'digital'
     ];
 }
