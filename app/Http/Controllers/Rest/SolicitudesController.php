@@ -82,6 +82,7 @@ class SolicitudesController extends Controller
                     'Su contrato está activo, su línea está lista para usarse.',
                     []
                 );
+                Cliente::where('id', $solicitud->cliente_id)->update(['digital' => 1]);
                 $info = Informacion::where('user_id', $user->id)->where('codigo_info', 1)->first();
                 $info->delete();
             }

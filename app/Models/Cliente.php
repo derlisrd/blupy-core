@@ -58,6 +58,7 @@ class Cliente extends Model
         'antiguedad_laboral_mes',
         'empresa_email',
         'asofarma',
+        'digital',
         'funcionario',
         'extranjero',
         'solicitud_credito',
