@@ -119,7 +119,7 @@ trait RegisterTraits
         }
     }
 
-    public function userInfo($cliente,string $token, array $tarjetas, bool $esAdicional, $info = null){
+    public function userInfo($cliente,string $token, array $tarjetas, bool $esAdicional){
         return [
             'adicional'=>$esAdicional,
             'cliid'=>$cliente->cliid,
@@ -141,8 +141,7 @@ trait RegisterTraits
             'token'=>'Bearer '.$token,
             'tokenRaw'=>$token,
             'changepass'=>$cliente->user->changepass,
-            'tarjetas'=>$tarjetas ?? [],
-            'info'=>$info
+            'tarjetas'=>$tarjetas ?? []
         ];
     }
 

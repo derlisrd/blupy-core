@@ -228,7 +228,7 @@ class AuthController extends Controller
                         'success' => true,
                         'message' => 'Ha ingresado',
                         'id' => null,
-                        'results' => $this->userInfo($cliente, $token, $tarjetas, $esAdicional,$user->info)
+                        'results' => $this->userInfo($cliente, $token, $tarjetas, $esAdicional)
                     ]
                 );
             }
