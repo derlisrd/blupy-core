@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class UpdatePerfilDigital implements ShouldQueue
 {
@@ -30,13 +31,18 @@ class UpdatePerfilDigital implements ShouldQueue
     {
 
         // Procesar en chunks para evitar problemas de memoria
+       try {
         Cliente::chunk(100, function ($clientes) {
             foreach ($clientes as $cliente) {
                 // Despachamos un job individual por cada cliente
                 UpdatePerfilDigitalInidividual::dispatch($cliente);
             }
         });
+       } catch (\Throwable $th) {
+        Log::error('Error en el proceso de actualización de perfiles digitales: ' . $th->getMessage());
+        throw $th;
+       }
 
-        SupabaseService::LOG('Job de distribución de clientes digitales completado','completado');
+
     }
 }
