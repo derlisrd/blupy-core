@@ -141,7 +141,8 @@ trait RegisterTraits
             'token'=>'Bearer '.$token,
             'tokenRaw'=>$token,
             'changepass'=>$cliente->user->changepass,
-            'tarjetas'=>$tarjetas ?? []
+            'tarjetas'=>$tarjetas ?? [],
+            'digital'=>$cliente->digital,
         ];
     }
 

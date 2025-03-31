@@ -176,11 +176,6 @@ class AuthController extends Controller
 
             $version = $req->version ?? null;
 
-            if($version == '2.5.8' || $version == '2.6.0') {
-                return response()->json(['success' => false, 'message' => 'Por favor actualice su app para mayor seguridad'], 400);
-            }
-
-
             $user =  $cliente->user;
 
             if ($user->active == 0) return response()->json(['success' => false, 'message' => 'Cuenta inhabilitada o bloqueada temporalmente. Contacte con soporte.'], 400);
