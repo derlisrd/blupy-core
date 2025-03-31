@@ -22,7 +22,8 @@ class InformacionesController extends Controller
             'results'=>[
                 'general'=>$general,
                 'user' =>$user->info(),
-                'digital'=>$digital
+                'digital'=>$digital,
+                'aso'=>null
             ]
         ]);
     }

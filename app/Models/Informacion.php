@@ -24,4 +24,8 @@ class Informacion extends Model
         'farma',
         'digital'
     ];
+    /* protected $hidden = [
+        'created_at',
+        'updated_at'
+    ]; */
 }
