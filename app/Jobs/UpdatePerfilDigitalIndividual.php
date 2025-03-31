@@ -16,7 +16,6 @@ class UpdatePerfilDigitalInidividual implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $cliente;
-    protected $infinitaService;
 
     // Configuración de reintentos
     public $tries = 3;
@@ -25,10 +24,9 @@ class UpdatePerfilDigitalInidividual implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(Cliente $cliente, InfinitaService $infinitaService = null)
+    public function __construct(Cliente $cliente)
     {
         $this->cliente = $cliente;
-        $this->infinitaService = $infinitaService;
     }
 
     /**
@@ -37,13 +35,12 @@ class UpdatePerfilDigitalInidividual implements ShouldQueue
     public function handle(): void
     {
         try {
-            // Si no se pasó el servicio, lo creamos
-            if (!$this->infinitaService) {
-                $this->infinitaService = new InfinitaService();
-            }
+
+            $infinitaService = new InfinitaService();
+
 
             // Verificamos con InfinitaService
-            $res = $this->infinitaService->ListarTarjetasPorDoc($this->cliente->cedula);
+            $res = $infinitaService->ListarTarjetasPorDoc($this->cliente->cedula);
 
             // Convertimos a objeto
             $data = (object)$res['data'];

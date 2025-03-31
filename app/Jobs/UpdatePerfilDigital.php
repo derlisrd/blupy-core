@@ -28,13 +28,12 @@ class UpdatePerfilDigital implements ShouldQueue
      */
     public function handle(): void
     {
-        $infinita = new InfinitaService();
 
         // Procesar en chunks para evitar problemas de memoria
-        Cliente::chunk(100, function ($clientes) use ($infinita) {
+        Cliente::chunk(100, function ($clientes) {
             foreach ($clientes as $cliente) {
                 // Despachamos un job individual por cada cliente
-                UpdatePerfilDigitalInidividual::dispatch($cliente, $infinita);
+                UpdatePerfilDigitalInidividual::dispatch($cliente);
             }
         });
 
