@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Rest;
 use App\Http\Controllers\Controller;
 use App\Jobs\ActualizarSucursalesFarmaJobs;
 use App\Jobs\ProcesarVentasDelDiaFarmaJobs;
+use App\Jobs\UpdatePerfilDigital;
 use App\Jobs\UpdatePerfilJobs;
+use App\Services\InfinitaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -36,6 +38,11 @@ class JobsManualesController extends Controller
             return response()->json(['success'=>false,'message' => $validator->errors()->first()], 400);
 
         ProcesarVentasDelDiaFarmaJobs::dispatch($request->fecha);
+        return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar ventas']);
+    }
+
+    public function updateClienteDigital(){
+        UpdatePerfilDigital::dispatch();
         return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar ventas']);
     }
 }
