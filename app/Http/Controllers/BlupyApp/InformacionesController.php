@@ -14,12 +14,15 @@ class InformacionesController extends Controller
         ->where('general',1)
         ->latest()->first();
 
+        $digital = Informacion::where('active',1)->where('digital',1)->latest()->first();
+
         return response()->json([
             'success'=>true,
             'message'=>'',
             'results'=>[
                 'general'=>$general,
-                'user' =>$user->info()
+                'user' =>$user->info(),
+                'digital'=>$digital
             ]
         ]);
     }
