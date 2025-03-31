@@ -30,35 +30,14 @@ class UpdatePerfilDigital implements ShouldQueue
     {
         $infinita = new InfinitaService();
 
-        // Obtenemos todos los clientes
-        $clientes = Cliente::all();
-
-        foreach ($clientes as $cliente) {
-            try {
-                // Verificamos con InfinitaService usando la cédula del cliente
-                $res = $infinita->ListarTarjetasPorDoc($cliente->cedula);
-
-                // Convertimos a objeto para usar property_exists
-                $data = (object)$res['data'];
-
-                // Actualizamos el campo digital según la respuesta
-                if (property_exists($data, 'Tarjetas') && !empty($data->Tarjetas)) {
-                    $cliente->digital = 1;
-                } else {
-                    $cliente->digital = 0;
-                }
-
-                $cliente->save();
-
-                // Opcional: agrega un pequeño delay para no sobrecargar el servicio externo
-                sleep(1);
-
-            } catch (\Exception $e) {
-                // Log del error y continuamos con el siguiente cliente
-                SupabaseService::LOG('Error al procesar cliente ID: ' . $cliente->id , $e->getMessage());
+        // Procesar en chunks para evitar problemas de memoria
+        Cliente::chunk(100, function ($clientes) use ($infinita) {
+            foreach ($clientes as $cliente) {
+                // Despachamos un job individual por cada cliente
+                UpdatePerfilDigitalInidividual::dispatch($cliente, $infinita);
             }
-        }
+        });
 
-        SupabaseService::LOG('Job de actualización de clientes digitales completado', 'info');
+        SupabaseService::LOG('Job de distribución de clientes digitales completado','completado');
     }
 }
