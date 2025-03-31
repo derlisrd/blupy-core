@@ -3,8 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\Cliente;
-use App\Services\InfinitaService;
-use App\Services\SupabaseService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,7 +33,7 @@ class UpdatePerfilDigital implements ShouldQueue
         Cliente::chunk(100, function ($clientes) {
             foreach ($clientes as $cliente) {
                 // Despachamos un job individual por cada cliente
-                UpdatePerfilDigitalInidividual::dispatch($cliente);
+                UpdatePerfilDigitalIndividual::dispatch($cliente);
             }
         });
        } catch (\Throwable $th) {
