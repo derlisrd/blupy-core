@@ -11,6 +11,7 @@ use App\Models\Device;
 use App\Models\User;
 use App\Services\NotificationService;
 use App\Services\PushExpoService;
+use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -34,6 +35,7 @@ class NotificacionesController extends Controller
                 'body' => $req->body,
                 'type' => $toDevice->os,
             ]);
+            SupabaseService::LOG('devitoken',$toDevice->devicetoken);
             $expoService = new PushExpoService();
             $expoService->send(
                 [$toDevice->notitoken],
