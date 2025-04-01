@@ -49,8 +49,8 @@ class CuentasController extends Controller
 
     public function tarjetas(string $cedula, int $extranjero, string $codigo_farma){
         $results = [];
-        $resInfinita = (object) $this->infinitaService->ListarTarjetasPorDoc($cedula);
-        $infinita = (object)$resInfinita->data;
+        $resInfinita =  $this->infinitaService->ListarTarjetasPorDoc($cedula);
+        $infinita = (object)$resInfinita['data'];
         if(property_exists( $infinita,'Tarjetas')){
             foreach ($infinita->Tarjetas as $val) {
                 array_push($results, [
@@ -111,7 +111,7 @@ class CuentasController extends Controller
                             'cuenta' => null,
                             'bloqueo'=> false,
                             'numeroTarjeta'=>null,
-                            'linea' => $val['limiteCreditoTotal'],
+                            'linea' => $val['clerLimiteCredito'] + $val['clerLimiteCreditoAdic'], //$val['limiteCreditoTotal'],
                             'pagoMinimo'=> null,
                             'deuda' => $val['pendiente'],
                             'disponible' => $val['saldoDisponible'],

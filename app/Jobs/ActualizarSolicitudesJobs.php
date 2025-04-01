@@ -2,11 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\Cliente;
 use App\Models\SolicitudCredito;
-use App\Models\Tarjeta;
 use App\Services\InfinitaService;
-use App\Services\SupabaseService;
 use App\Traits\SolicitudesInfinitaTraits;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
