@@ -114,7 +114,7 @@ class CuentasController extends Controller
                             'linea' => $val['clerLimiteCredito'] + $val['clerLimiteCreditoAdic'], //$val['limiteCreditoTotal'],
                             'pagoMinimo'=> null,
                             'deuda' => $val['pendiente'],
-                            'disponible' => $val['saldoDisponible'],
+                            'disponible' => ($val['clerLimiteCredito'] + $val['clerLimiteCreditoAdic']) - $val['pendiente'],//$val['saldoDisponible'],
                             'alianzas' => $alianzas
                         ]);
                     //}
