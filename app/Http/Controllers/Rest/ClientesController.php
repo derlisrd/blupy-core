@@ -236,6 +236,7 @@ class ClientesController extends Controller
 
         return response()->json([
             'success' => true,
+            'results' => $user,
             'message' => 'Estado actualizado'
         ]);
     }
