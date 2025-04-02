@@ -221,7 +221,7 @@ class ClientesController extends Controller
     ACTIVAR USUARIO
     ==============================================================================================================
     */
-    public function activar(Request $request)
+    public function cambiarEstado(Request $request)
     {
         $validator = Validator::make($request->all(), ['id' => 'required|exists:users,id']);
         if ($validator->fails())
@@ -231,12 +231,12 @@ class ClientesController extends Controller
         if (!$user)
             return response()->json(['success' => false, 'message' => 'Usuario no existe'], 404);
 
-        $user->active = 1;
+        $user->active = !$user->active;
         $user->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Cambiado !'
+            'message' => 'Estado actualizado'
         ]);
     }
 

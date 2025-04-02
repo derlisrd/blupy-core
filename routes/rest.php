@@ -33,6 +33,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
         Route::get('/buscar',[ClientesController::class,'buscar'])->name('rest_clientes_buscar');
         Route::get('/ficha/{id}',[ClientesController::class,'ficha'])->name('rest_cliente_ficha');
         Route::put('/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])->name('rest_cliente_restablecer_contrasena');
+        Route::put('/estado',[ClientesController::class,'cambiarEstado'])->name('rest_cliente_cambiar_estado');
     });
 
     Route::prefix('micredito')->group(function(){
