@@ -110,7 +110,7 @@ class CuentasController extends Controller
             $user = $req->user();
             $fechaActual = Carbon::now();
             $periodo = isset($req->periodo) ? $req->periodo : $fechaActual->format('m-Y');
-            if(isset($req->cuenta)){
+            if(isset($req->cuenta) && $req->cuenta !== null){
                 //infinita
                 $resInfinita = (object) $this->infinitaService->movimientosPorFecha($req->cuenta,$periodo,$req->numero_tarjeta);
                 $infinita = (object) $resInfinita->data;
@@ -160,7 +160,7 @@ class CuentasController extends Controller
         } catch (\Throwable $th) {
             //SupabaseService::LOG('movimientos',$th);
             throw $th;
-            Log::error($th);
+            Log::error($th->getMessage());
         }
     }
 
