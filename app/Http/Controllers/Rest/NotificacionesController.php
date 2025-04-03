@@ -103,7 +103,8 @@ class NotificacionesController extends Controller
                 'title' => $req->title,
                 'text' => $req->text
             ];
-            $expoDigital = User::where('digital',1)
+            $expoDigital = Cliente::join('users','users.cliente_id','=','clientes.id')
+            ->where('clientes.digital',1)
             ->join('devices','users.id','=','devices.user_id')
             //->select('devices.devicetoken','devices.notitoken')
             ->pluck('notitoken')->toArray();
