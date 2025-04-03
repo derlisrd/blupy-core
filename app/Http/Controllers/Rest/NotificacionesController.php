@@ -86,7 +86,8 @@ class NotificacionesController extends Controller
             PushNativeJobs::dispatch($req->title,$req->text,$iosDevices,'ios')->onConnection('database');
             return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano']);
         } catch (\Throwable $th) {
-            throw $th;
+            //throw $th;
+            return response()->json(['success' => false, 'message' => 'Error al enviar notificaciones: ' . $th->getMessage()], 500);
         }
     }
 
@@ -107,7 +108,7 @@ class NotificacionesController extends Controller
             ->where('clientes.digital',1)
             ->join('devices','users.id','=','devices.user_id')
             //->select('devices.devicetoken','devices.notitoken')
-            ->pluck('notitoken')->toArray();
+            ->pluck('devices.notitoken')->toArray();
             //$expotokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
 
             //NotificacionesJobs::dispatch($req->title,$req->text,$expoDigital)->onConnection('database');

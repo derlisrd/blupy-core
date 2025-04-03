@@ -159,8 +159,9 @@ class CuentasController extends Controller
 
         } catch (\Throwable $th) {
             //SupabaseService::LOG('movimientos',$th);
-            throw $th;
+            //throw $th;
             Log::error($th->getMessage());
+            return response()->json(['success'=>false,'message'=>'Ocurrió un error inesperado','results'=>[]], 500);
         }
     }
 

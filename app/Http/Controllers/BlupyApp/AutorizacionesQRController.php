@@ -88,7 +88,7 @@ class AutorizacionesQRController extends Controller
             $blupyQrService = new BlupyQrService();
             $blupy = $blupyQrService->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
-
+            $datasResults = null;
             if (property_exists($data, 'results')) {
                 $noti = new PushExpoService();
                 $tokens = $user->notitokens();
@@ -116,7 +116,7 @@ class AutorizacionesQRController extends Controller
             return response()->json([
                 'success' => $data->success,
                 'message' => $data->message,
-                'results' => $data->results
+                'results' => $datasResults,
             ], $blupy['status']);
 
             return response()->json();
