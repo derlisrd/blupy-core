@@ -88,8 +88,35 @@ class NotificacionesController extends Controller
         } catch (\Throwable $th) {
             throw $th;
         }
+    }
 
+    public function difusionSelectiva(Request $req){
+        $validator = Validator::make($req->all(), [
+            'title' => 'required',
+            'text' => 'required'
+        ]);
+        if ($validator->fails())
+            return response()->json(['success'=>false,'message'=> $validator->errors()->first()], 400);
 
+        try {
+            $datos = [
+                'title' => $req->title,
+                'text' => $req->text
+            ];
+            $expoDigital = User::where('digital',1)
+            ->join('devices','users.id','=','devices.user_id')
+            //->select('devices.devicetoken','devices.notitoken')
+            ->pluck('notitoken')->toArray();
+            //$expotokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
+
+            NotificacionesJobs::dispatch($req->title,$req->text,$expoDigital)->onConnection('database');
+            /*PushNativeJobs::dispatch($req->title,$req->text,$androidDevices,'android')->onConnection('database');
+            PushNativeJobs::dispatch($req->title,$req->text,$iosDevices,'ios')->onConnection('database'); */
+            return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano']);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['success' => false, 'message' => 'Error al enviar notificaciones: ' . $th->getMessage()], 500);
+        }
     }
 
 

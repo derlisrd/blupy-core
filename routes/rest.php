@@ -47,6 +47,7 @@ Route::middleware(Authenticate::using('api'))->group(function(){
     Route::prefix('/notificacion')->group(function(){
         Route::post('/individual',[NotificacionesController::class,'individual'])->name('rest_enviar_notificacion_individual');
         Route::post('/difusion',[NotificacionesController::class,'difusion'])->name('rest_enviar_notificaciones_masivas');
+        Route::post('/difusion-selectiva',[NotificacionesController::class,'difusionSelectiva'])->name('rest_enviar_notificaciones_masivas_selectiva');
         Route::get('/ficha',[NotificacionesController::class,'ficha'])->name('rest_notificacion_ficha');
     });
 
