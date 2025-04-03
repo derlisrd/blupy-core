@@ -110,10 +110,10 @@ class NotificacionesController extends Controller
             ->pluck('notitoken')->toArray();
             //$expotokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
 
-            NotificacionesJobs::dispatch($req->title,$req->text,$expoDigital)->onConnection('database');
+            //NotificacionesJobs::dispatch($req->title,$req->text,$expoDigital)->onConnection('database');
             /*PushNativeJobs::dispatch($req->title,$req->text,$androidDevices,'android')->onConnection('database');
             PushNativeJobs::dispatch($req->title,$req->text,$iosDevices,'ios')->onConnection('database'); */
-            return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano']);
+            return response()->json(['success'=>true,'message'=>'Notificaciones enviadas en 2do plano','results'=>$expoDigital]);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(['success' => false, 'message' => 'Error al enviar notificaciones: ' . $th->getMessage()], 500);
