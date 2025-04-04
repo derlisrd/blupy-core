@@ -41,7 +41,9 @@ class VentasController extends Controller
         // Construir la consulta más eficiente
         $query = Venta::select('id', 'codigo', 'factura_numero','documento','forma_codigo','importe_final','sucursal','operacion','fecha','adicional') // Solo columnas necesarias
             ->whereBetween('fecha', [$fechaInicio, $fechaFin])
-            ->where('forma_codigo', $req->forma_codigo);
+            ->where('forma_codigo', $req->forma_codigo)
+            ->orderBy('fecha', 'desc')
+            ;
 
         // Aplicar filtro de alianza
         if ($req->alianza === '1') {
