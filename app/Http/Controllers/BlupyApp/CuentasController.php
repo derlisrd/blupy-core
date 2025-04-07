@@ -135,8 +135,8 @@ class CuentasController extends Controller
             }
             if(!isset($req->cuenta) || $req->cuenta == null || $req->cuenta == '0'){
                 //farma
-                $resFarma = (object) $this->farmaService->movimientos($user->cliente->cedula,$periodo);
-                $farma = (object) $resFarma->data;
+                $resFarma = $this->farmaService->movimientos($user->cliente->cedula,$periodo);
+                $farma = (object) $resFarma['data'];
                 if(property_exists($farma,'result')){
                     foreach($farma->result['movimientos'] as $val){
                         $date = Carbon::parse($val['evenFecha'],'UTC');

@@ -54,8 +54,8 @@ class ConsultasController extends Controller
 
     public function profesiones(){
         try {
-            $res = (object)$this->infinitaService->listarProfesiones();
-            $infinita = (object) $res->data;
+            $res = $this->infinitaService->listarProfesiones();
+            $infinita = (object) $res['data'];
             if (property_exists($infinita, 'wDato')) {
                 $results = [];
                 foreach($infinita->wDato as $val){
@@ -80,8 +80,8 @@ class ConsultasController extends Controller
 
     public function tiposLaboral(){
         try {
-            $res = (object)$this->infinitaService->listarTiposLaboral();
-            $infinita = (object) $res->data;
+            $res = $this->infinitaService->listarTiposLaboral();
+            $infinita = (object) $res['data'];
             $results = [];
             $success = false;
             $message = 'No se recuperaron registros';
