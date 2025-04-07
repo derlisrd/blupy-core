@@ -28,10 +28,10 @@ class UpdateClienteDigitalJob implements ShouldQueue
     public function handle(): void
     {
         $clientes = Cliente::where('digital',1)->select('id','cedula');
-        $infinita = new InfinitaService();
+        $infinitaService = new InfinitaService();
         foreach ($clientes->get() as $cliente) {
-            $digital = $infinita->ListarTarjetasPorDoc($cliente->cedula);
-            $infinita = (object)$digital['data'];
+            $resInfinita = $infinitaService->ListarTarjetasPorDoc($cliente['cedula']);
+            $infinita = (object)$resInfinita['data'];
             $existe = 0;
             if(property_exists( $infinita,'Tarjetas')){
                 $existe = 1;

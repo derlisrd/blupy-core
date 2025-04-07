@@ -45,8 +45,8 @@ class ClienteController extends Controller
         $results = [];
         $cedula = $req->cedula;
         $infinitaService = new InfinitaService();
-        $resInfinita = (object) $infinitaService->ListarTarjetasPorDoc($cedula);
-        $infinita = (object)$resInfinita->data;
+        $resInfinita = $infinitaService->ListarTarjetasPorDoc($cedula);
+        $infinita = (object)$resInfinita['data'];
         if(property_exists( $infinita,'Tarjetas')){
             foreach ($infinita->Tarjetas as $val) {
                 array_push($results, [
