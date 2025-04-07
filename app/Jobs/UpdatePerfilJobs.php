@@ -18,6 +18,8 @@ class UpdatePerfilJobs implements ShouldQueue
     /**
      * Create a new job instance.
      */
+    public $timeout = 120;
+
     public function __construct()
     {
         //

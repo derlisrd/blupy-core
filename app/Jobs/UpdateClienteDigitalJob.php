@@ -32,10 +32,12 @@ class UpdateClienteDigitalJob implements ShouldQueue
         foreach ($clientes->get() as $cliente) {
             $digital = $infinita->ListarTarjetasPorDoc($cliente->cedula);
             $infinita = (object)$digital['data'];
+            $existe = 0;
             if(property_exists( $infinita,'Tarjetas')){
-                $cliente->digital = 1;
-                $cliente->save();
+                $existe = 1;
             }
+            $cliente->digital = $existe;
+            $cliente->save();
         }
     }
 }
