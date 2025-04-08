@@ -29,8 +29,8 @@ class PdfController extends Controller
             'cuenta' => $req->cuenta,
         ];
 
-        $pdf = Pdf::loadView('pdf.recibo', $data);
-        return $pdf->download('invoice.pdf');
-
+        //$pdf = Pdf::loadView('pdf.recibo', $data);
+        //return $pdf->download('invoice.pdf');
+        return response()->json(['success'=>true,'message'=>'Recibo generado correctamente.']);
     }
 }
