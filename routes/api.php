@@ -11,6 +11,7 @@ use App\Http\Controllers\BlupyApp\DeviceController;
 use App\Http\Controllers\BlupyApp\FarmaController;
 use App\Http\Controllers\BlupyApp\InformacionesController;
 use App\Http\Controllers\BlupyApp\NotificacionesController;
+use App\Http\Controllers\BlupyApp\PdfController;
 use App\Http\Controllers\BlupyApp\QRController;
 use App\Http\Controllers\BlupyApp\SolicitudesController;
 use App\Http\Controllers\BlupyApp\UserController as UserPrivate;
@@ -103,6 +104,10 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/mis-adicionales-tarjeta',[ClienteController::class,'tarjeta'])->name('api_mis_adicionales_tarjetas');
 
     Route::post('/vincular-vendedor',[VendedorController::class,'vincular'])->name('api_vincular_vendedor');
+
+    Route::prefix('pdf')->group(function(){
+        Route::get('/recibo',[PdfController::class,'recibo'])->name('api_recibos');
+    });
 });
 
 

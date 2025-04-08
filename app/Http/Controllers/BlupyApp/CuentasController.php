@@ -128,7 +128,8 @@ class CuentasController extends Controller
                             'detalles'=> $val['TcMovDes'],
                             'fecha'=>$fecha,
                             'hora'=>$hora,
-                            'monto'=>(int) $val['TcMovImp']
+                            'monto'=>(int) $val['TcMovImp'],
+                            'numero'=>$val['TcMovNro'],
                         ]);
                     }
                 }
