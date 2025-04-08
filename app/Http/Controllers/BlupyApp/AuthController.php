@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
 use App\Services\SupabaseService;
+use App\Services\TigoSmsService;
 use App\Traits\Helpers;
 use App\Traits\RegisterTraits;
 use Illuminate\Http\Request;
@@ -196,12 +197,13 @@ class AuthController extends Controller
                     if (!$dispositoDeConfianza) {
                         SupabaseService::LOG('newDevice', $req->cedula);
                         $pistaEmail =  $user->email; //$this->ocultarParcialmenteEmail($user->email);
-                        $idValidacion = $this->enviarEmaildispositivoInusual($user->email, $cliente->id, $req);
+                        $pistaDeNumero = $this->ocultarParcialmenteTelefono($cliente->celular);
+                        $idValidacion = $this->enviarSMSyEmaildispositivoInusual($user->email,$cliente->celular, $cliente->id, $req);
                         return response()->json([
                             'success' => true,
                             'results' => null,
                             'id' => $idValidacion,
-                            'message' => 'Código enviado a ' . $pistaEmail . ' , puede tardar unos minutos. Revisa también el spam o correo no deseado.'
+                            'message' => 'Necesitamos asociar tu cuenta es este dispositivo. PIN enviado a ' . $pistaDeNumero . ' , puede tardar unos minutos. Revisa también tu correo.'
                         ]);
                     }
                     $dispositoDeConfianza->update([
@@ -301,7 +303,7 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'message' => 'Su cuenta ha sido desactivada correctamente']);
     }
 
-    private function enviarEmaildispositivoInusual($email, $clienteId, $req)
+    private function enviarSMSyEmaildispositivoInusual($email,$celular, $clienteId, $req)
     {
         $randomNumber = random_int(100000, 999999);
         $emailService = new EmailService();
@@ -311,6 +313,11 @@ class AuthController extends Controller
             'model' => $req->model,
             'ip' => $req->ip()
         ];
+        $mensaje =   $randomNumber . ' es tu PIN de BLUPY. No lo compartas con nadie.';
+        $numero = str_replace('+595', '0', $celular);
+        $tigoService = new TigoSmsService();
+        $tigoService->enviarSms($numero, $mensaje);
+
         $emailService->enviarEmail($email, "[" . $randomNumber . "]Blupy confirmar dispositivo", 'email.validarDispositivo', $datos);
         $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 0, 'email' => $email, 'cliente_id' => $clienteId, 'origen' => 'dispositivo']);
         return $validacion->id;
