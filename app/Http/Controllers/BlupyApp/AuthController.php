@@ -15,6 +15,7 @@ use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
 use App\Traits\Helpers;
 use App\Traits\RegisterTraits;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
@@ -313,7 +314,8 @@ class AuthController extends Controller
             'model' => $req->model,
             'ip' => $req->ip()
         ];
-        $mensaje =   $randomNumber . ' es tu PIN de BLUPY. No lo compartas con nadie.';
+        $hora = Carbon::now()->format('H:i');
+        $mensaje =   $randomNumber . ' es tu PIN de BLUPY. No lo compartas con nadie. ' . $hora;
         $numero = str_replace('+595', '0', $celular);
         $tigoService = new TigoSmsService();
         $tigoService->enviarSms($numero, $mensaje);
