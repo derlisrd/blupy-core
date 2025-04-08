@@ -108,7 +108,9 @@ class NotificacionesController extends Controller
             ->where('clientes.digital',1)
             ->join('devices','users.id','=','devices.user_id')
             //->select('devices.devicetoken','devices.notitoken')
-            ->pluck('devices.notitoken')->toArray();
+            ->whereNotNull('notitoken')
+            ->pluck('devices.notitoken')
+            ->toArray();
             //$expotokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
 
             //NotificacionesJobs::dispatch($req->title,$req->text,$expoDigital)->onConnection('database');
