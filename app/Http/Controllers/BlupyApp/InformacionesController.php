@@ -10,11 +10,16 @@ class InformacionesController extends Controller
 {
     public function infoPopUpInicial(Request $req){
         $user = $req->user();
+        $cliente = $user->cliente;
         $general = Informacion::where('active',1)
         ->where('general',1)
         ->latest()->first();
+        $digital = null;
+        if($cliente->digital == 1){
+            $digital = Informacion::where('active',1)
+            ->where('digital',1)->latest()->first();
+        }
 
-        $digital = Informacion::where('active',1)->where('digital',1)->latest()->first();
 
         return response()->json([
             'success'=>true,
