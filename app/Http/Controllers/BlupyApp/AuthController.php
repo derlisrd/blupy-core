@@ -199,7 +199,7 @@ class AuthController extends Controller
                         SupabaseService::LOG('newDevice', $req->cedula);
                         $pistaEmail =  $user->email; //$this->ocultarParcialmenteEmail($user->email);
                         $pistaDeNumero = $this->ocultarParcialmenteTelefono($cliente->celular);
-                        $idValidacion = $this->enviarSMSyEmaildispositivoInusual($user->email,$cliente->celular, $cliente->id, $req);
+                        $idValidacion = $this->enviarSMSyEmaildispositivoInusual($user->email, $cliente->celular, $cliente->id, $req);
                         return response()->json([
                             'success' => true,
                             'results' => null,
@@ -304,7 +304,7 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'message' => 'Su cuenta ha sido desactivada correctamente']);
     }
 
-    private function enviarSMSyEmaildispositivoInusual($email,$celular, $clienteId, $req)
+    private function enviarSMSyEmaildispositivoInusual($email, $celular, $clienteId, $req)
     {
         $randomNumber = random_int(100000, 999999);
         $emailService = new EmailService();
@@ -321,7 +321,14 @@ class AuthController extends Controller
         $tigoService->enviarSms($numero, $mensaje);
 
         $emailService->enviarEmail($email, "[" . $randomNumber . "]Blupy confirmar dispositivo", 'email.validarDispositivo', $datos);
-        $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 0, 'email' => $email, 'cliente_id' => $clienteId, 'origen' => 'dispositivo']);
+        $validacion = Validacion::create([
+            'codigo' => $randomNumber,
+            'forma' => 0,
+            'celular' => $celular,
+            'email' => $email,
+            'cliente_id' => $clienteId,
+            'origen' => 'dispositivo'
+        ]);
         return $validacion->id;
     }
 }
