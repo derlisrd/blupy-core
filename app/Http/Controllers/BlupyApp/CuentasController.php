@@ -52,8 +52,8 @@ class CuentasController extends Controller
             }
         }
 
-        $resFarma = (object)$this->farmaService->cliente($cedula);
-        $farma = (object) $resFarma->data;
+        $resFarma = $this->farmaService->cliente($cedula);
+        $farma = (object) $resFarma['data'];
 
         if(property_exists( $farma,'result')){
             foreach ($farma->result as $val) {
@@ -110,10 +110,10 @@ class CuentasController extends Controller
             $user = $req->user();
             $fechaActual = Carbon::now();
             $periodo = isset($req->periodo) ? $req->periodo : $fechaActual->format('m-Y');
-            if(isset($req->cuenta) && $req->cuenta !== null){
+            if(isset($req->cuenta) && $req->cuenta !== null && $req->numero_tarjeta !== null){
                 //infinita
-                $resInfinita = (object) $this->infinitaService->movimientosPorFecha($req->cuenta,$periodo,$req->numero_tarjeta);
-                $infinita = (object) $resInfinita->data;
+                $resInfinita = $this->infinitaService->movimientosPorFecha($req->cuenta,$periodo,$req->numero_tarjeta);
+                $infinita = (object) $resInfinita['data'];
                 if(property_exists($infinita,'Tarj')){
                     $movimientos = isset($infinita->Tarj['Mov']) ? $infinita->Tarj['Mov'] : [];
                     foreach($movimientos as $val){

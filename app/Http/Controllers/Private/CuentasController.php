@@ -76,15 +76,14 @@ class CuentasController extends Controller
         }
 
         if($extranjero == 1){
-            $resFarma = (object)$this->farmaService->clientePorCodigo($codigo_farma);
+            $resFarma = $this->farmaService->clientePorCodigo($codigo_farma);
         }
 
         if($extranjero == 0){
-            $resFarma = (object) $this->farmaService->cliente($cedula);
+            $resFarma =  $this->farmaService->cliente($cedula);
         }
 
-        $farma = (object) $resFarma->data;
-
+        $farma = (object) $resFarma['data'];
         if(property_exists( $farma,'result')){
             foreach ($farma->result as $val) {
                 $alianzas = [];
@@ -118,9 +117,7 @@ class CuentasController extends Controller
                             'alianzas' => $alianzas
                         ]);
                     //}
-
                 }
-
         }
 
         return $results;
