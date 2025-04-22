@@ -119,12 +119,19 @@ class ValidacionesController extends Controller
                 return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
             $ip = $req->ip();
-            $executed = RateLimiter::attempt($ip, $perTwoMinutes = 6, function () {});
+            $key = $ip . '|' . $req->celular;
+            $executed = RateLimiter::attempt($key, $perTwoMinutes = 6, function () {});
             if (!$executed)
                 return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 500);
 
             $randomNumber = random_int(100000, 999999);
-            $this->enviarMensajeDeTexto($req->celular, $randomNumber);
+
+            $celularFormateado = $req->celular;
+            if (substr($celularFormateado, 0, 2) === '09') {
+                $celularFormateado = '595' . substr($celularFormateado, 2);
+            }
+
+            $this->enviarMensajeDeTexto($celularFormateado, $randomNumber);
             $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 1, 'celular' => $req->celular, 'origen' => 'celular']);
 
             return response()->json(['success' => true, 'results' => ['id' => $validacion->id], 'message' => 'Mensaje enviado']);
