@@ -132,7 +132,7 @@ class ValidacionesController extends Controller
             } */
 
             $this->enviarMensajeDeTexto($celularFormateado, $randomNumber);
-            $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 1, 'celular' => $req->celular, 'origen' => 'celular']);
+            $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 1, 'celular' => $req->celular, 'origen' => 'registro_celular']);
 
             return response()->json(['success' => true, 'results' => ['id' => $validacion->id], 'message' => 'Mensaje enviado']);
         } catch (\Throwable $th) {
