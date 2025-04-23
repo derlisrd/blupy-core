@@ -127,9 +127,9 @@ class ValidacionesController extends Controller
             $randomNumber = random_int(100000, 999999);
 
             $celularFormateado = $req->celular;
-            if (substr($celularFormateado, 0, 2) === '09') {
+            /* if (substr($celularFormateado, 0, 2) === '09') {
                 $celularFormateado = '595' . substr($celularFormateado, 2);
-            }
+            } */
 
             $this->enviarMensajeDeTexto($celularFormateado, $randomNumber);
             $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 1, 'celular' => $req->celular, 'origen' => 'celular']);
