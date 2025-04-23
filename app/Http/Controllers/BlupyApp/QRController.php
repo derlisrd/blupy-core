@@ -43,17 +43,16 @@ class QRController extends Controller
                 ->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
 
-            if (property_exists($data, 'results')) {
+            if (isset($data->results)){
 
                 $datasResults = $data->results;
 
                 if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
-                    $farmaService = new FarmaService();
-                    $farmaService->actualizarPedidosQR(
-                        (string)$datasResults['id'],
-                        $datasResults['numero_cuenta'],
-                        $datasResults['numero_tarjeta'],
-                        $datasResults['numero_movimiento']
+                    app(FarmaService::class)->actualizarPedidosQR(
+                        (string) ($datasResults['id'] ?? ''),
+                        $datasResults['numero_cuenta'] ?? '',
+                        $datasResults['numero_tarjeta'] ?? '',
+                        $datasResults['numero_movimiento'] ?? ''
                     );
                 }
             }
@@ -64,8 +63,10 @@ class QRController extends Controller
                 'message' => $data->message
             ], $blupy['status']);
         } catch (\Throwable $th) {
-            Log::error($th);
-            throw $th;
+            Log::error('Error en autorizar QR: ' . $th->getMessage(), [
+                'exception' => $th,
+                'user_id' => $req->user()->id ?? null,
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Error de servidor. CQ500'
@@ -117,17 +118,16 @@ class QRController extends Controller
             $blupy = $this->webserviceBlupyQRCore->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
 
-            if (property_exists($data, 'results')) {
+            if (isset($data->results)){
 
                 $datasResults = $data->results;
 
                 if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
-                    $farmaService = new FarmaService();
-                    $farmaService->actualizarPedidosQR(
-                        (string)$datasResults['id'],
-                        $datasResults['numero_cuenta'],
-                        $datasResults['numero_tarjeta'],
-                        $datasResults['numero_movimiento']
+                    app(FarmaService::class)->actualizarPedidosQR(
+                        (string) ($datasResults['id'] ?? ''),
+                        $datasResults['numero_cuenta'] ?? '',
+                        $datasResults['numero_tarjeta'] ?? '',
+                        $datasResults['numero_movimiento'] ?? ''
                     );
                 }
             }
