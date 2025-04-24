@@ -18,7 +18,7 @@ class TigoSmsService
 
     public function enviarSms(string $numero, string $texto){
         try {
-            Http::get($this->url . 'key='.$this->key.'&message='.$texto.'&msisdn='.$numero);
+           return Http::get($this->url . 'key='.$this->key.'&message='.$texto.'&msisdn='.$numero);
         } catch (\Throwable $th) {
             throw $th;
         }
