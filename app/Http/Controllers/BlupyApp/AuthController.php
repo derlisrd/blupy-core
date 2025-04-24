@@ -315,7 +315,8 @@ class AuthController extends Controller
             'ip' => $req->ip()
         ];
         $hora = Carbon::now()->format('H:i');
-        $mensaje =   $randomNumber . ' es tu PIN de BLUPY. No lo compartas con nadie. ' . $hora;
+        $mensaje = "Utiliza el código $randomNumber para confirmar tu dispositivo en Blupy." ;
+        //$randomNumber . ' es tu PIN de BLUPY. No lo compartas con nadie. ' . $hora;
         $numero = str_replace('+595', '0', $celular);
         $tigoService = new TigoSmsService();
         $tigoService->enviarSms($numero, $mensaje);

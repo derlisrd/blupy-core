@@ -188,7 +188,7 @@ class ValidacionesController extends Controller
     {
         try {
             //$hora = Carbon::now()->format('H:i');
-            $mensaje = "Tu pin de blupy es " . $code . ". No lo compartas con nadie.";
+            $mensaje = "Tu codigo de verificacion para Blupy es: $code. Verificacion de cuenta.";
             $numero = str_replace('+595', '0', $celular);
             $tigoService = new TigoSmsService();
             $tigoService->enviarSms($numero, $mensaje);

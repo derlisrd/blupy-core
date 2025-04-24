@@ -51,12 +51,12 @@ class UserController extends Controller
                 $forma = $this->ocultarParcialmenteEmail($user->email);
                 $emailService = new EmailService();
                 $emailService->enviarEmail($user->email,'Blupy: recupera tu contraseña','email.recuperarcontrasena',['code'=>$randomNumber]);
-                $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$user->email,'cliente_id'=>$cliente->id,'origen'=>'recuperar']);
+                $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$user->email,'cliente_id'=>$cliente->id,'origen'=>'rec. por email']);
             }
             if($req->forma == 1){
                 $forma = $this->ocultarParcialmenteTelefono($user->cliente->celular);
                 $this->enviarMensajeDeTextoRecuperacion($user->cliente->celular,$randomNumber);
-                $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$cliente->celular,'cliente_id'=>$cliente->id,'origen'=>'recuperar']);
+                $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$cliente->celular,'cliente_id'=>$cliente->id,'origen'=>'rec. por celular']);
             }
 
             return response()->json([
@@ -145,8 +145,8 @@ class UserController extends Controller
 
     private function enviarMensajeDeTextoRecuperacion(String $celular, int $code){
         try {
-            $hora = Carbon::now()->format('H:i');
-            $mensaje = "$code es tu codigo de recuperacion de BLUPY. ". $hora  ;
+            //$hora = Carbon::now()->format('H:i');
+            $mensaje = "Blupy te ha enviado el código $code para restablecer tu contraseña";
             $numero = str_replace('+595', '0', $celular);
             $tigoService = new TigoSmsService();
             $tigoService->enviarSms($numero,$mensaje);
