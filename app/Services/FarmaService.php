@@ -90,7 +90,7 @@ class FarmaService
                 'status'=>$response->status()
             ];
         } catch (RequestException $e) {
-            Log::error($e->getMessage());
+            //Log::error($e->getMessage());
             return [
                 'status' => $e->response ? $e->response->status() : null,
                 'data' => $e->response ? $e->response->json() : null,

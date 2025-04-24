@@ -51,7 +51,7 @@ class CuentasController extends Controller
         $results = [];
         $resInfinita =  $this->infinitaService->ListarTarjetasPorDoc($cedula);
         $infinita = (object)$resInfinita['data'];
-        if(property_exists( $infinita,'Tarjetas')){
+        if(isset( $infinita->Tarjetas)){
             foreach ($infinita->Tarjetas as $val) {
                 array_push($results, [
                     'id'=>2,

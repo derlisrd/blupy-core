@@ -187,8 +187,8 @@ class ValidacionesController extends Controller
     private function enviarMensajeDeTexto(String $celular, int $code)
     {
         try {
-            $hora = Carbon::now()->format('H:i');
-            $mensaje = "$code es tu PIN de verificacion de BLUPY. " . $hora;
+            //$hora = Carbon::now()->format('H:i');
+            $mensaje = "Tu pin de blupy es " . $code . ". No lo compartas con nadie.";
             $numero = str_replace('+595', '0', $celular);
             $tigoService = new TigoSmsService();
             $tigoService->enviarSms($numero, $mensaje);
