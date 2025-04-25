@@ -119,11 +119,15 @@ class ValidacionesController extends Controller
             if ($validator->fails())
                 return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
+
             $ip = $req->ip();
-            $key = $ip . '|' . $req->celular;
-            $executed = RateLimiter::attempt($key, $perTwoMinutes = 6, function () {});
-            if (!$executed)
-                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 500);
+            $rateKey = $ip . '|' . $req->celular;
+
+            if (RateLimiter::tooManyAttempts($rateKey, 3)) {
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
+            }
+            RateLimiter::hit($rateKey, 60);
+
 
             $randomNumber = random_int(100000, 999999);
 
