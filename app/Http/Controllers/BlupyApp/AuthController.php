@@ -13,6 +13,7 @@ use App\Models\Validacion;
 use App\Services\EmailService;
 use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
+use App\Services\WaService;
 use App\Traits\Helpers;
 use App\Traits\RegisterTraits;
 use Carbon\Carbon;
@@ -304,32 +305,40 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'message' => 'Su cuenta ha sido desactivada correctamente']);
     }
 
-    private function enviarSMSyEmaildispositivoInusual($email, $celular, $clienteId, $req)
+    private function enviarSMSyEmailDispositivoInusual($email, $celular, $clienteId, $req)
     {
-        $randomNumber = random_int(100000, 999999);
-        $emailService = new EmailService();
-        $datos = [
-            'code' => $randomNumber,
+        $codigo = random_int(100000, 999999);
+
+        $datosEmail = [
+            'code' => $codigo,
             'device' => $req->device,
             'model' => $req->model,
-            'ip' => $req->ip()
+            'ip' => $req->ip(),
         ];
-        $hora = Carbon::now()->format('H:i');
-        $mensaje = "Utiliza el código $randomNumber para confirmar tu dispositivo en Blupy." ;
-        //$randomNumber . ' es tu PIN de BLUPY. No lo compartas con nadie. ' . $hora;
-        $numero = str_replace('+595', '0', $celular);
-        $tigoService = new TigoSmsService();
-        $tigoService->enviarSms($numero, $mensaje);
 
-        $emailService->enviarEmail($email, "[" . $randomNumber . "]Blupy confirmar dispositivo", 'email.validarDispositivo', $datos);
+        $mensaje = "Utiliza el código $codigo para confirmar tu dispositivo en Blupy.";
+        $numeroTelefonoWa = preg_replace(['/^\+?595/', '/^09/'], ['+5959', '5959'], $celular);
+        // Enviar SMS
+        (new TigoSmsService())->enviarSms($celular, $mensaje);
+        (new WaService())->send($numeroTelefonoWa, $mensaje);
+        // Enviar Email
+        (new EmailService())->enviarEmail(
+            $email,
+            "[$codigo] Blupy confirmar dispositivo",
+            'email.validarDispositivo',
+            $datosEmail
+        );
+
+        // Guardar validación
         $validacion = Validacion::create([
-            'codigo' => $randomNumber,
+            'codigo' => $codigo,
             'forma' => 0,
             'celular' => $celular,
             'email' => $email,
             'cliente_id' => $clienteId,
-            'origen' => 'dispositivo'
+            'origen' => 'dispositivo',
         ]);
+
         return $validacion->id;
     }
 }
