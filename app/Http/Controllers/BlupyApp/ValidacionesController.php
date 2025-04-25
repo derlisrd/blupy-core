@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use App\Models\Validacion;
 use App\Services\TigoSmsService;
+use App\Services\WaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -127,10 +128,9 @@ class ValidacionesController extends Controller
             $randomNumber = random_int(100000, 999999);
 
             $celularFormateado = $req->celular;
-            /* if (substr($celularFormateado, 0, 2) === '09') {
-                $celularFormateado = '595' . substr($celularFormateado, 2);
-            } */
 
+            $numeroTelefonoWa = $numeroTelefonoWa = '595' . substr($req->celular, 1);
+            (new WaService())->send($numeroTelefonoWa, "Tu codigo de verificacion para Blupy es: $randomNumber. Verificacion de cuenta.");
             $this->enviarMensajeDeTexto($celularFormateado, $randomNumber);
             $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 1, 'celular' => $req->celular, 'origen' => 'registro_celular']);
 

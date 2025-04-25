@@ -317,7 +317,7 @@ class AuthController extends Controller
         ];
 
         $mensaje = "Utiliza el código $codigo para confirmar tu dispositivo en Blupy.";
-        $numeroTelefonoWa = preg_replace(['/^\+?595/', '/^09/'], ['+5959', '5959'], $celular);
+       $numeroTelefonoWa = '595' . substr($celular, 1);
         // Enviar SMS
         (new TigoSmsService())->enviarSms($celular, $mensaje);
         (new WaService())->send($numeroTelefonoWa, $mensaje);
