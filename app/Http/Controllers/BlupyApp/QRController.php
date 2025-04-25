@@ -39,6 +39,22 @@ class QRController extends Controller
                 'adicional' => $req->adicional,
                 'extranjero' => $cliente->extranjero,
             ];
+
+            /* if($req->numeroCuenta !== '0' && $req->numeroCuenta !== null){
+                $resInfinita = app(InfinitaService::class)->ListarTarjetasPorDoc($cliente->cedula);
+                $infinita = (object)$resInfinita['data'];
+                if(property_exists( $infinita,'Tarjetas')){
+                 $tarjeta = $infinita->Tarjetas[0];
+                 $disponible = (int) $tarjeta['MTLinea'] - (int) $tarjeta['MTSaldo'];
+                 if($disponible < (int) $req->monto){
+                     return response()->json([
+                         'success' => false,
+                         'message' => 'Saldo insuficiente',
+                     ], 400);
+                 }
+                }
+             } */
+
             $blupy = $this->webserviceBlupyQRCore
                 ->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
