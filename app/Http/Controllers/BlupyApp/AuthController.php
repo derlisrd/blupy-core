@@ -205,7 +205,7 @@ class AuthController extends Controller
                             'success' => true,
                             'results' => null,
                             'id' => $idValidacion,
-                            'message' => 'Necesitamos validar este dispositivo. PIN enviado a ' . $pistaDeNumero . '. y al correo ' . $pistaEmail,
+                            'message' => 'Valida este dispositivo. PIN enviado a ' . $pistaDeNumero . '. y al correo ' . $pistaEmail. '. Verifica tu whatsapp.',
                         ]);
                     }
                     $dispositoDeConfianza->update([
