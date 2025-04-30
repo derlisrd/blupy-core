@@ -42,8 +42,7 @@ class QRController extends Controller
             ];
 
             if($req->numeroCuenta !== '0' && $req->numeroCuenta !== null && $req->monto){
-                SupabaseService::LOG('monto_qr',$req->monto);
-                /* $resInfinita = app(InfinitaService::class)->ListarTarjetasPorDoc($cliente->cedula);
+                $resInfinita = app(InfinitaService::class)->ListarTarjetasPorDoc($cliente->cedula);
                 $infinita = (object)$resInfinita['data'];
                 if(property_exists( $infinita,'Tarjetas')){
                  $tarjeta = $infinita->Tarjetas[0];
@@ -54,7 +53,7 @@ class QRController extends Controller
                          'message' => 'Saldo insuficiente',
                      ], 400);
                  }
-                } */
+                }
              }
 
             $blupy = $this->webserviceBlupyQRCore
