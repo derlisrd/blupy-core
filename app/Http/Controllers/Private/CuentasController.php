@@ -88,7 +88,7 @@ class CuentasController extends Controller
             foreach ($farma->result as $val) {
                 $alianzas = [];
                 foreach($val['alianzas'] as $alianza){
-                    if($alianza['frpaCodigo'] === 129 ){
+                    if($alianza['frpaCodigo'] === 129 || $alianza['frpaCodigo'] === 136){
                         array_push($alianzas,[
                             'codigo'=>$alianza['codigoAdicional'],
                             'nombre'=> $alianza['alianza'],
@@ -101,7 +101,7 @@ class CuentasController extends Controller
                     if(count($alianzas)>0 || $val['esFuncionario'] ==='S'){
                         array_push($results, [
                             'id'=>1,
-                            'descripcion'=>'Blupy crédito 1 día',
+                            'descripcion'=> $val['esFuncionario'] ==='S' ? 'Blupy Farma' : 'Blupy Alianza',
                             'otorgadoPor'=>'Farma S.A.',
                             'tipo'=>0,
                             'emision'=>null,
