@@ -41,7 +41,7 @@ class QRController extends Controller
                 'extranjero' => $cliente->extranjero,
             ];
 
-            if($req->numeroCuenta !== '0' && $req->numeroCuenta !== null && $req->monto){
+            if($req->numeroCuenta !== '0' && $req->numeroCuenta !== null){
                 $resInfinita = app(InfinitaService::class)->ListarTarjetasPorDoc($cliente->cedula);
                 $infinita = (object)$resInfinita['data'];
                 if(property_exists( $infinita,'Tarjetas')){
