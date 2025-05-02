@@ -40,7 +40,7 @@ class QRController extends Controller
                 'adicional' => $req->adicional,
                 'extranjero' => $cliente->extranjero,
             ];
-
+            SupabaseService::LOG('monto',$req->monto . ' - ' . $req->numeroCuenta);
             if($req->numeroCuenta !== '0' && $req->numeroCuenta !== null){
                 $resInfinita = app(InfinitaService::class)->ListarTarjetasPorDoc($cliente->cedula);
                 $infinita = (object)$resInfinita['data'];
