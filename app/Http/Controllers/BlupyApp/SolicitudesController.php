@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Private\CuentasController as CuentasPrivate;
+use App\Services\WaService;
 
 class SolicitudesController extends Controller
 {
@@ -222,6 +223,7 @@ class SolicitudesController extends Controller
             if ($solicitud->id === 5) {
                 $titulo = '¡Crédito aprobado, felicidades! 🎉 ';
                 $descripcion = 'Tu solicitud de crédito ha sido aprobada. ¡Celebremos este logro! 🥳';
+                (new WaService())->send($cliente->celular, $titulo . $descripcion);
                 Informacion::create([
                     'user_id' => $user->id,
                     'codigo_info' => 1,
