@@ -223,7 +223,8 @@ class SolicitudesController extends Controller
             if ($solicitud->id === 5) {
                 $titulo = '¡Crédito aprobado, felicidades! 🎉 ';
                 $descripcion = 'Tu solicitud de crédito ha sido aprobada. ¡Celebremos este logro! 🥳';
-                (new WaService())->send($cliente->celular, $titulo . $descripcion);
+                $numeroTelefonoWa = '595' . substr($user->cliente->celular, 1);
+                (new WaService())->send($numeroTelefonoWa, $titulo . $descripcion);
                 Informacion::create([
                     'user_id' => $user->id,
                     'codigo_info' => 1,

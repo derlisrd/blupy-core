@@ -83,7 +83,7 @@ class SolicitudesController extends Controller
                     'Su contrato está activo, su línea está lista para usarse.',
                     []
                 );
-                $numeroTelefonoWa = $numeroTelefonoWa = '595' . substr($user->cliente->celular, 1);
+                $numeroTelefonoWa = '595' . substr($user->cliente->celular, 1);
                 (new WaService())->send($numeroTelefonoWa, "Tu contrato de BLUPY se ha activado, tienes hasta 30% de descuento en tu primera compra.");
                 Cliente::where('id', $solicitud->cliente_id)->update(['digital' => 1]);
                 $info = Informacion::where('user_id', $user->id)->where('codigo_info', 1)->first();
