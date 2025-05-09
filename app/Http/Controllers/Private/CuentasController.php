@@ -98,7 +98,7 @@ class CuentasController extends Controller
                         ]);
                     }
                 }
-                    //if(count($alianzas)>0 || $val['esFuncionario'] ==='S'){
+                    if(count($alianzas)>0 || $val['esFuncionario'] ==='S'){
                         array_push($results, [
                             'id'=>1,
                             'descripcion'=> $val['esFuncionario'] ==='S' ? 'Blupy Farma' : 'Blupy Alianza',
@@ -116,7 +116,7 @@ class CuentasController extends Controller
                             'disponible' => $val['saldoDisponible'],
                             'alianzas' => $alianzas
                         ]);
-                    //}
+                    }
                 }
         }
 
