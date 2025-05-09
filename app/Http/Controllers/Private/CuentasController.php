@@ -55,7 +55,7 @@ class CuentasController extends Controller
             foreach ($infinita->Tarjetas as $val) {
                 array_push($results, [
                     'id'=>2,
-                    'descripcion'=>'Blupy crédito digital',
+                    'descripcion'=>'Blupy Digital',
                     'otorgadoPor'=>'Mi crédito S.A.',
                     'tipo'=>1,
                     'emision'=>$val['MTFEmi'],
@@ -98,7 +98,7 @@ class CuentasController extends Controller
                         ]);
                     }
                 }
-                    if(count($alianzas)>0 || $val['esFuncionario'] ==='S'){
+                    //if(count($alianzas)>0 || $val['esFuncionario'] ==='S'){
                         array_push($results, [
                             'id'=>1,
                             'descripcion'=> $val['esFuncionario'] ==='S' ? 'Blupy Farma' : 'Blupy Alianza',
@@ -116,7 +116,7 @@ class CuentasController extends Controller
                             'disponible' => $val['saldoDisponible'],
                             'alianzas' => $alianzas
                         ]);
-                    }
+                    //}
                 }
         }
 
