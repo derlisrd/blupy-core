@@ -102,7 +102,7 @@ class CuentasController extends Controller
                         array_push($results, [
                             'id'=>1,
                             'descripcion'=> $val['esFuncionario'] ==='S' ? 'Blupy Farma' : 'Blupy Alianza',
-                            'otorgadoPor'=>'Farma S.A.',
+                            'otorgadoPor'=>$val['esFuncionario'] ==='S' ? 'Farma S.A.' : 'Farma por alianza',
                             'tipo'=>0,
                             'emision'=>null,
                             'condicion'=>'credito',
