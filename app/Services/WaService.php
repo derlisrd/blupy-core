@@ -27,12 +27,6 @@ class WaService
                 'text' => $texto,
             ]);
             $json = $response->json();
-            Log::info("message sent to wa",[
-                'numero'=>$numero,
-                'texto'=>$texto,
-                'response'=>$json,
-                'status'=>$response->status()
-            ]);
             return [
                 'data'=>$json,
                 'status'=>$response->status()
