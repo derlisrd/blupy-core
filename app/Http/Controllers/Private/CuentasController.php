@@ -47,7 +47,7 @@ class CuentasController extends Controller
         return count($results) > 0 ? $results[0] : null;
     }
 
-    public function tarjetas(string $cedula, int $extranjero, string $codigo_farma){
+    public function tarjetas(string $cedula, int $extranjero, string $codigo_farma, int $franquicia){
         $results = [];
         $resInfinita =  $this->infinitaService->ListarTarjetasPorDoc($cedula);
         $infinita = (object)$resInfinita['data'];
@@ -70,7 +70,7 @@ class CuentasController extends Controller
                     'pagoMinimo'=> (int) $val['MCPagMin'],
                     'deuda' => (int) $val['MTSaldo'],
                     'disponible' => (int) $val['MTLinea'] - (int) $val['MTSaldo'],
-                    'alianzas' => []
+                    'alianzas' => [],
                 ]);
             }
         }
@@ -98,7 +98,7 @@ class CuentasController extends Controller
                         ]);
                     }
                 }
-                    if(count($alianzas)>0 || $val['esFuncionario'] ==='S'){
+                    if(count($alianzas)>0 || $val['esFuncionario'] ==='S' || $franquicia === 1){
                         array_push($results, [
                             'id'=>1,
                             'descripcion'=> $val['esFuncionario'] ==='S' ? 'Blupy Farma' : 'Blupy Alianza',

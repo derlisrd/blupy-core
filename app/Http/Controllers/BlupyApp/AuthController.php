@@ -136,7 +136,7 @@ class AuthController extends Controller
 
             $token = JWTAuth::fromUser($user);
             $tarjetasConsultas = new CuentasPrivate();
-            $tarjetas = $tarjetasConsultas->tarjetas($req->cedula, 0, '');
+            $tarjetas = $tarjetasConsultas->tarjetas($req->cedula, 0, '',0);
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario registrado correctamente',
@@ -223,7 +223,7 @@ class AuthController extends Controller
 
 
                 $tarjetasConsultas = new CuentasPrivate();
-                $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula, $cliente->extranjero, $cliente->codigo_farma ?? '');
+                $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula, $cliente->extranjero, $cliente->codigo_farma ?? '',$cliente->franquicia);
                 return response()->json(
                     [
                         'success' => true,
@@ -266,7 +266,7 @@ class AuthController extends Controller
             $tarjetasConsultas = new CuentasPrivate();
             $adicional = Adicional::whereCedula($cliente->cedula)->first();
             $esAdicional = $adicional ? true : false;
-            $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula, 0, '');
+            $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula, 0, '',$cliente->franquicia);
             return response()->json([
                 'success' => true,
                 'message' => 'Valido',
