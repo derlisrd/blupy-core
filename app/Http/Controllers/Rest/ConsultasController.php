@@ -21,18 +21,18 @@ class ConsultasController extends Controller
 
         $cliente = Cliente::where('cedula', $req->cedula)->first();
 
-        $infinita = new InfinitaService();
-        $farma = new FarmaService();
 
-        $infinitaRes = (object)$infinita->ListarTarjetasPorDoc($req->cedula);
-        $infinitaData = (object)$infinitaRes->data;
+
+
+        $infinitaRes =  (new InfinitaService())->ListarTarjetasPorDoc($req->cedula);
+        $infinitaData = (object)$infinitaRes['data'];
         $infinitaResult = null;
         if (property_exists($infinitaData, 'Tarjetas')) {
             $infinitaResult = $infinitaData->Tarjetas[0];
         }
 
-        $res = (object)$farma->cliente($req->cedula);
-        $dataFarma = (object)$res->data;
+        $res = (new FarmaService())->cliente($req->cedula);
+        $dataFarma = (object)$res['data'];
 
         $farmaResult = null;
 
@@ -65,8 +65,8 @@ class ConsultasController extends Controller
 
 
 
-        $res = (object)$farma->clientePorCodigo($req->codigo);
-        $dataFarma = (object)$res->data;
+        $res = $farma->clientePorCodigo($req->codigo);
+        $dataFarma = (object)$res['data'];
 
         $farmaResult = null;
 

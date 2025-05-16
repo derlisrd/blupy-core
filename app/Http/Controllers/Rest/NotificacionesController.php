@@ -8,6 +8,7 @@ use App\Jobs\NotificacionesJobs;
 use App\Jobs\PushNativeJobs;
 use App\Models\Cliente;
 use App\Models\Device;
+use App\Services\InfinitaService;
 use App\Services\NotificationService;
 use App\Services\PushExpoService;
 use App\Services\SupabaseService;
@@ -159,6 +160,12 @@ class NotificacionesController extends Controller
         }
         $user = $cliente->user;
         $devices = Device::where('user_id', $user->id)->get();
+        $infinitaRes =  (new InfinitaService())->ListarTarjetasPorDoc($req->cedula);
+        $micredidoData = (object)$infinitaRes['data'];
+        $miCreditoResult = null;
+        if (property_exists($micredidoData, 'Tarjetas')) {
+            $miCreditoResult = $micredidoData->Tarjetas[0];
+        }
         $results = [
             'cliente_id' => $cliente->id,
             'user_id' => $user->id,
@@ -166,7 +173,8 @@ class NotificacionesController extends Controller
             'email' => $user->email,
             'celular' => $cliente->celular,
             'cedula' => $cliente->cedula,
-            'devices' => $devices
+            'devices' => $devices,
+            'micredito' => $miCreditoResult,
         ];
         return response()->json(['success' => true, 'message' => 'Datos del cliente', 'results' => $results]);
     }
