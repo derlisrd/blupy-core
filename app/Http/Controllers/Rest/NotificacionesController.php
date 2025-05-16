@@ -13,12 +13,32 @@ use App\Services\NotificationService;
 use App\Services\PushExpoService;
 use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
+use App\Services\WaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class NotificacionesController extends Controller
 {
 
+    public function wa(Request $req)
+    {
+        $validator = Validator::make($req->all(), [
+            'title' => 'required',
+            'text' => 'required',
+            'number' => 'required'
+        ]);
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        //$res = app(TigoSmsService::class)->enviarSms($req->number, $req->text);
+        $text = $req->title . ' ' . $req->text;
+        $res = app(WaService::class)->send($req->number, $text);
+        return response()->json([
+            'success' => true,
+            'message' => 'Mensaje enviado',
+            'results' => $res
+        ], 200);
+    }
     public function enviarSms(Request $req)
     {
         $validator = Validator::make($req->all(), [
