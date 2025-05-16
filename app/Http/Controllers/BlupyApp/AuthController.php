@@ -232,7 +232,7 @@ class AuthController extends Controller
 
 
             $user->update(['intentos' => $user->intentos + 1]);
-            SupabaseService::LOG('fallo', $req->cedula . ' ' . $req->password);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error. La contraseña es incorrecta.'

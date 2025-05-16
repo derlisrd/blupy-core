@@ -273,7 +273,7 @@ class InfinitaService
             ],
             "Proceso"=> 2
         ];
-        SupabaseService::LOG('datos_cliente',$cliente);
+
         return $datosClienteInfinita;
     }
 

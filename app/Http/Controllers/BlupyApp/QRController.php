@@ -3,12 +3,9 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
-use App\Models\Notificacion;
 use App\Services\BlupyQrService;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
-use App\Services\PushExpoService;
-use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -40,8 +37,7 @@ class QRController extends Controller
                 'adicional' => $req->adicional,
                 'extranjero' => $cliente->extranjero,
             ];
-            SupabaseService::LOG('monto',$req->monto . ' - ' . $req->numeroCuenta);
-            if($req->numeroCuenta !== '0' && $req->numeroCuenta !== null){
+            if($req->numeroCuenta !== '0' || $req->numeroCuenta !== null){
                 $resInfinita = app(InfinitaService::class)->ListarTarjetasPorDoc($cliente->cedula);
                 $infinita = (object)$resInfinita['data'];
                 if(property_exists( $infinita,'Tarjetas')){
