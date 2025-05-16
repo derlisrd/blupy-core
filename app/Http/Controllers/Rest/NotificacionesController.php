@@ -24,14 +24,14 @@ class NotificacionesController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'title' => 'required',
-            'text' => 'required',
+            'body' => 'required',
             'number' => 'required'
         ]);
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
         //$res = app(TigoSmsService::class)->enviarSms($req->number, $req->text);
-        $text = $req->title . ' ' . $req->text;
+        $text = $req->title . ' ' . $req->body;
         $res = app(WaService::class)->send($req->number, $text);
         return response()->json([
             'success' => true,
