@@ -16,7 +16,6 @@ use App\Services\TigoSmsService;
 use App\Services\WaService;
 use App\Traits\Helpers;
 use App\Traits\RegisterTraits;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
@@ -178,9 +177,6 @@ class AuthController extends Controller
             if (!$cliente) return response()->json(['success' => false, 'message' => 'Usuario no existe. Registrese'], 404);
 
             $version = $req->version ?? null;
-            if($version !== '2.8.0') {
-                return response()->json(['success' => false, 'message' => 'Por favor por seguridad actualice la app'], 400);
-            }
             $user =  $cliente->user;
 
             if ($user->active == 0) return response()->json(['success' => false, 'message' => 'Cuenta inhabilitada o bloqueada temporalmente. Contacte con soporte.'], 400);
