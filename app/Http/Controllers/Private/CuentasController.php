@@ -110,10 +110,10 @@ class CuentasController extends Controller
                             'cuenta' => null,
                             'bloqueo'=> false,
                             'numeroTarjeta'=>null,
-                            'linea' => $val['limiteCreditoTotal'],
+                            'linea' => $val['clerLimiteCredito'] +  $val['clerLimiteCreditoAdic'],//$val['limiteCreditoTotal'],
                             'pagoMinimo'=> null,
                             'deuda' => $val['pendiente'],
-                            'disponible' => $val['saldoDisponible'],
+                            'disponible' => ($val['clerLimiteCredito'] +  $val['clerLimiteCreditoAdic']) - $val['pendiente'], //$val['saldoDisponible'],
                             'alianzas' => $alianzas
                         ]);
                     }

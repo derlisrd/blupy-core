@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Adjuntos extends Model
+class Adjunto extends Model
 {
     use HasFactory;
+
+    protected $table = 'adjuntos';
 
     protected $fillable = [
         'cliente_id',

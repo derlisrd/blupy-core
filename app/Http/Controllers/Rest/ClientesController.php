@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
-use App\Models\Adjuntos;
+use App\Models\Adjunto;
 use App\Models\Cliente;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
@@ -253,6 +253,13 @@ class ClientesController extends Controller
             'results' => $clients
         ]);
     }
+    public function adjuntos(Request $req){
+        $adjuntos = Adjunto::where('cliente_id', $req->id)->get();
+        return response()->json([
+            'success' => true,
+            'results' => $adjuntos
+        ]);
+    }
 
     public function agregarAdjunto(Request $req){
         $validator = Validator::make($req->all(), [
@@ -277,7 +284,7 @@ class ClientesController extends Controller
             // Procesar y guardar la imagen
             $imager->read($imagen->getPathname())->scale(800)->save($publicPath);
 
-            Adjuntos::create([
+            Adjunto::create([
                 'cliente_id' => $req->cliente_id,
                 'nombre' => $req->nombre,
                 'path' => asset('abjuntos/' . $imageName),
