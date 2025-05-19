@@ -281,7 +281,7 @@ class ClientesController extends Controller
             $imagen = $req->file('adjunto');
             $extension = $imagen->getClientOriginalExtension();
             $time = time();
-            $imageName =  $id . '_' . $time  . $extension;
+            $imageName =  $id . '_' . $time . '.' . $extension;
             $publicPath = public_path('adjuntos/' . $imageName);
 
             $imager = new ImageManager(new Driver());
@@ -291,7 +291,7 @@ class ClientesController extends Controller
             Adjunto::create([
                 'cliente_id' => $id,
                 'nombre' => $req->nombre,
-                'path' => asset('abjuntos/' . $imageName),
+                'path' => asset('adjuntos/' . $imageName),
                 'url' =>  $imageName
             ]);
 
