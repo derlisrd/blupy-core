@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
+use App\Models\Adjuntos;
 use App\Models\Cliente;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
@@ -253,10 +254,52 @@ class ClientesController extends Controller
         ]);
     }
 
+    public function agregarAdjunto(Request $req){
+        $validator = Validator::make($req->all(), [
+            'cliente_id' => 'required|exists:clientes,id',
+            'adjunto' => 'required|image|mimes:jpeg,png,jpg,|max:2048',
+            'nombre' => 'required|string'
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+
+        try {
+
+            $imagen = $req->file('adjunto');
+            $extension = $imagen->getClientOriginalExtension();
+            $time = time();
+            $imageName =  $req->cliente_id . '_' . $time  . $extension;
+            $publicPath = public_path('adjuntos/' . $imageName);
+
+            $imager = new ImageManager(new Driver());
+            // Procesar y guardar la imagen
+            $imager->read($imagen->getPathname())->scale(800)->save($publicPath);
+
+            Adjuntos::create([
+                'cliente_id' => $req->cliente_id,
+                'nombre' => $req->nombre,
+                'path' => asset('abjuntos/' . $imageName),
+                'url' =>  $imageName
+            ]);
+
+
+            return response()->json([
+                'message' => 'Imagen subida correctamente',
+                'success' => true,
+                'results' => [
+                    'path' => asset('abjuntos/' . $imageName)
+                ]
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+    }
+
     public function actualizarFotoCedula(Request $request, $id)
     {
-
-
         $validator = Validator::make(
             ['id' => $id, 'foto_cedula' => $request->foto_cedula],
             [
