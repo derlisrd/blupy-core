@@ -291,7 +291,7 @@ class ClientesController extends Controller
             Adjunto::create([
                 'cliente_id' => $id,
                 'nombre' => $req->nombre,
-                'path' => asset('adjuntos/' . $imageName),
+                'path' => 'adjuntos',
                 'url' =>  $imageName
             ]);
 
