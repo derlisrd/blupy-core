@@ -261,9 +261,8 @@ class ClientesController extends Controller
         ]);
     }
 
-    public function agregarAdjunto(Request $req){
+    public function agregarAdjunto(Request $req,$id){
         $validator = Validator::make($req->all(), [
-            'cliente_id' => 'required|exists:clientes,id',
             'adjunto' => 'required|image|mimes:jpeg,png,jpg,|max:2048',
             'nombre' => 'required|string'
         ]);
@@ -271,13 +270,14 @@ class ClientesController extends Controller
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
+          $cliente =  Cliente::findOrFail($id);
 
         try {
 
             $imagen = $req->file('adjunto');
             $extension = $imagen->getClientOriginalExtension();
             $time = time();
-            $imageName =  $req->cliente_id . '_' . $time  . $extension;
+            $imageName =  $cliente->id . '_' . $time  . $extension;
             $publicPath = public_path('adjuntos/' . $imageName);
 
             $imager = new ImageManager(new Driver());
@@ -285,7 +285,7 @@ class ClientesController extends Controller
             $imager->read($imagen->getPathname())->scale(800)->save($publicPath);
 
             Adjunto::create([
-                'cliente_id' => $req->cliente_id,
+                'cliente_id' => $cliente->id,
                 'nombre' => $req->nombre,
                 'path' => asset('abjuntos/' . $imageName),
                 'url' =>  $imageName
