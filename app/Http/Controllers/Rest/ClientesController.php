@@ -262,22 +262,26 @@ class ClientesController extends Controller
     }
 
     public function agregarAdjunto(Request $req,$id){
-        $validator = Validator::make($req->all(), [
-            'adjunto' => 'required|image|mimes:jpeg,png,jpg,|max:2048',
-            'nombre' => 'required|string'
-        ]);
+        $validator = Validator::make(
+            ['id' => $id,
+            'adjunto' => $req->adjunto],
+            [
+                'id' => 'required|exists:clientes,id',
+                'adjunto' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+            ]
+        );
 
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-          $cliente =  Cliente::findOrFail($id);
+
 
         try {
 
             $imagen = $req->file('adjunto');
             $extension = $imagen->getClientOriginalExtension();
             $time = time();
-            $imageName =  $cliente->id . '_' . $time  . $extension;
+            $imageName =  $id . '_' . $time  . $extension;
             $publicPath = public_path('adjuntos/' . $imageName);
 
             $imager = new ImageManager(new Driver());
@@ -285,7 +289,7 @@ class ClientesController extends Controller
             $imager->read($imagen->getPathname())->scale(800)->save($publicPath);
 
             Adjunto::create([
-                'cliente_id' => $cliente->id,
+                'cliente_id' => $id,
                 'nombre' => $req->nombre,
                 'path' => asset('abjuntos/' . $imageName),
                 'url' =>  $imageName
@@ -308,7 +312,8 @@ class ClientesController extends Controller
     public function actualizarFotoCedula(Request $request, $id)
     {
         $validator = Validator::make(
-            ['id' => $id, 'foto_cedula' => $request->foto_cedula],
+            ['id' => $id,
+            'foto_cedula' => $request->foto_cedula],
             [
                 'id' => 'required|exists:clientes,id',
                 'foto_cedula' => 'required|image|mimes:jpeg,png,jpg|max:2048'
