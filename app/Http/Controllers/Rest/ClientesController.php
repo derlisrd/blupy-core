@@ -253,8 +253,8 @@ class ClientesController extends Controller
             'results' => $clients
         ]);
     }
-    public function adjuntos(Request $req){
-        $adjuntos = Adjunto::where('cliente_id', $req->id)->get();
+    public function adjuntos(Request $req, $id){
+        $adjuntos = Adjunto::where('cliente_id', $id)->get();
         return response()->json([
             'success' => true,
             'results' => $adjuntos
