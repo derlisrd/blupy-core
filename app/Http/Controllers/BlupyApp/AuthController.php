@@ -5,6 +5,7 @@ namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Private\CuentasController as CuentasPrivate;
 use App\Models\Adicional;
+use App\Models\Adjunto;
 use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\SolicitudCredito;
@@ -82,7 +83,7 @@ class AuthController extends Controller
                 'cliid' => 0,
                 'solicitud_credito' => 0
             ];
-
+            
             // ver si tiene ficha en infinita, sino lo crea
             $resRegistrarInfinita = (object)  $this->registrarInfinita((object) $datosCliente);
 
@@ -105,6 +106,13 @@ class AuthController extends Controller
                 'email' => $req->email,
                 'password' => bcrypt($req->password),
                 'vendedor_id' => $req->vendedor_id,
+            ]);
+            Adjunto::create([
+                'cliente_id' => $cliente->id,
+                'nombre' => $fotoCiFrente,
+                'tipo' => 'cedula1',
+                'path' => 'clientes',
+                'url' => 'clientes/' . $fotoCiFrente,
             ]);
             Device::create([
                 'user_id' => $user->id,
