@@ -207,7 +207,7 @@ class SolicitudesController extends Controller
                 'cliente_id' => $cliente->id,
                 'nombre' => $imagenSelfie,
                 'tipo' => 'selfie',
-                'path' => 'clientes',
+                'path' => 'adjuntos',
                 'url' => 'adjuntos/' . $imagenSelfie,
             ]);
 
