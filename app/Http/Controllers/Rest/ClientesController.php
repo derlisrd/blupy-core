@@ -288,11 +288,13 @@ class ClientesController extends Controller
             // Procesar y guardar la imagen
             $imager->read($imagen->getPathname())->scale(800)->save($publicPath);
 
+
             Adjunto::create([
                 'cliente_id' => $id,
-                'nombre' => $req->nombre,
+                'nombre' => $imageName,
+                'tipo' => $req->nombre,
                 'path' => 'adjuntos',
-                'url' =>  $imageName
+                'url' => 'adjuntos/'. $imageName
             ]);
 
 
