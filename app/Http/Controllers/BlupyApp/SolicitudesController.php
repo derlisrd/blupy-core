@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Private\CuentasController as CuentasPrivate;
 use App\Models\Adjunto;
+use App\Services\InfinitaService;
 use App\Services\WaService;
 
 class SolicitudesController extends Controller
@@ -312,8 +313,11 @@ class SolicitudesController extends Controller
             $datosAenviar['empresa_departamento_id'] = $departamento_empresa->codigo;
             $datosAenviar['empresa_ciudad_id'] = $ciudad_empresa->codigo;
 
+            $ingreso = preg_replace('#data:image/[^;]+;base64,#', '', $fotoIngreso);
+            $ande = preg_replace('#data:image/[^;]+;base64,#', '', $fotoAnde);
+            app(InfinitaService::class)->enviarComprobantes($cliente->cedula, $ingreso, $ande);
 
-            $ampliacion = (object) $this->ampliacionEnInfinita($datosAenviar, $lineaSolicitada, $nroCuenta, $fotoIngreso, $fotoAnde);
+            $ampliacion = (object) $this->ampliacionEnInfinita($datosAenviar, $lineaSolicitada, $nroCuenta);
 
             if (!$ampliacion->success) {
                 SupabaseService::LOG('core_ampliacion_178', $ampliacion);
