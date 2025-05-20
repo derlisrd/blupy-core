@@ -206,7 +206,7 @@ class SolicitudesController extends Controller
             Adjunto::create([
                 'cliente_id' => $cliente->id,
                 'nombre' => $imagenSelfie,
-                'tipo' => 'cedula1',
+                'tipo' => 'selfie',
                 'path' => 'clientes',
                 'url' => 'adjuntos/' . $imagenSelfie,
             ]);
