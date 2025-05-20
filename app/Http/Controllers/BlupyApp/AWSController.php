@@ -33,6 +33,7 @@ class AWSController extends Controller
                 'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
                 'version' => 'latest',
             ]);
+
             $base64Image = explode(";base64,", $req->fotofrontal64);
             $explodeImage = explode("image/", $base64Image[0]);
             $imageType = $explodeImage[1];
@@ -43,20 +44,48 @@ class AWSController extends Controller
             $image = fopen($imagePath, "r");
             $bytes = fread($image, filesize($imagePath));
             fclose($image);
-            $analysis = $amazon->detectText(['Image'=> ['Bytes' => $bytes],'MaxLabels' => 10,'MinConfidence' => 77]);
-            $results = $analysis['TextDetections'];
-            if(!$results){
+
+            $base64ImageBack = explode(";base64,", $req->fotodorsal64);
+            $explodeImageBack = explode("image/", $base64ImageBack[0]);
+            $imageTypeBack = $explodeImageBack[1];
+            $image_base64_back = base64_decode($base64ImageBack[1]);
+            $imageNameBack = $req->cedula . '_dorso.' . $imageTypeBack;
+            $imagePathBack = public_path('clientes/tmp/' . $imageNameBack);
+            file_put_contents($imagePathBack, $image_base64_back);
+            $imageBack = fopen($imagePathBack, "r");
+            $bytes2 = fread($imageBack, filesize($imagePathBack));
+            fclose($imageBack);
+
+
+            $analysis1 = $amazon->detectText(['Image'=> ['Bytes' => $bytes],'MaxLabels' => 10,'MinConfidence' => 77]);
+            $results1 = $analysis1['TextDetections'];
+            if(!$results1){
                 return response()->json([
                     'success' => false,
                     'message' => 'No se pudo subir la imagen (1)'
                 ], 400);
             }
             $string = '';
-            foreach($results as $item){
+            foreach($results1 as $item){
                 if($item['Type'] === 'WORD' || $item['Type'] === 'LINE'){
                     $string .= $item['DetectedText'] . ' ';
                 }
             }
+            $analysis2 = $amazon->detectText(['Image'=> ['Bytes' => $bytes2],'MaxLabels' => 10,'MinConfidence' => 77]);
+            $results2 = $analysis2['TextDetections'];
+            if(!$results2){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo subir la imagen (2)'
+                ], 400);
+            }
+            
+            foreach($results2 as $item){
+                if($item['Type'] === 'WORD' || $item['Type'] === 'LINE'){
+                    $string .= $item['DetectedText'] . ' ';
+                }
+            }
+
             $scaned = $this->CleanScan($string);
             $name = $this->CleanText($req->nombres);
             $lastname = $this->CleanText($req->apellidos);
@@ -68,7 +97,6 @@ class AWSController extends Controller
             $extraidoCedula = (int)strstr($scaned, $req->cedula);
             $cedula = (int) $req->cedula;
 
-            SupabaseService::LOG('scaneo',$scaned);
             $message = '';
             $success = true;
             $status = 200;
@@ -94,7 +122,13 @@ class AWSController extends Controller
                 $message = 'Apellido no concuerda con la foto. Verifique los datos.';
                 $status = 400;
             }
-            unlink($imagePath);
+            if(file_exists($imagePath)){
+                unlink($imagePath);
+            }
+            if(file_exists($imagePathBack)){
+                unlink($imagePathBack);
+            }
+
             return response()->json([
                 'success' => $success,
                 'results' => [
@@ -106,6 +140,12 @@ class AWSController extends Controller
                 'message'=>$message
             ],$status);
         } catch (\Throwable $th) {
+            if(file_exists($imagePath)){
+                unlink($imagePath);
+            }
+            if(file_exists($imagePathBack)){
+                unlink($imagePathBack);
+            }
             Log::error($th->getMessage());
             return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
         }
