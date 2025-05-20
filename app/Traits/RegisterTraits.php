@@ -173,7 +173,7 @@ trait RegisterTraits
             $imagen = base64_decode($imagenBase64);
             $imager = new ImageManager(Driver::class);
             $imageName = 'selfie_'. $cedula . '.' . $extension;
-            $publicPath = public_path('clientes/' . $imageName);
+            $publicPath = public_path('adjuntos/' . $imageName);
             $imager->read($imagen)->scale(800)->save($publicPath);
             return $imageName; // Opcional: retornar el path de la imagen guardada
         }
