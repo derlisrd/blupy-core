@@ -114,6 +114,13 @@ class AuthController extends Controller
                 'path' => 'clientes',
                 'url' => 'clientes/' . $fotoCiFrente,
             ]);
+            Adjunto::create([
+                'cliente_id' => $cliente->id,
+                'nombre' => $fotoCiDorso,
+                'tipo' => 'cedula2',
+                'path' => 'clientes',
+                'url' => 'clientes/' . $fotoCiDorso,
+            ]);
             Device::create([
                 'user_id' => $user->id,
                 'notitoken' => $req->notitoken,

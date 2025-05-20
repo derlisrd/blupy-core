@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Private\CuentasController as CuentasPrivate;
+use App\Models\Adjunto;
 use App\Services\WaService;
 
 class SolicitudesController extends Controller
@@ -200,9 +201,15 @@ class SolicitudesController extends Controller
                 'tipo_empresa_id' => $req->tipo_empresa_id,
                 'solicitud_credito' => 1,
                 'direccion_completado' => 1,
-                'selfie' => $imagenSelfie,
             ]);
 
+            Adjunto::create([
+                'cliente_id' => $cliente->id,
+                'nombre' => $imagenSelfie,
+                'tipo' => 'cedula1',
+                'path' => 'clientes',
+                'url' => 'adjuntos/' . $imagenSelfie,
+            ]);
 
             Notificacion::create([
                 'user_id' => $user->id,
@@ -307,7 +314,7 @@ class SolicitudesController extends Controller
 
 
             $ampliacion = (object) $this->ampliacionEnInfinita($datosAenviar, $lineaSolicitada, $nroCuenta, $fotoIngreso, $fotoAnde);
-            SupabaseService::LOG('core_ampliacion_176', $ampliacion);
+
             if (!$ampliacion->success) {
                 SupabaseService::LOG('core_ampliacion_178', $ampliacion);
                 return response()->json(['success' => false, 'message' => $ampliacion->message], 400);
