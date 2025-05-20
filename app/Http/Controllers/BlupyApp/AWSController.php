@@ -79,7 +79,7 @@ class AWSController extends Controller
                     'message' => 'No se pudo subir la imagen (2)'
                 ], 400);
             }
-            
+
             foreach($results2 as $item){
                 if($item['Type'] === 'WORD' || $item['Type'] === 'LINE'){
                     $string .= $item['DetectedText'] . ' ';
@@ -271,6 +271,7 @@ class AWSController extends Controller
             $faceValid = $face && $face['Confidence'] > 60;
 
             if (!$documentValid || !$idCardValid || !$faceValid) {
+                SupabaseService::LOG('scanSelfieCedula', $labels);
                 SupabaseService::uploadImageSelfies($imageName,$imagePath,$imageType);
                 unlink($imagePath);
                 return response()->json([
