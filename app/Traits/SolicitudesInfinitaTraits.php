@@ -4,15 +4,15 @@ namespace App\Traits;
 
 use App\Services\InfinitaService;
 use App\Services\SupabaseService;
-use Illuminate\Support\Facades\Log;
+
 
 trait SolicitudesInfinitaTraits
 {
 
     public function aprobarSolicitudInfinita(string $codigo){
-        $infinitaService = new InfinitaService();
-        $res = (object) $infinitaService->AprobarSolicitud($codigo);
-        $data = (object) $res->data;
+
+        $res = app(InfinitaService::class)->AprobarSolicitud($codigo);
+        $data = (object) $res['data'];
         $results = ['success'=>false,'message'=>null,'status'=>400];
         if($data && property_exists($data, 'Messages')){
             $results = [
@@ -26,10 +26,10 @@ trait SolicitudesInfinitaTraits
 
 
     public function consultarEstadoSolicitudInfinita(string $codigo){
-        $infinitaService = new InfinitaService();
-        $res = (object) $infinitaService->ConsultaEstadoSolicitud($codigo);
 
-        $data = (object) $res->data;
+        $res = app(InfinitaService::class)->ConsultaEstadoSolicitud($codigo);
+
+        $data = (object) $res['data'];
 
         if($data && property_exists($data, 'wDato')){
             $results = [
@@ -42,9 +42,9 @@ trait SolicitudesInfinitaTraits
     }
 
     public function actualizarSolicitudInfinita(string $codigo){
-        $infinitaService = new InfinitaService();
-        $infinita = (object)$infinitaService->ConsultaEstadoSolicitud($codigo);
-        $data = (object) $infinita->data;
+
+        $infinita = app(InfinitaService::class)->ConsultaEstadoSolicitud($codigo);
+        $data = (object) $infinita['data'];
         $results = ['success'=>false,'estado'=>null, 'id'=>null];
         if($data && property_exists($data, 'wDato')){
             $results = [
@@ -57,9 +57,9 @@ trait SolicitudesInfinitaTraits
     }
 
     public function listaSolicitudes($cedula,$desde,$hasta){
-        $infinitaService = new InfinitaService();
-        $res = (object)$infinitaService->ListarSolicitudes($cedula,$desde,$hasta);
-        $solicitudes = (object)$res->data;
+
+        $res = app(InfinitaService::class)->ListarSolicitudes($cedula,$desde,$hasta);
+        $solicitudes = (object)$res['data'];
         $result = [];
         if(property_exists($solicitudes,'wSolicitudes')){
            $arr = ($solicitudes->wSolicitudes);
@@ -78,11 +78,11 @@ trait SolicitudesInfinitaTraits
     }
 
     public function ingresarSolicitudInfinita($cliente){
-        $infinitaService = new InfinitaService();
-        $res = (object)$infinitaService->solicitudLineaDeCredito($cliente);
-        $resultadoInfinitaObject = (object) $res->data;
+
+        $res = app(InfinitaService::class)->solicitudLineaDeCredito($cliente);
+        $resultadoInfinitaObject = (object) $res['data'];
         $resultado = ['success'=>false, 'message'=>'Error en la solicitud','estado'=>null,'codigo'=>null,'id'=>null];
-        SupabaseService::LOG('ingresar solicitud',$res->data);
+
         if(property_exists($resultadoInfinitaObject,'CliId')){
             if($resultadoInfinitaObject->CliId == '0'){
                 $resultado = ['success'=>false, 'message'=> $resultadoInfinitaObject->Messages[0]['Description'] ,'estado'=>null,'codigo'=>null,'id'=>null];
@@ -145,9 +145,8 @@ trait SolicitudesInfinitaTraits
             "SolAdiApe2" => $datosDelAdicional['apellido2'],
             "SolAdiDire" => $datosDelAdicional['direccion']
         ]);
-        $infinitaService = new InfinitaService();
-        $infinita = (object) $infinitaService->agregarAdicional($clientePrincipal,$ADICIONALES,$cuentaPrincipal);
-        $res = (object)$infinita->data;
+        $infinita = app(InfinitaService::class)->agregarAdicional($clientePrincipal,$ADICIONALES,$cuentaPrincipal);
+        $res = (object)$infinita['data'];
 
         if(property_exists($res,'CliId')){
             $message = property_exists($res,'Messages') ? $res->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';

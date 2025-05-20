@@ -323,8 +323,6 @@ class SolicitudesController extends Controller
                 SupabaseService::LOG('core_ampliacion_178', $ampliacion);
                 return response()->json(['success' => false, 'message' => $ampliacion->message], 400);
             }
-
-
             SolicitudCredito::create([
                 'cliente_id' => $cliente->id,
                 'codigo' => $ampliacion->codigo,
