@@ -29,7 +29,7 @@ class AdjuntosJob implements ShouldQueue
     {
 
         // --- Procesar clientes que no tienen 'selfie' en adjuntos pero sí en clientes ---
-        /* Cliente::whereNotNull('clientes.selfie') // Aseguramos que el cliente tenga una selfie
+        Cliente::whereNotNull('clientes.selfie') // Aseguramos que el cliente tenga una selfie
             ->leftJoin('adjuntos', function ($join) {
                 $join->on('clientes.id', '=', 'adjuntos.cliente_id')
                      ->where('adjuntos.tipo', '=', 'selfie');
@@ -47,10 +47,10 @@ class AdjuntosJob implements ShouldQueue
                         ]
                     );
                 }
-            }); */
+            });
 
         // --- Procesar clientes que no tienen 'foto_ci_frente' en adjuntos pero sí en clientes ---
-        Cliente::whereNotNull('clientes.foto_ci_frente')
+        /* Cliente::whereNotNull('clientes.foto_ci_frente')
             ->leftJoin('adjuntos', function ($join) {
                 $join->on('clientes.id', '=', 'adjuntos.cliente_id')
                      ->where('adjuntos.tipo', '=', 'cedula1');
@@ -68,7 +68,7 @@ class AdjuntosJob implements ShouldQueue
                         ]
                     );
                 }
-            });
+            }); */
 
         // --- Procesar clientes que no tienen 'foto_ci_dorso' en adjuntos pero sí en clientes ---
         /* Cliente::whereNotNull('clientes.foto_ci_dorso')
