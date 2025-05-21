@@ -27,41 +27,69 @@ class AdjuntosJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Cliente::chunk(100, function ($clientes) { // Usamos chunk para procesar en lotes y evitar problemas de memoria con muchos clientes
-            foreach ($clientes as $cliente) {
-                // Procesar 'selfie'
-                if ($cliente->selfie) {
-                    Adjunto::create([
-                        'cliente_id' => $cliente->id,
-                        'nombre' => $cliente->selfie,
-                        'tipo' => 'selfie',
-                        'path' => 'clientes',
-                        'url' => 'clientes/' . $cliente->selfie,
-                    ]);
-                }
 
-                // Procesar 'foto_ci_frente'
-                if ($cliente->foto_ci_frente) {
-                    Adjunto::create([
-                        'cliente_id' => $cliente->id,
-                        'nombre' => $cliente->foto_ci_frente,
-                        'tipo' => 'cedula1', // Según tu descripción
-                        'path' => 'clientes',
-                        'url' => 'clientes/' . $cliente->foto_ci_frente,
-                    ]);
+        // --- Procesar clientes que no tienen 'selfie' en adjuntos pero sí en clientes ---
+        /* Cliente::whereNotNull('clientes.selfie') // Aseguramos que el cliente tenga una selfie
+            ->leftJoin('adjuntos', function ($join) {
+                $join->on('clientes.id', '=', 'adjuntos.cliente_id')
+                     ->where('adjuntos.tipo', '=', 'selfie');
+            })
+            ->whereNull('adjuntos.id') // Donde no hay un registro de adjunto de tipo 'selfie'
+            ->select('clientes.*') // Seleccionamos solo las columnas de clientes para evitar conflictos de nombres
+            ->chunk(100, function ($clientes) {
+                foreach ($clientes as $cliente) {
+                    Adjunto::firstOrCreate(
+                        ['cliente_id' => $cliente->id, 'tipo' => 'selfie'],
+                        [
+                            'nombre' => $cliente->selfie,
+                            'path' => 'clientes',
+                            'url' => 'clientes/' . $cliente->selfie,
+                        ]
+                    );
                 }
+            }); */
 
-                // Procesar 'foto_ci_dorso'
-                if ($cliente->foto_ci_dorso) {
-                    Adjunto::create([
-                        'cliente_id' => $cliente->id,
-                        'nombre' => $cliente->foto_ci_dorso,
-                        'tipo' => 'cedula2', // Según tu descripción
-                        'path' => 'clientes',
-                        'url' => 'clientes/' . $cliente->foto_ci_dorso,
-                    ]);
+        // --- Procesar clientes que no tienen 'foto_ci_frente' en adjuntos pero sí en clientes ---
+        Cliente::whereNotNull('clientes.foto_ci_frente')
+            ->leftJoin('adjuntos', function ($join) {
+                $join->on('clientes.id', '=', 'adjuntos.cliente_id')
+                     ->where('adjuntos.tipo', '=', 'cedula1');
+            })
+            ->whereNull('adjuntos.id')
+            ->select('clientes.*')
+            ->chunk(100, function ($clientes) {
+                foreach ($clientes as $cliente) {
+                    Adjunto::firstOrCreate(
+                        ['cliente_id' => $cliente->id, 'tipo' => 'cedula1'],
+                        [
+                            'nombre' => $cliente->foto_ci_frente,
+                            'path' => 'clientes',
+                            'url' => 'clientes/' . $cliente->foto_ci_frente,
+                        ]
+                    );
                 }
-            }
-        });
+            });
+
+        // --- Procesar clientes que no tienen 'foto_ci_dorso' en adjuntos pero sí en clientes ---
+        /* Cliente::whereNotNull('clientes.foto_ci_dorso')
+            ->leftJoin('adjuntos', function ($join) {
+                $join->on('clientes.id', '=', 'adjuntos.cliente_id')
+                     ->where('adjuntos.tipo', '=', 'cedula2');
+            })
+            ->whereNull('adjuntos.id')
+            ->select('clientes.*')
+            ->chunk(100, function ($clientes) {
+                foreach ($clientes as $cliente) {
+                    Adjunto::firstOrCreate(
+                        ['cliente_id' => $cliente->id, 'tipo' => 'cedula2'],
+                        [
+                            'nombre' => $cliente->foto_ci_dorso,
+                            'path' => 'clientes',
+                            'url' => 'clientes/' . $cliente->foto_ci_dorso,
+                        ]
+                    );
+                }
+            }); */
     }
+    
 }
