@@ -16,8 +16,8 @@ Route::get('/clientescondeudas',[JobsManualesController::class,'clientesConDeuda
 //Route::post('/procesar-ventas-del-dia', [JobsManualesController::class, 'ingresarVentas']);
 
 
-/* Route::get('/run-adjuntos-job', function () {
+ Route::get('/run-adjuntos-job', function () {
     AdjuntosJob::dispatch(); // Despacha el Job con el nombre correcto
     return response()->json(['message' => 'Job AdjuntosJob despachado']);
 });
-  */
+  
