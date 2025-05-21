@@ -337,8 +337,14 @@ class ClientesController extends Controller
             // Procesar y guardar la imagen
             $imager->read($imagen->getPathname())->scale(800)->save($publicPath);
 
-            $cliente->foto_ci_frente = $imageName;
-            $cliente->save();
+            Adjunto::create([
+                'cliente_id' => $request->id,
+                'nombre' => $imageName,
+                'tipo' => 'cedula1',
+                'path' => 'clientes',
+                'url' => 'clientes/'. $imageName
+            ]);
+
 
             return response()->json([
                 'message' => 'Imagen subida correctamente',
