@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
+use App\Models\Adjunto;
 use App\Models\Cliente;
 use App\Traits\ContratosBlupyFarmaTraits;
 use Illuminate\Http\Request;
@@ -29,9 +30,11 @@ class ContratosController extends Controller
         ->select('clientes.foto_ci_frente','clientes.cedula','clientes.id','clientes.selfie','clientes.nombre_primero',
         'clientes.apellido_primero','clientes.celular','s.tipo','s.estado','s.codigo','s.estado_id','s.created_at')
         ->first();
+        $adjuntos = Adjunto::where('cliente_id',$cliente->id)->get();
         $results = [
             'contratos'=>$res->results,
-            'cliente'=>$cliente
+            'cliente'=>$cliente,
+            'adjuntos'=>$adjuntos
         ];
         return response()->json(['success'=>true,'results'=>$results],$res->status);
     }
@@ -52,9 +55,11 @@ class ContratosController extends Controller
         ->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')
         ->select('clientes.foto_ci_frente','clientes.cedula','clientes.id','clientes.selfie','clientes.nombre_primero',
         'clientes.apellido_primero','clientes.celular','s.tipo','s.estado','s.codigo','s.estado_id','s.created_at')->first();
+        $adjuntos = Adjunto::where('cliente_id',$cliente->id)->get();
         $results = [
             'contratos'=>$res->results,
-            'cliente'=>$cliente
+            'cliente'=>$cliente,
+            'adjuntos'=>$adjuntos
         ];
         return response()->json(['success'=>true,'results'=>$results],$res->status);
 
