@@ -27,9 +27,27 @@ class AdjuntosJob implements ShouldQueue
      */
     public function handle(): void
     {
-
+        $clientes = Cliente::whereNotNull('clientes.foto_ci_frente')->select('id','foto_ci_frente'); // Aseguramos que el cliente tenga una selfie
+        
+        $clientes->chunk(100, function ($clientes) {
+            foreach ($clientes as $c) {
+                Adjunto::firstOrCreate(
+                    [
+                        'cliente_id' => $c->id,
+                        'tipo' => 'cedula1' // Si quieres que el tipo también sea parte del criterio de unicidad
+                    ],
+                    [
+                        'cliente_id' => $c->id,
+                        'tipo' => 'cedula1',
+                        'nombre' => $c->foto_ci_frente,
+                        'url' => 'clientes/'.$c->foto_ci_frente,
+                        'path' => 'clientes'
+                    ]
+                );
+            }
+        });
         // --- Procesar clientes que no tienen 'selfie' en adjuntos pero sí en clientes ---
-        Cliente::whereNotNull('clientes.selfie') // Aseguramos que el cliente tenga una selfie
+        /* Cliente::whereNotNull('clientes.selfie') // Aseguramos que el cliente tenga una selfie
             ->leftJoin('adjuntos', function ($join) {
                 $join->on('clientes.id', '=', 'adjuntos.cliente_id')
                      ->where('adjuntos.tipo', '=', 'selfie');
@@ -47,7 +65,7 @@ class AdjuntosJob implements ShouldQueue
                         ]
                     );
                 }
-            });
+            }); */
 
         // --- Procesar clientes que no tienen 'foto_ci_frente' en adjuntos pero sí en clientes ---
         /* Cliente::whereNotNull('clientes.foto_ci_frente')
