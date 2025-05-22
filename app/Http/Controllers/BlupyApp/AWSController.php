@@ -259,7 +259,7 @@ class AWSController extends Controller
             $bytes = fread($image, filesize($imagePath));
             fclose($image);
 
-            $etiquetas = $amazon->detectLabels(['Image'=> ['Bytes' => $bytes],'MaxLabels' => 20]);
+            $etiquetas = $amazon->detectLabels(['Image'=> ['Bytes' => $bytes],'MaxLabels' => 10]);
             $labels = $etiquetas['Labels'];
 
             $document = collect($labels)->firstWhere('Name', 'Document');
@@ -269,6 +269,17 @@ class AWSController extends Controller
             $documentValid = $document && $document['Confidence'] > 60;
             $idCardValid = $idCard && $idCard['Confidence'] > 60;
             $faceValid = $face && $face['Confidence'] > 60;
+            $mensaje = '';
+
+            if (!$documentValid) {
+                $message = 'No se pudo detectar el documento.';
+            }
+            if (!$idCardValid) {
+                $message = 'No se pudo detectar la cédula.';
+            }
+            if (!$faceValid) {
+                $message = 'No cubra su rostro.';
+            }
 
             if (!$documentValid || !$idCardValid || !$faceValid) {
                 SupabaseService::LOG('scanSelfieCedula', 'rostro: '.$faceValid.' documento: '.$documentValid.' cedula: '.$idCardValid);
@@ -276,7 +287,7 @@ class AWSController extends Controller
                 unlink($imagePath);
                 return response()->json([
                     'success' => true,
-                    'message' => 'Error. Tome una foto nítida, bien iluminada, con su cédula visible y sin cubrir su rostro.',
+                    'message' => $message,
                 ],400);
             }
 
