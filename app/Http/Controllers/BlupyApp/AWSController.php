@@ -259,43 +259,47 @@ class AWSController extends Controller
             $bytes = fread($image, filesize($imagePath));
             fclose($image);
 
+            $faceDetect = $amazon->detectFaces(['Image' => ['Bytes' => $bytes], 'Attributes' => ['ALL']]);
+            $faceDetectArray = ($faceDetect['FaceDetails']);
+
             $etiquetas = $amazon->detectLabels(['Image'=> ['Bytes' => $bytes],'MaxLabels' => 10]);
             $labels = $etiquetas['Labels'];
 
             $document = collect($labels)->firstWhere('Name', 'Document');
             $idCard = collect($labels)->firstWhere('Name', 'Id Cards');
-            $face = collect($labels)->firstWhere('Name', 'Face');
+            //$face = collect($labels)->firstWhere('Name', 'Face');
 
-            $documentValid = $document && $document['Confidence'] > 60;
-            $idCardValid = $idCard && $idCard['Confidence'] > 60;
-            $faceValid = $face && $face['Confidence'] > 60;
-            $mensaje = '';
+            $documentValid = $document && $document['Confidence'] > 70;
+            $idCardValid = $idCard && $idCard['Confidence'] > 70;
+            //$faceValid = $face && $face['Confidence'] > 60;
+            $message = 'Imagen subida correctamente.';
+            $success = true;
+            $status = 200;
 
+            if (!$faceDetectArray) {   
+                $message = 'No se dectectó rostro.';
+            }
+            
             if (!$documentValid) {
                 $message = 'No se pudo detectar el documento.';
             }
             if (!$idCardValid) {
                 $message = 'No se pudo detectar la cédula.';
             }
-            if (!$faceValid) {
-                $message = 'No cubra su rostro.';
-            }
+            
 
-            if (!$documentValid || !$idCardValid || !$faceValid) {
+            if (!$documentValid || !$idCardValid || !$faceDetectArray) {
                 SupabaseService::LOG($req->cedula, $message);
                 SupabaseService::uploadImageSelfies($imageName,$imagePath,$imageType);
-                unlink($imagePath);
-                return response()->json([
-                    'success' => true,
-                    'message' => $message,
-                ],400);
+                $status = 400;
+                $success = false;
             }
 
             unlink($imagePath);
             return response()->json([
-                'success' => true,
-                'message' => 'Imagen subida correctamente.',
-            ]);
+                'success' => $success,
+                'message' => $message,
+            ], $status);
         }
         catch (\Throwable $th) {
             Log::error($th->getMessage());
