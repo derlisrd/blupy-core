@@ -282,7 +282,7 @@ class AWSController extends Controller
             }
 
             if (!$documentValid || !$idCardValid || !$faceValid) {
-                SupabaseService::LOG('scanSelfieCedula', 'rostro: '.$faceValid.' documento: '.$documentValid.' cedula: '.$idCardValid);
+                SupabaseService::LOG($req->cedula, $message);
                 SupabaseService::uploadImageSelfies($imageName,$imagePath,$imageType);
                 unlink($imagePath);
                 return response()->json([
