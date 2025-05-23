@@ -33,14 +33,25 @@ class ConsultasController extends Controller
         if($validator->fails())
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
-        $ip = $req->ip();
-        $executed = RateLimiter::attempt($ip,$perTwoMinutes = 6,function() {});
-        if (!$executed)
-            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+        // Control de tasa de peticiones por IP
+            $ip = $req->ip();
+            $maxAttempts = 6;
+            $decaySeconds = 120;
 
+            if (!RateLimiter::attempt($ip, $maxAttempts, fn() => null, $decaySeconds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Demasiadas peticiones. Intente de nuevo en 1 minuto.'
+                ], 429); // Too Many Requests
+            }
 
-        $cliente = Cliente::where('cedula',$req->cedula)->first();
-        if($cliente)
+            // Verificar si el cliente ya existe
+            $clienteExiste = Cliente::join('users', 'users.cliente_id', '=', 'clientes.id')
+            ->where('clientes.cedula', $req->cedula)
+            ->where('users.rol', 0)
+            ->exists();
+
+        if($clienteExiste)
             return response()->json(['success'=>false,'message'=>'El número de cédula de cliente ya existe.'],403);
 
         return response()->json(['success'=>true,'message'=>'El cliente no existe.']);
