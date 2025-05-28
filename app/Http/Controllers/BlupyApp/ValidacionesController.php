@@ -63,7 +63,7 @@ class ValidacionesController extends Controller
             if (!$executed)
                 return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 500);
 
-            $randomNumber = random_int(100000, 999999);
+            $randomNumber = random_int(1000, 9999);
             $this->enviarEmail($req->email, $randomNumber);
             $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 0, 'email' => $req->email, 'origen' => 'email']);
 
