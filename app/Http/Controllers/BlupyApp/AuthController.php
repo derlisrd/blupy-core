@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 
 
@@ -163,7 +164,8 @@ class AuthController extends Controller
             ], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
-            SupabaseService::LOG('register', $th);
+            //SupabaseService::LOG('register', $th);
+            Log::error($th->getMessage());
             return response()->json(['success' => false, 'message' => 'Error de servidor'], 500);
         }
     }
