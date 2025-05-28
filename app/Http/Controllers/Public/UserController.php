@@ -46,7 +46,7 @@ class UserController extends Controller
             if(!$user || $user->active == 0)
                 return response()->json(['success'=>false,'message'=>'No existe registro en nuestras bases de datos.'],404);
 
-            $randomNumber = random_int(100000, 999999);
+            $randomNumber = random_int(1000, 9999);
             $forma = '';
             if($req->forma == 0){
                 $forma = $this->ocultarParcialmenteEmail($user->email);
