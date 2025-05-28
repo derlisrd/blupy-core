@@ -130,7 +130,7 @@ class ValidacionesController extends Controller
             RateLimiter::hit($rateKey, 60);
 
 
-            $randomNumber = random_int(100000, 999999);
+            $randomNumber = random_int(1000, 9999);
 
             $celularFormateado = $req->celular;
 
