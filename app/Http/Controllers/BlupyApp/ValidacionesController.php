@@ -9,6 +9,7 @@ use App\Services\TigoSmsService;
 use App\Services\WaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
@@ -140,6 +141,7 @@ class ValidacionesController extends Controller
 
             return response()->json(['success' => true, 'results' => ['id' => $validacion->id], 'message' => 'Mensaje enviado']);
         } catch (\Throwable $th) {
+            Log::error($th->getMessage());
             return response()->json(['success' => false, 'message' => 'Error en el servidor'], 500);
         }
     }
