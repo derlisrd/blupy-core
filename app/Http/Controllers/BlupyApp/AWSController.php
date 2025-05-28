@@ -57,6 +57,25 @@ class AWSController extends Controller
             fclose($imageBack);
 
 
+            $base64Selfie = explode(";base64,", $req->fotoselfie64);
+            $explodeImageSelfie = explode("image/", $base64Selfie[0]);
+            $imageTypeSelfie = $explodeImageSelfie[1];
+            $image_base64_selfie = base64_decode($base64Selfie[1]);
+            $imageNameSelfie = $req->cedula . '_selfie.' . $imageTypeSelfie;
+            $imagePathSelfie = public_path('clientes/tmp/' . $imageNameSelfie);
+            file_put_contents($imagePathSelfie, $image_base64_selfie);
+            $imageSelfie = fopen($imagePathSelfie, "r");
+            $bytesFaceSelfie = fread($imageSelfie, filesize($imagePathSelfie));
+            fclose($imageSelfie);
+
+            
+            $faceDetect = $amazon->detectFaces(['Image' => ['Bytes' => $bytesFaceSelfie], 'Attributes' => ['ALL']]);
+            $faceDetectArray = ($faceDetect['FaceDetails']);
+            $selfieDetect = true;
+            if (!$faceDetectArray) {   
+                $selfieDetect = false;
+            }
+
             $analysis1 = $amazon->detectText(['Image'=> ['Bytes' => $bytes],'MaxLabels' => 10,'MinConfidence' => 77]);
             $results1 = $analysis1['TextDetections'];
             if(!$results1){
@@ -128,6 +147,9 @@ class AWSController extends Controller
             if(file_exists($imagePathBack)){
                 unlink($imagePathBack);
             }
+            if(file_exists($imagePathSelfie)){
+                unlink($imagePathSelfie);
+            }
 
             return response()->json([
                 'success' => $success,
@@ -135,7 +157,8 @@ class AWSController extends Controller
                     'apellidos' => $apellidos,
                     'nombres' => $nombres,
                     'nacimiento' => $fechaNacimiento,
-                    'cedula' => $nroCedula
+                    'cedula' => $nroCedula,
+                    'selfie' => $selfieDetect,
                 ],
                 'message'=>$message
             ],$status);
@@ -152,77 +175,7 @@ class AWSController extends Controller
     }
 
 
-    public function scanFace(Request $req){
-        $validator = Validator::make($req->all(),[
-            'selfie64' => 'required|string',
-            'cedula' => 'required|numeric'
-        ]);
-
-        if($validator->fails())
-            return response()->json(['success' => false, 'message' => $validator->errors()->first()],400);
-
-            $ip = $req->ip();
-            $rateKey = "scanFace:$ip";
-
-            if (RateLimiter::tooManyAttempts($rateKey, 5)) {
-                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 2 minutos.'], 429);
-            }
-            RateLimiter::hit($rateKey, 120);
-
-        try {
-            $amazon = new RekognitionClient([
-                'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
-                'version' => 'latest',
-            ]);
-            $base64Image = explode(";base64,", $req->selfie64);
-            $explodeImage = explode("image/", $base64Image[0]);
-            $imageType = $explodeImage[1];
-            $image_base64 = base64_decode($base64Image[1]);
-            $imageName = $req->cedula . '_selfie.'.$imageType;
-            $imagePath = public_path('clientes/' .$imageName);
-            file_put_contents($imagePath, $image_base64);
-            $image = fopen($imagePath, "r");
-            $bytes = fread($image, filesize($imagePath));
-            fclose($image);
-
-            $analysis = $amazon->detectFaces(['Image'=> ['Bytes' => $bytes],'Attributes' => ['ALL']]);
-            $results = $analysis['FaceDetails'][0];
-
-
-            if(!$results){
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No se pudo subir la imagen (1)'
-                ], 400);
-            }
-            $smile = $results['Smile']['Value'];
-            $smileConfidence = $results['Smile']['Confidence'];
-            $eyeOpen = $results['EyesOpen']['Value'];
-            $eyeOpenConfidence = $results['EyesOpen']['Confidence'];
-
-            if(!$smile || $smileConfidence <80){
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Sonríe muy poco o no sonríe. Verifique la foto.'
-                ], 400);
-            }
-            if(!$eyeOpen || $eyeOpenConfidence <80){
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Cierra los ojos. Verifique la foto.'
-                ], 400);
-            }
-            unlink($imagePath);
-            return response()->json([
-                'success' => true,
-                'message' => 'Imagen subida correctamente.'
-            ]);
-        }
-        catch (\Throwable $th) {
-            Log::error($th->getMessage());
-            return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
-        }
-    }
+    
 
 
     public function scanSelfieCedula(Request $req){
