@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login',[AuthController::class,'login'])->name('api_login');
 Route::post('/confirmar-nuevo-dispositivo',[DeviceController::class,'confirmarNuevoDispositivo'])->name('api_confirmar_nuevo_dispositivo');
 Route::post('/codigo-nuevo-dispositivo',[DeviceController::class,'codigoNuevoDispositivo'])->name('api_codigo_nuevo_dispositivo');
+
 Route::post('/register',[AuthController::class,'register'])->name('api_register');
 
 Route::post('/olvide-contrasena',[UserPublic::class,'olvideContrasena'])->name('api_olvide_contrasena');

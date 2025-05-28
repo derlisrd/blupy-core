@@ -45,6 +45,8 @@ class AuthController extends Controller
             // guardar cedula en nuestros servidores las fotos estan en base64
             $fotoCiFrente = $this->guardarCedulaImagenBase64($req->fotocedulafrente, $req->cedula . '_frente', 1);
             $fotoCiDorso = $this->guardarCedulaImagenBase64($req->fotoceduladorso, $req->cedula . '_dorso', 1);
+            $fotoSelfie = $this->guardarSelfieImagenBase64($req->fotoselfie, $req->cedula);
+
 
             if ($fotoCiDorso == null || $fotoCiFrente == null)
                 return response()->json(['success' => false, 'message' => 'Hay un error con la imagen de la cedula'], 400);
@@ -67,6 +69,7 @@ class AuthController extends Controller
                 'cedula' => $req->cedula,
                 'foto_ci_frente' => $fotoCiFrente,
                 'foto_ci_dorso' => $fotoCiDorso,
+                'selfie' => $fotoSelfie,
                 'nombre_primero' => $nombres[0],
                 'nombre_segundo' => $nombres[1],
                 'apellido_primero' => $apellidos[0],
@@ -81,7 +84,8 @@ class AuthController extends Controller
                 'importe_credito_farma' => $clienteFarma->credito,
                 'direccion_completado' => $direccionCompletado,
                 'cliid' => 0,
-                'solicitud_credito' => 0
+                'solicitud_credito' => 0,
+                
             ];
             
             // ver si tiene ficha en infinita, sino lo crea
@@ -146,6 +150,7 @@ class AuthController extends Controller
             DB::commit();
             // enviar foto de cedula a infinita
             $this->enviarFotoCedulaInfinita($req->cedula, $req->fotocedulafrente, $req->fotoceduladorso);
+            $this->enviarSelfieInfinita($req->cedula, $req->fotoselfie);
             $this->enviarEmailRegistro($req->email, $nombres[0]);
 
             $token = JWTAuth::fromUser($user);
