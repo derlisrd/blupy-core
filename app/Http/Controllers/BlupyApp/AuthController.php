@@ -217,7 +217,7 @@ class AuthController extends Controller
                         ->where('devicetoken', $req->devicetoken)
                         ->first();
                     if (!$dispositoDeConfianza) {
-                        SupabaseService::LOG('newDevice', $req->cedula);
+                        //SupabaseService::LOG('newDevice', $req->cedula);
                         $pistaEmail =  $user->email; //$this->ocultarParcialmenteEmail($user->email);
                         $pistaDeNumero = $this->ocultarParcialmenteTelefono($cliente->celular);
                         $idValidacion = $this->enviarSMSyEmaildispositivoInusual($user->email, $cliente->celular, $cliente->id, $req);
@@ -328,7 +328,7 @@ class AuthController extends Controller
 
     private function enviarSMSyEmailDispositivoInusual($email, $celular, $clienteId, $req)
     {
-        $codigo = random_int(100000, 999999);
+        $codigo = random_int(1000, 9999);
 
         $datosEmail = [
             'code' => $codigo,
