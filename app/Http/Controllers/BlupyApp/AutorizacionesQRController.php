@@ -71,7 +71,7 @@ class AutorizacionesQRController extends Controller
             $user = $req->user();
             $cliente = $user->cliente;
 
-            $cedula = $cliente->cedula;
+            
 
             if (!Hash::check($req->password, $user->password))
                 return response()->json(['success' => false, 'message' => 'Contraseña incorrecta.'], 401);
@@ -87,8 +87,8 @@ class AutorizacionesQRController extends Controller
                 'adicional' => $req->adicional,
                 'extranjero' => $cliente->extranjero,
             ];
-            $blupyQrService = new BlupyQrService();
-            $blupy = $blupyQrService->autorizarQR($parametrosPorArray);
+            
+            $blupy = app(BlupyQrService::class)->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
             $datasResults = null;
             if (property_exists($data, 'results')) {

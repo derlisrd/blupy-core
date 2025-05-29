@@ -28,7 +28,7 @@ class DeviceController extends Controller
             $id = null;
             $user = User::where('email',$req->email)->first();
             if($user){
-                $randomNumber = random_int(100000, 999999);
+                $randomNumber = random_int(1000, 9999);
                 $emailService = new EmailService();
                 $cliente = $user->cliente;
                 $emailService->enviarEmail($req->email,"[".$randomNumber."]Blupy confirmar dispositivo",'email.validarDispositivo',['code'=>$randomNumber]);
