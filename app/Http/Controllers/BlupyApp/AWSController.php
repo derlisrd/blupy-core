@@ -45,7 +45,7 @@ class AWSController extends Controller
             $bytes = fread($image, filesize($imagePath));
             fclose($image);
 
-            $base64ImageBack = explode(";base64,", $req->fotodorsal64);
+            /* $base64ImageBack = explode(";base64,", $req->fotodorsal64);
             $explodeImageBack = explode("image/", $base64ImageBack[0]);
             $imageTypeBack = $explodeImageBack[1];
             $image_base64_back = base64_decode($base64ImageBack[1]);
@@ -54,7 +54,7 @@ class AWSController extends Controller
             file_put_contents($imagePathBack, $image_base64_back);
             $imageBack = fopen($imagePathBack, "r");
             $bytes2 = fread($imageBack, filesize($imagePathBack));
-            fclose($imageBack);
+            fclose($imageBack); */
 
 
             $base64Selfie = explode(";base64,", $req->fotoselfie64);
@@ -81,7 +81,7 @@ class AWSController extends Controller
             if(!$results1){
                 return response()->json([
                     'success' => false,
-                    'message' => 'No se pudo subir la imagen (1)'
+                    'message' => 'No se pudo subir la imagen o no se detecta el documento.'
                 ], 400);
             }
             $string = '';
@@ -90,20 +90,20 @@ class AWSController extends Controller
                     $string .= $item['DetectedText'] . ' ';
                 }
             }
-            $analysis2 = $amazon->detectText(['Image'=> ['Bytes' => $bytes2],'MaxLabels' => 10,'MinConfidence' => 77]);
+            /* $analysis2 = $amazon->detectText(['Image'=> ['Bytes' => $bytes2],'MaxLabels' => 10,'MinConfidence' => 77]);
             $results2 = $analysis2['TextDetections'];
             if(!$results2){
                 return response()->json([
                     'success' => false,
                     'message' => 'No se pudo subir la imagen (2)'
                 ], 400);
-            }
+            } */
 
-            foreach($results2 as $item){
+            /* foreach($results2 as $item){
                 if($item['Type'] === 'WORD' || $item['Type'] === 'LINE'){
                     $string .= $item['DetectedText'] . ' ';
                 }
-            }
+            } */
 
             $scaned = $this->CleanScan($string);
             $name = $this->CleanText($req->nombres);
@@ -144,9 +144,9 @@ class AWSController extends Controller
             if(file_exists($imagePath)){
                 unlink($imagePath);
             }
-            if(file_exists($imagePathBack)){
+            /* if(file_exists($imagePathBack)){
                 unlink($imagePathBack);
-            }
+            } */
             if(file_exists($imagePathSelfie)){
                 unlink($imagePathSelfie);
             }
@@ -166,8 +166,11 @@ class AWSController extends Controller
             if(file_exists($imagePath)){
                 unlink($imagePath);
             }
-            if(file_exists($imagePathBack)){
+            /* if(file_exists($imagePathBack)){
                 unlink($imagePathBack);
+            } */
+            if(file_exists($imagePathSelfie)){
+                unlink($imagePathSelfie);
             }
             Log::error($th->getMessage());
             return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
