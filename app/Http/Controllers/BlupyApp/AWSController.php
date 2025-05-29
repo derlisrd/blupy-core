@@ -71,10 +71,7 @@ class AWSController extends Controller
             
             $faceDetect = $amazon->detectFaces(['Image' => ['Bytes' => $bytesFaceSelfie], 'Attributes' => ['ALL']]);
             $faceDetectArray = ($faceDetect['FaceDetails']);
-            $selfieDetect = true;
-            if (!$faceDetectArray) {   
-                $selfieDetect = false;
-            }
+            
 
             $analysis1 = $amazon->detectText(['Image'=> ['Bytes' => $bytes],'MaxLabels' => 10,'MinConfidence' => 77]);
             $results1 = $analysis1['TextDetections'];
@@ -119,6 +116,15 @@ class AWSController extends Controller
             $message = '';
             $success = true;
             $status = 200;
+
+            $selfieDetect = true;
+            if (!$faceDetectArray) {   
+                $selfieDetect = false;
+                $success = false;
+                $message = 'No se pudo detectar su rostro en la foto.';
+                $status = 400;
+            }
+
             if($cedula != $extraidoCedula){
                 $nroCedula = false;
                 $success = false;
