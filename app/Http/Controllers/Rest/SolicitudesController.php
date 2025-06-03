@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Rest;
 use App\Http\Controllers\Controller;
 use App\Jobs\ActualizarSolicitudesJobs;
 use App\Models\Cliente;
+use App\Models\Comision;
 use App\Models\Informacion;
 use App\Models\SolicitudCredito;
 use App\Models\User;
@@ -69,6 +70,16 @@ class SolicitudesController extends Controller
 
             $res = $this->aprobarSolicitudInfinita($codigo);
             $user = User::where('cliente_id', $solicitud->cliente_id)->first();
+            
+            $cliente = Cliente::find($solicitud->cliente_id)->select('id','vendedor_id');
+
+            /* Comision::create([
+                'cedula' => $req->cedula_vendedor,
+                'usuario' => $req->usuario_vendedor,
+                'tipo'=>'impresion',
+                'cliente_id'=>$cliente->id,
+                'vendedor_id'=>$cliente->vendedor_id,
+            ]); */
 
             if ($res->success) {
                 $solicitud->estado = 'Vigente';
