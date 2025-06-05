@@ -147,17 +147,21 @@ class NotificacionesController extends Controller
             ->where('clientes.digital', 1)
             ->join('devices', 'users.id', '=', 'devices.user_id')
             ->whereNotNull('devices.devicetoken')
-            ->select('devices.notitoken', 'devices.os', 'devices.devicetoken');
-            
-            $androidDevices = $devices->where('os', 'android')->pluck('notitoken')->toArray();
-            $iosDevices = $devices->where('os', 'ios')->pluck('notitoken')->toArray();
+            ->select('devices.notitoken', 'devices.os', 'devices.devicetoken')
+            ->get();
+            $androidDevices = $devices->where('os', 'android')->pluck('devicetoken')->toArray();
+            $iosDevices = $devices->where('os', 'ios')->pluck('devicetoken')->toArray();
             $expo = $devices->pluck('notitoken')->toArray();
             //$expotokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
 
-            /* NotificacionesJobs::dispatch($req->title, $req->text, $devices)->onConnection('database');
+            NotificacionesJobs::dispatch($req->title, $req->text, $devices)->onConnection('database');
             PushNativeJobs::dispatch($req->title,$req->text,$androidDevices,'android')->onConnection('database');
-            PushNativeJobs::dispatch($req->title,$req->text,$iosDevices,'ios')->onConnection('database');  */
-            return response()->json(['success' => true, 'message' => 'Notificaciones enviadas en 2do plano','results'=>$expo]);
+            PushNativeJobs::dispatch($req->title,$req->text,$iosDevices,'ios')->onConnection('database'); 
+            return response()->json(['success' => true, 'message' => 'Notificaciones enviadas en 2do plano','results'=>[
+                'expo' => $expo,
+                'android' => $androidDevices,
+                'ios' => $iosDevices
+            ] ]);
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(['success' => false, 'message' => 'Error al enviar notificaciones: ' . $th->getMessage()], 500);
