@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\Admin;
+use App\Models\PermisosOtorgado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
@@ -14,6 +15,8 @@ use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     public function login(Request $req){
+
+    
         $validator = Validator::make($req->all(),trans('validation.rest.login'), trans('validation.rest.login.messages'));
         if($validator->fails())
             return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
@@ -26,13 +29,13 @@ class AuthController extends Controller
             }
             RateLimiter::hit($rateKey, 60);
 
-        $user = User::where('email',$req->email)->where('rol',1)->first();
+        $user = Admin::where('email',$req->email)->where('role','admin')->first();
         if(!$user)
             return response()->json(['success'=>false,'message'=>'Error de credenciales'],401);
 
         $credentials = ['email'=>$req->email, 'password'=>$req->password];
         $token = auth('admin')->attempt($credentials);
-
+        
         if($token){
             return response()->json([
                 'success'=>true,
@@ -46,7 +49,7 @@ class AuthController extends Controller
         }
         return response()->json([
             'success'=>false, 'message'=>"Error de credenciales"
-        ],401);
+        ],401); 
     }
 
 

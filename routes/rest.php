@@ -26,14 +26,18 @@ Route::group(['middleware' => ['auth:admin']], function() {
 
 
     Route::prefix('clientes')->group(function(){
-        Route::get('/',[ClientesController::class,'index'])->name('rest_clientes');
+        Route::get('/',[ClientesController::class,'index'])
+        ->middleware('permiso.admin:clientes,ver')
+        ->name('rest_clientes');
         Route::post('/actualizar-foto-cedula/{id}',[ClientesController::class,'actualizarFotoCedula'])->name('rest_actualizar_foto_cedula');
         Route::post('/agregar-adjunto/{id}',[ClientesController::class,'agregarAdjunto'])->name('rest_agregar_abjuntos');
         Route::get('/adjuntos/{id}',[ClientesController::class,'adjuntos'])->name('rest_clientes_adjuntos');
         Route::post('/filtros',[ClientesController::class,'filtros'])->name('rest_clientes_filtros');
         Route::get('/buscar',[ClientesController::class,'buscar'])->name('rest_clientes_buscar');
         Route::get('/ficha/{id}',[ClientesController::class,'ficha'])->name('rest_cliente_ficha');
-        Route::put('/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])->name('rest_cliente_restablecer_contrasena');
+        Route::put('/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])
+        ->middleware('permiso.admin:clientes,restablecer_contrasena')
+        ->name('rest_cliente_restablecer_contrasena');
         Route::put('/estado',[ClientesController::class,'cambiarEstado'])->name('rest_cliente_cambiar_estado');
     });
 
@@ -48,8 +52,12 @@ Route::group(['middleware' => ['auth:admin']], function() {
     Route::prefix('/notificacion')->group(function(){
         Route::post('/individual',[NotificacionesController::class,'individual'])->name('rest_enviar_notificacion_individual');
         Route::post('/wa',[NotificacionesController::class,'wa'])->name('rest_enviar_wa');
-        Route::post('/difusion',[NotificacionesController::class,'difusion'])->name('rest_enviar_notificaciones_masivas');
-        Route::post('/difusion-selectiva',[NotificacionesController::class,'difusionSelectiva'])->name('rest_enviar_notificaciones_masivas_selectiva');
+        Route::post('/difusion',[NotificacionesController::class,'difusion'])
+            ->middleware('permiso.admin:notificaciones,enviar_difusion_masiva')
+        ->name('rest_enviar_notificaciones_masivas');
+        Route::post('/difusion-selectiva',[NotificacionesController::class,'difusionSelectiva'])
+            ->middleware('permiso.admin:notificaciones,enviar_difusion_selectiva')
+        ->name('rest_enviar_notificaciones_masivas_selectiva');
         Route::get('/ficha',[NotificacionesController::class,'ficha'])->name('rest_notificacion_ficha');
         Route::post('/enviar-sms',[NotificacionesController::class,'enviarSms'])->name('rest_enviar_sms');
     });

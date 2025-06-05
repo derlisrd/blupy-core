@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\VerificarPermisoAdmin;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -44,6 +45,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'x-api-key' => XapiKeyTokenIsValid::class
+        ]);
+        $middleware->alias([
+            'permiso.admin' => VerificarPermisoAdmin::class
         ]);
         //$middleware->append(\App\Http\Middleware\XapiKeyTokenIsValid::class);
         /* $middleware->use([

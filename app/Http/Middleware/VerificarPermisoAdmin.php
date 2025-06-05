@@ -13,14 +13,17 @@ class VerificarPermisoAdmin
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle($request, Closure $next, $modulo, $accion)
+    public function handle(Request $request, Closure $next, $modulo, $accion)
     {
-        $admin = auth()->guard('admin')->user();
-    
+        $admin = auth('admin')->user();
+
         if (!$admin || !$admin->tienePermiso($modulo, $accion)) {
-            abort(403, 'No tienes permiso para realizar esta acción.');
+            return response()->json([
+                'success' => false,
+                'message' => 'No tienes permisos para realizar esta acción.'
+            ], 403);
         }
-    
+
         return $next($request);
     }
 }
