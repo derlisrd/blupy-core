@@ -31,7 +31,7 @@ class AuthController extends Controller
             return response()->json(['success'=>false,'message'=>'Error de credenciales'],401);
 
         $credentials = ['email'=>$req->email, 'password'=>$req->password];
-        $token = JWTAuth::attempt($credentials);
+        $token = auth('admin')->attempt($credentials);
 
         if($token){
             return response()->json([

@@ -8,16 +8,15 @@ use App\Http\Controllers\Rest\EstadisticasController;
 use App\Http\Controllers\Rest\JobsManualesController;
 use App\Http\Controllers\Rest\NotificacionesController;
 use App\Http\Controllers\Rest\SolicitudesController;
-use App\Http\Controllers\Rest\UsersController;
 use App\Http\Controllers\Rest\VentasController;
-use Illuminate\Auth\Middleware\Authenticate;
+//use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
 
 
 
 Route::post('login',[AuthController::class,'login'])->name('rest_login');
 
-Route::middleware(Authenticate::using('api'))->group(function(){
+Route::group(['middleware' => ['auth:admin']], function() {
 
     Route::get('/check',[AuthController::class,'checkToken'])->name('rest_check_token');
 
