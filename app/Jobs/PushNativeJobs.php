@@ -39,7 +39,7 @@ class PushNativeJobs implements ShouldQueue
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'x-api-key' => env('PUSH_SERVICE_API_KEY')
-                ])->post(env('PUSH_SERVICE_URL') . '/send-push-difusion',[
+                ])->post(env('PUSH_SERVICE_URL') . '/send-push-single',[
                     'tokens' => $chunk,
                     'title' => $this->title,
                     'body' => $this->body,
