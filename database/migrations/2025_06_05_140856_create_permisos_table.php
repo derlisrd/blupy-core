@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('permisos', function (Blueprint $table) {
             $table->id();
-            $table->id();
             $table->string('modulo'); // Ej: productos, usuarios
             $table->string('accion'); // Ej: ver, crear, editar, eliminar
             $table->timestamps();
