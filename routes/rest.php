@@ -7,6 +7,7 @@ use App\Http\Controllers\Rest\ContratosController;
 use App\Http\Controllers\Rest\EstadisticasController;
 use App\Http\Controllers\Rest\JobsManualesController;
 use App\Http\Controllers\Rest\NotificacionesController;
+use App\Http\Controllers\Rest\PermisoAdminController;
 use App\Http\Controllers\Rest\SolicitudesController;
 use App\Http\Controllers\Rest\VentasController;
 //use Illuminate\Auth\Middleware\Authenticate;
@@ -111,7 +112,13 @@ Route::group(['middleware' => ['auth:admin']], function() {
     });
 
 
-
+    Route::prefix('permisos')
+    ->middleware('permiso.admin:permisos,asignar')
+    ->group(function () {
+        Route::get('/', [PermisoAdminController::class, 'index']); // Todos los permisos disponibles
+        Route::post('/asignar', [PermisoAdminController::class, 'asignar']); // Asignar permisos
+        Route::post('/revocar', [PermisoAdminController::class, 'revocar']); // Revocar permisos
+    });
 
 });
 
