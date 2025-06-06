@@ -13,7 +13,7 @@ class PermisoAdminController extends Controller
     {
         $permisos = Permiso::all();
         return response()->json([
-            'succcess' => true,
+            'success' => true,
             'results' => $permisos
         ]);        
     }
