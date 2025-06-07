@@ -13,7 +13,8 @@ class VendedoresController extends Controller
 {
     public function generarQRVendedor(Request $r){
 
-        $ip = $r->ip();
+        try {
+            $ip = $r->ip();
         $executed = RateLimiter::attempt($ip,$perTwoMinutes = 4,function() {});
         if (!$executed)
             return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
@@ -45,6 +46,9 @@ class VendedoresController extends Controller
             'results'=> null,
             'message'=>'No existe registro.'
         ],404);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
 
