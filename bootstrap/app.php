@@ -24,12 +24,12 @@ return Application::configure(basePath: dirname(__DIR__))
         then:function(){
 
             Route::prefix('job')
-            ->middleware('x-api-key')
+            ->middleware(XapiKeyTokenIsValid::class)
             ->name('job')
             ->group(base_path('routes/job.php'));
 
             Route::prefix('farma')
-            ->middleware('x-api-key')
+            ->middleware(XapiKeyTokenIsValid::class)
             ->name('farma')
             ->group(base_path('routes/farma.php'));
 
@@ -37,9 +37,8 @@ return Application::configure(basePath: dirname(__DIR__))
             ->prefix('rest')
             ->name('rest')
             ->group(base_path('routes/rest.php'));
-        }
-    )
-    ->withMiddleware(function (Middleware $middleware) {
+        })
+        ->withMiddleware(function (Middleware $middleware) {
         $middleware->api(append: [
             XapiKeyTokenIsValid::class,
         ]);
