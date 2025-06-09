@@ -29,7 +29,7 @@ class AuthController extends Controller
             }
             RateLimiter::hit($rateKey, 60);
 
-        $user = Admin::where('email',$req->email)->where('role','admin')->first();
+        $user = Admin::where('email',$req->email)->first();
         if(!$user)
             return response()->json(['success'=>false,'message'=>'Error de credenciales'],401);
 
