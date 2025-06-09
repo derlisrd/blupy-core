@@ -124,8 +124,12 @@ Route::group(['middleware' => ['auth:admin']], function() {
     });
 
     Route::prefix('admin')->group(function () {
+        Route::post('/reset-password', [AdminController::class, 'resetPassword'])
+        ->middleware('permiso.admin:admins,reset_password');
+
         Route::post('/add', [AdminController::class, 'store'])
         ->middleware('permiso.admin:admins,crear');
+
     });
 
 });

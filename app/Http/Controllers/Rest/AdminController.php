@@ -36,4 +36,27 @@ class AdminController extends Controller
             'message' => 'Se ha creado el administrador correctamente'
         ]);
     }
+
+    public function resetPassword(Request $req){
+
+        $validator = Validator::make($req->all(), [
+            'id' => 'required|exists:admins,id',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+
+        Admin::where('id', $req->id)->update([
+            'password' => bcrypt($req->password)
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cambio de contraseña realizado correctamente'
+        ]);
+    }
 }
