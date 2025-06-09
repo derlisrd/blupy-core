@@ -19,9 +19,9 @@ class PermisoAdminController extends Controller
         ]);        
     }
 
-    public function permisosByAdmin(Request $req){
+    public function permisosByAdmin(Request $req,$id){
 
-        $permisosByUser = PermisosOtorgado::where('admin_id', $req->id)->get();
+        $permisosByUser = PermisosOtorgado::where('admin_id', $id)->get();
 
         return response()->json([
             'success' => true,
