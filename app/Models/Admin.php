@@ -14,6 +14,13 @@ class Admin extends Authenticatable implements JWTSubject
     use HasFactory, Notifiable, HasApiTokens;
     protected $table = 'admins';
 
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role'
+    ];
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
