@@ -49,7 +49,9 @@ class PermisoAdminController extends Controller
         $admin = Admin::findOrFail($request->admin_id);
         $admin->permisos()->syncWithoutDetaching($request->permisos);
 
-        return response()->json(['message' => 'Permisos asignados correctamente.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Permisos asignados correctamente.']);
     }
 
     // Quitar permisos de un admin
@@ -64,7 +66,9 @@ class PermisoAdminController extends Controller
         $admin = Admin::findOrFail($request->admin_id);
         $admin->permisos()->detach($request->permisos);
 
-        return response()->json(['message' => 'Permisos revocados correctamente.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Permisos revocados correctamente.']);
     }
 
 }
