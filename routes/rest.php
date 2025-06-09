@@ -125,7 +125,7 @@ Route::group(['middleware' => ['auth:admin']], function() {
 
     Route::prefix('admin')->group(function () {
         Route::post('/add', [AdminController::class, 'store'])
-        ->middleware('permiso.admin:admin,crear');
+        ->middleware('permiso.admin:admins,crear');
     });
 
 });
