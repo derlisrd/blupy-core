@@ -19,7 +19,7 @@ class PermisoAdminController extends Controller
     }
 
     public function administradores(){
-        $admins = Admin::all()->with('permisos');
+        $admins = Admin::join('permisos_otorgados', 'admins.id', '=', 'permisos_otorgados.admin_id')->get();
         return response()->json([
             'succcess' => true,
             'results' => $admins
