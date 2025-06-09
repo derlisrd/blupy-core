@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Rest\AdminController;
 use App\Http\Controllers\Rest\AuthController;
 use App\Http\Controllers\Rest\ClientesController;
 use App\Http\Controllers\Rest\ConsultasController;
@@ -120,6 +121,10 @@ Route::group(['middleware' => ['auth:admin']], function() {
         Route::get('/by-admin/{id}', [PermisoAdminController::class, 'permisosByAdmin']); // Todos los permisos disponibles
         Route::post('/asignar', [PermisoAdminController::class, 'asignar']); // Asignar permisos
         Route::post('/revocar', [PermisoAdminController::class, 'revocar']); // Revocar permisos
+    });
+
+    Route::prefix('admin')->group(function () {
+        Route::post('/add', [AdminController::class, 'add']);
     });
 
 });
