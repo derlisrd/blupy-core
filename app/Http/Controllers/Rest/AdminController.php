@@ -13,8 +13,8 @@ class AdminController extends Controller
         $validator = Validator::make($req->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:admins,email|max:255',
-            'password' => 'required|string|min:6',
-            //'password' => 'required|string|min:8|confirmed',
+            //'password' => 'required|string|min:6',
+            'password' => 'required|string|min:6|confirmed',
             'role' => 'required|in:admin,moderator',
         ]);
         if ($validator->fails()) {
