@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Rest;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Permiso;
+use App\Models\PermisosOtorgado;
 use Illuminate\Http\Request;
 
 class PermisoAdminController extends Controller
@@ -18,8 +19,18 @@ class PermisoAdminController extends Controller
         ]);        
     }
 
+    public function permisosByAdmin(Request $req){
+
+        $permisosByUser = PermisosOtorgado::where('admin_id', $req->id)->get();
+
+        return response()->json([
+            'success' => true,
+            'results' => $permisosByUser
+        ]);
+    }
+
     public function administradores(){
-        $admins = Admin::join('permisos_otorgados', 'admins.id', '=', 'permisos_otorgados.admin_id')->get();
+        $admins = Admin::all();
         return response()->json([
             'succcess' => true,
             'results' => $admins

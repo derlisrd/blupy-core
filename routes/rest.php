@@ -117,6 +117,7 @@ Route::group(['middleware' => ['auth:admin']], function() {
     ->group(function () {
         Route::get('/users-administradores', [PermisoAdminController::class, 'administradores']); // Todos los permisos disponibles
         Route::get('/', [PermisoAdminController::class, 'index']); // Todos los permisos disponibles
+        Route::get('/permisos-by-admin', [PermisoAdminController::class, 'permisosByAdmin']); // Todos los permisos disponibles
         Route::post('/asignar', [PermisoAdminController::class, 'asignar']); // Asignar permisos
         Route::post('/revocar', [PermisoAdminController::class, 'revocar']); // Revocar permisos
     });
