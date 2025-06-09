@@ -28,19 +28,15 @@ Route::group(['middleware' => ['auth:admin']], function() {
 
 
     Route::prefix('clientes')->group(function(){
-        Route::get('/',[ClientesController::class,'index'])
-        ->middleware('permiso.admin:clientes,ver')
-        ->name('rest_clientes');
+        Route::get('/',[ClientesController::class,'index'])->middleware('permiso.admin:clientes,ver')->name('rest_clientes');
         Route::post('/actualizar-foto-cedula/{id}',[ClientesController::class,'actualizarFotoCedula'])->name('rest_actualizar_foto_cedula');
         Route::post('/agregar-adjunto/{id}',[ClientesController::class,'agregarAdjunto'])->name('rest_agregar_abjuntos');
         Route::get('/adjuntos/{id}',[ClientesController::class,'adjuntos'])->name('rest_clientes_adjuntos');
         Route::post('/filtros',[ClientesController::class,'filtros'])->name('rest_clientes_filtros');
         Route::get('/buscar',[ClientesController::class,'buscar'])->name('rest_clientes_buscar');
         Route::get('/ficha/{id}',[ClientesController::class,'ficha'])->name('rest_cliente_ficha');
-        Route::put('/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])
-        ->middleware('permiso.admin:clientes,restablecer_contrasena')
-        ->name('rest_cliente_restablecer_contrasena');
-        Route::put('/estado',[ClientesController::class,'cambiarEstado'])->name('rest_cliente_cambiar_estado');
+        Route::put('/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])->middleware('permiso.admin:clientes,restablecer_contrasena');
+        Route::put('/estado',[ClientesController::class,'cambiarEstado'])->middleware('permiso.admin:clientes,cambiar_estado');
     });
 
     Route::prefix('micredito')->group(function(){
@@ -54,24 +50,22 @@ Route::group(['middleware' => ['auth:admin']], function() {
     Route::prefix('/notificacion')->group(function(){
         Route::post('/individual',[NotificacionesController::class,'individual'])->name('rest_enviar_notificacion_individual');
         Route::post('/wa',[NotificacionesController::class,'wa'])->name('rest_enviar_wa');
-        Route::post('/difusion',[NotificacionesController::class,'difusion'])
-            ->middleware('permiso.admin:notificaciones,enviar_difusion_masiva')
-        ->name('rest_enviar_notificaciones_masivas');
-        Route::post('/difusion-selectiva',[NotificacionesController::class,'difusionSelectiva'])
-            ->middleware('permiso.admin:notificaciones,enviar_difusion_selectiva')
-        ->name('rest_enviar_notificaciones_masivas_selectiva');
+        Route::post('/difusion',[NotificacionesController::class,'difusion'])->middleware('permiso.admin:notificaciones,enviar_difusion_masiva');
+        Route::post('/difusion-selectiva',[NotificacionesController::class,'difusionSelectiva'])->middleware('permiso.admin:notificaciones,enviar_difusion_selectiva');
         Route::get('/ficha',[NotificacionesController::class,'ficha'])->name('rest_notificacion_ficha');
         Route::post('/enviar-sms',[NotificacionesController::class,'enviarSms'])->name('rest_enviar_sms');
     });
 
 
 
-    Route::prefix('jobs')->group(function(){
-        Route::post('/update-perfil-funcionarios',[JobsManualesController::class,'updatePerfilFuncionarios'])->name('rest_update_perfil_funcionarios');
-        Route::post('/update-perfil-alianzas',[JobsManualesController::class,'updatePerfilAlianzas'])->name('rest_update_perfil_alianzas');
-        Route::post('/update-sucursales-farma',[JobsManualesController::class,'updateSucursalesFarma'])->name('rest_update_sucursales_farma');
-        Route::post('/update-ventas-farma',[JobsManualesController::class,'updateVentasFarma'])->name('rest_update_ventas_farma');
-        Route::post('/update-cliente-digital',[JobsManualesController::class,'updateClienteDigital'])->name('rest_update_cliente_digital');
+    Route::prefix('jobs')
+    ->middleware('permiso.admin:jobs,gestionar')
+    ->group(function(){
+        Route::post('/update-perfil-funcionarios',[JobsManualesController::class,'updatePerfilFuncionarios']);
+        Route::post('/update-perfil-alianzas',[JobsManualesController::class,'updatePerfilAlianzas']);
+        Route::post('/update-sucursales-farma',[JobsManualesController::class,'updateSucursalesFarma']);
+        Route::post('/update-ventas-farma',[JobsManualesController::class,'updateVentasFarma']);
+        Route::post('/update-cliente-digital',[JobsManualesController::class,'updateClienteDigital']);
     });
 
 
@@ -82,7 +76,7 @@ Route::group(['middleware' => ['auth:admin']], function() {
         Route::get('/totales',[SolicitudesController::class,'totales'])->name('rest_solicitudes_totales');
         Route::get('/buscar',[SolicitudesController::class,'buscar'])->name('rest_solicitud_buscar');
         Route::get('/filtros',[SolicitudesController::class,'filtros'])->name('rest_solicitudes_filtros');
-        Route::post('/aprobar',[SolicitudesController::class,'aprobar'])->name('rest_aprobar_solicitud');
+        Route::post('/aprobar',[SolicitudesController::class,'aprobar'])->middleware('permiso.admin:solicitud_creditos,aprobar');
         Route::put('/actualizar-solicitudes',[SolicitudesController::class,'actualizarSolicitudes'])->name('rest_actualizar_solicitudes');
         Route::put('/actualizar-solicitud',[SolicitudesController::class,'actualizarSolicitud'])->name('rest_actualizar_solicitud');
     });
