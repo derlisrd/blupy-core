@@ -6,6 +6,26 @@ use App\Services\FarmaService;
 
 trait ContratosBlupyFarmaTraits
 {
+    public function recibirContratoPorCodigo(string $codigo){
+        $farmaService = new FarmaService();
+        $response = $farmaService->MiCreditoContratosRecibir($codigo);
+        $data = (object) $response['data'];
+        $success = false;
+        $results = null;
+        $status = 400;
+
+        if($data->ok){
+            $success = true;
+            $results = $data->result;
+            $status = 200;
+        }
+
+        return (object) [
+            'success' => $success,
+            'results' => $results,
+            'status' => $status
+        ];
+    }
     public function consultarContratoBlupyPorDocumentoEnFarma(string $documento){
         $farmaService = new FarmaService();
         $response = $farmaService->MiCreditoContratosPorDocumento($documento);

@@ -13,6 +13,20 @@ class ContratosController extends Controller
 {
     use ContratosBlupyFarmaTraits;
 
+    public function recibirContrato(Request $req)
+    {
+        $validator = Validator::make($req->all(),['codigo'=>'required']);
+        if($validator->fails())
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+        $codigoDeContrato = $req->codigo;
+
+        $res = $this->recibirContratoPorCodigo($codigoDeContrato);
+        if(!$res->success)
+            return response()->json(['success' => false, 'message' => 'No se encontraron contratos para el codigo ingresado'], 404);
+
+        return response()->json(['success'=>true,'results'=>$res->results],$res->status);
+    }
+
     public function contratoPorDocumento(Request $req){
         $validator = Validator::make($req->all(),['documento'=>'required']);
         if($validator->fails())
