@@ -46,6 +46,8 @@ Route::post('/confirmar-telefono',[ValidacionesController::class,'confirmarTelef
 
 Route::get('/enviame-codigo-sms',[ValidacionesController::class,'enviameCodigoSMS'])->name('api_enviame_codigo_sms');
 
+Route::post('/re-enviar-codigo-wa', [ValidacionesController::class, 'reEnviarCodigoPorWa']);
+
 Route::get('/verificar-version',[VersionController::class,'verificarVersion'])->name('api_verificar_version');
 
 
