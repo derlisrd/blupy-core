@@ -151,14 +151,14 @@ class NotificacionesController extends Controller
             ->get();
             $androidDevices = $devices->where('os', 'android')->pluck('devicetoken')->toArray();
             $iosDevices = $devices->where('os', 'ios')->pluck('devicetoken')->toArray();
-            $expo = $devices->pluck('notitoken')->toArray();
+            //$expo = $devices->pluck('notitoken')->toArray();
             //$expotokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
 
-            NotificacionesJobs::dispatch($req->title, $req->text, $devices)->onConnection('database');
+            //NotificacionesJobs::dispatch($req->title, $req->text, $devices)->onConnection('database');
             PushNativeJobs::dispatch($req->title,$req->text,$androidDevices,'android')->onConnection('database');
             PushNativeJobs::dispatch($req->title,$req->text,$iosDevices,'ios')->onConnection('database'); 
             return response()->json(['success' => true, 'message' => 'Notificaciones enviadas en 2do plano','results'=>[
-                'expo' => $expo,
+                
                 'android' => $androidDevices,
                 'ios' => $iosDevices
             ] ]);
