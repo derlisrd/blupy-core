@@ -77,6 +77,14 @@ class ValidacionesController extends Controller
     // cliente quiere registrarse y no le llega el sms y no le llega el sms entonces usa esta funcion
     public function reEnviarCodigoPorWa(Request $req){
         try{
+            $ip = $req->ip();
+            $rateKey = "codigowa:$ip";
+
+            if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
+            }
+            RateLimiter::hit($rateKey, 60);
+
             $validator = Validator::make($req->all(), ['validacion_id' => 'required']);
             if ($validator->fails())
                 return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
