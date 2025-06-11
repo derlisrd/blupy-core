@@ -84,7 +84,7 @@ Route::group(['middleware' => ['auth:admin']], function() {
     Route::prefix('contrato')->group(function(){
         Route::get('/cedula',[ContratosController::class,'contratoPorDocumento'])->name('rest_contratos');
         Route::get('/codigo',[ContratosController::class,'contratoPorCodigo'])->name('rest_contratos');
-        Route::post('/recibir',[ContratosController::class,'recibirrecibirContrato'])->middleware('permiso.admin:contratos,recibir');;
+        Route::post('/recibir',[ContratosController::class,'recibirContrato'])->middleware('permiso.admin:contratos,recibir');;
     });
 
     Route::prefix('/consultas')->group(function(){
