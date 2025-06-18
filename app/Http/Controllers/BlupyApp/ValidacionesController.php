@@ -162,11 +162,12 @@ class ValidacionesController extends Controller
 
             $randomNumber = random_int(1000, 9999);
 
+            
+            /*  
             $celularFormateado = $req->celular;
-
-            $numeroTelefonoWa = $numeroTelefonoWa = '595' . substr($req->celular, 1);
+           $numeroTelefonoWa = $numeroTelefonoWa = '595' . substr($req->celular, 1);
             (new WaService())->send($numeroTelefonoWa, "Tu codigo de verificacion para Blupy es: $randomNumber. Verificacion de cuenta.");
-            $this->enviarMensajeDeTexto($celularFormateado, $randomNumber);
+            $this->enviarMensajeDeTexto($celularFormateado, $randomNumber); */
             
             $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 1, 'celular' => $req->celular, 'origen' => 'registro_celular']);
 
