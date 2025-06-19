@@ -157,7 +157,7 @@ return [
             'web'=>'required|boolean',
             'messages'=>[
                 'cedula.required'=>'Cédula es requerida.',
-                "password.required"=>"Contraseña es requerida.",
+                "password.required"=>"Ingrese la contraseña por favor.",
                 "desktop.required"=>"Tipo de dispositivo es obligatorio. (desktop)",
                 "desktop.boolean"=>"Tipo de dispositivo es boleano.",
                 "web.required"=>"SistemaOS de ingreso es obligatorio. (web)",
