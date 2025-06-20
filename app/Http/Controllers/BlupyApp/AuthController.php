@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Private\CuentasController as CuentasPrivate;
+use App\Jobs\DispositivoInusualJob;
 use App\Jobs\EmailSenderJob;
 use App\Models\Adicional;
 use App\Models\Adjunto;
@@ -336,17 +337,9 @@ class AuthController extends Controller
         ];
 
         $mensaje = "Utiliza el código $codigo para confirmar tu dispositivo en Blupy.";
-       $numeroTelefonoWa = '595' . substr($celular, 1);
-        // Enviar SMS
-        (new TigoSmsService())->enviarSms($celular, $mensaje);
-        (new WaService())->send($numeroTelefonoWa, $mensaje);
-        // Enviar Email
-        (new EmailService())->enviarEmail(
-            $email,
-            "[$codigo] Blupy confirmar dispositivo",
-            'email.validarDispositivo',
-            $datosEmail
-        );
+        $numeroTelefonoWa = '595' . substr($celular, 1);
+        
+        DispositivoInusualJob::dispatch($celular, $mensaje, $email, $codigo, $datosEmail, $numeroTelefonoWa)->onConnection('database');
 
         // Guardar validación
         $validacion = Validacion::create([
