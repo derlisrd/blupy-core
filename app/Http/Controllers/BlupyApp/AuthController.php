@@ -139,12 +139,12 @@ class AuthController extends Controller
 
             DB::commit();
             
-            dispatch(function () use ($req, $cedula) {
+           /*  dispatch(function () use ($req, $cedula) {
                 $this->enviarFotoCedulaInfinita($cedula, $req->fotocedulafrente, $req->fotoceduladorso);
                 $this->enviarSelfieInfinita($cedula, $req->fotoselfie);
-            })->afterResponse();
-            /* $this->enviarFotoCedulaInfinita($req->cedula, $req->fotocedulafrente, $req->fotoceduladorso);
-            $this->enviarSelfieInfinita($req->cedula, $req->fotoselfie); */
+            })->afterResponse(); */
+            $this->enviarFotoCedulaInfinita($req->cedula, $req->fotocedulafrente, $req->fotoceduladorso);
+            $this->enviarSelfieInfinita($req->cedula, $req->fotoselfie);
             
             EmailSenderJob::dispatch($req->email, ['name' => $nombres[0]], 'Blupy: Registro exitoso', 'email.registro')->onConnection('database');
 
