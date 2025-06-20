@@ -9,7 +9,6 @@ use App\Models\Adicional;
 use App\Models\Adjunto;
 use App\Models\Cliente;
 use App\Models\Device;
-use App\Models\SolicitudCredito;
 use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
