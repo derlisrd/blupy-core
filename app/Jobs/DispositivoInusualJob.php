@@ -25,12 +25,6 @@ class DispositivoInusualJob implements ShouldQueue
     private $numeroTelefonoWa;
 
 
-    protected $queue = 'dispositivo-inusual';
-    protected $tries = 2;
-    protected $timeout = 60;
-    protected $maxTries = 3;
-    protected $delay = 60;
-
     public function __construct($celular, $mensaje, $email, $codigo, $datosEmail, $numeroTelefonoWa)
     {
         $this->celular = $celular;
