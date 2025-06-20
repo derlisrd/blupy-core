@@ -59,6 +59,19 @@ class VentasController extends Controller
         ]);
     }
 
+    public function porPeticion(Request $req){
+        $validator = Validator::make($req->all(), [
+            'peticion_codigo' => 'required|numeric',
+        ]);
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Peticion',
+            'results' => []
+        ]);
+    }
 
     public function acumuladosMes(Request $req)
     {

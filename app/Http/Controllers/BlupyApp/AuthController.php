@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Private\CuentasController as CuentasPrivate;
+use App\Jobs\EmailSenderJob;
 use App\Models\Adicional;
 use App\Models\Adjunto;
 use App\Models\Cliente;
@@ -140,19 +141,20 @@ class AuthController extends Controller
                 'desktop' => $req->desktop ?? 0,
             ]);
 
-            SolicitudCredito::create([
+            /* SolicitudCredito::create([
                 'codigo' => $codigoSolicitud,
                 'estado' => 'Vigente',
                 'cliente_id' => $cliente->id,
                 'estado_id' => 7,
                 'tipo' => 0
-            ]);
+            ]); */
 
             DB::commit();
             // enviar foto de cedula a infinita
             $this->enviarFotoCedulaInfinita($req->cedula, $req->fotocedulafrente, $req->fotoceduladorso);
             $this->enviarSelfieInfinita($req->cedula, $req->fotoselfie);
-            $this->enviarEmailRegistro($req->email, $nombres[0]);
+            //$this->enviarEmailRegistro($req->email, $nombres[0]);
+            EmailSenderJob::dispatch($req->email, ['name' => $nombres[0]], 'Blupy: Registro exitoso', 'email.registro')->onConnection('database');
 
             $token = JWTAuth::fromUser($user);
             $tarjetasConsultas = new CuentasPrivate();
