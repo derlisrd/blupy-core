@@ -40,13 +40,17 @@ class AuthController extends Controller
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
         try {
+            $cedula = $req->cedula;
+
+            $adicional = Adicional::whereCedula($cedula)->first();
+            $esAdicional = (bool) $adicional;
             // consulta si tiene ficha en farma
-            $clienteFarma = $this->clienteFarma($req->cedula);
+            $clienteFarma = $this->clienteFarma($cedula);
 
             // guardar cedula en nuestros servidores las fotos estan en base64
-            $fotoCiFrente = $this->guardarCedulaImagenBase64($req->fotocedulafrente, $req->cedula . '_frente', 1);
-            $fotoCiDorso = $this->guardarCedulaImagenBase64($req->fotoceduladorso, $req->cedula . '_dorso', 1);
-            $fotoSelfie = $this->guardarSelfieImagenBase64($req->fotoselfie, $req->cedula);
+            $fotoCiFrente = $this->guardarCedulaImagenBase64($req->fotocedulafrente, $cedula . '_frente', 1);
+            $fotoCiDorso = $this->guardarCedulaImagenBase64($req->fotoceduladorso, $cedula . '_dorso', 1);
+            $fotoSelfie = $this->guardarSelfieImagenBase64($req->fotoselfie, $cedula);
 
 
             if ($fotoCiDorso == null || $fotoCiFrente == null)
@@ -54,10 +58,7 @@ class AuthController extends Controller
 
 
             DB::beginTransaction();
-
-            $adicional = Adicional::whereCedula($req->cedula)->first();
-            $esAdicional = $adicional ? true : false;
-
+        
             $nombres = $this->separarNombres($req->nombres);
             $apellidos = $this->separarNombres($req->apellidos);
 
@@ -67,7 +68,7 @@ class AuthController extends Controller
             }
 
             $datosCliente = [
-                'cedula' => $req->cedula,
+                'cedula' => $cedula,
                 'foto_ci_frente' => $fotoCiFrente,
                 'foto_ci_dorso' => $fotoCiDorso,
                 'selfie' => $fotoSelfie,
@@ -86,7 +87,6 @@ class AuthController extends Controller
                 'direccion_completado' => $direccionCompletado,
                 'cliid' => 0,
                 'solicitud_credito' => 0,
-                
             ];
             
             // ver si tiene ficha en infinita, sino lo crea
@@ -95,9 +95,6 @@ class AuthController extends Controller
             if (!$resRegistrarInfinita->register) {
                 return response()->json(['success' => false, 'message' => 'Intente mas adelante. Error infinita.'], 500);
             }
-
-            $codigoSolicitud = $resRegistrarInfinita->solicitudId;
-
 
 
             $datosCliente['cliid'] = $resRegistrarInfinita->cliId;
@@ -140,19 +137,15 @@ class AuthController extends Controller
                 'desktop' => $req->desktop ?? 0,
             ]);
 
-            /* SolicitudCredito::create([
-                'codigo' => $codigoSolicitud,
-                'estado' => 'Vigente',
-                'cliente_id' => $cliente->id,
-                'estado_id' => 7,
-                'tipo' => 0
-            ]); */
-
             DB::commit();
-            // enviar foto de cedula a infinita
-            $this->enviarFotoCedulaInfinita($req->cedula, $req->fotocedulafrente, $req->fotoceduladorso);
-            $this->enviarSelfieInfinita($req->cedula, $req->fotoselfie);
-            //$this->enviarEmailRegistro($req->email, $nombres[0]);
+            
+            dispatch(function () use ($req, $cedula) {
+                $this->enviarFotoCedulaInfinita($cedula, $req->fotocedulafrente, $req->fotoceduladorso);
+                $this->enviarSelfieInfinita($cedula, $req->fotoselfie);
+            })->afterResponse();
+            /* $this->enviarFotoCedulaInfinita($req->cedula, $req->fotocedulafrente, $req->fotoceduladorso);
+            $this->enviarSelfieInfinita($req->cedula, $req->fotoselfie); */
+            
             EmailSenderJob::dispatch($req->email, ['name' => $nombres[0]], 'Blupy: Registro exitoso', 'email.registro')->onConnection('database');
 
             $token = JWTAuth::fromUser($user);
@@ -166,7 +159,11 @@ class AuthController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             //SupabaseService::LOG('register', $th);
-            Log::error($th->getMessage());
+            Log::error('Error en registro de usuario', [
+                'cedula' => $req->cedula ?? 'N/A',
+                'error' => $th->getMessage(),
+                'trace' => $th->getTraceAsString()
+            ]);
             return response()->json(['success' => false, 'message' => 'Error de servidor'], 500);
         }
     }
