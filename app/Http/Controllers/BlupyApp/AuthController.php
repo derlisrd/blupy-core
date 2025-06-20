@@ -77,7 +77,6 @@ class AuthController extends Controller
                 'apellido_primero' => $apellidos[0],
                 'apellido_segundo' => $apellidos[1],
                 'fecha_nacimiento' => $req->fecha_nacimiento,
-                'cedula' => $req->cedula,
                 'celular' => $req->celular,
                 'email' => $req->email,
                 'funcionario' => $clienteFarma->funcionario,
@@ -93,6 +92,7 @@ class AuthController extends Controller
             $resRegistrarInfinita = (object)  $this->registrarInfinita((object) $datosCliente);
 
             if (!$resRegistrarInfinita->register) {
+                DB::rollBack();
                 return response()->json(['success' => false, 'message' => 'Intente mas adelante. Error infinita.'], 500);
             }
 
