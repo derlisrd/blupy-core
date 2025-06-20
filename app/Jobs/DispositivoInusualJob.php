@@ -5,10 +5,10 @@ namespace App\Jobs;
 use App\Services\EmailService;
 use App\Services\TigoSmsService;
 use App\Services\WaService;
+
+
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
-
-
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
