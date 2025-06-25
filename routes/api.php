@@ -18,7 +18,6 @@ use App\Http\Controllers\BlupyApp\UserController as UserPrivate;
 use App\Http\Controllers\Public\UserController as UserPublic;
 use App\Http\Controllers\BlupyApp\ValidacionesController;
 use App\Http\Controllers\BlupyApp\VendedorController;
-use App\Http\Controllers\BlupyEmpresa\AuthController as BlupyEmpresaAuthController;
 use App\Http\Controllers\Public\VersionController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,7 +25,6 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::post('/empresa/login', [BlupyEmpresaAuthController::class, 'login']);
 Route::post('/login',[AuthController::class,'login'])->name('api_login');
 
 Route::post('/confirmar-nuevo-dispositivo',[DeviceController::class,'confirmarNuevoDispositivo'])->name('api_confirmar_nuevo_dispositivo');
