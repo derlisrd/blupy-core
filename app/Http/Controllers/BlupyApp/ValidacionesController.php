@@ -155,7 +155,7 @@ class ValidacionesController extends Controller
             $rateKey = $ip . '|' . $req->celular;
 
             if (RateLimiter::tooManyAttempts($rateKey, 3)) {
-                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 400);
             }
             RateLimiter::hit($rateKey, 60);
 
@@ -163,11 +163,15 @@ class ValidacionesController extends Controller
             $randomNumber = random_int(1000, 9999);
 
             
-            /*  
+              
             $celularFormateado = $req->celular;
-           $numeroTelefonoWa = $numeroTelefonoWa = '595' . substr($req->celular, 1);
-            (new WaService())->send($numeroTelefonoWa, "Tu codigo de verificacion para Blupy es: $randomNumber. Verificacion de cuenta.");
-            $this->enviarMensajeDeTexto($celularFormateado, $randomNumber); */
+            $numeroTelefonoWa = $numeroTelefonoWa = '595' . substr($req->celular, 1);
+            $mensaje = "Tu código de verificación para Blupy es " . $randomNumber . ". Este código es válido por 10 minutos.";
+            
+            (new WaService())->send($numeroTelefonoWa, $mensaje);
+            
+            (new TigoSmsService())->enviarSms($celularFormateado, $mensaje);
+            
             
             $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 1, 'celular' => $req->celular, 'origen' => 'registro_celular']);
 
