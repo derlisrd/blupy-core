@@ -149,6 +149,7 @@ class VendedoresController extends Controller
         ->join('solicitud_creditos as s','s.cliente_id','=','c.id')
         ->where('v.cedula',$req->cedula)
         ->where('s.tipo',1)
+        ->where('s.estado_id', 7)
         ->select('s.id','c.cedula','users.name as cliente','v.nombre as vendedor','s.created_at as fecha','s.tipo','s.estado')
         ->get();
         
