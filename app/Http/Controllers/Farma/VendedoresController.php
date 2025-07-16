@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Farma;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Vendedor;
 use App\Services\FarmaService;
 use Illuminate\Http\Request;
@@ -102,7 +103,53 @@ class VendedoresController extends Controller
             'success'=>true,
             'message'=>'Error al ingresar. Contacte con nosotros.',
         ],500);
-
-
     }
+
+
+    public function activaciones(Request $req)
+    {
+        $ip = $req->ip();
+        $key = 'activaciones:' . $ip;
+        
+        // Método 1: Usando attempt() correctamente
+        $executed = RateLimiter::attempt($key, 3, function() {
+            // Aquí va la lógica que quieres ejecutar
+            // Por ejemplo:
+            // $this->procesarActivacion();
+            return true; // o el resultado de tu operación
+        }, 120); // 120 segundos = 2 minutos
+        
+        if (!$executed) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Demasiadas peticiones. Espere 2 minutos.'
+            ], 429); // Código 429 es más apropiado para rate limiting
+        }
+
+        $validator = Validator::make($req->only(['cedula']), [
+            'cedula' => 'required',
+        ]);
+
+        if($validator->fails())
+            return response()->json([
+                'success'=>false,
+                'message'=> $validator->errors()->first(),
+                'results'=>null
+            ], 400);
+        
+        $users = User::join('vendedores as v','users.vendedor_id','=','v.id')
+        ->where('v.cedula',$req->cedula)
+        ->select('users.name as cliente','v.nombre as vendedor')
+        ->get();
+        
+        
+        // Si llegaste aquí, la petición fue exitosa
+        return response()->json([
+            'success' => true,
+            'results'=>$users,
+            'message' => 'Activaciones'
+        ]);
+    }
+
+
 }
