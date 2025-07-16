@@ -137,17 +137,28 @@ class VendedoresController extends Controller
                 'results'=>null
             ], 400);
         
-        $users = User::join('vendedores as v','users.vendedor_id','=','v.id')
+        $registros = User::join('vendedores as v','users.vendedor_id','=','v.id')
+        ->join('clientes as c','users.cliente_id','=','c.id')
         ->where('v.cedula',$req->cedula)
-        ->select('users.name as cliente','v.nombre as vendedor','users.created_at as fecha');
-        
+        ->select('c.id','c.cedula','users.name as cliente','v.nombre as vendedor','users.created_at as fecha')
+        ->get();
+
+
+        $solicitudes = User::join('vendedores as v','users.vendedor_id','=','v.id')
+        ->join('clientes as c','users.cliente_id','=','c.id')
+        ->join('solicitud_creditos as s','s.cliente_id','=','c.id')
+        ->where('v.cedula',$req->cedula)
+        ->select('s.id','c.cedula','users.name as cliente','v.nombre as vendedor','users.created_at as fecha')
+        ->get();
         
         // Si llegaste aquí, la petición fue exitosa
         return response()->json([
             'success' => true,
             'message' => 'Activaciones',
-            'cantidad'=>$users->count(),
-            'results'=>$users->get(),
+            'results'=>[
+                'registros'=>$registros,
+                'solicitudes' => $solicitudes
+            ],
         ]);
     }
 
