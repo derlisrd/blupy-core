@@ -139,15 +139,15 @@ class VendedoresController extends Controller
         
         $users = User::join('vendedores as v','users.vendedor_id','=','v.id')
         ->where('v.cedula',$req->cedula)
-        ->select('users.name as cliente','v.nombre as vendedor')
-        ->get();
+        ->select('users.name as cliente','v.nombre as vendedor','users.created_at as fecha');
         
         
         // Si llegaste aquí, la petición fue exitosa
         return response()->json([
             'success' => true,
-            'results'=>$users,
-            'message' => 'Activaciones'
+            'message' => 'Activaciones',
+            'cantidad'=>$users->count(),
+            'results'=>$users->get(),
         ]);
     }
 
