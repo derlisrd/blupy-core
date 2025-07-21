@@ -230,7 +230,7 @@ class SolicitudesController extends Controller
             $descripcion = 'Tu solicitud de crédito ha sido enviada. ¡Estamos procesando tu solicitud! 🥳';
             if ($solicitud->id === 5) {
                 $titulo = '¡Crédito aprobado, felicidades! 🎉 ';
-                $descripcion = 'Para activar la linea puede pasar por cualquier sucursal de punto farma y firmar su contrato.';
+                $descripcion = 'Tiene 30 días para activar su línea. Puede activar su línea el Punto Farma más cercano. ¡Te esperamos!';
                 $numeroTelefonoWa = '595' . substr($user->cliente->celular, 1);
                 (new WaService())->send($numeroTelefonoWa, $titulo . $descripcion);
                 Informacion::create([
