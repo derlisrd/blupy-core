@@ -394,9 +394,20 @@ class SolicitudesController extends Controller
             if ($tarjetaObject->linea < (int)$req->limite)
                 return response()->json(['success' => false, 'message' => 'Error, limite excedido'], 403);
 
+                $datosAenviar = $cliente;
+
+                $departamento = Departamento::find($cliente->departamento_id);
+                $ciudad = Ciudad::find($cliente->ciudad_id);
+                $barrio = Barrio::find($cliente->barrio_id);
+    
+                $datosAenviar['departamento_id'] = $departamento->codigo;
+                $datosAenviar['ciudad_id'] = $ciudad->codigo;
+                $datosAenviar['barrio_id'] = $barrio->codigo;
+    
+                
 
 
-            $infinitaAdicional = $this->adicionalEnInfinita($cliente, $datoDelAdicional, $req->cuenta);
+            $infinitaAdicional = $this->adicionalEnInfinita($datosAenviar, $datoDelAdicional, $req->cuenta);
 
             if (! $infinitaAdicional->success) {
                 return response()->json(['success' => false, 'message' => $infinitaAdicional->message], 400);
