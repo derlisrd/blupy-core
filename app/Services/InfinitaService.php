@@ -22,6 +22,15 @@ class InfinitaService
         ];
     }
 
+    public function anularSolicitud($codigoSolicitud){
+        $datos = (object)[
+            'SolId'=>$codigoSolicitud,
+            'Proc'=>13
+        ];
+        return $this->post('LiqSolicitud',$datos);
+    }
+
+
     public function ExtractoCerrado($Maectaid,$Mtnume,$Periodo){
         return $this->get('ExtractoCerrado',['Maectaid' => $Maectaid,'Mtnume'=>$Mtnume,'Periodo' => $Periodo]);
     }

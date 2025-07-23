@@ -8,6 +8,7 @@ use App\Jobs\UpdatePerfilJobs;
 use App\Models\Cliente;
 use App\Models\SolicitudCredito;
 use App\Services\FarmaService;
+use App\Services\InfinitaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -16,16 +17,39 @@ class JobsManualesController extends Controller
 {
 
     public function anularSolicitudes(){
-        
-        $results = SolicitudCredito::where('estado_id',5)
-
-        ->whereBetween('created_at',[
-            '2023-10-23 00:00:00',
-            '2025-05-01 23:59:59' 
-        ])
-        ->get();
-
-        return response()->json(['success'=>false,'message'=>'Solicutdes','results'=>$results]);
+        // 1. Get only the 'codigo' for the records that need to be processed
+        $solicitudesToAnular = SolicitudCredito::where('estado_id', 5)
+            ->whereBetween('created_at', [
+                '2023-10-23 00:00:00',
+                '2023-12-31 23:59:59'
+            ])
+            ->select('id', 'codigo') // Select 'id' if you need it later, or just 'codigo'
+            ->get();
+    
+        $infinita = new InfinitaService();
+        $codigosAnulados = [];
+    
+        // 2. Loop through the results to call the external service
+        foreach($solicitudesToAnular as $sol){
+            // Call the external service for each 'codigo'
+            $infinita->anularSolicitud($sol->codigo);
+            $codigosAnulados[] = $sol->codigo; // Store the codes that were processed
+        }
+    
+        // 3. Perform a single mass update for all records that were processed
+        if (!empty($codigosAnulados)) {
+            SolicitudCredito::whereIn('codigo', $codigosAnulados)->update([
+                'estado_id' => 13,
+                'estado' => 'anulado'
+            ]);
+        }
+    
+        // You might want to return a different message or the count of updated records
+        return response()->json([
+            'success' => true,
+            'message' => 'Solicitudes procesadas y anuladas correctamente.',
+            'anuladas_count' => count($codigosAnulados)
+        ]);
     }
 
 
