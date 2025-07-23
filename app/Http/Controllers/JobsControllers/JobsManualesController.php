@@ -3,17 +3,32 @@
 namespace App\Http\Controllers\JobsControllers;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\ActualizarTarjetasJobs;
+
 use App\Jobs\UpdatePerfilJobs;
 use App\Models\Cliente;
+use App\Models\SolicitudCredito;
 use App\Services\FarmaService;
-use App\Services\SupabaseService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 
 class JobsManualesController extends Controller
 {
+
+    public function anularSolicitudes(){
+        
+        $results = SolicitudCredito::where('estado_id',5)
+
+        ->whereBetween('created_at',[
+            '2023-10-23 00:00:00',
+            '2025-05-01 23:59:59' 
+        ])
+        ->get();
+
+        return response()->json(['success'=>false,'message'=>'Solicutdes','results'=>$results]);
+    }
+
+
     public function actualizarTarjetas(){
         // ActualizarTarjetasJobs::dispatch()->onConnection('database');
         return response()->json(['success'=>false,'message'=>'Job ya ha sido procesado.'],400);
@@ -186,7 +201,7 @@ class JobsManualesController extends Controller
                             ];
                         }
                         if (!empty($ventasProcesadas)) {
-                            SupabaseService::ventas($ventasProcesadas);
+                            //SupabaseService::ventas($ventasProcesadas);
                         }
                     }
 
