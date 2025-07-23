@@ -20,8 +20,8 @@ class JobsManualesController extends Controller
         // 1. Get only the 'codigo' for the records that need to be processed
         $solicitudesToAnular = SolicitudCredito::where('estado_id', 5)
             ->whereBetween('created_at', [
-                '2024-01-01 00:00:00',
-                '2024-12-31 23:59:59'
+                '2025-01-01 00:00:00',
+                '2025-05-31 23:59:59'
             ])
             ->select('id', 'codigo') // Select 'id' if you need it later, or just 'codigo'
             ->get();
