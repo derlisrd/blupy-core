@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\JobsControllers\JobsManualesController;
+//use App\Http\Controllers\JobsControllers\JobsManualesController;
 //use App\Jobs\AdjuntosJob;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +22,4 @@ Route::get('/clientescondeudas',[JobsManualesController::class,'clientesConDeuda
 });
  */
 
- Route::get('/run-anular-solicitudes',[JobsManualesController::class,'anularSolicitudes']);
+ //Route::get('/run-anular-solicitudes',[JobsManualesController::class,'anularSolicitudes']);
