@@ -20,8 +20,8 @@ class JobsManualesController extends Controller
         // 1. Get only the 'codigo' for the records that need to be processed
         $solicitudesToAnular = SolicitudCredito::where('estado_id', 5)
             ->whereBetween('created_at', [
-                '2023-10-23 00:00:00',
-                '2023-12-31 23:59:59'
+                '2024-01-01 00:00:00',
+                '2024-12-31 23:59:59'
             ])
             ->select('id', 'codigo') // Select 'id' if you need it later, or just 'codigo'
             ->get();
@@ -40,7 +40,7 @@ class JobsManualesController extends Controller
         if (!empty($codigosAnulados)) {
             SolicitudCredito::whereIn('codigo', $codigosAnulados)->update([
                 'estado_id' => 13,
-                'estado' => 'anulado'
+                'estado' => 'Anulada'
             ]);
         }
     
