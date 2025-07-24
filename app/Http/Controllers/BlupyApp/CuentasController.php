@@ -136,10 +136,25 @@ class CuentasController extends Controller
             }
             if(!isset($req->cuenta) || $req->cuenta == null || $req->cuenta == '0'){
                 //farma
-                $resFarma = $this->farmaService->movimientos($user->cliente->cedula,$periodo);
+                $resFarma = $this->farmaService->movimientos2($user->cliente->cedula,$periodo);
                 $farma = (object) $resFarma['data'];
                 if(property_exists($farma,'result')){
-                    foreach($farma->result['movimientos'] as $val){
+                    foreach($farma->result as $val){
+                        $date = Carbon::parse($val['evenFecha'],'UTC');
+                        $date->setTimezone('America/Asuncion');
+                        $fecha = $date->format('Y-m-d');
+                        $hora = $date->format('H:i:s');
+
+                        array_push($results,[
+                            'comercio'=>'Farma S.A.',
+                            'descripcion'=>$val['ticoDescripcion'],
+                            'detalles'=> $val['ticoCodigo'].' '.$val['evenNumero'],
+                            'fecha'=>$fecha,
+                            'hora'=>$hora,
+                            'monto'=>$val['monto']
+                        ]);
+                    }
+                    /* foreach($farma->result['movimientos'] as $val){
                         $date = Carbon::parse($val['evenFecha'],'UTC');
                         $date->setTimezone('America/Asuncion');
                         $fecha = $date->format('Y-m-d');
@@ -152,7 +167,7 @@ class CuentasController extends Controller
                             'hora'=>$hora,
                             'monto'=>$val['monto']
                         ]);
-                    }
+                    } */
                 }
             }
 

@@ -47,6 +47,9 @@ class FarmaService
     public function actualizarPedidosQR($codigo, $numero_cuenta, $numero_tarjeta, $movimiento){
         return $this->post('pedidosqr/autorizar',['codigo' => $codigo,'numero_cuenta'=>$numero_cuenta,'numero_tarjeta'=>$numero_tarjeta,'movimiento'=>$movimiento]);
     }
+    public function movimientos2(String $cedula, String $periodo){
+        return $this->get('movimientos',['documento' => $cedula, 'periodo' =>$periodo]);
+    }
     public function movimientos(String $cedula, String $periodo){
         return $this->get('cliente/getMovimientos',['documento' => $cedula, 'periodo' =>$periodo]);
     }
