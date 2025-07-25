@@ -33,6 +33,9 @@ class FarmaService
     public function cliente(String $cedula){
         return $this->get('cliente/getCliente',['documento' => $cedula]);
     }
+    public function infoSucursal(String $punto){
+        return $this->get('info/sucursal',['punto' => $punto]);
+    }
 
     public function MiCreditoContratosRecibir(String $codigoDeContrato){
         return $this->post('micredito-contratos/recibir',['codigo' => $codigoDeContrato]);

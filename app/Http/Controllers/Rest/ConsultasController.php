@@ -12,6 +12,27 @@ use Illuminate\Support\Facades\Validator;
 
 class ConsultasController extends Controller
 {
+
+
+    public function infoSucursal(Request $req){
+
+        $validator = Validator::make($req->only(['punto']), ['punto' => 'required']);
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+            $res = (new FarmaService())->infoSucursal($req->punto);
+            $dataFarma = (object)$res['data'];
+
+            return response()->json([
+                'success'=> true,
+                'results' => $dataFarma->result
+            ]);
+
+    }
+
+
+
+
     public function clienteFarmaMiCredito(Request $req)
     {
         $validator = Validator::make($req->only(['cedula']), ['cedula' => 'required']);
