@@ -68,6 +68,7 @@ class QRController extends Controller
 
             if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
                 try {
+                    //confirmar pago en farma
                     $farmaService = new FarmaService();
                     $farmaService->actualizarPedidosQR(
                         (string) ($datasResults['id'] ?? ''),
