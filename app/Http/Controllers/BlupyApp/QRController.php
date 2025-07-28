@@ -57,19 +57,35 @@ class QRController extends Controller
                 ->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
 
-            if (isset($data->results)){
+            if (!isset($data->results)){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error en el servidor. !QR2400' 
+                ],404);
+            }
 
-                $datasResults = $data->results;
+            $datasResults = $data->results;
 
-                if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
-                    app(FarmaService::class)->actualizarPedidosQR(
+            if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
+                try {
+                    $farmaService = new FarmaService();
+                    $farmaService->actualizarPedidosQR(
                         (string) ($datasResults['id'] ?? ''),
                         $datasResults['numero_cuenta'] ?? '',
                         $datasResults['numero_tarjeta'] ?? '',
                         $datasResults['numero_movimiento'] ?? ''
-                    );
-                }
+                    ); 
+                } catch (\Throwable $th) {
+                    //throw $th;
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Error en el servidor. Intente en unos momentos. QRF500'
+                    ],500);
+                }  
+                    
             }
+
+            
 
 
             return response()->json([
