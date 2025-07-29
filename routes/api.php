@@ -19,10 +19,11 @@ use App\Http\Controllers\Public\UserController as UserPublic;
 use App\Http\Controllers\BlupyApp\ValidacionesController;
 use App\Http\Controllers\BlupyApp\VendedorController;
 use App\Http\Controllers\Public\VersionController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 
-
+Route::get('/test',[TestController::class,'test']);
 
 
 Route::post('/login',[AuthController::class,'login'])->name('api_login');
@@ -51,8 +52,6 @@ Route::get('/enviame-codigo-sms',[ValidacionesController::class,'enviameCodigoSM
 Route::post('/re-enviar-codigo-wa', [ValidacionesController::class, 'reEnviarCodigoPorWa']);
 
 Route::get('/verificar-version',[VersionController::class,'verificarVersion'])->name('api_verificar_version');
-
-
 
 
 Route::middleware('auth:api')->group(function(){
