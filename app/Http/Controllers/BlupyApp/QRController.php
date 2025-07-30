@@ -58,6 +58,8 @@ class QRController extends Controller
             $data = (object) $blupy['data'];
 
             if (!isset($data->results)){
+                Log::info($parametrosPorArray);
+                Log::info($data);
                 return response()->json([
                     'success' => false,
                     'message' => 'Error en el servidor. !QR2400' 
