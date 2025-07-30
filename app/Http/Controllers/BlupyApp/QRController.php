@@ -57,15 +57,6 @@ class QRController extends Controller
                 ->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
 
-            if (!isset($data->results)){
-                Log::info($parametrosPorArray);
-                Log::info($data);
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Error en el servidor. !QR2400' 
-                ],404);
-            }
-
             $datasResults = $data->results;
 
             if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
@@ -79,10 +70,10 @@ class QRController extends Controller
                         $datasResults['numero_movimiento'] ?? ''
                     ); 
                 } catch (\Throwable $th) {
-                    //throw $th;
+                    Log::error($th->getMessage());
                     return response()->json([
                         'success' => false,
-                        'message' => 'Error en el servidor. Intente en unos momentos. QRF500'
+                        'message' => 'Error. Intente otra vez en unos momentos. QRF500'
                     ],500);
                 }  
                     
