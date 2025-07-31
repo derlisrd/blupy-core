@@ -30,7 +30,7 @@ class QRController extends Controller
                 'id' => $req->id,
                 'documento' => $cliente->cedula,
                 'numeroCuenta' => $req->numeroCuenta ? (int) $req->numeroCuenta : 0,
-                'numeroTarjeta' => $req->numeroTarjeta,
+                'numeroTarjeta' => $req->numeroTarjeta ?? 1,
                 'telefono' => $req->telefono,
                 'ip' => $req->ip(),
                 'localizacion' => $req->localizacion,
