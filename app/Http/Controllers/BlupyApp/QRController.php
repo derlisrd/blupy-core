@@ -93,7 +93,7 @@ class QRController extends Controller
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Error. Por favor intente en unos momentos. CQ500'
+                'message' => 'Error de conexión. Por favor intente en unos momentos. CQ500'
             ], 500);
         }
     }
