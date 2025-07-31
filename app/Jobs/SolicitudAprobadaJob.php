@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class SolicitudAprobadaJob implements ShouldQueue
@@ -42,9 +43,11 @@ class SolicitudAprobadaJob implements ShouldQueue
                 $message->subject($datos['asunto']);
                 $message->to($datos['email']);
         });
-
+        Log::info('Correo enviado');
         } catch (\Throwable $th) {
+            Log::error($th->getMessage());
             throw $th;
+
         }
     }
 }
