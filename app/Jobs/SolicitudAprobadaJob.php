@@ -20,7 +20,7 @@ class SolicitudAprobadaJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct($text,$email,$celular)
+    public function __construct($email,$celular)
     {
         $this->email = $email;
         $this->celular = $celular;
