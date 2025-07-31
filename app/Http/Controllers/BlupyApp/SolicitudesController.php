@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Private\CuentasController as CuentasPrivate;
+use App\Jobs\SolicitudAprobadaJob;
 use App\Models\Adjunto;
 use App\Services\InfinitaService;
 use App\Services\WaService;
@@ -229,10 +230,9 @@ class SolicitudesController extends Controller
             $titulo = '¡Solicitud de crédito!';
             $descripcion = 'Tu solicitud de crédito ha sido enviada. ¡Estamos procesando tu solicitud! 🥳';
             if ($solicitud->id === 5) {
-                $titulo = '¡Crédito aprobado, felicidades! 🎉 ';
-                $descripcion = '¡Recuerda! Tienes hasta 30 días para activar tu línea. Puedes hacerlo en el Punto Farma más cercano. ¡Te esperamos!';
-                $numeroTelefonoWa = '595' . substr($user->cliente->celular, 1);
-                (new WaService())->send($numeroTelefonoWa, $titulo . $descripcion);
+                
+                SolicitudAprobadaJob::dispatch($cliente->email,$cliente->celular);
+
                 Informacion::create([
                     'user_id' => $user->id,
                     'codigo_info' => 1,

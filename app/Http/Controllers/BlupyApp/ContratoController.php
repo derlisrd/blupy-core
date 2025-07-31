@@ -17,4 +17,8 @@ class ContratoController extends Controller
             ]
         ]);
     }
+
+    public function contrato(){
+        return view('pdf.contrato');
+    }
 }
