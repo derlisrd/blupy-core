@@ -5,16 +5,24 @@ namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
 use App\Models\Vendedor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 
 class VendedorController extends Controller
 {
     public function consultar(Request $req){
+        $ip = $req->ip();
+            $rateKey = "vendedor:$ip";
+
+        if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+            return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
+        }
+        RateLimiter::hit($rateKey, 60);
         $vendedor = Vendedor::find($req->id);
         if(!$vendedor){
             return response()->json([
                 'success'=>false,
-                'message'=>"No existe vendedor"
+                'message'=>"Qr de vendedor no valido"
             ],404);
         }
         return response()->json([

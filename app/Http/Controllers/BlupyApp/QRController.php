@@ -88,12 +88,12 @@ class QRController extends Controller
             ], $blupy['status']);
         } catch (\Throwable $th) {
             Log::error('Error en autorizar QR: ' . $th->getMessage(), [
-                'exception' => $th,
                 'user_id' => $req->user()->id ?? null,
+                'parametros'=>$parametrosPorArray
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Error de servidor. CQ500'
+                'message' => 'Error. Por favor intente en unos momentos. CQ500'
             ], 500);
         }
     }

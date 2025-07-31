@@ -19,11 +19,11 @@ use App\Http\Controllers\Public\UserController as UserPublic;
 use App\Http\Controllers\BlupyApp\ValidacionesController;
 use App\Http\Controllers\BlupyApp\VendedorController;
 use App\Http\Controllers\Public\VersionController;
-use App\Http\Controllers\TestController;
+
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/test',[TestController::class,'test']);
+Route::get('/vendedor/{id}',[VendedorController::class,'consultar']);
 
 
 Route::post('/login',[AuthController::class,'login'])->name('api_login');
