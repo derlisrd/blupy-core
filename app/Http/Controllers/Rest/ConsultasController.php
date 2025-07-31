@@ -116,7 +116,7 @@ class ConsultasController extends Controller
 
         $farmaService = new FarmaService();
 
-        $resFarma = $farmaService->movimientos($req->cedula, $req->periodo);
+        $resFarma = $farmaService->movimientos2($req->cedula, $req->periodo);
         $farma = (object) $resFarma['data'];
         $results = [];
         if (property_exists($farma, 'result')) {
