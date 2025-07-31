@@ -120,7 +120,7 @@ class ConsultasController extends Controller
         $farma = (object) $resFarma['data'];
         $results = [];
         if (property_exists($farma, 'result')) {
-            foreach ($farma->result['movimientos'] as $val) {
+            foreach ($farma->result as $val) {
                 $date = Carbon::parse($val['evenFecha'], 'UTC');
                 $date->setTimezone('America/Asuncion');
                 $fecha = $date->format('Y-m-d');
