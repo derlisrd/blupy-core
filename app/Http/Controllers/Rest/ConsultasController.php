@@ -116,11 +116,11 @@ class ConsultasController extends Controller
 
         $farmaService = new FarmaService();
 
-        $resFarma = $farmaService->movimientos2($req->cedula, $req->periodo);
+        $resFarma = $farmaService->movimientos($req->cedula, $req->periodo);
         $farma = (object) $resFarma['data'];
         $results = [];
         if (property_exists($farma, 'result')) {
-            foreach ($farma->result as $val) {
+            foreach ($farma->result['movimientos'] as $val) {
                 $date = Carbon::parse($val['evenFecha'], 'UTC');
                 $date->setTimezone('America/Asuncion');
                 $fecha = $date->format('Y-m-d');
