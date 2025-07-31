@@ -231,7 +231,7 @@ class SolicitudesController extends Controller
             $descripcion = 'Tu solicitud de crédito ha sido enviada. ¡Estamos procesando tu solicitud! 🥳';
             if ($solicitud->id === 5) {
                 
-                SolicitudAprobadaJob::dispatch($cliente->email,$cliente->celular)->onConnection('database');
+                SolicitudAprobadaJob::dispatch($user->email,$cliente->celular)->onConnection('database');
 
                 Informacion::create([
                     'user_id' => $user->id,
