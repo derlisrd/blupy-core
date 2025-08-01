@@ -124,7 +124,7 @@ class CuentasController extends Controller
             foreach ($farma->result as $val) {
                 $alianzas = [];
                 foreach ($val['alianzas'] as $alianza) {
-                    if ($alianza['frpaCodigo'] === 129 || $alianza['frpaCodigo'] === 136 || $alianza['frpaCodigo'] === 127) {
+                    if ($alianza['frpaCodigo'] > 126) {
                         array_push($alianzas, [
                             'codigo' => $alianza['codigoAdicional'],
                             'nombre' => $alianza['alianza'],
