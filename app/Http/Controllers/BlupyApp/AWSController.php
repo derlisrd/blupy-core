@@ -68,8 +68,7 @@ class AWSController extends Controller
             $faceDetectArray = ($faceDetect['FaceDetails']);
             $results1 = $analysis1['TextDetections'];
 
-            Log::info('faceDetetc',$faceDetectArray);
-            Log::info('cedula_front',$results1);
+            
 
             if(!$results1){
                 return response()->json([
