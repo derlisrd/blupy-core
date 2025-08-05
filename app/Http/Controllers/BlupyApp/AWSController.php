@@ -75,13 +75,13 @@ class AWSController extends Controller
                 
                 // Validar calidad del rostro
                 $faceQuality = $face['Quality'];
-                if ($faceQuality['Brightness'] < 30) {
+                if ($faceQuality['Brightness'] < 30 || $faceQuality['Brightness'] > 80) {
                     $success = false;
-                    $message = 'La imagen está muy oscura. Tome la foto con mejor iluminación.';
+                    $message = 'La imagen está muy oscura o muy brillante. Tome la foto con mejor iluminación.';
                     $status = 400;
                 }
                 
-                if ($faceQuality['Sharpness'] < 30) {
+                if ($faceQuality['Sharpness'] < 50) {
                     $success = false;
                     $message = 'La imagen está borrosa. Tome una foto más nítida.';
                     $status = 400;
@@ -188,7 +188,6 @@ class AWSController extends Controller
             ], 500);
         }
     }
-
 
 
     public function escanearCedula(Request $req)
