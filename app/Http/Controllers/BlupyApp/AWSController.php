@@ -97,23 +97,23 @@ class AWSController extends Controller
             if ($cedula != $extraidoCedula) {
                 $nroCedula = false;
                 $success = false;
-                $message = 'Número de cédula no concuerda con la foto. Verifique los datos.';
+                $message = 'Número de cédula no concuerda con la foto. Verifique los datos o tome una foto más nitida.';
                 $status = 400;
             }
 
             if (!$fechaNacimiento) {
                 $success = false;
-                $message = 'Fecha de nacimiento no concuerda con la foto. Verifique los datos.';
+                $message = 'Fecha de nacimiento no concuerda con la foto. Verifique los datos o tome una foto más nitida.';
                 $status = 400;
             }
             if (!$nombres) {
                 $success = false;
-                $message = 'Nombre no concuerda con la foto. Verifique los datos.';
+                $message = 'Nombre no concuerda con la foto. Verifique los datos o tome una foto más nitida.';
                 $status = 400;
             }
             if (!$apellidos) {
                 $success = false;
-                $message = 'Apellido no concuerda con la foto. Verifique los datos.';
+                $message = 'Apellido no concuerda con la foto. Verifique los datos o tome una foto más nitida.';
                 $status = 400;
             }
 
