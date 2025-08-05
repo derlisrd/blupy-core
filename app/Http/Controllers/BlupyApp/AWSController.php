@@ -75,7 +75,7 @@ class AWSController extends Controller
                 
                 // Validar calidad del rostro
                 $faceQuality = $face['Quality'];
-                if ($faceQuality['Brightness'] < 30 || $faceQuality['Brightness'] > 80) {
+                if ($faceQuality['Brightness'] < 30) {
                     $success = false;
                     $message = 'La imagen está muy oscura o muy brillante. Tome la foto con mejor iluminación.';
                     $status = 400;
