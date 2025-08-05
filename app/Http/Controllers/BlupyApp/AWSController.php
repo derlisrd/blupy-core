@@ -16,19 +16,12 @@ class AWSController extends Controller
 
     public function escanearCedula(Request $req)
     {
-        $validator = Validator::make($req->only('fotofrontal64'), [
-            'fotofrontal64' => [
-                'required',
-                'string',
-                'base64image', // Valida que sea una imagen en Base64
-                'base64dimensions:min_width=100,min_height=100', // Valida las dimensiones mínimas
-                'base64mimes:jpeg,png', // Valida los tipos de archivo permitidos
-            ]
-        ], [
-            'fotofrontal64.required' => 'La foto frontal de la cédula es obligatoria.',
-            'fotofrontal64.base64image' => 'El archivo no es una imagen válida.',
-            'fotofrontal64.base64dimensions' => 'La imagen es demasiado pequeña. El tamaño mínimo es 100x100 píxeles.',
-            'fotofrontal64.base64mimes' => 'Solo se permiten imágenes en formato JPEG o PNG.',
+        $validator = Validator::make($req->all(), [
+            'fotofrontal64'=>'required',
+            'cedula'=>'required',
+            'nombres'=>'required',
+            'apellidos'=>'required',
+            'nacimiento'=>'required',
         ]);
 
         if ($validator->fails())
