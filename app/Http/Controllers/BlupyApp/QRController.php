@@ -59,6 +59,13 @@ class QRController extends Controller
 
             $datasResults = $data->results;
 
+            if(!isset($data->results)){
+                return response()->json([
+                    'success'=>false,
+                    'message'=>'Error. Por favor, solicite al comercio generar nuevamente el QR.'
+                ],400);
+            }
+
             if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
                 try {
                     //confirmar pago en farma
