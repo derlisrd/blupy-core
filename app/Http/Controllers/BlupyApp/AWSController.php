@@ -81,7 +81,7 @@ class AWSController extends Controller
                     $status = 400;
                 }
                 
-                if ($faceQuality['Sharpness'] < 50) {
+                if ($faceQuality['Sharpness'] < 30) {
                     $success = false;
                     $message = 'La imagen está borrosa. Tome una foto más nítida.';
                     $status = 400;
