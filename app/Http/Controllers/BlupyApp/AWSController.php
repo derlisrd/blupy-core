@@ -13,12 +13,29 @@ use Illuminate\Support\Facades\RateLimiter;
 
 class AWSController extends Controller
 {
-    
-    public function scanearDocumento(Request $req){
-        $validator = Validator::make($req->all(),trans('validation.verify.scan'),trans('validation.verify.scan.messages'));
 
-        if($validator->fails())
-            return response()->json(['success' => false, 'message' => $validator->errors()->first()],400);
+    public function escanearCedula(Request $req)
+    {
+        $validator = Validator::make($req->only('fotofrontal64'), [
+            'fotofrontal64' => [
+                'required',
+                'string',
+                'base64image', // Valida que sea una imagen en Base64
+                'base64dimensions:min_width=100,min_height=100', // Valida las dimensiones mínimas
+                'base64mimes:jpeg,png', // Valida los tipos de archivo permitidos
+            ]
+        ], [
+            'fotofrontal64.required' => 'La foto frontal de la cédula es obligatoria.',
+            'fotofrontal64.base64image' => 'El archivo no es una imagen válida.',
+            'fotofrontal64.base64dimensions' => 'La imagen es demasiado pequeña. El tamaño mínimo es 100x100 píxeles.',
+            'fotofrontal64.base64mimes' => 'Solo se permiten imágenes en formato JPEG o PNG.',
+        ]);
+
+        if ($validator->fails())
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 400);
 
         $ip = $req->ip();
         $rateKey = "scanCedula:$ip";
@@ -49,11 +66,122 @@ class AWSController extends Controller
                 'MaxLabels' => 10,
                 'MinConfidence' => 77
             ]);
-            
+
+            $results1 = $analysis1['TextDetections'];
+
+
+
+            if (!$results1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se pudo subir la imagen o no se detecta el documento.'
+                ], 400);
+            }
+            $string = '';
+            foreach ($results1 as $item) {
+                if ($item['Type'] === 'WORD' || $item['Type'] === 'LINE') {
+                    $string .= $item['DetectedText'] . ' ';
+                }
+            }
+
+
+            $scaned = $this->CleanScan($string);
+            $name = $this->CleanText($req->nombres);
+            $lastname = $this->CleanText($req->apellidos);
+            $nacimiento = str_replace('/', '-', $req->nacimiento);
+            $nombres = Str::contains($scaned, [$name]);
+            $apellidos = Str::contains($scaned, [$lastname]);
+            $fechaNacimiento = Str::contains($scaned, [$nacimiento]);
+            $nroCedula = Str::contains($scaned, [$req->cedula]);
+            $extraidoCedula = (int)strstr($scaned, $req->cedula);
+            $cedula = (int) $req->cedula;
+
+            $message = '';
+            $success = true;
+            $status = 200;
+
+
+            if ($cedula != $extraidoCedula) {
+                $nroCedula = false;
+                $success = false;
+                $message = 'Número de cédula no concuerda con la foto. Verifique los datos.';
+                $status = 400;
+            }
+
+            if (!$fechaNacimiento) {
+                $success = false;
+                $message = 'Fecha de nacimiento no concuerda con la foto. Verifique los datos.';
+                $status = 400;
+            }
+            if (!$nombres) {
+                $success = false;
+                $message = 'Nombre no concuerda con la foto. Verifique los datos.';
+                $status = 400;
+            }
+            if (!$apellidos) {
+                $success = false;
+                $message = 'Apellido no concuerda con la foto. Verifique los datos.';
+                $status = 400;
+            }
+
+            return response()->json([
+                'success' => $success,
+                'results' => [
+                    'apellidos' => $apellidos,
+                    'nombres' => $nombres,
+                    'nacimiento' => $fechaNacimiento,
+                    'cedula' => $nroCedula,
+                ],
+                'message' => $message
+            ], $status);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return response()->json(['success' =>  false, 'message' => 'Error. Trate de tomar una foto bien nitida y sin brillos.'], 500);
+        }
+    }
+
+
+    public function scanearDocumento(Request $req)
+    {
+        $validator = Validator::make($req->all(), trans('validation.verify.scan'), trans('validation.verify.scan.messages'));
+
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        $ip = $req->ip();
+        $rateKey = "scanCedula:$ip";
+
+        if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+            return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 2 minutos.'], 429);
+        }
+        RateLimiter::hit($rateKey, 120);
+
+        try {
+            $amazon = new RekognitionClient([
+                'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
+                'version' => 'latest',
+            ]);
+
+            // Procesa la imagen frontal de la cédula
+            $base64Image = explode(";base64,", $req->fotofrontal64);
+            $image_base64 = base64_decode($base64Image[1]);
+
+            // Verificamos si la decodificación fue exitosa
+            if (!$image_base64) {
+                return response()->json(['success' => false, 'message' => 'Error en formato de la imagen. Trate de subir desde galeria. E64'], 400);
+            }
+
+            // Pasamos los bytes decodificados directamente a Rekognition.
+            $analysis1 = $amazon->detectText([
+                'Image' => ['Bytes' => $image_base64],
+                'MaxLabels' => 10,
+                'MinConfidence' => 77
+            ]);
+
             // Procesa la imagen de la selfie
             $base64Selfie = explode(";base64,", $req->fotoselfie64);
             $image_base64_selfie = base64_decode($base64Selfie[1]);
-            
+
             // Verificamos si la decodificación fue exitosa
             if (!$image_base64_selfie) {
                 return response()->json(['success' => false, 'message' => 'Error en formato de selfie. Suba desde galeria. SE64'], 400);
@@ -68,22 +196,22 @@ class AWSController extends Controller
             $faceDetectArray = ($faceDetect['FaceDetails']);
             $results1 = $analysis1['TextDetections'];
 
-            
 
-            if(!$results1){
+
+            if (!$results1) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No se pudo subir la imagen o no se detecta el documento.'
                 ], 400);
             }
             $string = '';
-            foreach($results1 as $item){
-                if($item['Type'] === 'WORD' || $item['Type'] === 'LINE'){
+            foreach ($results1 as $item) {
+                if ($item['Type'] === 'WORD' || $item['Type'] === 'LINE') {
                     $string .= $item['DetectedText'] . ' ';
                 }
             }
-            
-            
+
+
             $scaned = $this->CleanScan($string);
             $name = $this->CleanText($req->nombres);
             $lastname = $this->CleanText($req->apellidos);
@@ -100,31 +228,31 @@ class AWSController extends Controller
             $status = 200;
 
             $selfieDetect = true;
-            if (!$faceDetectArray) {   
+            if (!$faceDetectArray) {
                 $selfieDetect = false;
                 $success = false;
                 $message = 'No se pudo detectar su rostro en la foto.';
                 $status = 400;
             }
 
-            if($cedula != $extraidoCedula){
+            if ($cedula != $extraidoCedula) {
                 $nroCedula = false;
                 $success = false;
                 $message = 'Número de cédula no concuerda con la foto. Verifique los datos.';
                 $status = 400;
             }
 
-            if(!$fechaNacimiento ){
+            if (!$fechaNacimiento) {
                 $success = false;
                 $message = 'Fecha de nacimiento no concuerda con la foto. Verifique los datos.';
                 $status = 400;
             }
-            if(!$nombres ){
+            if (!$nombres) {
                 $success = false;
                 $message = 'Nombre no concuerda con la foto. Verifique los datos.';
                 $status = 400;
             }
-            if(!$apellidos ){
+            if (!$apellidos) {
                 $success = false;
                 $message = 'Apellido no concuerda con la foto. Verifique los datos.';
                 $status = 400;
@@ -139,34 +267,35 @@ class AWSController extends Controller
                     'cedula' => $nroCedula,
                     'selfie' => $selfieDetect,
                 ],
-                'message'=>$message
-            ],$status);
+                'message' => $message
+            ], $status);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
-            return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
+            return response()->json(['success' =>  false, 'message' => 'Error. Trate de tomar una foto bien nitida y sin brillos.'], 500);
         }
     }
 
 
-    
 
 
-    public function scanSelfieCedula(Request $req){
-        $validator = Validator::make($req->all(),[
+
+    public function scanSelfieCedula(Request $req)
+    {
+        $validator = Validator::make($req->all(), [
             'selfie' => 'required|string',
             'cedula' => 'required|numeric'
         ]);
 
-        if($validator->fails())
-            return response()->json(['success' => false, 'message' => $validator->errors()->first()],400);
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-            $ip = $req->ip();
-            $rateKey = "scanSelfie:$ip";
+        $ip = $req->ip();
+        $rateKey = "scanSelfie:$ip";
 
-            if (RateLimiter::tooManyAttempts($rateKey, 5)) {
-                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 2 minutos.'], 429);
-            }
-            RateLimiter::hit($rateKey, 120);
+        if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+            return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 2 minutos.'], 429);
+        }
+        RateLimiter::hit($rateKey, 120);
 
         try {
             $amazon = new RekognitionClient([
@@ -178,8 +307,8 @@ class AWSController extends Controller
             $explodeImage = explode("image/", $base64Image[0]);
             $imageType = $explodeImage[1];
             $image_base64 = base64_decode($base64Image[1]);
-            $imageName = $req->cedula . '_selfie_ci.'.$imageType;
-            $imagePath = public_path('clientes/tmp/' .$imageName);
+            $imageName = $req->cedula . '_selfie_ci.' . $imageType;
+            $imagePath = public_path('clientes/tmp/' . $imageName);
             file_put_contents($imagePath, $image_base64);
             $image = fopen($imagePath, "r");
             $bytes = fread($image, filesize($imagePath));
@@ -188,7 +317,7 @@ class AWSController extends Controller
             $faceDetect = $amazon->detectFaces(['Image' => ['Bytes' => $bytes], 'Attributes' => ['ALL']]);
             $faceDetectArray = ($faceDetect['FaceDetails']);
 
-            $etiquetas = $amazon->detectLabels(['Image'=> ['Bytes' => $bytes],'MaxLabels' => 10]);
+            $etiquetas = $amazon->detectLabels(['Image' => ['Bytes' => $bytes], 'MaxLabels' => 10]);
             $labels = $etiquetas['Labels'];
 
             $document = collect($labels)->firstWhere('Name', 'Document');
@@ -202,21 +331,21 @@ class AWSController extends Controller
             $success = true;
             $status = 200;
 
-            if (!$faceDetectArray) {   
+            if (!$faceDetectArray) {
                 $message = 'No se dectectó rostro.';
             }
-            
+
             if (!$documentValid) {
                 $message = 'No se pudo detectar el documento.';
             }
             if (!$idCardValid) {
                 $message = 'No se pudo detectar la cédula.';
             }
-            
+
 
             if (!$documentValid || !$idCardValid || !$faceDetectArray) {
                 SupabaseService::LOG($req->cedula, $message);
-                SupabaseService::uploadImageSelfies($imageName,$imagePath,$imageType);
+                SupabaseService::uploadImageSelfies($imageName, $imagePath, $imageType);
                 $status = 400;
                 $success = false;
             }
@@ -226,22 +355,21 @@ class AWSController extends Controller
                 'success' => $success,
                 'message' => $message,
             ], $status);
-        }
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             Log::error($th->getMessage());
-            return response()->json(['success' =>  false, 'message'=>'Error. Trate de tomar una foto bien nitida y sin brillos.'],500);
+            return response()->json(['success' =>  false, 'message' => 'Error. Trate de tomar una foto bien nitida y sin brillos.'], 500);
         }
-
     }
 
-    private function getImageBytes(string $imageBase64,string $keyImage){
+    private function getImageBytes(string $imageBase64, string $keyImage)
+    {
 
         $base64Image = explode(";base64,", $imageBase64);
         $explodeImage = explode("image/", $base64Image[0]);
         $imageType = $explodeImage[1];
         $image_base64 = base64_decode($base64Image[1]);
-        $imageName = $keyImage . '.'.$imageType;
-        $imagePath = public_path('clientes/' .$imageName);
+        $imageName = $keyImage . '.' . $imageType;
+        $imagePath = public_path('clientes/' . $imageName);
         file_put_contents($imagePath, $image_base64);
         $image = fopen($imagePath, "r");
         $bytes = fread($image, filesize($imagePath));
@@ -254,7 +382,8 @@ class AWSController extends Controller
     }
 
 
-    private function CleanText($name){
+    private function CleanText($name)
+    {
         setlocale(LC_ALL, 'en_US');
         $name = iconv('utf-8', 'ASCII//TRANSLIT', $name);
         $name = mb_strtoupper($name, 'utf-8');
@@ -264,7 +393,8 @@ class AWSController extends Controller
         return $name;
     }
 
-    private function CleanScan($name){
+    private function CleanScan($name)
+    {
         setlocale(LC_ALL, 'en_US');
         $name = iconv('utf-8', 'ASCII//TRANSLIT', $name);
         $name = mb_strtoupper($name, 'utf-8');
