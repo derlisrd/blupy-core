@@ -114,6 +114,12 @@ class AWSController extends Controller
                     $message = 'Por favor mantenga la boca cerrada durante la foto.';
                     $status = 400;
                 }
+
+                if (isset($face['FaceOccluded']) && $face['FaceOccluded']['Value'] === true && $face['FaceOccluded']['Confidence'] > 80) {
+                    $success = false;
+                    $message = 'Por favor no se tape el rostro.';
+                    $status = 400;
+                }
     
                 // Información de las validaciones del rostro
                 $validations['face'] = [
