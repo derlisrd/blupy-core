@@ -176,18 +176,11 @@ class AWSController extends Controller
     
             return response()->json([
                 'success' => $success,
-                'message' => $message,
-                'validations' => $validations,
-                'detected_labels' => array_map(function($label) {
-                    return [
-                        'name' => $label['Name'],
-                        'confidence' => $label['Confidence']
-                    ];
-                }, $labels)
+                'message' => $message
             ], $status);
     
         } catch (\Throwable $th) {
-            Log::error('Error en escanearSelfieConCedula: ' . $th->getMessage());
+            Log::error('Error en escanearSelfieConCedula: '.$req->cedula . $th->getMessage());
             return response()->json([
                 'success' => false, 
                 'message' => 'Error. Trate de tomar una foto bien nítida y sin brillos.'
