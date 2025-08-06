@@ -77,11 +77,11 @@ class AWSController extends Controller
                 $faceQuality = $face['Quality'];
                 if ($faceQuality['Brightness'] < 30) {
                     $success = false;
-                    $message = 'La imagen está muy oscura o muy brillante. Tome la foto con mejor iluminación.';
+                    $message = 'La imagen está muy oscura. Tome la foto con mejor iluminación.';
                     $status = 400;
                 }
                 
-                if ($faceQuality['Sharpness'] < 50) {
+                if ($faceQuality['Sharpness'] < 30) {
                     $success = false;
                     $message = 'La imagen está borrosa. Tome una foto más nítida.';
                     $status = 400;
