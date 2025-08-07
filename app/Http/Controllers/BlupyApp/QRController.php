@@ -53,39 +53,40 @@ class QRController extends Controller
                 }
              }
 
-            $blupy = $this->webserviceBlupyQRCore
-                ->autorizarQR($parametrosPorArray);
-            $data = (object) $blupy['data'];
-
-            $datasResults = $data->results;
-
-            if(!isset($data->results)){
-                return response()->json([
-                    'success'=>false,
-                    'message'=>'Error. Por favor, solicite al comercio generar nuevamente el QR.'
-                ],400);
-            }
-
-            if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
-                try {
-                    //confirmar pago en farma
-                    $farmaService = new FarmaService();
-                    $farmaService->actualizarPedidosQR(
-                        (string) ($datasResults['id'] ?? ''),
-                        $datasResults['numero_cuenta'] ?? '',
-                        $datasResults['numero_tarjeta'] ?? '',
-                        $datasResults['numero_movimiento'] ?? ''
-                    ); 
-                } catch (\Throwable $th) {
-                    Log::error($th->getMessage());
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Error. Intente otra vez en unos momentos. QRF500'
-                    ],500);
-                }  
-                    
-            }
-
+             $blupy = app(BlupyQrService::class)->autorizarQR($parametrosPorArray);
+             $data = (object) $blupy['data'];
+             $datasResults = null;
+             if (property_exists($data, 'results')) {
+ 
+                 $datasResults = $data->results;
+                 if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
+                     $farmaService = new FarmaService();
+ 
+                     try {
+                         $this->executeWithRetry(function () use ($farmaService, $datasResults) {
+                             return $farmaService->actualizarPedidosQR(
+                                 (string)$datasResults['id'],
+                                 $datasResults['numero_cuenta'],
+                                 $datasResults['numero_tarjeta'],
+                                 $datasResults['numero_movimiento']
+                             );
+                         }, 3); // 3 intentos máximos
+                     } catch (\Exception $innerException) {
+                         // Capturar y loguear el error final después de todos los reintentos
+                         Log::error("Error final en FarmaService: " . $innerException->getMessage(), [
+                             'id' => $datasResults['id'],
+                             'exception' => $innerException
+                         ]);
+                         // Decide si quieres continuar o relanzar la excepción
+                         //throw $innerException;
+                         return response()->json([
+                             'success' => false,
+                             'message' => 'Error al procesar el pedido.',
+                         ], 500);
+                     }
+                 }
+             }
+ 
             
 
 
@@ -175,5 +176,54 @@ class QRController extends Controller
                 'message' => $th->getMessage()
             ], 500);
         }
+    }
+
+
+    protected function executeWithRetry(callable $function, int $maxRetries = 3, int $baseDelayMs = 200)
+    {
+        $attempts = 0;
+        $lastException = null;
+
+        while ($attempts < $maxRetries) {
+            try {
+                $attempts++;
+                return $function();
+            } catch (\Exception $e) {
+                $lastException = $e;
+
+                // No reintentamos en el último intento
+                if ($attempts >= $maxRetries) {
+                    break;
+                }
+
+                // Errores que no deberían reintentarse
+                if (
+                    $e instanceof \InvalidArgumentException ||
+                    $e instanceof \BadMethodCallException
+                ) {
+                    break;
+                }
+
+                // Backoff exponencial con jitter para evitar tormentas de reintentos
+                $maxDelay = $baseDelayMs * pow(2, $attempts - 1);
+                $jitter = mt_rand(0, $maxDelay / 2);
+                $delay = $maxDelay + $jitter;
+
+                Log::warning("Intento {$attempts}/{$maxRetries} fallido: " . $e->getMessage(), [
+                    'delay_ms' => $delay,
+                    'exception' => $e
+                ]);
+
+                // Usar una espera más eficiente sin bloquear el thread en entornos async
+                if (function_exists('usleep')) {
+                    usleep($delay * 1000); // usleep usa microsegundos
+                } else {
+                    sleep(ceil($delay / 1000));
+                }
+            }
+        }
+
+        // Si llegamos aquí, todos los intentos fallaron
+        throw $lastException ?? new \RuntimeException('Todos los intentos fallaron sin excepción específica');
     }
 }

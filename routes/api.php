@@ -48,9 +48,9 @@ Route::prefix('/scan')->group(function(){
 });
 
 Route::prefix('/validar')->group(function(){
-    Route::get('/enviarme-codigo-sms-nro-telefono',[ValidacionesController::class,'enviarmeCodigoPorSmsParaValidarNroTelefono']);
-    Route::get('/reenviarme-codigo-wa-nro',[ValidacionesController::class,'reEnviarmeCodigoPorWaParaValidarNroTelefono']);
-    Route::post('/confimar-codigo-nro-telefono',[ValidacionesController::class,'confirmarCodigoParaValidarNroTelefono']);
+    Route::get('/enviarme-codigo-sms',[ValidacionesController::class,'enviarmeCodigoPorSmsParaValidarNroTelefono']);
+    Route::get('/reenviarme-codigo-wa',[ValidacionesController::class,'reEnviarmeCodigoPorWaParaValidarNroTelefono']);
+    Route::post('/confimar-codigo-sms',[ValidacionesController::class,'confirmarCodigoParaValidarNroTelefono']);
 });
 /**
  * RUTAS NUEVAS

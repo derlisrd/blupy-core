@@ -70,10 +70,20 @@ class ValidacionesController extends Controller
             RateLimiter::hit($rateKey, 60);
 
             $validacion = Validacion::where('id', request()->validacion_id)->where('validado', 0)->first();
+
+            
         } catch (\Throwable $th) {
             throw $th;
         }
     }
+
+
+    public function confirmarCodigoParaValidarNroTelefono(Request $req){
+
+
+    }
+
+
 
 
     public function enviameCodigoSMS(Request $req)
