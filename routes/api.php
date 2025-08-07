@@ -42,6 +42,10 @@ Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDo
 /**
  * RUTAS NUEVAS
  */
+Route::prefix('/auth')->group(function(){
+    Route::post('/register',[AWSController::class,'registroCliente']);
+});
+
 Route::prefix('/scan')->group(function(){
     Route::post('/cedula',[AWSController::class,'escanearCedula']);
     Route::post('/selfie-cedula',[AWSController::class,'escanearSelfieConCedula']);

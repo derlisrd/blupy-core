@@ -27,6 +27,14 @@ class AuthController extends Controller
 {
     use RegisterTraits, Helpers;
 
+    public function registroCliente(Request $req){
+
+        $validator = Validator::make($req->all(), trans('validation.auth.register'), trans('validation.auth.register.messages'));
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+    }
+
+
     /* ----------------------------
     REGISTRO
     ----------------------------*/
