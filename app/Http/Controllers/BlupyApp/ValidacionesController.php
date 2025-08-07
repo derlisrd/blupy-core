@@ -57,7 +57,7 @@ class ValidacionesController extends Controller
     public function reEnviarmeCodigoPorWaParaValidarNroTelefono(Request $req)
     {
         try {
-            $validator = Validator::make($req()->all(), ['validacion_id' => 'required'], ['validacion_id.required' => 'El id de validacion es obligatorio']);
+            $validator = Validator::make($req()->all(), ['id' => 'required'], ['id.required' => 'El id de validacion es obligatorio']);
 
             if ($validator->fails())
                 return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
@@ -69,9 +69,20 @@ class ValidacionesController extends Controller
             }
             RateLimiter::hit($rateKey, 60);
 
-            $validacion = Validacion::where('id', request()->validacion_id)->where('validado', 0)->first();
+            $validacion = Validacion::where('id', $req->id)->where('validado', 0)->first();
 
-            
+            if (!$validacion) {
+                return response()->json(['success' => false, 'message' => 'No existe codigo'], 404);
+            }
+
+            $mensaje = "Tu código de verificación para Blupy es " . $validacion->codigo . ". Este código es válido por 10 minutos.";
+            $numeroTelefonoWa = '595' . substr($validacion->celular, 1);
+            (new WaService())->send($numeroTelefonoWa, $mensaje);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Codigo enviado. Verifique su whatsapp',
+            ]);
         } catch (\Throwable $th) {
             throw $th;
         }
