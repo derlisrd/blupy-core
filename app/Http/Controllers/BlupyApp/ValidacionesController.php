@@ -17,13 +17,11 @@ use Illuminate\Support\Facades\Validator;
 class ValidacionesController extends Controller
 {
 
-    public function enviarmeCodigoPorSmsParaValidarNroTelefono(Request $req)
-    {
+    public function enviarmeCodigoPorSmsParaValidarNroTelefono(Request $req){
         try {
             $validator = Validator::make($req->all(), trans('validation.verificaciones.celular'), trans('validation.verificaciones.celular.messages'));
             if ($validator->fails())
                 return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
-
 
             $ip = $req->ip();
             $rateKey = $ip . '|' . $req->celular;
@@ -33,15 +31,9 @@ class ValidacionesController extends Controller
             }
             RateLimiter::hit($rateKey, 60);
 
-
             $randomNumber = random_int(1000, 9999);
-
-
             $celularFormateado = $req->celular;
-            //$numeroTelefonoWa = $numeroTelefonoWa = '595' . substr($req->celular, 1);
             $mensaje = "Tu código de verificación para Blupy es " . $randomNumber . ". Este código es válido por 10 minutos.";
-
-            //(new WaService())->send($numeroTelefonoWa, $mensaje);
 
             (new TigoSmsService())->enviarSms($celularFormateado, $mensaje);
 
@@ -54,12 +46,13 @@ class ValidacionesController extends Controller
         }
     }
 
+
+
     public function reEnviarmeCodigoPorSmsParaValidarNroTelefono(Request $req){
         $validator = Validator::make($req->all(), ['id' => 'required'], ['id.required' => 'El id obligatorio']);
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-        
         $ip = $req->ip();
         $rateKey = $ip . '|' . $req->id;
 
@@ -70,10 +63,9 @@ class ValidacionesController extends Controller
 
         $validacion = Validacion::where('id', $req->id)->where('validado', 0)->first();
 
-        if (!$validacion) {
+        if (!$validacion) 
             return response()->json(['success' => false, 'message' => 'No existe codigo'], 404);
-        }
-
+        
         $mensaje = "Tu código de verificación para Blupy es " . $validacion->codigo . ". Este código es válido por 10 minutos.";
         $numeroTelefonoWa = '595' . substr($validacion->celular, 1);
 
@@ -86,28 +78,27 @@ class ValidacionesController extends Controller
     }
 
 
-    public function reEnviarmeCodigoPorWaParaValidarNroTelefono(Request $req)
-    {
+
+
+    public function reEnviarmeCodigoPorWaParaValidarNroTelefono(Request $req){
         try {
             $validator = Validator::make($req->all(), ['id' => 'required'], ['id.required' => 'El id obligatorio']);
             if ($validator->fails())
                 return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-            
             $ip = $req->ip();
             $rateKey = $ip . '|' . $req->id;
 
-            if (RateLimiter::tooManyAttempts($rateKey, 3)) {
+            if (RateLimiter::tooManyAttempts($rateKey, 3)) 
                 return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 400);
-            }
+            
             RateLimiter::hit($rateKey, 60);
 
             $validacion = Validacion::where('id', $req->id)->where('validado', 0)->first();
 
-            if (!$validacion) {
+            if (!$validacion)
                 return response()->json(['success' => false, 'message' => 'No existe codigo'], 404);
-            }
-
+            
             $mensaje = "Tu código de verificación para Blupy es " . $validacion->codigo . ". Este código es válido por 10 minutos.";
             $numeroTelefonoWa = '595' . substr($validacion->celular, 1);
             (new WaService())->send($numeroTelefonoWa, $mensaje);
@@ -120,6 +111,9 @@ class ValidacionesController extends Controller
             throw $th;
         }
     }
+
+
+
 
 
     public function confirmarCodigoParaValidarNroTelefono(Request $req){
@@ -147,6 +141,70 @@ class ValidacionesController extends Controller
         return response()->json(['success' => true, 'message' => 'Telefono verificado.']);
 
     }
+
+
+    public function enviarmeCodigoPorEmail(Request $req){
+        try {
+            $validator = Validator::make($req->all(), trans('validation.verificaciones.email'), trans('validation.verificaciones.email.messages'));
+            if ($validator->fails())
+                return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+                $ip = $req->ip();
+                $rateKey = "email:$ip";
+    
+                if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+                    return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
+                }
+                RateLimiter::hit($rateKey, 60);
+
+            $randomNumber = random_int(1000, 9999);
+            $this->enviarEmail($req->email, $randomNumber);
+            $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 0, 'email' => $req->email, 'origen' => 'email']);
+
+            return response()->json(['success' => true, 'results' => ['id' => $validacion->id], 'message' => 'Email enviado']);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'message' => 'Error en el servidor'], 500);
+        }
+    }
+
+
+
+    public function confirmarCodigoParaValidarEmail(Request $req)
+    {
+        $validator = Validator::make($req->all(), trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+            $ip = $req->ip();
+            $rateKey = "confirmaremail:$ip";
+
+            if (RateLimiter::tooManyAttempts($rateKey, 5)) 
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
+            
+            RateLimiter::hit($rateKey, 60);
+
+        $validacion = Validacion::where('id', $req->id)->where('validado', 0)->where('codigo', $req->codigo)->first();
+        if (!$validacion)
+            return response()->json(['success' => false, 'message' => 'Codigo invalido'], 403);
+
+        $fechaCreado = Carbon::parse($validacion->created_at);
+        $fechaActual = Carbon::now();
+        $diferenciaEnMinutos = $fechaCreado->diffInMinutes($fechaActual);
+
+        if ($diferenciaEnMinutos >= 10)
+            return response()->json(['success' => false, 'message' => 'Código ha expirado'], 401);
+
+        $validacion->validado = 1;
+        $validacion->save();
+
+        return response()->json(['success' => true, 'message' => 'Email verificado.']);
+    }
+
+
+
+
+
+
 
 
 
