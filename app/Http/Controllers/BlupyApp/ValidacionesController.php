@@ -57,12 +57,13 @@ class ValidacionesController extends Controller
     public function reEnviarmeCodigoPorWaParaValidarNroTelefono(Request $req)
     {
         try {
-            $validator = Validator::make($req()->all(), ['id' => 'required'], ['id.required' => 'El id de validacion es obligatorio']);
-
+            $validator = Validator::make($req->all(), ['id' => 'required'], ['id.required' => 'El id obligatorio']);
             if ($validator->fails())
                 return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+            
             $ip = $req->ip();
-            $rateKey = $ip . '|' . $req->celular;
+            $rateKey = $ip . '|' . $req->id;
 
             if (RateLimiter::tooManyAttempts($rateKey, 3)) {
                 return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 400);
