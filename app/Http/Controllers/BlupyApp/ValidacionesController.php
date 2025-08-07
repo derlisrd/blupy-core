@@ -143,7 +143,7 @@ class ValidacionesController extends Controller
     }
 
 
-    public function enviarmeCodigoPorEmail(Request $req){
+    public function enviarCodigoPorEmail(Request $req){
         try {
             $validator = Validator::make($req->all(), trans('validation.verificaciones.email'), trans('validation.verificaciones.email.messages'));
             if ($validator->fails())

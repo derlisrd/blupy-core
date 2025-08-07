@@ -53,7 +53,7 @@ Route::prefix('/validar')->group(function(){
     Route::get('/reenviar-codigo-sms',[ValidacionesController::class,'reEnviarCodigoPorSmsParaValidarNroTelefono']);
     Route::post('/confirmar-codigo-sms',[ValidacionesController::class,'confirmarCodigoParaValidarNroTelefono']);
     
-    Route::get('/enviarme-codigo-email',[ValidacionesController::class,'enviarmeCodigoPorEmail']);
+    Route::get('/enviar-codigo-email',[ValidacionesController::class,'enviarCodigoPorEmail']);
     Route::post('/confirmar-codigo-email',[ValidacionesController::class,'confirmarCodigoParaValidarEmail']);
 });
 /**
