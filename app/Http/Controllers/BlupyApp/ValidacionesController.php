@@ -114,7 +114,7 @@ class ValidacionesController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Codigo enviado. Verifique su whatsapp',
+                'message' => 'Codigo enviado. Verifique su buzon de mensajes',
             ]);
         } catch (\Throwable $th) {
             throw $th;
