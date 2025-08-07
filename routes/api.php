@@ -48,9 +48,9 @@ Route::prefix('/scan')->group(function(){
 });
 
 Route::prefix('/validar')->group(function(){
-    Route::get('/enviarme-codigo-sms',[ValidacionesController::class,'enviarmeCodigoPorSmsParaValidarNroTelefono']);
-    Route::get('/reenviar-codigo-wa',[ValidacionesController::class,'reEnviarmeCodigoPorWaParaValidarNroTelefono']);
-    Route::get('/reenviar-codigo-sms',[ValidacionesController::class,'reEnviarmeCodigoPorSmsParaValidarNroTelefono']);
+    Route::get('/enviar-codigo-sms',[ValidacionesController::class,'enviarCodigoPorSmsParaValidarNroTelefono']);
+    Route::get('/reenviar-codigo-wa',[ValidacionesController::class,'reEnviarCodigoPorWaParaValidarNroTelefono']);
+    Route::get('/reenviar-codigo-sms',[ValidacionesController::class,'reEnviarCodigoPorSmsParaValidarNroTelefono']);
     Route::post('/confirmar-codigo-sms',[ValidacionesController::class,'confirmarCodigoParaValidarNroTelefono']);
     
     Route::get('/enviarme-codigo-email',[ValidacionesController::class,'enviarmeCodigoPorEmail']);

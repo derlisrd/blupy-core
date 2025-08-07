@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Validator;
 class ValidacionesController extends Controller
 {
 
-    public function enviarmeCodigoPorSmsParaValidarNroTelefono(Request $req){
+    public function enviarCodigoPorSmsParaValidarNroTelefono(Request $req){
         try {
             $validator = Validator::make($req->all(), trans('validation.verificaciones.celular'), trans('validation.verificaciones.celular.messages'));
             if ($validator->fails())
@@ -48,7 +48,7 @@ class ValidacionesController extends Controller
 
 
 
-    public function reEnviarmeCodigoPorSmsParaValidarNroTelefono(Request $req){
+    public function reEnviarCodigoPorSmsParaValidarNroTelefono(Request $req){
         $validator = Validator::make($req->all(), ['id' => 'required'], ['id.required' => 'El id obligatorio']);
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
@@ -80,7 +80,7 @@ class ValidacionesController extends Controller
 
 
 
-    public function reEnviarmeCodigoPorWaParaValidarNroTelefono(Request $req){
+    public function reEnviarCodigoPorWaParaValidarNroTelefono(Request $req){
         try {
             $validator = Validator::make($req->all(), ['id' => 'required'], ['id.required' => 'El id obligatorio']);
             if ($validator->fails())
