@@ -302,9 +302,24 @@ class AWSController extends Controller
                 ],
                 'message' => $message
             ], $status);
+        } catch (\Aws\Rekognition\Exception\RekognitionException $e) {
+            // Capturamos el error específico de Rekognition
+            if ($e->getAwsErrorCode() === 'ValidationException' && str_contains($e->getAwsErrorMessage(), 'Member must have length less than or equal to')) {
+                // Si el error es por el tamaño de la imagen
+                Log::error($e->getMessage()); // Opcional: loguear el error para tu registro
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El tamaño de la imagen es demasiado grande. El tamaño máximo permitido es de 5 MB.'
+                ], 400);
+            } else {
+                // Para otros errores de Rekognition
+                Log::error($e->getMessage());
+                return response()->json(['success' => false, 'message' => 'Error al procesar la imagen con Rekognition. Por favor, intente de nuevo.'], 500);
+            }
         } catch (\Throwable $th) {
+            // Este catch general es para cualquier otro tipo de error
             Log::error($th->getMessage());
-            return response()->json(['success' =>  false, 'message' => 'Error. Trate de tomar una foto bien nitida y sin brillos.'], 500);
+            return response()->json(['success' => false, 'message' => 'Error. Trate de tomar una foto bien nítida y sin brillos.'], 500);
         }
     }
 
