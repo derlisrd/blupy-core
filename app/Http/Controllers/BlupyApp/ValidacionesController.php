@@ -17,6 +17,65 @@ use Illuminate\Support\Facades\Validator;
 class ValidacionesController extends Controller
 {
 
+    public function enviarmeCodigoPorSmsParaValidarNroTelefono(Request $req)
+    {
+        try {
+            $validator = Validator::make($req->all(), trans('validation.verificaciones.celular'), trans('validation.verificaciones.celular.messages'));
+            if ($validator->fails())
+                return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+
+            $ip = $req->ip();
+            $rateKey = $ip . '|' . $req->celular;
+
+            if (RateLimiter::tooManyAttempts($rateKey, 3)) {
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 400);
+            }
+            RateLimiter::hit($rateKey, 60);
+
+
+            $randomNumber = random_int(1000, 9999);
+
+
+            $celularFormateado = $req->celular;
+            //$numeroTelefonoWa = $numeroTelefonoWa = '595' . substr($req->celular, 1);
+            $mensaje = "Tu código de verificación para Blupy es " . $randomNumber . ". Este código es válido por 10 minutos.";
+
+            //(new WaService())->send($numeroTelefonoWa, $mensaje);
+
+            (new TigoSmsService())->enviarSms($celularFormateado, $mensaje);
+
+            $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 1, 'celular' => $req->celular, 'origen' => 'registro']);
+
+            return response()->json(['success' => true, 'results' => ['id' => $validacion->id], 'message' => 'Mensaje enviado']);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error en el servidor'], 500);
+        }
+    }
+
+    public function reEnviarmeCodigoPorWaParaValidarNroTelefono(Request $req)
+    {
+        try {
+            $validator = Validator::make($req()->all(), ['validacion_id' => 'required'], ['validacion_id.required' => 'El id de validacion es obligatorio']);
+
+            if ($validator->fails())
+                return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+            $ip = $req->ip();
+            $rateKey = $ip . '|' . $req->celular;
+
+            if (RateLimiter::tooManyAttempts($rateKey, 3)) {
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 400);
+            }
+            RateLimiter::hit($rateKey, 60);
+
+            $validacion = Validacion::where('id', request()->validacion_id)->where('validado', 0)->first();
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+
     public function enviameCodigoSMS(Request $req)
     {
         try {
@@ -75,8 +134,9 @@ class ValidacionesController extends Controller
 
 
     // cliente quiere registrarse y no le llega el sms y no le llega el sms entonces usa esta funcion
-    public function reEnviarCodigoPorWa(Request $req){
-        try{
+    public function reEnviarCodigoPorWa(Request $req)
+    {
+        try {
             $ip = $req->ip();
             $rateKey = "codigowa:$ip";
 
@@ -89,9 +149,9 @@ class ValidacionesController extends Controller
             if ($validator->fails())
                 return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
             $validacion = Validacion::where('id', $req->validacion_id)->where('validado', 0)->first();
-            if(!$validacion){
+            if (!$validacion) {
                 return response()->json(['success' => false, 'message' => 'No existe codigo'], 404);
-            }            
+            }
             $mensaje = "Tu código de verificación para Blupy es " . $validacion->codigo . ". Este código es válido por 10 minutos.";
             $numeroTelefonoWa = '595' . substr($validacion->celular, 1);
             (new WaService())->send($numeroTelefonoWa, $mensaje);
@@ -100,9 +160,7 @@ class ValidacionesController extends Controller
                 'success' => true,
                 'message' => 'Codigo enviado. Verifique su whatsapp',
             ]);
-
-        }
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             return response()->json(['success' => false, 'message' => 'Error en el servidor'], 500);
         }
     }
@@ -162,17 +220,17 @@ class ValidacionesController extends Controller
 
             $randomNumber = random_int(1000, 9999);
 
-            
-              
+
+
             $celularFormateado = $req->celular;
             $numeroTelefonoWa = $numeroTelefonoWa = '595' . substr($req->celular, 1);
             $mensaje = "Tu código de verificación para Blupy es " . $randomNumber . ". Este código es válido por 10 minutos.";
-            
+
             (new WaService())->send($numeroTelefonoWa, $mensaje);
-            
+
             (new TigoSmsService())->enviarSms($celularFormateado, $mensaje);
-            
-            
+
+
             $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 1, 'celular' => $req->celular, 'origen' => 'registro_celular']);
 
             return response()->json(['success' => true, 'results' => ['id' => $validacion->id], 'message' => 'Mensaje enviado']);

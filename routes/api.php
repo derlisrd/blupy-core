@@ -39,10 +39,22 @@ Route::post('/restablecer-contrasena',[UserPublic::class,'restablecerContrasena'
 
 Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDocumento'])->name('api_verificar_documento');
 
-// nuevas routas
-Route::post('/scanear-cedula',[AWSController::class,'escanearCedula']);
-Route::post('/scanear-selfie-cedula',[AWSController::class,'escanearSelfieConCedula']);
+/**
+ * RUTAS NUEVAS
+ */
+Route::prefix('/scan')->group(function(){
+    Route::post('/cedula',[AWSController::class,'escanearCedula']);
+    Route::post('/selfie-cedula',[AWSController::class,'escanearSelfieConCedula']);
+});
 
+Route::prefix('/validar')->group(function(){
+    Route::get('/enviarme-codigo-sms-nro-telefono',[ValidacionesController::class,'enviarmeCodigoPorSmsParaValidarNroTelefono']);
+    Route::get('/reenviarme-codigo-wa-nro',[ValidacionesController::class,'reEnviarmeCodigoPorWaParaValidarNroTelefono']);
+    Route::post('/confimar-codigo-nro-telefono',[ValidacionesController::class,'confirmarCodigoParaValidarNroTelefono']);
+});
+/**
+ * RUTAS NUEVAS
+ */
 
 
 Route::post('/scan',[AWSController::class,'scanearDocumento'])->name('api_scan');
