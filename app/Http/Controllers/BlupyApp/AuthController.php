@@ -62,13 +62,15 @@ class AuthController extends Controller
             $clienteFarma = $this->clienteFarma($cedula);
 
             // guardar cedula en nuestros servidores las fotos estan en base64
-            $fotoCiFrente = $this->guardarCedulaImagenBase64($req->fotocedulafrente, $cedula . '_frente', 1);
+            //$fotoCiFrente = $this->guardarCedulaImagenBase64($req->fotocedulafrente, $cedula . '_frente', 1);
             $fotoCiDorso = $this->guardarCedulaImagenBase64($req->fotoceduladorso, $cedula . '_dorso', 1);
             $fotoSelfie = $this->guardarSelfieImagenBase64($req->fotoselfie, $cedula);
 
+            $fotoCiFrente = $this->subirBase64ToWebp($req->fotocedulafrente, $cedula . '_frente', 'clientes');
 
-            if ($fotoCiDorso == null || $fotoCiFrente == null)
-                return response()->json(['success' => false, 'message' => 'Hay un error con la imagen de la cedula'], 400);
+
+            //if ($fotoCiDorso == null || $fotoCiFrente == null)
+                //return response()->json(['success' => false, 'message' => 'Hay un error con la imagen de la cedula'], 400);
 
 
             DB::beginTransaction();
@@ -418,6 +420,7 @@ class AuthController extends Controller
 
             // Retornar solo el nombre del archivo (o la ruta relativa)
             return $filename;
+
         } catch (\Throwable $th) {
             Log::error('Error al subir imagen base64 a WebP: ' . $th->getMessage(), [
                 'file' => $th->getFile(),
