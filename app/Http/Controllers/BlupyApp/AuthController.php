@@ -21,17 +21,25 @@ use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
-
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class AuthController extends Controller
 {
     use RegisterTraits, Helpers;
 
-    public function registroCliente(Request $req){
+    public function registroCliente(Request $req)
+    {
 
         $validator = Validator::make($req->all(), trans('validation.auth.register'), trans('validation.auth.register.messages'));
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        try {
+            //code...
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
 
@@ -64,7 +72,7 @@ class AuthController extends Controller
 
 
             DB::beginTransaction();
-        
+
             $nombres = $this->separarNombres($req->nombres);
             $apellidos = $this->separarNombres($req->apellidos);
 
@@ -93,7 +101,7 @@ class AuthController extends Controller
                 'cliid' => 0,
                 'solicitud_credito' => 0,
             ];
-            
+
             // ver si tiene ficha en infinita, sino lo crea
             $resRegistrarInfinita = (object)  $this->registrarInfinita((object) $datosCliente);
 
@@ -144,19 +152,19 @@ class AuthController extends Controller
             ]);
 
             DB::commit();
-            
-           /*  dispatch(function () use ($req, $cedula) {
+
+            /*  dispatch(function () use ($req, $cedula) {
                 $this->enviarFotoCedulaInfinita($cedula, $req->fotocedulafrente, $req->fotoceduladorso);
                 $this->enviarSelfieInfinita($cedula, $req->fotoselfie);
             })->afterResponse(); */
             $this->enviarFotoCedulaInfinita($req->cedula, $req->fotocedulafrente, $req->fotoceduladorso);
             $this->enviarSelfieInfinita($req->cedula, $req->fotoselfie);
-            
+
             EmailSenderJob::dispatch($req->email, ['name' => $nombres[0]], 'Blupy: Registro exitoso', 'email.registro')->onConnection('database');
 
             $token = JWTAuth::fromUser($user);
             $tarjetasConsultas = new CuentasPrivate();
-            $tarjetas = $tarjetasConsultas->tarjetas($req->cedula, 0, '',0);
+            $tarjetas = $tarjetasConsultas->tarjetas($req->cedula, 0, '', 0);
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario registrado correctamente',
@@ -229,7 +237,7 @@ class AuthController extends Controller
                             'success' => true,
                             'results' => null,
                             'id' => $idValidacion,
-                            'message' => 'Valida el dispositivo. PIN enviado a ' . $pistaDeNumero . '. y al correo ' . $pistaEmail. '. Verifica tu whatsapp.',
+                            'message' => 'Valida el dispositivo. PIN enviado a ' . $pistaDeNumero . '. y al correo ' . $pistaEmail . '. Verifica tu whatsapp.',
                         ]);
                     }
                     $dispositoDeConfianza->update([
@@ -245,7 +253,7 @@ class AuthController extends Controller
 
 
                 $tarjetasConsultas = new CuentasPrivate();
-                $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula, $cliente->extranjero, $cliente->codigo_farma ?? '',$cliente->franquicia);
+                $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula, $cliente->extranjero, $cliente->codigo_farma ?? '', $cliente->franquicia);
                 return response()->json(
                     [
                         'success' => true,
@@ -288,7 +296,7 @@ class AuthController extends Controller
             $tarjetasConsultas = new CuentasPrivate();
             $adicional = Adicional::whereCedula($cliente->cedula)->first();
             $esAdicional = $adicional ? true : false;
-            $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula, 0, '',$cliente->franquicia);
+            $tarjetas = $tarjetasConsultas->tarjetas($cliente->cedula, 0, '', $cliente->franquicia);
             return response()->json([
                 'success' => true,
                 'message' => 'Valido',
@@ -343,7 +351,7 @@ class AuthController extends Controller
 
         $mensaje = "Utiliza el código $codigo para confirmar tu dispositivo en Blupy.";
         $numeroTelefonoWa = '595' . substr($celular, 1);
-        
+
         DispositivoInusualJob::dispatch($celular, $mensaje, $email, $codigo, $datosEmail, $numeroTelefonoWa)->onConnection('database');
 
         // Guardar validación
@@ -357,5 +365,68 @@ class AuthController extends Controller
         ]);
 
         return $validacion->id;
+    }
+
+    private function subirBase64ToWebp(string $imagenBase64, string $imageName, string $path): string
+    {
+        try {
+            // Validar que sea una imagen base64 válida
+            if (!preg_match('/^data:image\/(\w+);base64,/', $imagenBase64, $matches)) {
+                throw new \Exception("Formato base64 no válido");
+            }
+
+            $originalExtension = strtolower($matches[1]);
+
+            // Validar que la extensión sea permitida
+            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+            if (!in_array($originalExtension, $allowedExtensions)) {
+                throw new \Exception("Formato de imagen no permitido: {$originalExtension}");
+            }
+
+            // Remover el prefijo data:image/...;base64, 
+            $imageData = substr($imagenBase64, strpos($imagenBase64, ',') + 1);
+
+            // Decodificar la imagen base64
+            $decodedImage = base64_decode($imageData);
+
+            if ($decodedImage === false) {
+                throw new \Exception("Error al decodificar la imagen base64");
+            }
+
+            // Nombre del archivo con extensión .webp
+            $filename = $imageName . '.webp';
+
+            // Crear el directorio si no existe
+            $fullDirectory = public_path($path);
+            if (!file_exists($fullDirectory)) {
+                mkdir($fullDirectory, 0755, true);
+            }
+
+            // Ruta completa del archivo
+            $publicPath = public_path($path . '/' . $filename);
+
+            $manager = new ImageManager(new Driver());
+
+            // Procesar y convertir la imagen a WebP usando Intervention Image v3
+            $imageProcessor = $manager->read($decodedImage);
+
+            // Redimensionar manteniendo proporción (máximo 800 en cualquier lado)
+            $imageProcessor->scaleDown(width: 800, height: 800);
+
+            // Guardar la imagen procesada directamente como WebP
+            $imageProcessor->toWebp(quality: 85)->save($publicPath);
+
+            // Retornar solo el nombre del archivo (o la ruta relativa)
+            return $filename;
+        } catch (\Throwable $th) {
+            Log::error('Error al subir imagen base64 a WebP: ' . $th->getMessage(), [
+                'file' => $th->getFile(),
+                'line' => $th->getLine(),
+                'imageName' => $imageName,
+                'directory_base' => $path,
+                'trace' => $th->getTraceAsString(),
+            ]);
+            throw $th;
+        }
     }
 }
