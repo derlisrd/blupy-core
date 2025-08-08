@@ -31,7 +31,7 @@ class AuthController extends Controller
 
     public function registroCliente(Request $req)
     {
-
+        Log::info('Registro cliente', ['request' => $req->all()]);
         return response()->json(['success' => true, 'message' => 'Registrado correctamente',
         'results'=>$req->all()
     ]);
