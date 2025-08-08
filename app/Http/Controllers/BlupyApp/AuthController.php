@@ -132,6 +132,9 @@ class AuthController extends Controller
                 'desktop' => $req->desktop ?? 0,
             ]);
 
+            $this->enviarFotoCedulaInfinita($req->cedula, $req->fotocedulafrente, $req->fotoceduladorso);
+            $this->enviarSelfieInfinita($req->cedula, $req->fotoselfie);
+
             DB::commit();
 
             $token = JWTAuth::fromUser($user);
