@@ -31,11 +31,83 @@ class AuthController extends Controller
 
     public function registroCliente(Request $req)
     {
-        Log::info('Registro cliente', ['request' => $req->all()]);
+        
+        $json_string = '{
+            "adicional": false,
+            "cliid": "2348",
+            "name": "Derlis Francisco Ruiz Diaz Romero",
+            "primerNombre": "Derlis",
+            "nombres": "Derlis Francisco",
+            "apellidos": "Ruiz Diaz Romero",
+            "cedula": "4937724",
+            "fechaNacimiento": "1990-10-04",
+            "email": "derlisruizdiaz@hotmail.com",
+            "telefono": "0983202090",
+            "celular": "0983202090",
+            "solicitudCredito": 0,
+            "solicitudCompletada": 1,
+            "funcionario": 0,
+            "aso": 0,
+            "vendedorId": 2111,
+            "tokenType": "Bearer",
+            "token": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvcmUuYmx1cHkuY29tLnB5L2FwaS9sb2dpbiIsImlhdCI6MTc1NDY4NTg3MCwiZXhwIjoxNzU0Njg5NDcwLCJuYmYiOjE3NTQ2ODU4NzAsImp0aSI6InhvVVRObjFFV3ViRU9CdFEiLCJzdWIiOiIyNDMyIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.jAg2eVF_PraM2HsULLPTxCBFvEYO0H6hJ9Z2Mp4MMwE",
+            "tokenRaw": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvcmUuYmx1cHkuY29tLnB5L2FwaS9sb2dpbiIsImlhdCI6MTc1NDY4NTg3MCwiZXhwIjoxNzU0Njg5NDcwLCJuYmYiOjE3NTQ2ODU4NzAsImp0aSI6InhvVVRObjFFV3ViRU9CdFEiLCJzdWIiOiIyNDMyIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.jAg2eVF_PraM2HsULLPTxCBFvEYO0H6hJ9Z2Mp4MMwE",
+            "changepass": 0,
+            "tarjetas": [
+                {
+                    "id": 2,
+                    "descripcion": "Blupy Digital",
+                    "otorgadoPor": "Mi crédito S.A.",
+                    "tipo": 1,
+                    "emision": "2023-11-03",
+                    "bloqueo": false,
+                    "condicion": "Contado",
+                    "condicionVenta": 1,
+                    "cuenta": "8",
+                    "principal": true,
+                    "adicional": false,
+                    "numeroTarjeta": "1",
+                    "linea": 700000,
+                    "pagoMinimo": 62000,
+                    "deuda": 0,
+                    "disponible": 700000,
+                    "alianzas": []
+                },
+                {
+                    "id": 1,
+                    "descripcion": "Blupy Alianza",
+                    "otorgadoPor": "Farma por alianza",
+                    "tipo": 0,
+                    "emision": null,
+                    "condicion": "credito",
+                    "condicionVenta": 2,
+                    "cuenta": null,
+                    "bloqueo": false,
+                    "numeroTarjeta": null,
+                    "linea": 1400000,
+                    "pagoMinimo": null,
+                    "deuda": 0,
+                    "disponible": 1400000,
+                    "alianzas": [
+                        {
+                            "codigo": 3386521,
+                            "nombre": "BLUPY",
+                            "descripcion": "BLUPY",
+                            "formaPagoCodigo": 129,
+                            "formaPago": "BLUPY CREDITO 1 DIA"
+                        }
+                    ]
+                }
+            ],
+            "digital": 1
+        }';
+        
+        $data_array = json_decode($json_string, true);
+
         return response()->json([
             'success' => true,
             'message' => 'Registrado correctamente',
-            'results' => $req->all()
+            'results' => $data_array
         ]);
 
         $validator = Validator::make($req->all(), trans('validation.auth.register'), trans('validation.auth.register.messages'));
