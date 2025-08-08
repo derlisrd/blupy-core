@@ -43,7 +43,7 @@ Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDo
  * RUTAS NUEVAS
  */
 Route::prefix('/auth')->group(function(){
-    Route::post('/register',[AWSController::class,'registroCliente']);
+    Route::post('/register',[AuthController::class,'registroCliente']);
 });
 
 Route::prefix('/scan')->group(function(){

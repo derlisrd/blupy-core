@@ -20,8 +20,10 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Private\CuentasController as CuentasPrivate;
+use App\Jobs\PushNativeJobs;
 use App\Jobs\SolicitudAprobadaJob;
 use App\Models\Adjunto;
+use App\Models\Device;
 use App\Services\InfinitaService;
 use App\Services\WaService;
 
@@ -213,11 +215,6 @@ class SolicitudesController extends Controller
                 'url' => 'adjuntos/' . $imagenSelfie,
             ]);
 
-            Notificacion::create([
-                'user_id' => $user->id,
-                'title' => 'Solicitud de crédito',
-                'body' => $solicitud->estado
-            ]);
 
             SolicitudCredito::create([
                 'cliente_id' => $cliente->id,
@@ -228,7 +225,7 @@ class SolicitudesController extends Controller
                 'importe' => 0
             ]);
             $titulo = '¡Solicitud de crédito!';
-            $descripcion = 'Tu solicitud de crédito ha sido enviada. ¡Estamos procesando tu solicitud! 🥳';
+            $descripcion = 'Tu solicitud de crédito ha sido aprobada.';
             if ($solicitud->id === 5) {
                 
                 SolicitudAprobadaJob::dispatch($user->email,$cliente->celular)->onConnection('database');
@@ -243,20 +240,16 @@ class SolicitudesController extends Controller
                     'leido' => 0,
                     'general' => 0,
                 ]);
-            }
-            $devicesTokens = $user->devices;
-            $expoService = new PushExpoService();
 
-            $expoService->send(
-                [$devicesTokens],
-                $titulo,
-                $descripcion,
-                [
-                    'info' => 'notificaciones',
-                    'title' => $titulo,
-                    'body' => $descripcion
-                ]
-            );
+                $device = Device::where('user_id',$user->id)
+                ->whereNotNull('devicetoken')
+                ->whereIn('os', ['android', 'ios'])
+                ->first();
+                
+                PushNativeJobs::dispatch($titulo, $descripcion, [$device->devicetoken], $device->os)->onConnection('database');
+                
+            }
+            
             $results = [
                 'estado_id' => $solicitud->id,
                 'estado' => $solicitud->estado,

@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -34,11 +35,120 @@ class AuthController extends Controller
         $validator = Validator::make($req->all(), trans('validation.auth.register'), trans('validation.auth.register.messages'));
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
-
         try {
-            //code...
+            $cedula = $req->cedula;
+
+            $adicional = Adicional::whereCedula($cedula)->first();
+            $esAdicional = (bool) $adicional;
+            // consulta si tiene ficha en farma
+            $clienteFarma = $this->clienteFarma($cedula);
+
+            $fotoCiDorso = $this->subirBase64ToWebp($req->fotoceduladorso, $cedula . '_dorso', 'clientes');
+            $fotoSelfie = $this->subirBase64ToWebp($req->fotoselfie, $cedula . '_selfie', 'clientes');
+            $fotoCiFrente = $this->subirBase64ToWebp($req->fotocedulafrente, $cedula . '_frente', 'clientes');
+
+            if ($fotoCiDorso == null || $fotoCiFrente == null || $fotoSelfie == null)
+                return response()->json(['success' => false, 'message' => 'Hay un error con la imagen de la cedula'], 400);
+
+            DB::beginTransaction();
+
+            $nombres = $this->separarNombres($req->nombres);
+            $apellidos = $this->separarNombres($req->apellidos);
+
+            $direccionCompletado = 0;
+            if ($clienteFarma->completado == 1 || $esAdicional) {
+                $direccionCompletado = 1;
+            }
+
+            $datosCliente =  [
+                'cedula' => $cedula,
+                'foto_ci_frente' => $fotoCiFrente,
+                'foto_ci_dorso' => $fotoCiDorso,
+                'selfie' => $fotoSelfie,
+                'nombre_primero' => $nombres[0],
+                'nombre_segundo' => $nombres[1],
+                'apellido_primero' => $apellidos[0],
+                'apellido_segundo' => $apellidos[1],
+                'fecha_nacimiento' => $req->fecha_nacimiento,
+                'celular' => $req->celular,
+                'email' => $req->email,
+                'funcionario' => $clienteFarma->funcionario,
+                'linea_farma' => $clienteFarma->lineaFarma,
+                'asofarma' => $clienteFarma->asofarma,
+                'importe_credito_farma' => $clienteFarma->credito,
+                'direccion_completado' => $direccionCompletado,
+                'cliid' => 0,
+                'solicitud_credito' => 0,
+            ];
+
+            $resRegistrarInfinita = $this->registrarInfinita((object) $datosCliente);
+
+            if (!$resRegistrarInfinita['register']) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Intente mas adelante. Error infinita.'], 500);
+            }
+
+            $datosCliente['cliid'] = $resRegistrarInfinita['cliId'];
+
+            unset($datosCliente['email']);
+            $cliente = Cliente::create($datosCliente);
+
+            $user = User::create([
+                'cliente_id' => $cliente->id,
+                'name' => $req->nombres . ' ' . $req->apellidos,
+                'email' => $req->email,
+                'password' => Hash::make($req->password),
+                'vendedor_id' => $req->vendedor_id,
+            ]);
+
+            $adjuntos = [
+                ['nombre' => $fotoCiFrente, 'tipo' => 'cedula_frente'],
+                ['nombre' => $fotoCiDorso, 'tipo' => 'cedula_dorso'],
+                ['nombre' => $fotoSelfie, 'tipo' => 'selfie']
+            ];
+        
+            foreach ($adjuntos as $adjunto) {
+                Adjunto::create([
+                    'cliente_id' => $cliente->id,
+                    'nombre' => $adjunto['nombre'],
+                    'tipo' => $adjunto['tipo'],
+                    'path' => 'clientes',
+                    'url' => 'clientes/' . $adjunto['nombre'],
+                ]);
+            }
+
+
+            Device::create([
+                'user_id' => $user->id,
+                'notitoken' => $req->notitoken,
+                'os' => $req->os,
+                'devicetoken' => $req->devicetoken,
+                'version' => $req->version,
+                'device' => $req->device,
+                'model' => $req->model,
+                'ip' => $req->ip(),
+                'version' => $req->version,
+                'web' => $req->web ?? 0,
+                'desktop' => $req->desktop ?? 0,
+            ]);
+
+            DB::commit();
+
+            $token = JWTAuth::fromUser($user);
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario registrado correctamente',
+                'results' => $this->userInfo($cliente, $token, [], $esAdicional)
+            ], 201);
         } catch (\Throwable $th) {
-            //throw $th;
+            DB::rollBack();
+            //SupabaseService::LOG('register', $th);
+            Log::error('Error en registro de usuario', [
+                'cedula' => $req->cedula ?? 'N/A',
+                'error' => $th->getMessage(),
+                'trace' => $th->getTraceAsString()
+            ]);
+            return response()->json(['success' => false, 'message' => 'Error de servidor'], 500);
         }
     }
 
@@ -70,7 +180,7 @@ class AuthController extends Controller
 
 
             //if ($fotoCiDorso == null || $fotoCiFrente == null)
-                //return response()->json(['success' => false, 'message' => 'Hay un error con la imagen de la cedula'], 400);
+            //return response()->json(['success' => false, 'message' => 'Hay un error con la imagen de la cedula'], 400);
 
 
             DB::beginTransaction();
@@ -369,7 +479,7 @@ class AuthController extends Controller
         return $validacion->id;
     }
 
-    private function subirBase64ToWebp(string $imagenBase64, string $imageName, string $path): string
+    private function subirBase64ToWebp(string $imagenBase64, string $imageName, string $path)
     {
         try {
             // Validar que sea una imagen base64 válida
@@ -420,7 +530,6 @@ class AuthController extends Controller
 
             // Retornar solo el nombre del archivo (o la ruta relativa)
             return $filename;
-
         } catch (\Throwable $th) {
             Log::error('Error al subir imagen base64 a WebP: ' . $th->getMessage(), [
                 'file' => $th->getFile(),
@@ -429,7 +538,33 @@ class AuthController extends Controller
                 'directory_base' => $path,
                 'trace' => $th->getTraceAsString(),
             ]);
-            throw $th;
+            return null;
         }
+    }
+
+    private function userInformacion($cliente,string $token, bool $esAdicional){
+        return [
+            'adicional'=>$esAdicional,
+            'cliid'=>$cliente->cliid,
+            'name'=>$cliente->user->name,
+            'primerNombre'=>$cliente->nombre_primero,
+            'nombres'=>trim($cliente->nombre_primero . ' ' . $cliente->nombre_segundo),
+            'apellidos'=>trim($cliente->apellido_primero . ' ' . $cliente->apellido_segundo),
+            'cedula'=>$cliente->cedula,
+            'fechaNacimiento'=>$cliente->fecha_nacimiento,
+            'email'=>$cliente->user->email,
+            'telefono'=>$cliente->celular,
+            'celular'=>$cliente->celular,
+            'solicitudCredito'=>$cliente->solicitud_credito,
+            'solicitudCompletada'=>$cliente->direccion_completado,
+            'funcionario'=>$cliente->funcionario,
+            'aso'=>$cliente->asofarma,
+            'vendedorId'=>$cliente->user->vendedor_id,
+            'tokenType'=>'Bearer',
+            'token'=>'Bearer '.$token,
+            'tokenRaw'=>$token,
+            'changepass'=>$cliente->user->changepass,
+            'digital'=>$cliente->digital,
+        ];
     }
 }

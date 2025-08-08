@@ -14,8 +14,8 @@ trait RegisterTraits
 
     public function clienteFarma(String $cedula){
         $farma = new FarmaService();
-        $res = (object)$farma->cliente($cedula);
-        $data = (object)$res->data;
+        $res = $farma->cliente($cedula);
+        $data = (object)$res['data'];
 
         if(property_exists($data,'result')){
             $result = $data->result;
@@ -44,8 +44,8 @@ trait RegisterTraits
 
     public function registrarInfinita(Object $cliente){
         $infinitaService = new InfinitaService();
-        $response = (object)$infinitaService->TraerPorDocumento($cliente->cedula);
-        $datosDeInfinita = (object) $response->data;
+        $response = $infinitaService->TraerPorDocumento($cliente->cedula);
+        $datosDeInfinita = (object) $response['data'];
 
         $response = [ 'cliId'=>0, 'register'=>false, 'solicitudId'=>0 ];
         try {
@@ -53,9 +53,9 @@ trait RegisterTraits
                 return [ 'cliId'=>$datosDeInfinita->CliId, 'register'=>true, 'solicitudId'=>0 ];
             }
 
-            $registrarEnInfinita = (object)$infinitaService->registrar((object)$cliente);
+            $registrarEnInfinita = $infinitaService->registrar((object)$cliente);
 
-            $dataInfinita = (object) $registrarEnInfinita->data;
+            $dataInfinita = (object) $registrarEnInfinita['data'];
                 if(property_exists($dataInfinita,'CliId')){
                     if( $dataInfinita->CliId !== '0'){
                         $response = [
