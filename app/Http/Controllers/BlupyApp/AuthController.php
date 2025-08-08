@@ -35,6 +35,12 @@ class AuthController extends Controller
         $validator = Validator::make($req->all(), trans('validation.auth.register'), trans('validation.auth.register.messages'));
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+
+        return response()->json(['success' => true, 'message' => 'Registrado correctamente',
+        'results'=> $this->userInformacion($req->all(),'111111',false)
+    ]);
+
         try {
             $cedula = $req->cedula;
 
@@ -81,6 +87,7 @@ class AuthController extends Controller
                 'solicitud_credito' => 0,
             ];
 
+
             $resRegistrarInfinita = $this->registrarInfinita((object) $datosCliente);
 
             if (!$resRegistrarInfinita['register']) {
@@ -106,7 +113,7 @@ class AuthController extends Controller
                 ['nombre' => $fotoCiDorso, 'tipo' => 'cedula_dorso'],
                 ['nombre' => $fotoSelfie, 'tipo' => 'selfie']
             ];
-        
+
             foreach ($adjuntos as $adjunto) {
                 Adjunto::create([
                     'cliente_id' => $cliente->id,
@@ -141,7 +148,7 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario registrado correctamente',
-                'results' => $this->userInfo($cliente, $token, [], $esAdicional)
+                'results' => $this->userInformacion($cliente, $token, $esAdicional)
             ], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -545,29 +552,30 @@ class AuthController extends Controller
         }
     }
 
-    private function userInformacion($cliente,string $token, bool $esAdicional){
+    private function userInformacion($cliente, string $token, bool $esAdicional)
+    {
         return [
-            'adicional'=>$esAdicional,
-            'cliid'=>$cliente->cliid,
-            'name'=>$cliente->user->name,
-            'primerNombre'=>$cliente->nombre_primero,
-            'nombres'=>trim($cliente->nombre_primero . ' ' . $cliente->nombre_segundo),
-            'apellidos'=>trim($cliente->apellido_primero . ' ' . $cliente->apellido_segundo),
-            'cedula'=>$cliente->cedula,
-            'fechaNacimiento'=>$cliente->fecha_nacimiento,
-            'email'=>$cliente->user->email,
-            'telefono'=>$cliente->celular,
-            'celular'=>$cliente->celular,
-            'solicitudCredito'=>$cliente->solicitud_credito,
-            'solicitudCompletada'=>$cliente->direccion_completado,
-            'funcionario'=>$cliente->funcionario,
-            'aso'=>$cliente->asofarma,
-            'vendedorId'=>$cliente->user->vendedor_id,
-            'tokenType'=>'Bearer',
-            'token'=>'Bearer '.$token,
-            'tokenRaw'=>$token,
-            'changepass'=>$cliente->user->changepass,
-            'digital'=>$cliente->digital,
+            'adicional' => $esAdicional,
+            'cliid' => $cliente->cliid,
+            'name' => $cliente->user->name,
+            'primerNombre' => $cliente->nombre_primero,
+            'nombres' => trim($cliente->nombre_primero . ' ' . $cliente->nombre_segundo),
+            'apellidos' => trim($cliente->apellido_primero . ' ' . $cliente->apellido_segundo),
+            'cedula' => $cliente->cedula,
+            'fechaNacimiento' => $cliente->fecha_nacimiento,
+            'email' => $cliente->user->email,
+            'telefono' => $cliente->celular,
+            'celular' => $cliente->celular,
+            'solicitudCredito' => $cliente->solicitud_credito,
+            'solicitudCompletada' => $cliente->direccion_completado,
+            'funcionario' => $cliente->funcionario,
+            'aso' => $cliente->asofarma,
+            'vendedorId' => $cliente->user->vendedor_id,
+            'tokenType' => 'Bearer',
+            'token' => 'Bearer ' . $token,
+            'tokenRaw' => $token,
+            'changepass' => $cliente->user->changepass,
+            'digital' => $cliente->digital,
         ];
     }
 }
