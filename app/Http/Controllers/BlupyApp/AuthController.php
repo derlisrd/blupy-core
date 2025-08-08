@@ -32,14 +32,16 @@ class AuthController extends Controller
     public function registroCliente(Request $req)
     {
 
+        return response()->json(['success' => true, 'message' => 'Registrado correctamente',
+        'results'=> $this->userInformacion($req->all(),'111111',false)
+    ]);
+
         $validator = Validator::make($req->all(), trans('validation.auth.register'), trans('validation.auth.register.messages'));
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
 
-        return response()->json(['success' => true, 'message' => 'Registrado correctamente',
-        'results'=> $this->userInformacion($req->all(),'111111',false)
-    ]);
+        
 
         try {
             $cedula = $req->cedula;
