@@ -33,7 +33,7 @@ class AuthController extends Controller
     {
 
         return response()->json(['success' => true, 'message' => 'Registrado correctamente',
-        'results'=> $this->userInformacion($req->all(),'111111',false)
+        'results'=>$req->all()
     ]);
 
         $validator = Validator::make($req->all(), trans('validation.auth.register'), trans('validation.auth.register.messages'));
