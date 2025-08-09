@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\BlupyApp\Auth\LoginController;
+use App\Http\Controllers\BlupyApp\Auth\RegisterController;
 use App\Http\Controllers\BlupyApp\AuthController;
 use App\Http\Controllers\BlupyApp\AutorizacionesQRController;
 use App\Http\Controllers\BlupyApp\AWSController;
@@ -43,7 +45,8 @@ Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDo
  * RUTAS NUEVAS
  */
 Route::prefix('/auth')->group(function(){
-    Route::post('/register',[AuthController::class,'registroCliente']);
+    Route::post('/login',[LoginController::class,'login']);
+    Route::post('/register',[RegisterController::class,'register']);
 });
 
 Route::prefix('/scan')->group(function(){

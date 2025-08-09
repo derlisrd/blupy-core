@@ -12,7 +12,6 @@ use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\User;
 use App\Models\Validacion;
-use App\Services\SupabaseService;
 use App\Traits\Helpers;
 use App\Traits\RegisterTraits;
 use Illuminate\Http\Request;
@@ -29,86 +28,94 @@ class AuthController extends Controller
 {
     use RegisterTraits, Helpers;
 
+    public function loginCliente(Request $req)
+    {
+        try {
+            $validator = Validator::make($req->all(), trans('validation.auth.login'), trans('validation.auth.login.messages'));
+
+            if ($validator->fails()) return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+            $ip = $req->ip();
+            $rateKey = "login:$ip";
+
+            if (RateLimiter::tooManyAttempts($rateKey, 5)) 
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
+            
+            RateLimiter::hit($rateKey, 60);
+
+            $cedula = $req->cedula;
+            $password = $req->password;
+            $cliente = Cliente::where('cedula', $cedula)->first();
+
+            if (!$cliente) return response()->json(['success' => false, 'message' => 'Usuario no existe. Registrese'], 404);
+
+            $version = $req->version ?? null;
+            $user =  $cliente->user;
+
+            if ($user->active == 0) return response()->json(['success' => false, 'message' => 'Cuenta inhabilitada o bloqueada temporalmente. Contacte con soporte.'], 400);
+
+            $adicional = Adicional::whereCedula($req->cedula)->first();
+            $esAdicional = $adicional ? true : false;
+
+            $credentials = ['email' => $user->email, 'password' => $password];
+            $token = JWTAuth::attempt($credentials);
+            if ($token) {
+                if ($user->rol == 0) {
+                    $dispositoDeConfianza = $user->devices
+                        ->where('desktop', $req->desktop)
+                        ->where('web', $req->web)
+                        ->where('device', $req->device)
+                        ->where('devicetoken', $req->devicetoken)
+                        ->first();
+                    if (!$dispositoDeConfianza) {
+                        //SupabaseService::LOG('newDevice', $req->cedula);
+                        $pistaEmail =  $user->email; //$this->ocultarParcialmenteEmail($user->email);
+                        $pistaDeNumero = $this->ocultarParcialmenteTelefono($cliente->celular);
+                        $idValidacion = $this->enviarSMSyEmaildispositivoInusual($user->email, $cliente->celular, $cliente->id, $req);
+                        return response()->json([
+                            'success' => true,
+                            'results' => null,
+                            'id' => $idValidacion,
+                            'message' => 'Valida el dispositivo. PIN enviado a ' . $pistaDeNumero . '. y al correo ' . $pistaEmail . '. Verifica tu whatsapp.',
+                        ]);
+                    }
+                    $dispositoDeConfianza->update([
+                        'version' => $version,
+                        'ip' => $req->ip()
+                    ]);
+                    $dispositoDeConfianza->touch();
+                }
+
+
+                $user->update(['intentos' => 0, 'ultimo_ingreso' =>  date('Y-m-d H:i:s'), 'version' => $version]);
+
+
+                return response()->json(
+                    [
+                        'success' => true,
+                        'message' => 'Ha ingresado',
+                        'id' => null,
+                        'results' => $this->userInformacion($cliente, $token, $esAdicional)
+                    ]
+                );
+            }
+
+
+            $user->update(['intentos' => $user->intentos + 1]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error. La contraseña es incorrecta.'
+            ], 401);
+        } catch (\Throwable $th) {
+            //SupabaseService::LOG('login_core', $th->getMessage());
+            throw $th;
+            return response()->json(['success' => false, 'message' => "Error de servidor"], 500);
+        }
+    }
+
     public function registroCliente(Request $req)
     {
-        
-        $json_string = '{
-            "adicional": false,
-            "cliid": "2348",
-            "name": "Derlis Francisco Ruiz Diaz Romero",
-            "primerNombre": "Derlis",
-            "nombres": "Derlis Francisco",
-            "apellidos": "Ruiz Diaz Romero",
-            "cedula": "4937724",
-            "fechaNacimiento": "1990-10-04",
-            "email": "derlisruizdiaz@hotmail.com",
-            "telefono": "0983202090",
-            "celular": "0983202090",
-            "solicitudCredito": 0,
-            "solicitudCompletada": 1,
-            "funcionario": 0,
-            "aso": 0,
-            "vendedorId": 2111,
-            "tokenType": "Bearer",
-            "token": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvcmUuYmx1cHkuY29tLnB5L2FwaS9sb2dpbiIsImlhdCI6MTc1NDY4NTg3MCwiZXhwIjoxNzU0Njg5NDcwLCJuYmYiOjE3NTQ2ODU4NzAsImp0aSI6InhvVVRObjFFV3ViRU9CdFEiLCJzdWIiOiIyNDMyIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.jAg2eVF_PraM2HsULLPTxCBFvEYO0H6hJ9Z2Mp4MMwE",
-            "tokenRaw": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2NvcmUuYmx1cHkuY29tLnB5L2FwaS9sb2dpbiIsImlhdCI6MTc1NDY4NTg3MCwiZXhwIjoxNzU0Njg5NDcwLCJuYmYiOjE3NTQ2ODU4NzAsImp0aSI6InhvVVRObjFFV3ViRU9CdFEiLCJzdWIiOiIyNDMyIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.jAg2eVF_PraM2HsULLPTxCBFvEYO0H6hJ9Z2Mp4MMwE",
-            "changepass": 0,
-            "tarjetas": [
-                {
-                    "id": 2,
-                    "descripcion": "Blupy Digital",
-                    "otorgadoPor": "Mi crédito S.A.",
-                    "tipo": 1,
-                    "emision": "2023-11-03",
-                    "bloqueo": false,
-                    "condicion": "Contado",
-                    "condicionVenta": 1,
-                    "cuenta": "8",
-                    "principal": true,
-                    "adicional": false,
-                    "numeroTarjeta": "1",
-                    "linea": 700000,
-                    "pagoMinimo": 62000,
-                    "deuda": 0,
-                    "disponible": 700000,
-                    "alianzas": []
-                },
-                {
-                    "id": 1,
-                    "descripcion": "Blupy Alianza",
-                    "otorgadoPor": "Farma por alianza",
-                    "tipo": 0,
-                    "emision": null,
-                    "condicion": "credito",
-                    "condicionVenta": 2,
-                    "cuenta": null,
-                    "bloqueo": false,
-                    "numeroTarjeta": null,
-                    "linea": 1400000,
-                    "pagoMinimo": null,
-                    "deuda": 0,
-                    "disponible": 1400000,
-                    "alianzas": [
-                        {
-                            "codigo": 3386521,
-                            "nombre": "BLUPY",
-                            "descripcion": "BLUPY",
-                            "formaPagoCodigo": 129,
-                            "formaPago": "BLUPY CREDITO 1 DIA"
-                        }
-                    ]
-                }
-            ],
-            "digital": 1
-        }';
-        
-        $data_array = json_decode($json_string, true);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Registrado correctamente',
-            'results' => $data_array
-        ]);
 
         $validator = Validator::make($req->all(), trans('validation.auth.register'), trans('validation.auth.register.messages'));
         if ($validator->fails())
@@ -470,7 +477,7 @@ class AuthController extends Controller
                 'message' => 'Error. La contraseña es incorrecta.'
             ], 401);
         } catch (\Throwable $th) {
-            SupabaseService::LOG('login_core', $th->getMessage());
+            //SupabaseService::LOG('login_core', $th->getMessage());
             throw $th;
             return response()->json(['success' => false, 'message' => "Error de servidor"], 500);
         }
