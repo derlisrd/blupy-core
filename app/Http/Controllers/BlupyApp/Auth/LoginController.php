@@ -43,8 +43,9 @@ class LoginController extends Controller
             
 
             // 5. Intentar autenticación
-            $authResult = $this->attemptAuthentication($cliente->user->email, $req->password);
-            if (!$authResult['success']) 
+            $credentials = ['email' => $cliente->user->email, 'password' => $req->password];
+            $token = JWTAuth::attempt($credentials);
+            if ($token) 
                 $this->incrementLoginAttempts($cliente->user);
                 return $this->errorResponse('Credenciales incorrectas. '.$cliente->user->email, 401);
             
@@ -125,16 +126,7 @@ class LoginController extends Controller
         return null;
     }
 
-    private function attemptAuthentication(string $email, string $password)
-    {
-        $credentials = ['email' => $email, 'password' => $password];
-        $token = JWTAuth::attempt($credentials);
-
-        return [
-            'success' => (bool) $token,
-            'token' => $token
-        ];
-    }
+    
 
     private function verifyTrustedDevice(Cliente $cliente, Request $req)
     {
