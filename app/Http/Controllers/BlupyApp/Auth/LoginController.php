@@ -31,7 +31,7 @@ class LoginController extends Controller
             
 
             // 3. Buscar cliente
-            $cliente = $this->findClienteByCedula($req->cedula);
+            $cliente = Cliente::with(['user'])->where('cedula', $req->cedula)->first();
             if (!$cliente) 
                 return $this->errorResponse('Usuario no existe. Regístrese', 404);
             
@@ -46,7 +46,7 @@ class LoginController extends Controller
             $authResult = $this->attemptAuthentication($cliente->user->email, $req->password);
             if (!$authResult['success']) 
                 $this->incrementLoginAttempts($cliente->user);
-                return $this->errorResponse('Credenciales incorrectas.', 401);
+                return $this->errorResponse('Credenciales incorrectas. '.$cliente->user->email, 401);
             
 
             // 6. Verificar dispositivo de confianza (solo para rol 0)
@@ -113,13 +113,7 @@ class LoginController extends Controller
         return null;
     }
 
-    private function findClienteByCedula(string $cedula)
-    {
-        return Cliente::with(['user'])
-            ->where('cedula', $cedula)
-            ->first();
-    }
-
+  
     private function checkAccountStatus($user)
     {
         if (!$user->active) {
