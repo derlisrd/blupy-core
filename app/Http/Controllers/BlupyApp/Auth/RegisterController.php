@@ -96,7 +96,7 @@ class RegisterController extends Controller
             'fotoceduladorso' => 'required|string', // base64
             'fotoselfie' => 'required|string', // base64
             'vendedor_id' => 'nullable|integer|exists:vendedores,id',
-            'notitoken' => 'sometimes|string',
+            'notitoken' => 'nullable|string',
             'os' => 'sometimes|string',
             'devicetoken' => 'sometimes|string',
             'version' => 'sometimes|string',
