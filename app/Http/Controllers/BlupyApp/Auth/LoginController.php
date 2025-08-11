@@ -45,7 +45,7 @@ class LoginController extends Controller
             // 5. Intentar autenticación
             $credentials = ['email' => $cliente->user->email, 'password' => $req->password];
             $token = JWTAuth::attempt($credentials);
-            if ($token) 
+            if (!$token) 
                 $this->incrementLoginAttempts($cliente->user);
                 return $this->errorResponse('Credenciales incorrectas. '.$cliente->user->email, 401);
             
