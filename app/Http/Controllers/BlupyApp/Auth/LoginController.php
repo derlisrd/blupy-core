@@ -47,7 +47,7 @@ class LoginController extends Controller
             $token = JWTAuth::attempt($credentials);
             if (!$token) 
                 $this->incrementLoginAttempts($cliente->user);
-                return $this->errorResponse('Credenciales incorrectas. '.$cliente->user->email, 401);
+                return $this->errorResponse('Credenciales incorrectas. '.$cliente->user->email . $req->password, 401);
             
 
             // 6. Verificar dispositivo de confianza (solo para rol 0)
