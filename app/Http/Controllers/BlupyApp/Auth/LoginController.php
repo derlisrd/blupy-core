@@ -56,9 +56,22 @@ class LoginController extends Controller
                     return $deviceVerificationResponse;
                 }
             }
-
-            // 7. Login exitoso
-            return $this->handleSuccessfulLogin($cliente, $authResult['token'], $req);
+            $cliente->user->update([
+                'intentos' => 0,
+                'ultimo_ingreso' => now(),
+                'version' => $req->version
+            ]);
+    
+            // Verificar si es adicional
+            $esAdicional = Adicional::where('cedula', $req->cedula)->exists();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Ingreso exitoso',
+                'id' => null,
+                'results' => $this->userInformacion($cliente, $token, $esAdicional)
+            ]);
+            
         } catch (\Throwable $th) {
             Log::error('Login error', [
                 'cedula' => $req->cedula ?? 'N/A',
@@ -177,25 +190,6 @@ class LoginController extends Controller
         ]);
     }
 
-    private function handleSuccessfulLogin(Cliente $cliente, string $token, Request $req)
-    {
-        // Resetear intentos fallidos y actualizar último ingreso
-        $cliente->user->update([
-            'intentos' => 0,
-            'ultimo_ingreso' => now(),
-            'version' => $req->version
-        ]);
-
-        // Verificar si es adicional
-        $esAdicional = Adicional::where('cedula', $req->cedula)->exists();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Ingreso exitoso',
-            'id' => null,
-            'results' => $this->userInformacion($cliente, $token, $esAdicional)
-        ]);
-    }
 
     private function incrementLoginAttempts($user)
     {
