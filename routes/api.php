@@ -123,6 +123,9 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/solicitar-autorizacion-compra',[AutorizacionesQRController::class,'solicitarAutorizacion'])->name('api_solicitar_compra');
     Route::post('/autorizar-compra',[AutorizacionesQRController::class,'autorizar'])->name('api_autorizar_compra');
 
+    Route::prefix('/solicitudes')->group(function(){
+        Route::post('/cancelar',[SolicitudesController::class,'cancelarSolicitud']);
+    });
 
     Route::get('/ciudades',[ConsultasController::class,'ciudades'])->name('api_ciudades');
     Route::get('/barrios-por-ciudad/{idCiudad}',[ConsultasController::class,'barriosPorCiudad'])->name('api_barrios_por_ciudad');

@@ -23,6 +23,7 @@ use App\Http\Controllers\Private\CuentasController as CuentasPrivate;
 use App\Jobs\PushNativeJobs;
 use App\Jobs\SolicitudAprobadaJob;
 use App\Models\Adjunto;
+use App\Models\Cliente;
 use App\Models\Device;
 use App\Services\InfinitaService;
 use App\Services\WaService;
@@ -55,6 +56,18 @@ class SolicitudesController extends Controller
         return response()->json([
             'success' => true,
             'results' => $results
+        ]);
+    }
+
+    public function cancelarSolicitud(Request $req){
+        $cliente = $req->user()->cliente;
+
+        $cliente->direccion_completado = 1;
+        $cliente->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Solicitud cancelada correctamente.'
         ]);
     }
 
