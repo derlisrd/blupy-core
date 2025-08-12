@@ -45,42 +45,81 @@ class CuentasController extends Controller
     {
         $results = collect();
 
-        // Usar HTTP facade para llamadas concurrentes
-        $responses = Http::pool(function (Pool $pool) use ($cliente) {
-            return [
-                'infinita' => $pool->timeout(10)->retry(2, 1000)->async()->get('infinita-endpoint', [
-                    'cedula' => $cliente->cedula
-                ]),
-                'farma' => $pool->timeout(10)->retry(2, 1000)->async()->get('farma-endpoint', [
-                    'cedula' => $cliente->extranjero == 1 ? null : $cliente->cedula,
-                    'codigo_farma' => $cliente->extranjero == 1 ? $cliente->codigo_farma : null
-                ])
-            ];
-        });
-
-        // Procesar Infinita
+        // Usar HTTP facade con Pool para llamadas concurrentes usando tus endpoints reales
         try {
-            if ($responses['infinita']->successful()) {
+            $responses = Http::pool(function (Pool $pool) use ($cliente) {
+                $infinitaUrl = config('services.infinita.url');
+                $farmaUrl = config('services.farma.url');
+                $infinitaToken = config('services.infinita.token');
+                $farmaToken = config('services.farma.token');
+
+                $calls = [];
+
+                // Llamada a Infinita
+                $calls['infinita'] = $pool->timeout(12)->retry(2, 1000)
+                    ->withHeaders([
+                        'Content-Type' => 'application/json',
+                        'Authorization' => "Bearer {$infinitaToken}",
+                        'Accept' => 'application/json',
+                    ])
+                    ->async()
+                    ->get($infinitaUrl . '/ListarTarjetasPorDoc', [
+                        'Mtdocu' => $cliente->cedula
+                    ]);
+
+                // Llamada a Farma
+                if ($cliente->extranjero == 1) {
+                    $calls['farma'] = $pool->timeout(12)->retry(2, 1000)
+                        ->withHeaders([
+                            'Content-Type' => 'application/json',
+                            'Authorization' => "Bearer {$farmaToken}",
+                            'Accept' => 'application/json',
+                        ])
+                        ->async()
+                        ->get($farmaUrl . '/cliente/getClienteCodigo', [
+                            'codigo' => $cliente->codigo_farma
+                        ]);
+                } else {
+                    $calls['farma'] = $pool->timeout(12)->retry(2, 1000)
+                        ->withHeaders([
+                            'Content-Type' => 'application/json',
+                            'Authorization' => "Bearer {$farmaToken}",
+                            'Accept' => 'application/json',
+                        ])
+                        ->async()
+                        ->get($farmaUrl . '/cliente/getCliente', [
+                            'documento' => $cliente->cedula
+                        ]);
+                }
+
+                return $calls;
+            });
+
+            // Procesar respuesta de Infinita
+            if (isset($responses['infinita']) && $responses['infinita']->successful()) {
                 $infinitaData = $responses['infinita']->json();
                 $infinitaCards = $this->buildInfinitaCards($infinitaData);
                 $results = $results->concat($infinitaCards);
+            } else {
+                // Fallback síncrono para Infinita
+                $results = $results->concat($this->procesarInfinitaFallback($cliente->cedula));
             }
-        } catch (\Exception $e) {
-            Log::error('Error procesando Infinita: ' . $e->getMessage());
-            // Fallback - llamada síncrona
-            $results = $results->concat($this->procesarInfinitaFallback($cliente->cedula));
-        }
 
-        // Procesar Farma
-        try {
-            if ($responses['farma']->successful()) {
+            // Procesar respuesta de Farma
+            if (isset($responses['farma']) && $responses['farma']->successful()) {
                 $farmaData = $responses['farma']->json();
                 $farmaCards = $this->buildFarmaCards($farmaData, $cliente->franquicia);
                 $results = $results->concat($farmaCards);
+            } else {
+                // Fallback síncrono para Farma
+                $results = $results->concat($this->procesarFarmaFallback($cliente));
             }
+
         } catch (\Exception $e) {
-            Log::error('Error procesando Farma: ' . $e->getMessage());
-            // Fallback - llamada síncrona
+            Log::error('Error en llamadas concurrentes: ' . $e->getMessage());
+            
+            // Fallback completo - usar services originales
+            $results = $results->concat($this->procesarInfinitaFallback($cliente->cedula));
             $results = $results->concat($this->procesarFarmaFallback($cliente));
         }
 
@@ -225,28 +264,55 @@ class CuentasController extends Controller
             $needsFarma = !isset($req->cuenta) || $req->cuenta == null || $req->cuenta == '0';
             
             if ($needsInfinita && $needsFarma) {
-                // Ambas APIs - llamadas concurrentes
-                $responses = Http::pool(function (Pool $pool) use ($req, $user, $periodo) {
-                    return [
-                        'infinita' => $pool->timeout(15)->retry(2, 1000)->async()->get('infinita-movimientos', [
-                            'cuenta' => $req->cuenta,
-                            'periodo' => $periodo,
-                            'numero_tarjeta' => $req->numero_tarjeta
-                        ]),
-                        'farma' => $pool->timeout(15)->retry(2, 1000)->async()->get('farma-movimientos', [
-                            'cedula' => $user->cliente->cedula,
-                            'periodo' => $periodo
-                        ])
-                    ];
-                });
-                
-                // Procesar respuestas concurrentes
-                if ($responses['infinita']->successful()) {
-                    $results = $results->concat($this->processInfinitaMovimientos($responses['infinita']->json()));
-                }
-                
-                if ($responses['farma']->successful()) {
-                    $results = $results->concat($this->processFarmaMovimientos($responses['farma']->json()));
+                // Ambas APIs - llamadas concurrentes con endpoints reales
+                try {
+                    $responses = Http::pool(function (Pool $pool) use ($req, $user, $periodo) {
+                        $infinitaUrl = config('services.infinita.url');
+                        $farmaUrl = config('services.farma.url');
+                        $infinitaToken = config('services.infinita.token');
+                        $farmaToken = config('services.farma.token');
+
+                        return [
+                            'infinita' => $pool->timeout(15)->retry(2, 1000)
+                                ->withHeaders([
+                                    'Content-Type' => 'application/json',
+                                    'Authorization' => "Bearer {$infinitaToken}",
+                                    'Accept' => 'application/json',
+                                ])
+                                ->async()
+                                ->get($infinitaUrl . '/TarjMovimPorFecha', [
+                                    'Maectaid' => $req->cuenta,
+                                    'Periodo' => $periodo,
+                                    'Mtnume' => $req->numero_tarjeta
+                                ]),
+                            'farma' => $pool->timeout(15)->retry(2, 1000)
+                                ->withHeaders([
+                                    'Content-Type' => 'application/json',
+                                    'Authorization' => "Bearer {$farmaToken}",
+                                    'Accept' => 'application/json',
+                                ])
+                                ->async()
+                                ->get($farmaUrl . '/movimientos', [
+                                    'documento' => $user->cliente->cedula,
+                                    'periodo' => $periodo
+                                ])
+                        ];
+                    });
+                    
+                    // Procesar respuestas concurrentes
+                    if (isset($responses['infinita']) && $responses['infinita']->successful()) {
+                        $results = $results->concat($this->processInfinitaMovimientos($responses['infinita']->json()));
+                    }
+                    
+                    if (isset($responses['farma']) && $responses['farma']->successful()) {
+                        $results = $results->concat($this->processFarmaMovimientos($responses['farma']->json()));
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Error en llamadas concurrentes de movimientos: ' . $e->getMessage());
+                    
+                    // Fallback - usar services originales
+                    $results = $results->concat($this->getMovimientosInfinitaSync($req->cuenta, $periodo, $req->numero_tarjeta));
+                    $results = $results->concat($this->getMovimientosFarmaSync($user->cliente->cedula, $periodo));
                 }
                 
             } elseif ($needsInfinita) {
