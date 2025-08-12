@@ -25,9 +25,13 @@ class CuentasController extends Controller
 
 
 
-    public function tarjetas(string $cedula, int $extranjero, string $codigo_farma, int $franquicia)
+    public function tarjetas(Request $req)
     {
-
+        $user = $req->user();
+        $cedula = $user->cliente->cedula;
+        $extranjero = $user->cliente->extranjero;
+        $codigo_farma = $user->cliente->codigo_farma;
+        $franquicia = $user->cliente->franquicia;
         $results = [];
 
         // Manejo de errores para API Infinita
@@ -92,7 +96,11 @@ class CuentasController extends Controller
 
         // El resto del código se mantiene igual
         if (!$resFarma) {
-            return $results;
+            return response()->json([
+                'success' => true,
+                'results' => $results,
+                'message' => ''
+            ]);
         }
 
         $farma = (object) $resFarma['data'];
