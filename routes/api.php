@@ -129,7 +129,7 @@ Route::middleware('auth:api')->group(function(){
 
     Route::prefix('/consultas')->group(function(){
         Route::get('/ciudades',[ConsultasController::class,'ciudades'])->name('api_ciudades');
-        Route::get('/barrios',[ConsultasController::class,'ciudades'])->name('api_barrios');
+        Route::get('/barrios',[ConsultasController::class,'barrios'])->name('api_barrios');
     });
 
     Route::get('/ciudades',[ConsultasController::class,'ciudades'])->name('api_ciudades');
