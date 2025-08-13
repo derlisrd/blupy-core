@@ -127,6 +127,11 @@ Route::middleware('auth:api')->group(function(){
         Route::post('/cancelar',[SolicitudesController::class,'cancelarSolicitud']);
     });
 
+    Route::prefix('/consultas')->group(function(){
+        Route::get('/ciudades',[ConsultasController::class,'ciudades'])->name('api_ciudades');
+        Route::get('/barrios',[ConsultasController::class,'ciudades'])->name('api_barrios');
+    });
+
     Route::get('/ciudades',[ConsultasController::class,'ciudades'])->name('api_ciudades');
     Route::get('/barrios-por-ciudad/{idCiudad}',[ConsultasController::class,'barriosPorCiudad'])->name('api_barrios_por_ciudad');
 

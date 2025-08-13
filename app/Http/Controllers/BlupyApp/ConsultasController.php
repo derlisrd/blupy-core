@@ -9,6 +9,7 @@ use App\Models\Cliente;
 use App\Models\Version;
 use App\Services\InfinitaService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -116,15 +117,28 @@ class ConsultasController extends Controller
     }
 
 
+
+
     public function barriosPorCiudad(Request $req){
         $results = Barrio::where('ciudad_id',$req->idCiudad)->get();
         return response()->json(['success'=>true,'results'=>$results]);
     }
 
-    public function ciudades(){
-        return response()->json(['success'=>true,'results'=>Ciudad::all()]);
+    public function barrios(){
+        $barrios = Cache::remember('barrios', now()->addDays(30), function () {
+            return Barrio::all();
+        });
+        
+        return response()->json(['success' => true, 'results' => $barrios]);
     }
-
+    
+    public function ciudades(){
+        $ciudades = Cache::remember('ciudades', now()->addDays(30), function () {
+            return Ciudad::all();
+        });
+        
+        return response()->json(['success' => true, 'results' => $ciudades]);
+    }
 
     public function verificarVersion(Request $req){
 
