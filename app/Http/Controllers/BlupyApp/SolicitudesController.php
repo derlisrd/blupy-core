@@ -181,17 +181,13 @@ class SolicitudesController extends Controller
                 'empresa_ciudad' => $req->empresa_ciudad,
 
             ];
-            PushNativeJobs::dispatch('Solicitud ingresadad', 'Solicitud ha sido aprobada', [$req->devicetoken], $req->os)->onConnection('database');
-            return response()->json([
-                'success'=>true,
-                'message'=>'Solicitud ingresadad',
-                'results'=>$req->all()
-            ]);
+            
+            
 
 
-            $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
+            /* $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
             if (!$solicitud->success)
-                return response()->json(['success' => false, 'message' => $solicitud->message], 400);
+                return response()->json(['success' => false, 'message' => $solicitud->message], 400); */
 
 
             $cliente->update([
@@ -220,7 +216,7 @@ class SolicitudesController extends Controller
             ]);
 
 
-            SolicitudCredito::create([
+            /* SolicitudCredito::create([
                 'cliente_id' => $cliente->id,
                 'estado_id' => $solicitud->id,
                 'estado' => $solicitud->estado,
@@ -250,7 +246,13 @@ class SolicitudesController extends Controller
                 'estado_id' => $solicitud->id,
                 'estado' => $solicitud->estado,
                 'codigo' => $solicitud->codigo
-            ];
+            ]; */
+
+            $results = [
+                'estado_id' => 5,
+                'estado' => 'Contrato pendiente',
+                'codigo' => '12345'
+            ]; 
             return response()->json([
                 'success' => true,
                 'results' => $results,
