@@ -375,7 +375,6 @@ class RegisterController extends Controller
     {
         try {
             // Validar que sea una imagen base64 válida
-            Log::info('foto: '.$imagenBase64);
             if (!preg_match('/^data:image\/(\w+);base64,/', $imagenBase64, $matches)) {
                 throw new \Exception("Formato base64 no válido");
             }
