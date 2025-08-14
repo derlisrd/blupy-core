@@ -181,7 +181,7 @@ class SolicitudesController extends Controller
                 'empresa_ciudad' => $req->empresa_ciudad,
 
             ];
-
+            PushNativeJobs::dispatch('Solicitud ingresadad', 'Solicitud ha sido aprobada', [$req->devicetoken], $req->os)->onConnection('database');
             return response()->json([
                 'success'=>true,
                 'message'=>'Solicitud ingresadad',
