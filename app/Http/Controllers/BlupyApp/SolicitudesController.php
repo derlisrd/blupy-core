@@ -59,7 +59,8 @@ class SolicitudesController extends Controller
         ]);
     }
 
-    public function cancelarSolicitud(Request $req){
+    public function cancelarSolicitud(Request $req)
+    {
         $cliente = $req->user()->cliente;
 
         $cliente->direccion_completado = 1;
@@ -101,6 +102,167 @@ class SolicitudesController extends Controller
         }
         return response()->json(['success' => true, 'message' => 'Puede ingresar una nueva solicitud']);
     }
+
+    /**********************************************************************
+     * solicitar credito digital
+     ************************************************************************/
+    public function solicitarCreditoDigital(Request $req)
+    {
+        $user = $req->user();
+        $fechaLimite = Carbon::now()->subDays(2);
+
+        // Buscar solicitudes que puedan causar conflicto
+        $solicitudConflictiva = SolicitudCredito::where('cliente_id', $user->cliente->id)
+            ->where('tipo', 1)
+            ->where(function ($query) use ($fechaLimite) {
+                $query->where('created_at', '>', $fechaLimite)  // Menos de 48 horas
+                    ->orWhere('estado_id', 5);                // O pendiente de contrato
+            })
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if ($solicitudConflictiva) {
+            if ($solicitudConflictiva->estado_id == 5) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ya tiene una solicitud con contrato pendiente.'
+                ], 400);
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'
+            ], 400);
+        }
+
+
+
+        try {
+            $cliente = $user->cliente;
+
+            $departamento = Departamento::find($req->departamento_id);
+            $departamento_empresa = Departamento::find($req->empresa_departamento_id);
+
+
+            $datosAenviar = (object) [
+                'cedula' => $cliente->cedula,
+                'apellido_primero' => $cliente->apellido_primero,
+                'apellido_segundo' => $cliente->apellido_segundo,
+                'nombre_primero' => $cliente->nombre_primero,
+                'nombre_segundo' => $cliente->nombre_segundo,
+                'fecha_nacimiento' => $cliente->fecha_nacimiento,
+                'celular' => $cliente->celular,
+
+                'profesion_id' => $req->profesion_id,
+                'salario' => $req->salario,
+                'antiguedad_laboral' => $req->antiguedad_laboral,
+                'antiguedad_laboral_mes' => $req->antiguedad_laboral_mes,
+                'empresa' => $req->empresa,
+                'empresa_direccion' => $req->empresa_direccion,
+                'empresa_telefono' => $req->empresa_telefono,
+                'tipo_empresa_id' => $req->tipo_empresa_id,
+
+                'email' => $user->email,
+
+                'latitud_direccion' => $req->latitud_direccion,
+                'longitud_direccion' => $req->longitud_direccion,
+
+                'calle' => $req->calle,
+                'referencia_direccion' => $req->referencia_direccion,
+
+                
+                'departamento_id' => $departamento->codigo,
+                'ciudad_id' => $req->ciudad_codigo,
+                'ciudad' => $req->ciudad,
+                'barrio_id' => $req->barrio_codigo,
+                'barrio' => $req->barrio,
+
+                'empresa_departamento_id' => $departamento_empresa->codigo,
+                'empresa_ciudad_id' => $req->empresa_ciudad_codigo,
+                'empresa_ciudad' => $req->empresa_ciudad,
+
+            ];
+
+            return response()->json([
+                'success'=>true,
+                'message'=>'Solicitud ingresadad',
+                'results'=>$req->all()
+            ]);
+
+
+            $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
+            if (!$solicitud->success)
+                return response()->json(['success' => false, 'message' => $solicitud->message], 400);
+
+
+            $cliente->update([
+                'latitud_direccion' => $req->latitud_direccion,
+                'longitud_direccion' => $req->longitud_direccion,
+                'departamento_id' => $req->departamento_id,
+                'ciudad_id' => $req->ciudad_id,
+                'ciudad' => $req->ciudad,
+                'barrio_id' => $req->barrio_id,
+                'barrio' => $req->barrio,
+                'calle' => $req->calle,
+                'referencia_direccion' => $req->referencia_direccion,
+                'profesion_id' => $req->profesion_id,
+                'salario' => $req->salario,
+                'antiguedad_laboral' => $req->antiguedad_laboral,
+                'antiguedad_laboral_mes' => $req->antiguedad_laboral_mes,
+                'empresa' => $req->empresa,
+                'empresa_direccion' => $req->empresa_direccion,
+                'empresa_telefono' => $req->empresa_telefono,
+                'empresa_departamento_id' => $req->empresa_departamento_id,
+                'empresa_ciudad_id' => $req->empresa_ciudad_id,
+                'empresa_ciudad' => $req->empresa_ciudad,
+                'tipo_empresa_id' => $req->tipo_empresa_id,
+                'solicitud_credito' => 1,
+                'direccion_completado' => 1,
+            ]);
+
+
+            SolicitudCredito::create([
+                'cliente_id' => $cliente->id,
+                'estado_id' => $solicitud->id,
+                'estado' => $solicitud->estado,
+                'codigo' => $solicitud->codigo,
+                'tipo' => 1,
+                'importe' => 0
+            ]);
+            $titulo = '¡Solicitud de crédito!';
+            $descripcion = 'Tu solicitud de crédito ha sido aprobada.';
+            if ($solicitud->id === 5) {
+                SolicitudAprobadaJob::dispatch($user->email, $cliente->celular)->onConnection('database');
+                Informacion::create([
+                    'user_id' => $user->id,
+                    'codigo_info' => 1,
+                    'title' => $titulo,
+                    'description' => $descripcion,
+                    'text' => $descripcion,
+                    'active' => 1,
+                    'leido' => 0,
+                    'general' => 0,
+                ]);
+                PushNativeJobs::dispatch($titulo, $descripcion, [$req->devicetoken], $req->os)->onConnection('database');
+
+            }
+
+            $results = [
+                'estado_id' => $solicitud->id,
+                'estado' => $solicitud->estado,
+                'codigo' => $solicitud->codigo
+            ];
+            return response()->json([
+                'success' => true,
+                'results' => $results,
+                'message' => 'Solicitud ingresada correctamente.'
+            ]);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            SupabaseService::LOG($th->getMessage(), $th);
+            return response()->json(['success' => false, 'message' => 'Hubo un error con el servidor. Contacte con nosotros por favor.'], 500);
+        }
+    }
+
 
 
 
@@ -240,8 +402,8 @@ class SolicitudesController extends Controller
             $titulo = '¡Solicitud de crédito!';
             $descripcion = 'Tu solicitud de crédito ha sido aprobada.';
             if ($solicitud->id === 5) {
-                
-                SolicitudAprobadaJob::dispatch($user->email,$cliente->celular)->onConnection('database');
+
+                SolicitudAprobadaJob::dispatch($user->email, $cliente->celular)->onConnection('database');
 
                 Informacion::create([
                     'user_id' => $user->id,
@@ -254,15 +416,14 @@ class SolicitudesController extends Controller
                     'general' => 0,
                 ]);
 
-                $device = Device::where('user_id',$user->id)
-                ->whereNotNull('devicetoken')
-                ->whereIn('os', ['android', 'ios'])
-                ->first();
-                
+                $device = Device::where('user_id', $user->id)
+                    ->whereNotNull('devicetoken')
+                    ->whereIn('os', ['android', 'ios'])
+                    ->first();
+
                 PushNativeJobs::dispatch($titulo, $descripcion, [$device->devicetoken], $device->os)->onConnection('database');
-                
             }
-            
+
             $results = [
                 'estado_id' => $solicitud->id,
                 'estado' => $solicitud->estado,
@@ -342,7 +503,7 @@ class SolicitudesController extends Controller
             //Log::error($th);
             SupabaseService::LOG('core_ampliacion_194', $th->getMessage());
 
-            return response()->json(['success' => false, 'message' => 'Error de servidor. Contacto con atención al cliente'],500);
+            return response()->json(['success' => false, 'message' => 'Error de servidor. Contacto con atención al cliente'], 500);
         }
     }
 
@@ -400,17 +561,17 @@ class SolicitudesController extends Controller
             if ($tarjetaObject->linea < (int)$req->limite)
                 return response()->json(['success' => false, 'message' => 'Error, limite excedido'], 403);
 
-                $datosAenviar = $cliente;
+            $datosAenviar = $cliente;
 
-                $departamento = Departamento::find($cliente->departamento_id);
-                $ciudad = Ciudad::find($cliente->ciudad_id);
-                $barrio = Barrio::find($cliente->barrio_id);
-    
-                $datosAenviar['departamento_id'] = $departamento->codigo;
-                $datosAenviar['ciudad_id'] = $ciudad->codigo;
-                $datosAenviar['barrio_id'] = $barrio->codigo;
-    
-                
+            $departamento = Departamento::find($cliente->departamento_id);
+            $ciudad = Ciudad::find($cliente->ciudad_id);
+            $barrio = Barrio::find($cliente->barrio_id);
+
+            $datosAenviar['departamento_id'] = $departamento->codigo;
+            $datosAenviar['ciudad_id'] = $ciudad->codigo;
+            $datosAenviar['barrio_id'] = $barrio->codigo;
+
+
 
 
             $infinitaAdicional = $this->adicionalEnInfinita($datosAenviar, $datoDelAdicional, $req->cuenta);
