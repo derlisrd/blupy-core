@@ -124,7 +124,7 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/autorizar-compra',[AutorizacionesQRController::class,'autorizar'])->name('api_autorizar_compra');
 
     Route::prefix('/solicitudes')->group(function(){
-        Route::post('/solicitar-credito',[SolicitudesController::class,'solicitarCreditoDigital']);
+        Route::post('/solicitar-credito-digital',[SolicitudesController::class,'solicitarCreditoDigital']);
         Route::post('/cancelar',[SolicitudesController::class,'cancelarSolicitud']);
     });
 
