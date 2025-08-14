@@ -71,6 +71,39 @@ class SolicitudesController extends Controller
             'message' => 'Solicitud cancelada correctamente.'
         ]);
     }
+    public function verificarDisponibilidad(Request $req)
+    {
+        $user = $req->user();
+        $fechaLimite = Carbon::now()->subDays(2);
+
+        // Buscar solicitudes que puedan causar conflicto
+        $solicitudConflictiva = SolicitudCredito::where('cliente_id', $user->cliente->id)
+            ->where('tipo', 1)
+            ->where(function ($query) use ($fechaLimite) {
+                $query->where('created_at', '>', $fechaLimite)  // Menos de 48 horas
+                    ->orWhere('estado_id', 5);                // O pendiente de contrato
+            })
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if ($solicitudConflictiva) {
+            if ($solicitudConflictiva->estado_id == 5) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ya tiene una solicitud con contrato pendiente.'
+                ], 400);
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'
+            ], 400);
+        }
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'Puede solicitar'
+        ]);
+    }
 
 
     public function verificarEstadoSolicitud(Request $req)
@@ -108,35 +141,8 @@ class SolicitudesController extends Controller
      ************************************************************************/
     public function solicitarCreditoDigital(Request $req)
     {
-        $user = $req->user();
-        $fechaLimite = Carbon::now()->subDays(2);
-
-        // Buscar solicitudes que puedan causar conflicto
-        $solicitudConflictiva = SolicitudCredito::where('cliente_id', $user->cliente->id)
-            ->where('tipo', 1)
-            ->where(function ($query) use ($fechaLimite) {
-                $query->where('created_at', '>', $fechaLimite)  // Menos de 48 horas
-                    ->orWhere('estado_id', 5);                // O pendiente de contrato
-            })
-            ->orderBy('created_at', 'desc')
-            ->first();
-
-        if ($solicitudConflictiva) {
-            if ($solicitudConflictiva->estado_id == 5) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Ya tiene una solicitud con contrato pendiente.'
-                ], 400);
-            }
-            return response()->json([
-                'success' => false,
-                'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'
-            ], 400);
-        }
-
-
-
         try {
+            $user = $req->user;
             $cliente = $user->cliente;
 
             $departamento = Departamento::find($req->departamento_id);
