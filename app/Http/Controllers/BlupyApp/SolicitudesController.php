@@ -231,20 +231,21 @@ class SolicitudesController extends Controller
                 'importe' => 0
             ]);
             $titulo = '¡Solicitud de crédito!';
-            $descripcion = 'Tu solicitud de crédito ha sido aprobada.';
+            $message = 'Tu solicitud ha sido ingresada correctamente.';
             if ($solicitud->id === 5) {
+                $message = '¡Felicitaciones! Tu solicitud de crédito ha sido aprobada.';
                 SolicitudAprobadaJob::dispatch($user->email, $cliente->celular)->onConnection('database');
                 Informacion::create([
                     'user_id' => $user->id,
                     'codigo_info' => 1,
                     'title' => $titulo,
-                    'description' => $descripcion,
-                    'text' => $descripcion,
+                    'description' => $message,
+                    'text' => $message,
                     'active' => 1,
                     'leido' => 0,
                     'general' => 0,
                 ]);
-                PushNativeJobs::dispatch($titulo, $descripcion, [$req->devicetoken], $req->os)->onConnection('database');
+                PushNativeJobs::dispatch($titulo, $message, [$req->devicetoken], $req->os)->onConnection('database');
             }
 
             $results = [
@@ -255,7 +256,7 @@ class SolicitudesController extends Controller
             return response()->json([
                 'success' => true,
                 'results' => $results,
-                'message' => 'Solicitud ingresada correctamente.'
+                'message' => $message
             ]);
         } catch (\Throwable $th) {
             Log::error($th);
