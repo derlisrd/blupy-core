@@ -126,7 +126,7 @@ Route::middleware('auth:api')->group(function(){
     Route::prefix('/solicitudes')->group(function(){
         Route::post('/solicitar-credito-digital',[SolicitudesController::class,'solicitarCreditoDigital']);
         Route::post('/cancelar',[SolicitudesController::class,'cancelarSolicitud']);
-        Route::post('/verificar-disponibilidad',[SolicitudesController::class,'verificarDisponibilidad']);
+        Route::get('/verificar-disponibilidad',[SolicitudesController::class,'verificarDisponibilidad']);
     });
 
     Route::prefix('/consultas')->group(function(){
