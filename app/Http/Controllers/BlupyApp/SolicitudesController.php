@@ -142,7 +142,7 @@ class SolicitudesController extends Controller
     public function solicitarCreditoDigital(Request $req)
     {
         try {
-            $user = $req->user;
+            $user = $req->user();
             $cliente = $user->cliente;
 
             $departamento = Departamento::find($req->departamento_id);
