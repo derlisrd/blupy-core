@@ -191,9 +191,9 @@ class SolicitudesController extends Controller
             
 
 
-            /* $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
+            $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
             if (!$solicitud->success)
-                return response()->json(['success' => false, 'message' => $solicitud->message], 400); */
+                return response()->json(['success' => false, 'message' => $solicitud->message], 400); 
 
 
             $cliente->update([
@@ -222,7 +222,7 @@ class SolicitudesController extends Controller
             ]);
 
 
-            /* SolicitudCredito::create([
+            SolicitudCredito::create([
                 'cliente_id' => $cliente->id,
                 'estado_id' => $solicitud->id,
                 'estado' => $solicitud->estado,
@@ -245,19 +245,12 @@ class SolicitudesController extends Controller
                     'general' => 0,
                 ]);
                 PushNativeJobs::dispatch($titulo, $descripcion, [$req->devicetoken], $req->os)->onConnection('database');
-
             }
 
             $results = [
                 'estado_id' => $solicitud->id,
                 'estado' => $solicitud->estado,
                 'codigo' => $solicitud->codigo
-            ]; */
-
-            $results = [
-                'estado_id' => 5,
-                'estado' => 'Contrato pendiente',
-                'codigo' => '12345'
             ]; 
             return response()->json([
                 'success' => true,
