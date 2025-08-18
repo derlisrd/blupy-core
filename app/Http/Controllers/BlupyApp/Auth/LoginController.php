@@ -93,11 +93,14 @@ class LoginController extends Controller
         return Validator::make($req->all(), [
             'cedula' => 'required|string',
             'password' => 'required|string|min:6',
-            'desktop' => 'sometimes|boolean',
-            'web' => 'sometimes|boolean',
-            'device' => 'sometimes|string',
-            'devicetoken' => 'sometimes|string',
-            'version' => 'sometimes|string'
+            'desktop' => 'nullable|boolean',
+            'web' => 'nullable|boolean',
+            'device' => 'nullable|string',
+            'devicetoken' => 'nullable|string',
+            'version' => 'nullable|string'
+        ],[
+            'cedula.required' => 'Ingrese la cédula por favor.',
+            'password.required'=>'Ingrese la contraseña por favor.'
         ]);
     }
 
