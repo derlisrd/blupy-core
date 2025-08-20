@@ -8,6 +8,7 @@ use App\Models\Adjunto;
 use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\User;
+use App\Services\FarmaService;
 use App\Traits\Helpers;
 use App\Traits\RegisterTraits;
 use Illuminate\Http\Request;
@@ -46,30 +47,30 @@ class RegisterController extends Controller
                 return $this->errorResponse($imageData['message'], 400);
             }
 
-            // 4. Obtener datos adicionales
-            $additionalData = $this->getAdditionalUserData($req->cedula);
+            // 4. Obtener datos adicionales de farma
+            $userInfoDatosFarma = $this->getDataInfoFarma($req->cedula);
 
             // 5. Ejecutar registro en transacción
             DB::beginTransaction();
 
-            $registrationResult = $this->executeRegistration($req, $imageData['images'], $additionalData);
+            $registroResult = $this->ejecutarRegistro($req, $imageData['images'], $userInfoDatosFarma);
 
-            if (!$registrationResult['success']) {
+            if (!$registroResult['success']) {
                 DB::rollBack();
-                return $this->errorResponse($registrationResult['message'], 500);
+                return $this->errorResponse($registroResult['message'], 500);
             }
 
             DB::commit();
 
             // 6. Procesos post-registro (async si es posible)
-            $this->handlePostRegistrationTasks($req, $registrationResult['cliente']);
+            $this->enviarFotosAInfinita($req, $registroResult['cliente']);
 
             return $this->successResponse(
                 'Usuario registrado correctamente',
                 $this->userInformacion(
-                    $registrationResult['cliente'],
-                    $registrationResult['token'],
-                    $additionalData['esAdicional']
+                    $registroResult['cliente'],
+                    $registroResult['token'],
+                    $userInfoDatosFarma['esAdicional']
                 ),
                 201
             );
@@ -154,22 +155,37 @@ class RegisterController extends Controller
         ];
     }
 
-    private function getAdditionalUserData(string $cedula): array
+    private function getDataInfoFarma(string $cedula): array
     {
         $adicional = Adicional::where('cedula', $cedula)->first();
         $esAdicional = (bool) $adicional;
-        $clienteFarma = $this->clienteFarma($cedula);
-
-        $direccionCompletado = ($clienteFarma->completado == 1 || $esAdicional) ? 1 : 0;
+        //$clienteFarma = $this->clienteFarma($cedula);
+        $farmaService = new FarmaService();
+        $farmaResponse = $farmaService->esAlianzaOFuncionario($cedula);
+        $farmaData = (object) $farmaResponse['data'];
+        $direccionCompletado = 0;
+        $asofarma = 0;
+        $funcionario = 0;
+        if(property_exists($farmaData,'result')){
+            $result = $farmaData->result;
+            if($result['alianza'] === true){
+                $asofarma = 1;
+            }
+            if($result['funcionario'] === true){
+                $funcionario = 1;
+            }
+        }
+        $direccionCompletado = ($funcionario == 1 || $esAdicional || $asofarma == 1) ? 1 : 0;
 
         return [
             'esAdicional' => $esAdicional,
-            'clienteFarma' => $clienteFarma,
+            'asofarma'=>$asofarma,
+            'funcionario' => $funcionario,
             'direccionCompletado' => $direccionCompletado
         ];
     }
 
-    private function executeRegistration(Request $req, array $images, array $additionalData): array
+    private function ejecutarRegistro(Request $req, array $images, array $additionalData): array
     {
         try {
             // Preparar datos del cliente
@@ -206,11 +222,12 @@ class RegisterController extends Controller
         }
     }
 
-    private function prepareClienteData(Request $req, array $images, array $additionalData): array
+    private function prepareClienteData(Request $req, array $images, array $datosDeFarma): array
     {
         $nombres = $this->separarNombres($req->nombres);
         $apellidos = $this->separarNombres($req->apellidos);
-        $clienteFarma = $additionalData['clienteFarma'];
+
+
 
         return [
             'cedula' => $req->cedula,
@@ -224,11 +241,11 @@ class RegisterController extends Controller
             'fecha_nacimiento' => $req->fecha_nacimiento,
             'celular' => $req->celular,
             'email' => $req->email,
-            'funcionario' => $clienteFarma->funcionario ?? false,
-            'linea_farma' => $clienteFarma->lineaFarma ?? null,
-            'asofarma' => $clienteFarma->asofarma ?? false,
-            'importe_credito_farma' => $clienteFarma->credito ?? 0,
-            'direccion_completado' => $additionalData['direccionCompletado'],
+            'funcionario' => $datosDeFarma['funcionario'],
+            'linea_farma' => null,
+            'asofarma' => $datosDeFarma['asofarma'],
+            'importe_credito_farma' => 0,
+            'direccion_completado' => $datosDeFarma['direccionCompletado'],
             'cliid' => 0,
             'solicitud_credito' => 0,
         ];
@@ -292,7 +309,7 @@ class RegisterController extends Controller
         }
     }
 
-    private function handlePostRegistrationTasks(Request $req, Cliente $cliente): void
+    private function enviarFotosAInfinita(Request $req, Cliente $cliente): void
     {
         // Estas operaciones podrían ser asíncronas (jobs/queues)
         try {
