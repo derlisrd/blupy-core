@@ -82,7 +82,7 @@ class CuentasController extends Controller
                 'bloqueo' => false,
                 'condicion' => 'Credito',
                 'condicionVenta' => 2,
-                'cuenta' => 0,
+                'cuenta' => null,
                 'principal' => false,
                 'adicional' => false,
                 'numeroTarjeta' => 0,
