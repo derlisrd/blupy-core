@@ -40,7 +40,7 @@ class CuentasController extends Controller
         $infinitaCardData = (object)$infinitaCards['data'];
 
         if(property_exists($infinitaCardData,'Tarjetas')){
-            $tarjetasInfinita = $infinitaCardData['Tarjetas'];
+            $tarjetasInfinita = $infinitaCardData->Tarjetas;
             foreach($tarjetasInfinita as $tarjeta){
                 $tarjetasResults[] = [
                 'id' => 2,
