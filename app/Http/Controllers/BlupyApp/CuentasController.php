@@ -21,13 +21,94 @@ class CuentasController extends Controller
     private $infinitaService;
     private $farmaService;
 
+    
+
     public function __construct()
     {
         $this->infinitaService = new InfinitaService();
         $this->farmaService = new FarmaService();
     }
 
-    public function tarjetas(Request $req)
+    public function tarjetas(Request $req){
+        $user = $req->user();
+        $cliente = $user->cliente;
+
+        $tarjetasResults = [];
+
+        $infinitaCards = $this->infinitaService->ListarTarjetasPorDoc($cliente->cedula);
+        
+        $infinitaCardData = (object)$infinitaCards['data'];
+
+        if(property_exists($infinitaCardData,'Tarjetas')){
+            $tarjetasInfinita = $infinitaCardData['Tarjetas'];
+            foreach($tarjetasInfinita as $tarjeta){
+                $tarjetasResults[] = [
+                'id' => 2,
+                'descripcion' => 'Blupy Digital',
+                'otorgadoPor' => 'Mi crédito S.A.',
+                'tipo' => 1,
+                'emision' => $tarjeta['MTFEmi'],
+                'bloqueo' => !empty($tarjeta['MTBloq']),
+                'condicion' => 'Contado',
+                'condicionVenta' => 1,
+                'cuenta' => $tarjeta['MaeCtaId'],
+                'principal' => $tarjeta['MTTipo'] === 'P',
+                'adicional' => $tarjeta['MTTipo'] === 'A',
+                'numeroTarjeta' => $tarjeta['MTNume'],
+                'linea' => (int)$tarjeta['MTLinea'],
+                'pagoMinimo' => (int)$tarjeta['MCPagMin'],
+                'deuda' => (int)$tarjeta['MTSaldo'],
+                'disponible' => (int)$tarjeta['MTLinea'] - (int)$tarjeta['MTSaldo'],
+                'alianzas' => null,
+                ];
+            }
+        }
+
+        $farmaCards = $this->farmaService->cliente2($cliente->cedula);
+        $farmaCardData = (object)$farmaCards['data'];
+
+        if(property_exists($farmaCardData,'result')){
+            $tarjetasFarma = (object)$farmaCardData['result'];
+            if(!$tarjetasFarma)
+            {
+                $alianza = $tarjetasFarma->alianza;
+
+                $tarjetasResults[] = [
+                'id' => 1,
+                'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Funcionario',
+                'otorgadoPor' => 'Farma S.A.',
+                'tipo' => 0,
+                'emision' => null,
+                'bloqueo' => false,
+                'condicion' => 'Credito',
+                'condicionVenta' => 2,
+                'cuenta' => 0,
+                'principal' => false,
+                'adicional' => false,
+                'numeroTarjeta' => 0,
+                'linea' => $tarjetasFarma->clerLimiteCredito,
+                'pagoMinimo' => 0,
+                'deuda' => $tarjetasFarma->deuda,
+                'disponible' => $tarjeta->clerLimiteCredito - $tarjetasFarma->deuda,
+                'alianzas' => $alianza,
+                ];
+            }
+            
+        }
+
+
+
+        
+        return response()->json([
+            'success'=>true,
+            'message'=>'',
+            'results'=>$tarjetasResults,
+        ]);
+    }
+
+
+
+    public function tarjetas2(Request $req)
     {
         $user = $req->user();
         $cliente = $user->cliente;
@@ -236,6 +317,9 @@ class CuentasController extends Controller
                 'alianzas' => $item['alianzas']
             ]);
     }
+
+
+    
 
     public function movimientos(Request $req)
     {
