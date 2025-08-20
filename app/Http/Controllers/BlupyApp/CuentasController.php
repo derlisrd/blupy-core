@@ -29,7 +29,7 @@ class CuentasController extends Controller
         $this->farmaService = new FarmaService();
     }
 
-    public function tarjetas(Request $req){
+    public function tarjetas2(Request $req){
         $user = $req->user();
         $cliente = $user->cliente;
 
@@ -90,7 +90,7 @@ class CuentasController extends Controller
                 'pagoMinimo' => 0,
                 'deuda' => $tarjetasFarma->deuda,
                 'disponible' => $tarjetasFarma->clerLimiteCredito - $tarjetasFarma->deuda,
-                'alianzas' => $alianza,
+                'alianzas' => [$alianza],
                 ];
             }
             
@@ -108,7 +108,7 @@ class CuentasController extends Controller
 
 
 
-    public function tarjetas2(Request $req)
+    public function tarjetas(Request $req)
     {
         $user = $req->user();
         $cliente = $user->cliente;
