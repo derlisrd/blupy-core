@@ -25,7 +25,7 @@ class FarmaService
         return $this->get('cliente/alianza-funcionario',['documento' => $documento]);
     }
     public function cliente2(String $cedula){
-        return $this->get('cliente',['documento' => $cedula]);
+        return $this->get('cliente/',['documento' => $cedula]);
     }
     public function ventaPorCodigo(String $codigo){
         return $this->get('ventas/codigo',['codigo' => $codigo]);
