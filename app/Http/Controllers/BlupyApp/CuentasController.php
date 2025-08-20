@@ -90,7 +90,7 @@ class CuentasController extends Controller
                 'pagoMinimo' => 0,
                 'deuda' => $tarjetasFarma->deuda,
                 'disponible' => $tarjetasFarma->clerLimiteCredito - $tarjetasFarma->deuda,
-                'alianzas' => [$alianza],
+                'alianzas' => $alianza,
                 ];
             }
             
