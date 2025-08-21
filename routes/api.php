@@ -46,7 +46,6 @@ Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDo
  */
 Route::prefix('/auth')->group(function(){
     Route::post('/login',[LoginController::class,'login']);
-    Route::post('/logout',[LoginController::class,'logOut']);
     Route::post('/register',[RegisterController::class,'register']);
 });
 
