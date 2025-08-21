@@ -71,7 +71,7 @@ class CuentasController extends Controller
             $tarjetasFarma = (object)$farmaCardData->result;
             if($tarjetasFarma)
             {
-                $alianza = $tarjetasFarma->alianza;
+                $alianza = $tarjetasFarma->alianza ?? null;
 
                 $tarjetasResults[] = [
                 'id' => 1,
