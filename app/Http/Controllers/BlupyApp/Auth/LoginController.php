@@ -272,4 +272,16 @@ class LoginController extends Controller
         $obfuscatedPhoneNumber = substr($phoneNumber, 0, 3) . str_repeat('*', strlen($phoneNumber) - 6) . substr($phoneNumber, -2);
         return $obfuscatedPhoneNumber;
     }
+
+
+
+    public function logOut(Request $req){
+        JWTAuth::invalidate(JWTAuth::getToken());
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'out'
+        ]);
+
+    }
 }
