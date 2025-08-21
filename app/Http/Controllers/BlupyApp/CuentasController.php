@@ -69,7 +69,7 @@ class CuentasController extends Controller
 
         if(property_exists($farmaCardData,'result')){
             $tarjetasFarma = (object)$farmaCardData->result;
-            if(!empty($tarjetasFarma))
+            if($tarjetasFarma)
             {
                 $alianza = $tarjetasFarma->alianza ?? null;
 
