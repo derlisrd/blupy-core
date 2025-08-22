@@ -33,7 +33,7 @@ return [
         ]
     ],
     'movimientos'=>[
-        'periodo'=>['nullable', 'regex:/^\d{2}-\d{4}$/'],
+        'periodo'=>['required', 'regex:/^(0[1-9]|1[0-2])-\d{4}$/'],
         'cuenta'=>'nullable|numeric',
         'numero_tarjeta'=>'nullable',
         'messages'=>[

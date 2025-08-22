@@ -95,7 +95,6 @@ class CuentasController extends Controller
             }
             
         }
-
         return response()->json([
             'success'=>true,
             'message'=>'',
@@ -104,6 +103,7 @@ class CuentasController extends Controller
     }
 
 
+    
 
     public function tarjetas(Request $req)
     {
