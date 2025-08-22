@@ -22,10 +22,9 @@ class MovimientosController extends Controller
         
         if($req->cuenta === 0){
             $farmaResponse = (new FarmaService())->movimientos2($cliente->cedula,$req->periodo);
-            $farmaData = (object)$farmaResponse['data'];
-
-            if(property_exists($farmaData,'result')){
-                $movimientos = $farmaData->result;
+            $farmaData = $farmaResponse['data'];
+            if ($farmaData && isset($farmaData['result'])) {
+                $movimientos = $farmaData['result'];
                 foreach($movimientos as $val){
                     $date = Carbon::parse($val['evenFecha'], 'UTC')->setTimezone('America/Asuncion');
                     $results[] = [
@@ -37,7 +36,7 @@ class MovimientosController extends Controller
                         'monto' => $val['monto']
                     ];
                 }
-            }
+            } 
         }
 
         if($req->cuenta>0){
@@ -45,7 +44,7 @@ class MovimientosController extends Controller
             $infiData = $infiService['data'];
 
             if ($infiData && isset($infiData['Tarj']['Mov'])) {
-                
+
                 $movimientosInfi = $infiData['Tarj']['Mov'];
                 foreach($movimientosInfi as $val){
                     $date = Carbon::parse($val['TcMovFec']);
