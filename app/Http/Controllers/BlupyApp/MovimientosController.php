@@ -21,7 +21,7 @@ class MovimientosController extends Controller
         $cliente = $req->user()->cliente;
         $results = [];
         
-        if($req->cuenta === 0){
+        if($req->cuenta == '0' || $req->cuenta == 0){
             Log::info('cuenta 0');
             $farmaResponse = (new FarmaService())->movimientos2($cliente->cedula,$req->periodo);
             $farmaData = $farmaResponse['data'];
