@@ -12,6 +12,7 @@ use App\Http\Controllers\BlupyApp\DatosController;
 use App\Http\Controllers\BlupyApp\DeviceController;
 use App\Http\Controllers\BlupyApp\FarmaController;
 use App\Http\Controllers\BlupyApp\InformacionesController;
+use App\Http\Controllers\BlupyApp\MovimientosController;
 use App\Http\Controllers\BlupyApp\NotificacionesController;
 use App\Http\Controllers\BlupyApp\PdfController;
 use App\Http\Controllers\BlupyApp\QRController;
@@ -104,7 +105,7 @@ Route::middleware('auth:api')->group(function(){
         Route::get('/tarjetas',[CuentasController::class,'tarjetas2'])->name('api_tarjetas');
     });
     Route::get('/tarjetas',[CuentasController::class,'tarjetas'])->name('api_tarjetas');
-    Route::get('/movimientos',[CuentasController::class,'movimientos'])->name('api_movimientos');
+    Route::get('/movimientos',[MovimientosController::class,'movimientos'])->name('api_movimientos');
     Route::get('/extracto',[CuentasController::class,'extracto'])->name('api_extracto');
 
     Route::get('/solicitudes',[SolicitudesController::class,'solicitudes'])->name('api_solicitudes');
