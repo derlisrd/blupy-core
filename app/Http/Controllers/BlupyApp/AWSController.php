@@ -158,7 +158,7 @@ class AWSController extends Controller
             
             if (!$documentDetected && (!$idCardFound || $idCardFound['Confidence'] < 70) && (!$documentFound || $documentFound['Confidence'] < 70)) {
                 $success = false;
-                $message = 'No se detectó un documento de identidad en la imagen. Asegúrese de tener la cédula visible en su mano.';
+                $message = 'No se detectó un documento de identidad en la imagen. Asegúrese de tener la cédula visible en tu mano.';
                 $status = 400;
             }
     
