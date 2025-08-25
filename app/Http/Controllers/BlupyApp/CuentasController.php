@@ -103,7 +103,7 @@ class CuentasController extends Controller
             $result = $farmaCardData['result'];
             if($result != null){
                 $tarjetasResults[] = [
-                'id' => 1,
+                'id' => 3,
                 'descripcion' => 'Blupy empresa',
                 'otorgadoPor' => $result['empresa'],
                 'tipo' => 0,
