@@ -101,7 +101,6 @@ class CuentasController extends Controller
 
         if(property_exists($farmaCardData,'result')){
             $tarjetasResult = $farmaCardData->result[0];
-            Log::info('farma',$farmaCardData);
             if($tarjetasResult != null){
                 $tarjetasFarma = (object)$tarjetasResult;
 
