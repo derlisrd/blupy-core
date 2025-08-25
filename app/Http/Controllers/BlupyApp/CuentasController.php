@@ -102,12 +102,10 @@ class CuentasController extends Controller
         if($farmaCardData && isset($farmaCardData['result'])){
             $result = $farmaCardData['result'];
             if($result != null){
-                
-
                 $tarjetasResults[] = [
                 'id' => 1,
                 'descripcion' => 'Blupy empresa',
-                'otorgadoPor' => $result['persNombre'],
+                'otorgadoPor' => $result['empresa'],
                 'tipo' => 0,
                 'emision' => null,
                 'bloqueo' => false,
