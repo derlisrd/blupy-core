@@ -76,29 +76,25 @@ class SolicitudesController extends Controller
         $user = $req->user();
         $fechaLimite = Carbon::now()->subDays(2);
 
-        // Buscar solicitudes que puedan causar conflicto
-        $solicitudConflictiva = SolicitudCredito::where('cliente_id', $user->cliente->id)
-            ->where('tipo', 1)
-            ->where(function ($query) use ($fechaLimite) {
-                $query->where('created_at', '>', $fechaLimite)  // Menos de 48 horas
-                    ->orWhere('estado_id', 5);                // O pendiente de contrato
-            })
-            ->orderBy('created_at', 'desc')
-            ->first();
+        $solicitudConflictiva = SolicitudCredito::where('cliente_id',$user->cliente->id)
+        ->where('tipo',1)
+        ->first();
 
-        if ($solicitudConflictiva) {
-            if ($solicitudConflictiva->estado_id == 5) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Ya tiene una solicitud con contrato pendiente.'
-                ], 400);
-            }
+        if(!$solicitudConflictiva)
+            return response()->json(['success'=>true,'message'=>'Puede solicitar']);
+
+        if($solicitudConflictiva->estado_id == 13)
+            return response()->json(['success'=>true,'message'=>'Puede solicitar']);
+         
+        if($solicitudConflictiva->estado_id == 5)
             return response()->json([
                 'success' => false,
-                'message' => 'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'
+                'message' => 'Ya tiene una solicitud con contrato pendiente.'
             ], 400);
-        }
-
+        
+        if($solicitudConflictiva->created_at > $fechaLimite)
+            return response()->json(['success'=>false,'message'=>'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'],400);
+        
         return response()->json([
             'success'=>true,
             'message'=>'Puede solicitar'
