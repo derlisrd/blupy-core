@@ -96,18 +96,17 @@ class CuentasController extends Controller
             }
         }
 
-        $farmaCards = $this->farmaService->empresaAutorizados($cliente->cedula);
-        $farmaCardData = $farmaCards['data'];
+        $farmaEmpresaAutorizada = $this->farmaService->empresaAutorizados($cliente->cedula);
+        $farmaCardData = $farmaEmpresaAutorizada['data'];
 
         if($farmaCardData && isset($farmaCardData['result'])){
             $tarjetasResult = $farmaCardData->result;
             if($tarjetasResult != null){
-                $tarjetasFarma = (object)$tarjetasResult;
-                $alianza = $tarjetasFarma->alianza ?? null;
+                $tarjetasFarma = (object)$tarjetasResult[0];
 
                 $tarjetasResults[] = [
                 'id' => 1,
-                'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Funcionario',
+                'descripcion' => 'Blupy Empresa',
                 'otorgadoPor' => 'Farma S.A.',
                 'tipo' => 0,
                 'emision' => null,
@@ -118,11 +117,11 @@ class CuentasController extends Controller
                 'principal' => false,
                 'adicional' => false,
                 'numeroTarjeta' => 0,
-                'linea' => $tarjetasFarma->clerLimiteCredito,
+                'linea' => $tarjetasFarma->clerLimiteCredito + $tarjetasFarma->clerLimiteCreditoAdic,
                 'pagoMinimo' => 0,
-                'deuda' => $tarjetasFarma->deuda,
-                'disponible' => $tarjetasFarma->clerLimiteCredito - $tarjetasFarma->deuda,
-                'alianzas' => $alianza,
+                'deuda' => 0,// $tarjetasFarma->deuda,
+                'disponible' => 0,//$tarjetasFarma->clerLimiteCredito - $tarjetasFarma->deuda,
+                'alianzas' => null
                 ];
             }
         }
