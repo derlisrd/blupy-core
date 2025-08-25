@@ -100,8 +100,9 @@ class CuentasController extends Controller
         $farmaCardData = (object)$farmaCards['data'];
 
         if(property_exists($farmaCardData,'result')){
-            $tarjetasResult = $farmaCardData->result[0];
-            if($tarjetasResult != null){
+            $tarjetasResult = $farmaCardData->result;
+            Log::info($tarjetasResult);
+            /* if($tarjetasResult != null){
                 $tarjetasFarma = (object)$tarjetasResult;
 
                 $tarjetasResults[] = [
@@ -123,7 +124,7 @@ class CuentasController extends Controller
                 'disponible' => 0,
                 'alianzas' => null,
                 ];
-            }
+            } */
         }
 
         return response()->json([
