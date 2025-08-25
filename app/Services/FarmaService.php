@@ -22,7 +22,7 @@ class FarmaService
     }
 
     public function esAlianzaOFuncionario(String $documento){
-        return $this->get('cliente/alianza-funcionario',['documento' => $documento]);
+        return $this->get('cliente/alianza-funcionario/',['documento' => $documento]);
     }
     public function empresaAutorizados(String $cedula){
         return $this->get('empresa/autorizados/',['documento' => $cedula]);
@@ -31,10 +31,10 @@ class FarmaService
         return $this->get('cliente/',['documento' => $cedula]);
     }
     public function ventaPorCodigo(String $codigo){
-        return $this->get('ventas/codigo',['codigo' => $codigo]);
+        return $this->get('ventas/codigo/',['codigo' => $codigo]);
     }
     public function ventaPorFactura(String $factura){
-        return $this->get('ventas/factura',['factura' => $factura]);
+        return $this->get('ventas/factura/',['factura' => $factura]);
     }
     public function clientePorCodigo(String $codigo){
         return $this->get('cliente/getClienteCodigo',['codigo' => $codigo]);
