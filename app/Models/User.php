@@ -68,6 +68,12 @@ class User extends Authenticatable implements JWTSubject
         $tokens = Device::where('user_id', $id)->whereNotNull('notitoken')->pluck('notitoken')->toArray();
         return $tokens;
     }
+    public function nativeTokens()
+    {
+        $id = $this->id;
+        $tokens = Device::where('user_id', $id)->whereNotNull('devicetoken')->pluck('devicetoken')->toArray();
+        return $tokens;
+    }
 
     protected function casts(): array
     {

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ActualizarSolicitudesJobs;
+use App\Jobs\PushNativeJobs;
 use App\Models\Cliente;
 use App\Models\Comision;
+use App\Models\Device;
 use App\Models\Informacion;
 use App\Models\SolicitudCredito;
 use App\Models\User;
@@ -13,7 +15,7 @@ use App\Services\PushExpoService;
 use App\Services\WaService;
 use App\Traits\SolicitudesInfinitaTraits;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Validator;
 
 class SolicitudesController extends Controller
 {
@@ -58,6 +60,13 @@ class SolicitudesController extends Controller
     */
     public function aprobar(Request $req)
     {
+        $validator = Validator::make($req->all(),['codigo'=>'required']);
+        if ($validator->fails()) 
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 400);
+        
         try {
             $codigo = $req->codigo;
             $solicitud = SolicitudCredito::where('codigo', $codigo)->where('estado_id', 5)->first();
@@ -68,32 +77,29 @@ class SolicitudesController extends Controller
                 ], 404);
             }
 
-            $res = $this->aprobarSolicitudInfinita($codigo);
             $user = User::where('cliente_id', $solicitud->cliente_id)->first();
             
-            $cliente = Cliente::find($solicitud->cliente_id)->select('id','vendedor_id');
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado para esta solicitud.'
+                ], 404);
+            }
 
-            /* Comision::create([
-                'cedula' => $req->cedula_vendedor,
-                'usuario' => $req->usuario_vendedor,
-                'tipo'=>'impresion',
-                'cliente_id'=>$cliente->id,
-                'vendedor_id'=>$cliente->vendedor_id,
-            ]); */
+            $res = $this->aprobarSolicitudInfinita($codigo);
+            
 
             if ($res->success) {
                 $solicitud->estado = 'Vigente';
                 $solicitud->estado_id = 7;
                 $solicitud->save();
-                $notificacion = new PushExpoService();
-                //$emailService = new EmailService();
-                $to = $user->notitokens();
-                $notificacion->send(
-                    $to,
-                    '¡Contrato Activo!',
-                    'Su contrato está activo, su línea está lista para usarse.',
-                    []
-                );
+                $titulo = "¡Buenas noticias!";
+                $message = "Tu línea de crédito ha sido activada. ¡Aprovecha ahora un 30% de descuento en tu primera compra en las sucursales de Punto Farma! ¡Te esperamos!";
+                $tokens = Device::where('user_id', $user->id)->whereNotNull('devicetoken')->get();
+                foreach($tokens as $token){
+                    PushNativeJobs::dispatch($titulo, $message, [$token['devicetoken']], $token['os'])->onConnection('database');
+                }
+
                 $numeroTelefonoWa = '595' . substr($user->cliente->celular, 1);
                 (new WaService())->send($numeroTelefonoWa, "¡Buenas noticias! 🎉 Tu línea de crédito ha sido activada. ¡Aprovecha ahora un 30% de descuento en tu primera compra en las sucursales de Punto Farma! ¡Te esperamos! 😊");
                 Cliente::where('id', $solicitud->cliente_id)->update(['digital' => 1]);
