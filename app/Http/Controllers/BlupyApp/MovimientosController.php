@@ -21,8 +21,8 @@ class MovimientosController extends Controller
         $cliente = $req->user()->cliente;
         $results = [];
 
-        if($req->cuenta == '0' && $req->id==3){
-            $farmaResponse = (new FarmaService())->movimientos2($cliente->cedula,$req->periodo);
+        if($req->cuenta == '0' && $req->id==3 && $req->ruc){
+            $farmaResponse = (new FarmaService())->movimientosEmpresa($req->ruc,$req->periodo);
             $farmaData = $farmaResponse['data'];
             if ($farmaData && isset($farmaData['result'])) {
                 $movimientos = $farmaData['result'];
