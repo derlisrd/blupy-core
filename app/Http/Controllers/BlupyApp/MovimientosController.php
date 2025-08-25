@@ -20,8 +20,8 @@ class MovimientosController extends Controller
 
         $cliente = $req->user()->cliente;
         $results = [];
-        
-        if($req->cuenta == '0' || $req->cuenta == 0){
+
+        if($req->cuenta == '0' && $req->id==3){
             $farmaResponse = (new FarmaService())->movimientos2($cliente->cedula,$req->periodo);
             $farmaData = $farmaResponse['data'];
             if ($farmaData && isset($farmaData['result'])) {
@@ -37,7 +37,36 @@ class MovimientosController extends Controller
                         'monto' => $val['monto']
                     ];
                 }
-            } 
+            }
+            return response()->json([
+                'success'=>true,
+                'message'=>'',
+                'results'=>$results
+            ]);
+        }
+        
+        if($req->cuenta == '0'){
+            $farmaResponse = (new FarmaService())->movimientos2($cliente->cedula,$req->periodo);
+            $farmaData = $farmaResponse['data'];
+            if ($farmaData && isset($farmaData['result'])) {
+                $movimientos = $farmaData['result'];
+                foreach($movimientos as $val){
+                    $date = Carbon::parse($val['evenFecha'], 'UTC')->setTimezone('America/Asuncion');
+                    $results[] = [
+                        'comercio' => 'Farma S.A.',
+                        'descripcion' => $val['ticoDescripcion'],
+                        'detalles' => $val['ticoCodigo'] . ' ' . $val['evenNumero'],
+                        'fecha' => $date->format('Y-m-d'),
+                        'hora' => $date->format('H:i:s'),
+                        'monto' => $val['monto']
+                    ];
+                }
+            }
+            return response()->json([
+                'success'=>true,
+                'message'=>'',
+                'results'=>$results
+            ]); 
         }
 
         if($req->cuenta>0){
@@ -62,20 +91,6 @@ class MovimientosController extends Controller
                     ];
                 }
             }
-
-
-            /* $date = Carbon::parse($val['TcMovFec']);
-            $horario = Carbon::parse($val['TcMovCFh'], 'UTC')->setTimezone('America/Asuncion');
-            
-            return [
-                'comercio' => $val['TcComNom'],
-                'descripcion' => $val['MvDes'],
-                'detalles' => $val['TcMovDes'],
-                'fecha' => $date->format('Y-m-d'),
-                'hora' => $horario->format('H:i:s'),
-                'monto' => (int)$val['TcMovImp'],
-                'numero' => $val['TcMovNro'],
-            ]; */
         }
 
 

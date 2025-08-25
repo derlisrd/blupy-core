@@ -120,8 +120,8 @@ class CuentasController extends Controller
                 'numeroTarjeta' => 0,
                 'linea' => $result['clerLimiteCreditoAdic'],
                 'pagoMinimo' => 0,
-                'deuda' => 0,
-                'disponible' => 0,
+                'deuda' => $result['deuda'],
+                'disponible' => $result['clerLimiteCreditoAdic'] - $result['deuda'],
                 'alianzas' => null,
                 ];
             } 
