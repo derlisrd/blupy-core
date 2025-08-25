@@ -24,6 +24,9 @@ class FarmaService
     public function esAlianzaOFuncionario(String $documento){
         return $this->get('cliente/alianza-funcionario',['documento' => $documento]);
     }
+    public function empresaAutorizados(String $cedula){
+        return $this->get('empresa/autorizados/',['documento' => $cedula]);
+    }
     public function cliente2(String $cedula){
         return $this->get('cliente/',['documento' => $cedula]);
     }

@@ -37,10 +37,11 @@ class CuentasController extends Controller
 
         $infinitaCards = $this->infinitaService->ListarTarjetasPorDoc($cliente->cedula);
         
-        $infinitaCardData = (object)$infinitaCards['data'];
+        $infinitaCardData = $infinitaCards['data'];
 
-        if(property_exists($infinitaCardData,'Tarjetas')){
-            $tarjetasInfinita = $infinitaCardData->Tarjetas;
+        if($infinitaCardData &&  isset($infinitaCardData['Tarjetas'])){
+
+            $tarjetasInfinita = $infinitaCardData['Tarjetas'];
             foreach($tarjetasInfinita as $tarjeta){
                 $tarjetasResults[] = [
                 'id' => 2,
@@ -93,8 +94,39 @@ class CuentasController extends Controller
                 'alianzas' => $alianza,
                 ];
             }
-            
         }
+
+        $farmaCards = $this->farmaService->empresaAutorizados($cliente->cedula);
+        $farmaCardData = $farmaCards['data'];
+
+        if($farmaCardData && isset($farmaCardData['result'])){
+            $tarjetasResult = $farmaCardData->result;
+            if($tarjetasResult != null){
+                $tarjetasFarma = (object)$tarjetasResult;
+                $alianza = $tarjetasFarma->alianza ?? null;
+
+                $tarjetasResults[] = [
+                'id' => 1,
+                'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Funcionario',
+                'otorgadoPor' => 'Farma S.A.',
+                'tipo' => 0,
+                'emision' => null,
+                'bloqueo' => false,
+                'condicion' => 'Credito',
+                'condicionVenta' => 2,
+                'cuenta' => null,
+                'principal' => false,
+                'adicional' => false,
+                'numeroTarjeta' => 0,
+                'linea' => $tarjetasFarma->clerLimiteCredito,
+                'pagoMinimo' => 0,
+                'deuda' => $tarjetasFarma->deuda,
+                'disponible' => $tarjetasFarma->clerLimiteCredito - $tarjetasFarma->deuda,
+                'alianzas' => $alianza,
+                ];
+            }
+        }
+
         return response()->json([
             'success'=>true,
             'message'=>'',
