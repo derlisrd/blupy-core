@@ -144,11 +144,6 @@ class SolicitudesController extends Controller
         try {
             $user = $req->user();
             $cliente = $user->cliente;
-
-            $solicitud = SolicitudCredito::where('tipo',1)->where('estado_id',7)->first();
-
-            if($solicitud)
-                return response()->json(['success'=>false,'message'=>'Crédito ya activo.'],400);
             
 
             $departamento = Departamento::find($req->departamento_id);
