@@ -25,10 +25,11 @@ class QRController extends Controller
             $user = $req->user();
             $cliente = $user->cliente;
 
+            $documento = $req->ruc ? $req->ruc : $cliente->cedula;
 
             $parametrosPorArray = [
                 'id' => $req->id,
-                'documento' => $cliente->cedula,
+                'documento' => $documento,
                 'numeroCuenta' => $req->numeroCuenta ? (int) $req->numeroCuenta : 0,
                 'numeroTarjeta' => $req->numeroTarjeta ?? 1,
                 'telefono' => $req->telefono,
@@ -37,12 +38,12 @@ class QRController extends Controller
                 'adicional' => $req->adicional,
                 'extranjero' => $cliente->extranjero,
             ];
-            //Log::info('numeroCuenta: '.$req->numeroCuenta .' tipo ' . gettype($req->numeroCuenta));
+            //Verificar si tiene saldo
             if($req->numeroCuenta !== '0'){
                 $resInfinita = app(InfinitaService::class)->ListarTarjetasPorDoc($cliente->cedula);
-                $infinita = (object)$resInfinita['data'];
-                if(property_exists( $infinita,'Tarjetas')){
-                 $tarjeta = $infinita->Tarjetas[0];
+                $infinita = $resInfinita['data'];
+                if($infinita && isset($infinita['Tarjetas'])){
+                 $tarjeta = $infinita['Tarjetas'][0];
                  $disponible = (int) $tarjeta['MTLinea'] - (int) $tarjeta['MTSaldo'];
                  if($disponible < (int) $req->monto){
                      return response()->json([
@@ -56,9 +57,9 @@ class QRController extends Controller
              $blupy = app(BlupyQrService::class)->autorizarQR($parametrosPorArray);
              $data = (object) $blupy['data'];
              $datasResults = null;
-             if (property_exists($data, 'results')) {
+             if ($data && isset($data['results']) ) {
  
-                 $datasResults = $data->results;
+                 $datasResults = $data['results'];
                  if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
                      $farmaService = new FarmaService();
  
