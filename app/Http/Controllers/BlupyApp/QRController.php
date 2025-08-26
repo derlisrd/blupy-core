@@ -55,7 +55,7 @@ class QRController extends Controller
              }
 
              $blupy = app(BlupyQrService::class)->autorizarQR($parametrosPorArray);
-             $data = (object) $blupy['data'];
+             $data = $blupy['data'];
              $datasResults = null;
              if ($data && isset($data['results']) ) {
  
