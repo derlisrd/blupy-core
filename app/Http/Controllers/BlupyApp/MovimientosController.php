@@ -7,7 +7,6 @@ use App\Services\FarmaService;
 use App\Services\InfinitaService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class MovimientosController extends Controller

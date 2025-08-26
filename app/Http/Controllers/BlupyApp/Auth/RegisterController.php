@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BlupyApp\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SubirImages2doPlano;
 use App\Models\Adicional;
 use App\Models\Adjunto;
 use App\Models\Cliente;
@@ -18,7 +19,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\RateLimiter;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
@@ -42,10 +42,22 @@ class RegisterController extends Controller
             }
 
             // 3. Procesar y validar imágenes
-            $imageData = $this->processUserImages($req);
-            if (!$imageData['success']) {
-                return $this->errorResponse($imageData['message'], 400);
+
+            /// aqui debe subir imagenes en 2do plano para no bloquear todo
+            $imagesData = [];
+            $imageFields = [
+                'fotocedulafrente' => 'frente',
+                'fotoceduladorso' => 'dorso',
+                'fotoselfie' => 'selfie'
+            ];
+
+            foreach ($imageFields as $key => $value) {
+                $imagePath = 'clientes/' . $req->cedula . '_' . $value;
+                //string $imagenBase64, string $imageName, string $path
+                SubirImages2doPlano::dispatch($req->$key, ($req->cedula . '_' . $value), 'clientes')->onConnection('database');
+                $imagesData[$value] = $imagePath;
             }
+
 
             // 4. Obtener datos adicionales de farma
             $userInfoDatosFarma = $this->getDataInfoFarma($req->cedula);
@@ -53,7 +65,7 @@ class RegisterController extends Controller
             // 5. Ejecutar registro en transacción
             DB::beginTransaction();
 
-            $registroResult = $this->ejecutarRegistro($req, $imageData['images'], $userInfoDatosFarma);
+            $registroResult = $this->ejecutarRegistro($req, $imagesData, $userInfoDatosFarma);
 
             if (!$registroResult['success']) {
                 DB::rollBack();
@@ -123,37 +135,7 @@ class RegisterController extends Controller
         return null;
     }
 
-    private function processUserImages(Request $req): array
-    {
-        $images = [];
-        $imageFields = [
-            'fotocedulafrente' => 'frente',
-            'fotoceduladorso' => 'dorso',
-            'fotoselfie' => 'selfie'
-        ];
 
-        foreach ($imageFields as $field => $suffix) {
-            $imagePath = $this->subirBase64ToWebp(
-                $req->$field,
-                $req->cedula . '_' . $suffix,
-                'clientes'
-            );
-
-            if (!$imagePath) {
-                return [
-                    'success' => false,
-                    'message' => "Error al procesar la imagen: $field"
-                ];
-            }
-
-            $images[$suffix] = $imagePath;
-        }
-
-        return [
-            'success' => true,
-            'images' => $images
-        ];
-    }
 
     private function getDataInfoFarma(string $cedula): array
     {
@@ -166,12 +148,12 @@ class RegisterController extends Controller
         $direccionCompletado = 0;
         $asofarma = 0;
         $funcionario = 0;
-        if(property_exists($farmaData,'result')){
+        if (property_exists($farmaData, 'result')) {
             $result = $farmaData->result;
-            if($result['alianza'] === true){
+            if ($result['alianza'] === true) {
                 $asofarma = 1;
             }
-            if($result['funcionario'] === true){
+            if ($result['funcionario'] === true) {
                 $funcionario = 1;
             }
         }
@@ -179,7 +161,7 @@ class RegisterController extends Controller
 
         return [
             'esAdicional' => $esAdicional,
-            'asofarma'=>$asofarma,
+            'asofarma' => $asofarma,
             'funcionario' => $funcionario,
             'direccionCompletado' => $direccionCompletado
         ];
@@ -189,8 +171,29 @@ class RegisterController extends Controller
     {
         try {
             // Preparar datos del cliente
-            $clienteData = $this->prepareClienteData($req, $images, $additionalData);
+            $nombres = $this->separarNombres($req->nombres);
+            $apellidos = $this->separarNombres($req->apellidos);
 
+            $clienteData = [
+                'cedula' => $req->cedula,
+                'foto_ci_frente' => $images['frente'],
+                'foto_ci_dorso' => $images['dorso'],
+                'selfie' => $images['selfie'],
+                'nombre_primero' => $nombres[0],
+                'nombre_segundo' => $nombres[1] ?? null,
+                'apellido_primero' => $apellidos[0],
+                'apellido_segundo' => $apellidos[1] ?? null,
+                'fecha_nacimiento' => $req->fecha_nacimiento,
+                'celular' => $req->celular,
+                'email' => $req->email,
+                'funcionario' => $additionalData['funcionario'],
+                'linea_farma' => null,
+                'asofarma' => $additionalData['asofarma'],
+                'importe_credito_farma' => 0,
+                'direccion_completado' => $additionalData['direccionCompletado'],
+                'cliid' => 0,
+                'solicitud_credito' => 0,
+            ];
             // Registrar en sistema externo (Infinita)
             $infinitaResult = $this->registrarInfinita((object) $clienteData);
             if (!$infinitaResult['register']) {
@@ -309,7 +312,7 @@ class RegisterController extends Controller
         }
     }
 
-    private function enviarFotosAInfinita(Request $req, Cliente $cliente): void
+    private function enviarFotosAInfinita(Request $req): void
     {
         // Estas operaciones podrían ser asíncronas (jobs/queues)
         try {
@@ -435,7 +438,7 @@ class RegisterController extends Controller
             $imageProcessor->scaleDown(width: 800, height: 800);
 
             // Guardar la imagen procesada directamente como WebP
-            $imageProcessor->toWebp(quality: 85)->save($publicPath);
+            $imageProcessor->toWebp(quality: 90)->save($publicPath);
 
             // Retornar solo el nombre del archivo (o la ruta relativa)
             return $filename;
