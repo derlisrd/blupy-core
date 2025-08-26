@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
 
-class SubirImages2doPlano implements ShouldQueue
+class SubirImages2doPlanoJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

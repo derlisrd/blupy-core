@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\BlupyApp\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\SubirImages2doPlano;
+use App\Jobs\SubirImages2doPlanoJob;
 use App\Models\Adicional;
 use App\Models\Adjunto;
 use App\Models\Cliente;
@@ -54,7 +54,7 @@ class RegisterController extends Controller
             foreach ($imageFields as $key => $value) {
                 $imagePath = 'clientes/' . $req->cedula . '_' . $value;
                 //string $imagenBase64, string $imageName, string $path
-                SubirImages2doPlano::dispatch($req->$key, ($req->cedula . '_' . $value), 'clientes')->onConnection('database');
+                SubirImages2doPlanoJob::dispatch($req->$key, ($req->cedula . '_' . $value), 'clientes')->onConnection('database');
                 $imagesData[$value] = $imagePath;
             }
 
