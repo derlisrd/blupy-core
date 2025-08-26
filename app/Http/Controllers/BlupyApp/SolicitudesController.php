@@ -95,6 +95,10 @@ class SolicitudesController extends Controller
         if($solicitudConflictiva->created_at > $fechaLimite)
             return response()->json(['success'=>false,'message'=>'Su solicitud ya ingresó. Debe esperar al menos 48 hs para hacer una nueva.'],400);
         
+        if($solicitudConflictiva->estado_id == 7){
+            return response()->json(['success'=>false,'message'=>'Crédito ya activo.'],400);
+        }
+
         return response()->json([
             'success'=>true,
             'message'=>'Puede solicitar'
@@ -140,6 +144,12 @@ class SolicitudesController extends Controller
         try {
             $user = $req->user();
             $cliente = $user->cliente;
+
+            $solicitud = SolicitudCredito::where('tipo',1)->where('estado_id',7)->first();
+
+            if($solicitud)
+                return response()->json(['success'=>false,'message'=>'Crédito ya activo.'],400);
+            
 
             $departamento = Departamento::find($req->departamento_id);
             $departamento_empresa = Departamento::find($req->empresa_departamento_id);
