@@ -52,10 +52,9 @@ class RegisterController extends Controller
             ];
 
             foreach ($imageFields as $key => $value) {
-                $imagePath = 'clientes/' . $req->cedula . '_' . $value;
                 //string $imagenBase64, string $imageName, string $path
                 SubirImages2doPlanoJob::dispatch($req->$key, ($req->cedula . '_' . $value), 'clientes')->onConnection('database');
-                $imagesData[$value] = $imagePath;
+                $imagesData[$value] = $req->cedula . '_' . $value;
             }
 
 
