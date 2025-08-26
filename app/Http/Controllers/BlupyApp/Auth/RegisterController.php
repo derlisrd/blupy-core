@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
@@ -29,19 +30,17 @@ class RegisterController extends Controller
     public function register(Request $req)
     {
         try {
-            // 1. Validación inicial
-            $validator = $this->validateRegistrationRequest($req);
-            if ($validator->fails()) {
-                return $this->errorResponse($validator->errors()->first(), 400);
-            }
+            $validator = Validator::make($req->all(), trans('validation.auth.login'), trans('validation.auth.login.messages'));
 
-            // 2. Verificar si el usuario ya existe
-            $existingUser = $this->checkExistingUser($req->cedula, $req->email);
-            if ($existingUser) {
-                return $existingUser;
-            }
+            if ($validator->fails()) return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-            // 3. Procesar y validar imágenes
+            $ip = $req->ip();
+            $rateKey = "login:$ip";
+
+            if (RateLimiter::tooManyAttempts($rateKey, 5)) 
+                return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
+            
+            RateLimiter::hit($rateKey, 60);
 
             /// aqui debe subir imagenes en 2do plano para no bloquear todo
             $imagesData = [];
@@ -120,20 +119,6 @@ class RegisterController extends Controller
         ]);
     }
 
-    private function checkExistingUser(string $cedula, string $email)
-    {
-        $existingCliente = Cliente::where('cedula', $cedula)->first();
-        if ($existingCliente) {
-            return $this->errorResponse('La cédula ya está registrada', 409);
-        }
-
-        $existingUser = User::where('email', $email)->first();
-        if ($existingUser) {
-            return $this->errorResponse('El email ya está registrado', 409);
-        }
-
-        return null;
-    }
 
 
 
@@ -142,14 +127,13 @@ class RegisterController extends Controller
         $adicional = Adicional::where('cedula', $cedula)->first();
         $esAdicional = (bool) $adicional;
         //$clienteFarma = $this->clienteFarma($cedula);
-        $farmaService = new FarmaService();
-        $farmaResponse = $farmaService->esAlianzaOFuncionario($cedula);
-        $farmaData = (object) $farmaResponse['data'];
+        $farmaResponse = (new FarmaService())->esAlianzaOFuncionario($cedula);
+        $farmaData = $farmaResponse['data'];
         $direccionCompletado = 0;
         $asofarma = 0;
         $funcionario = 0;
-        if (property_exists($farmaData, 'result')) {
-            $result = $farmaData->result;
+        if ($farmaData && isset($farmaData['result'])) {
+            $result = $farmaData['result'];
             if ($result['alianza'] === true) {
                 $asofarma = 1;
             }
@@ -209,7 +193,7 @@ class RegisterController extends Controller
             $cliente = Cliente::create($clienteData);
             $user = $this->createUserRecord($req, $cliente->id);
             $this->createDeviceRecord($req, $user->id);
-            $this->createAttachmentRecords($cliente->id, $images);
+            $this->crearAdjuntos($cliente->id, $images);
 
             $token = JWTAuth::fromUser($user);
 
@@ -266,7 +250,7 @@ class RegisterController extends Controller
         ]);
     }
 
-    private function createAttachmentRecords(int $clienteId, array $images): void
+    private function crearAdjuntos(int $clienteId, array $images): void
     {
         $attachments = [
             ['image' => $images['frente'], 'tipo' => 'cedula_frente'],
