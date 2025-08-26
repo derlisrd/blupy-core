@@ -52,7 +52,8 @@ class RegisterController extends Controller
 
             foreach ($imageFields as $key => $value) {
                 //string $imagenBase64, string $imageName, string $path
-                SubirImages2doPlanoJob::dispatch($req->$key, ($req->cedula . '_' . $value), 'clientes')->onConnection('database');
+                //SubirImages2doPlanoJob::dispatch($req->$key, ($req->cedula . '_' . $value), 'clientes')->onConnection('database');
+                $this->subirBase64ToWebp($req->$key,($req->cedula . '_' . $value),'clientes');
                 //formato '.webp'
                 $imagesData[$value] = $req->cedula . '_' . $value . '.webp';
             }
