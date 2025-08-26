@@ -92,8 +92,8 @@ class QRController extends Controller
 
 
             return response()->json([
-                'success' => $data->success,
-                'message' => $data->message
+                'success' => $data['success'],
+                'message' => $data['message']
             ], $blupy['status']);
         } catch (\Throwable $th) {
             Log::error('Error en autorizar QR: ' . $th->getMessage(), [
