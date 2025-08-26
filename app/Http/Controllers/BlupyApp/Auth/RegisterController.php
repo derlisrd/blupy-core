@@ -203,8 +203,10 @@ class RegisterController extends Controller
                 ];
             }
 
-            // Crear registros en BD
-            $cliente = $this->createClienteRecord($clienteData, $infinitaResult['cliId']);
+            $clienteData['cliid'] = $infinitaResult['cliId'];
+            unset($clienteData['email']); // Email va en la tabla users
+
+            $cliente = Cliente::create($clienteData);
             $user = $this->createUserRecord($req, $cliente->id);
             $this->createDeviceRecord($req, $user->id);
             $this->createAttachmentRecords($cliente->id, $images);
@@ -225,34 +227,6 @@ class RegisterController extends Controller
         }
     }
 
-    private function prepareClienteData(Request $req, array $images, array $datosDeFarma): array
-    {
-        $nombres = $this->separarNombres($req->nombres);
-        $apellidos = $this->separarNombres($req->apellidos);
-
-
-
-        return [
-            'cedula' => $req->cedula,
-            'foto_ci_frente' => $images['frente'],
-            'foto_ci_dorso' => $images['dorso'],
-            'selfie' => $images['selfie'],
-            'nombre_primero' => $nombres[0],
-            'nombre_segundo' => $nombres[1] ?? null,
-            'apellido_primero' => $apellidos[0],
-            'apellido_segundo' => $apellidos[1] ?? null,
-            'fecha_nacimiento' => $req->fecha_nacimiento,
-            'celular' => $req->celular,
-            'email' => $req->email,
-            'funcionario' => $datosDeFarma['funcionario'],
-            'linea_farma' => null,
-            'asofarma' => $datosDeFarma['asofarma'],
-            'importe_credito_farma' => 0,
-            'direccion_completado' => $datosDeFarma['direccionCompletado'],
-            'cliid' => 0,
-            'solicitud_credito' => 0,
-        ];
-    }
 
     private function createClienteRecord(array $clienteData, int $cliId): Cliente
     {
