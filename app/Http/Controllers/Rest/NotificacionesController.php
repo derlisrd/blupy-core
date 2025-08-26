@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Rest;
 
 
 use App\Http\Controllers\Controller;
-use App\Jobs\NotificacionesJobs;
 use App\Jobs\PushNativeJobs;
 use App\Models\Cliente;
 use App\Models\Device;
@@ -106,12 +105,8 @@ class NotificacionesController extends Controller
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
         try {
-            $datos = [
-                'title' => $req->title,
-                'text' => $req->text
-            ];
 
-            $expotokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
+            //$expotokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
 
             $androidDevices = Device::where('os', 'android')
                 ->whereNotNull('devicetoken')
@@ -122,7 +117,7 @@ class NotificacionesController extends Controller
                 ->whereNotNull('devicetoken')
                 ->pluck('devicetoken')
                 ->toArray();
-            NotificacionesJobs::dispatch($req->title, $req->text, $expotokens)->onConnection('database');
+            //NotificacionesJobs::dispatch($req->title, $req->text, $expotokens)->onConnection('database');
             PushNativeJobs::dispatch($req->title, $req->text, $androidDevices, 'android')->onConnection('database');
             PushNativeJobs::dispatch($req->title, $req->text, $iosDevices, 'ios')->onConnection('database');
             return response()->json(['success' => true, 'message' => 'Notificaciones enviadas en 2do plano']);
