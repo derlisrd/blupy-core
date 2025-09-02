@@ -251,6 +251,11 @@ class AuthController extends Controller
     ----------------------------*/
     public function register(Request $req)
     {
+        return response()->json([
+            'message'=>'Actualiza tu app',
+            'success'=>false,
+            'results'=>null
+        ],400);
 
         $validator = Validator::make($req->all(), trans('validation.auth.register'), trans('validation.auth.register.messages'));
         if ($validator->fails())
@@ -396,6 +401,12 @@ class AuthController extends Controller
 
     public function login(Request $req)
     {
+
+        return response()->json([
+            'message'=>'Actualiza tu app',
+            'success'=>false,
+            'results'=>null
+        ],400);
         try {
             $validator = Validator::make($req->all(), trans('validation.auth.login'), trans('validation.auth.login.messages'));
 
