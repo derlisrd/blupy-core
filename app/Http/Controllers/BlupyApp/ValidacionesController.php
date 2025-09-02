@@ -99,7 +99,7 @@ class ValidacionesController extends Controller
             if (!$validacion)
                 return response()->json(['success' => false, 'message' => 'No existe codigo'], 404);
             
-            $mensaje = "Tu código de verificación para Blupy es " . $validacion->codigo . ". Este código es válido por 10 minutos.";
+            $mensaje = "Tu código de verificación para Blupy es _" . $validacion->codigo . "_  Este código es válido por 10 minutos.";
             $numeroTelefonoWa = '595' . substr($validacion->celular, 1);
             (new WaService())->send($numeroTelefonoWa, $mensaje);
 
@@ -357,7 +357,7 @@ class ValidacionesController extends Controller
 
             $celularFormateado = $req->celular;
             $numeroTelefonoWa = $numeroTelefonoWa = '595' . substr($req->celular, 1);
-            $mensaje = "Tu código de verificación para Blupy es " . $randomNumber . ". Este código es válido por 10 minutos.";
+            $mensaje = "Tu código de verificación para Blupy es _" . $randomNumber . "_ Este código es válido por 10 minutos.";
 
             (new WaService())->send($numeroTelefonoWa, $mensaje);
 

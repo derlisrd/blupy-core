@@ -8,9 +8,7 @@ use App\Models\Barrio;
 use App\Models\Ciudad;
 use App\Models\Departamento;
 use App\Models\Informacion;
-use App\Models\Notificacion;
 use App\Models\SolicitudCredito;
-use App\Services\PushExpoService;
 use App\Services\SupabaseService;
 use App\Traits\Helpers;
 use App\Traits\RegisterTraits;
@@ -23,10 +21,8 @@ use App\Http\Controllers\Private\CuentasController as CuentasPrivate;
 use App\Jobs\PushNativeJobs;
 use App\Jobs\SolicitudAprobadaJob;
 use App\Models\Adjunto;
-use App\Models\Cliente;
 use App\Models\Device;
 use App\Services\InfinitaService;
-use App\Services\WaService;
 
 class SolicitudesController extends Controller
 {
