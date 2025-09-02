@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('apellido_primero');
             $table->string('apellido_segundo')->nullable();
             $table->date('fecha_nacimiento');
-            $table->string('cedula',12);
+            $table->string('cedula',12)->unique();
             $table->string('celular');
             $table->string('foto_ci_frente')->nullable();
             $table->string('foto_ci_dorso')->nullable();
