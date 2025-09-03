@@ -77,7 +77,7 @@ class CuentasController extends Controller
                 $linea = ($tarjetasFarma->clerLimiteCredito + $tarjetasFarma->clerLimiteCreditoAdic);
                 $tarjetasResults[] = [
                 'id' => 1,
-                'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Funcionario',
+                'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Farma',
                 'otorgadoPor' => 'Farma S.A.',
                 'ruc' => null,
                 'tipo' => 0,
