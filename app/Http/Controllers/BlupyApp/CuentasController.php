@@ -67,14 +67,14 @@ class CuentasController extends Controller
         }
 
         $farmaCards = $this->farmaService->cliente2($cliente->cedula);
-        $farmaCardData = (object)$farmaCards['data'];
+        $farmaCardData = $farmaCards['data'];
 
-        if(property_exists($farmaCardData,'result')){
-            $tarjetasResult = $farmaCardData->result;
+        if($farmaCardData && isset($farmaCardData['result'])){
+            $tarjetasResult = $farmaCardData['result'];
             if($tarjetasResult != null){
                 $tarjetasFarma = (object)$tarjetasResult;
                 $alianza = $tarjetasFarma->alianza ?? null;
-
+                $linea = ($tarjetasFarma->clerLimiteCredito + $tarjetasFarma->clerLimiteCreditoAdic);
                 $tarjetasResults[] = [
                 'id' => 1,
                 'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Funcionario',
@@ -89,10 +89,10 @@ class CuentasController extends Controller
                 'principal' => false,
                 'adicional' => false,
                 'numeroTarjeta' => 0,
-                'linea' => $tarjetasFarma->clerLimiteCredito,
+                'linea' => $linea,
                 'pagoMinimo' => 0,
                 'deuda' => $tarjetasFarma->deuda,
-                'disponible' => $tarjetasFarma->clerLimiteCredito - $tarjetasFarma->deuda,
+                'disponible' => $linea - $tarjetasFarma->deuda,
                 'alianzas' => $alianza,
                 ];
             }
