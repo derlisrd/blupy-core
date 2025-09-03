@@ -66,11 +66,11 @@ class CuentasController extends Controller
             }
         }
 
-        $farmaCards = $this->farmaService->cliente2($cliente->cedula);
-        $farmaCardData = $farmaCards['data'];
+        $farmaCardsF = $this->farmaService->cliente2($cliente->cedula);
+        $farmaCardDataF = $farmaCardsF['data'];
 
-        if($farmaCardData && isset($farmaCardData['result'])){
-            $tarjetasResult = $farmaCardData['result'];
+        if($farmaCardDataF && isset($farmaCardDataF['result'])){
+            $tarjetasResult = $farmaCardDataF['result'];
             if($tarjetasResult != null){
                 $tarjetasFarma = (object)$tarjetasResult;
                 $alianza = $tarjetasFarma->alianza ?? null;
