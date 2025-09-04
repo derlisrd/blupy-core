@@ -74,7 +74,7 @@ class CuentasController extends Controller
             if($tarjetasResult != null){
                 $tarjetasFarma = (object)$tarjetasResult;
                 $alianza = $tarjetasFarma->alianza ?? null;
-                $linea = ($tarjetasFarma->clerLimiteCredito + $tarjetasFarma->clerLimiteCreditoAdic);
+                $linea = $tarjetasFarma->clerLimiteCredito; //$tarjetasFarma->clerLimiteCreditoAdic;
                 $tarjetasResults[] = [
                 'id' => 1,
                 'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Farma',
