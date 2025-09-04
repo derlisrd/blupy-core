@@ -91,7 +91,7 @@ class LoginController extends Controller
     private function validateLoginRequest(Request $req)
     {
         return Validator::make($req->all(), [
-            'cedula' => 'required|string',
+            'cedula' => 'required|string|regex:/^[0-9\-]+$/',
             'password' => 'required|string|min:6',
             'desktop' => 'nullable|boolean',
             'web' => 'nullable|boolean',
@@ -100,6 +100,7 @@ class LoginController extends Controller
             'version' => 'nullable|string'
         ],[
             'cedula.required' => 'Ingrese la cédula por favor.',
+            'cedula.regex' => 'La cédula no debe contener puntos ni comas.',
             'password.required'=>'Ingrese la contraseña por favor.'
         ]);
     }
