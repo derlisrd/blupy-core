@@ -70,11 +70,20 @@ class CuentasController extends Controller
         $farmaCardDataF = $farmaCardsF['data'];
 
         if($farmaCardDataF && isset($farmaCardDataF['result'])){
-            $tarjetasResult = $farmaCardDataF['result'];
-            if($tarjetasResult != null){
-                $tarjetasFarma = (object)$tarjetasResult;
-                $alianza = $tarjetasFarma->alianza ?? null;
-                $linea = $tarjetasFarma->clerLimiteCredito; //$tarjetasFarma->clerLimiteCreditoAdic;
+            $tarjetasFarma = $farmaCardDataF['result'];
+            if($tarjetasFarma != null){
+                
+                $alianza = $tarjetasFarma['alianza'] ?? null;
+                
+                $linea = $tarjetasFarma['clerLimiteCredito']; 
+
+                $hoy = Carbon::now();
+                $fechaVigencia = Carbon::parse($tarjetasFarma['clerFchFinVigencia']);
+                if($fechaVigencia >= $hoy){ // aqui debo comparar la fecha
+                    $linea = $linea + $tarjetasFarma['clerLimiteCreditoAdic'];
+                } 
+                $deuda = $tarjetasFarma['deuda'];
+
                 $tarjetasResults[] = [
                 'id' => 1,
                 'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Farma',
@@ -91,8 +100,8 @@ class CuentasController extends Controller
                 'numeroTarjeta' => 0,
                 'linea' => $linea,
                 'pagoMinimo' => 0,
-                'deuda' => $tarjetasFarma->deuda,
-                'disponible' => $linea - $tarjetasFarma->deuda,
+                'deuda' => $deuda,
+                'disponible' => $linea - $deuda,
                 'alianzas' => $alianza,
                 ];
             }
