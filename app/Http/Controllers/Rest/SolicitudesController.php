@@ -99,7 +99,7 @@ class SolicitudesController extends Controller
                 }
 
                 $numeroTelefonoWa = '595' . substr($user->cliente->celular, 1);
-                (new WaService())->send($numeroTelefonoWa, "¡Buenas noticias! 🎉 Tu línea de crédito ha sido activada. ¡Aprovecha ahora un 30% de descuento en tu primera compra en las sucursales de Punto Farma! ¡Te esperamos! 😊");
+                //(new WaService())->send($numeroTelefonoWa, "¡Buenas noticias! 🎉 Tu línea de crédito ha sido activada. ¡Aprovecha ahora un 30% de descuento en tu primera compra en las sucursales de Punto Farma! ¡Te esperamos! 😊");
                 Cliente::where('id', $solicitud->cliente_id)->update(['digital' => 1]);
                 $info = Informacion::where('user_id', $user->id)->where('codigo_info', 1)->first();
                 $info->delete();

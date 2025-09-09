@@ -359,7 +359,7 @@ class ValidacionesController extends Controller
             $numeroTelefonoWa = $numeroTelefonoWa = '595' . substr($req->celular, 1);
             $mensaje = "Tu código de verificación para Blupy es _" . $randomNumber . "_ Este código es válido por 10 minutos.";
 
-            (new WaService())->send($numeroTelefonoWa, $mensaje);
+            //(new WaService())->send($numeroTelefonoWa, $mensaje);
 
             (new TigoSmsService())->enviarSms($celularFormateado, $mensaje);
 

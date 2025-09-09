@@ -36,7 +36,7 @@ class SolicitudAprobadaJob implements ShouldQueue
         $titulo = '¡Crédito aprobado, felicidades! 🎉 ';
         $descripcion = '¡Recuerda! Tienes hasta 30 días para activar tu línea. Puedes hacerlo en el Punto Farma más cercano. ¡Te esperamos!';
         $numeroTelefonoWa = '595' . substr($this->celular, 1);
-        (new WaService())->send($numeroTelefonoWa, $titulo . $descripcion);
+        //(new WaService())->send($numeroTelefonoWa, $titulo . $descripcion);
 
         $datos = ['asunto'=>'Contrato de línea de crédito Blupy.','email'=>$this->email];
         Mail::send('email.contrato', $params, function ($message) use($datos) {

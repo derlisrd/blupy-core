@@ -59,7 +59,7 @@ class UserController extends Controller
                 $this->enviarMensajeDeTextoRecuperacion($user->cliente->celular,$randomNumber);
                 $mensaje = "Blupy te ha enviado el código _".$randomNumber."_ para restablecer tu contraseña";
                 $numeroTelefonoWa = '595' . substr($user->cliente->celular, 1);
-                (new WaService())->send($numeroTelefonoWa, $mensaje);
+                //(new WaService())->send($numeroTelefonoWa, $mensaje);
                 $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$cliente->celular,'cliente_id'=>$cliente->id,'origen'=>'rec. por celular']);
             }
 

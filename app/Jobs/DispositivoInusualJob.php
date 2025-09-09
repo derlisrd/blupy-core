@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Services\EmailService;
 use App\Services\TigoSmsService;
-use App\Services\WaService;
+//use App\Services\WaService;
 
 
 use Illuminate\Bus\Queueable;
@@ -43,7 +43,7 @@ class DispositivoInusualJob implements ShouldQueue
     {
         // Enviar SMS
         (new TigoSmsService())->enviarSms($this->celular, $this->mensaje);
-        (new WaService())->send($this->numeroTelefonoWa, $this->mensaje);
+        //(new WaService())->send($this->numeroTelefonoWa, $this->mensaje);
         // Enviar Email
         (new EmailService())->enviarEmail(
             $this->email,
