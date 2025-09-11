@@ -66,29 +66,22 @@ class NotificacionesController extends Controller
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
         try {
-            $toDevice = Device::find($req->device_id);
+            $device = Device::find($req->device_id);
 
-            $notiService = new NotificationService();
-            $res = $notiService->sendPush([
-                'tokens' => [$toDevice->devicetoken],
-                'title' => $req->title,
-                'body' => $req->body,
-                'type' => $toDevice->os,
-            ]);
-            SupabaseService::LOG('devitoken', $toDevice->devicetoken);
-            $expoService = new PushExpoService();
-            $expoService->send(
-                [$toDevice->notitoken],
-                $req->title,
-                $req->body,
-                [
-                    'info' => 'notificaciones',
-                    'title' => $req->title,
-                    'body' => $req->body
-                ]
-            );
-
-            return response()->json(['success' => true, 'message' => 'Notificacion enviada con exito', 'results' => $res['data']], $res['status']);
+            if($device->os == 'android'){
+                PushNativeJobs::dispatch($req->title, $req->body, [
+                    $device->devicetoken
+                ], 'android')->onConnection('database');
+            }
+            if($device->os == 'ios'){
+                PushNativeJobs::dispatch($req->title, $req->body, [
+                    $device->devicetoken
+                ], 'ios')->onConnection('database');
+            }
+            return response()->json(['success' => true, 'message' => 'Notificaciones enviadas en 2do plano','results'=>[
+                
+                'device' => $device
+            ] ]);
         } catch (\Throwable $th) {
             throw $th;
             return response()->json(['success' => false, 'message' => 'Error de servidor. No se pudo enviar.'], 500);
