@@ -69,7 +69,7 @@ class NotificacionesController extends Controller
             $device = Device::find($req->device_id);
 
             if($device->os == 'android'){
-                (new NotificationService())->sendPush([
+                (new NotificationService())->sendPushAndroid([
                     'tokens' => [$device->devicetoken],
                     'title' => $req->title,
                     'body' => $req->body,
