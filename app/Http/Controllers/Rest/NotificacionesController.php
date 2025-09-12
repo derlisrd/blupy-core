@@ -69,9 +69,12 @@ class NotificacionesController extends Controller
             $device = Device::find($req->device_id);
 
             if($device->os == 'android'){
-                PushNativeJobs::dispatch($req->title, $req->body, [
-                    $device->devicetoken
-                ], 'android')->onConnection('database');
+                (new NotificationService())->sendPush([
+                    'tokens' => [$device->devicetoken],
+                    'title' => $req->title,
+                    'body' => $req->body,
+                    'type' => 'android',
+                ]);
             }
             if($device->os == 'ios'){
                 PushNativeJobs::dispatch($req->title, $req->body, [

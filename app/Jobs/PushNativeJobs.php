@@ -36,7 +36,8 @@ class PushNativeJobs implements ShouldQueue
         try {
             $chunksTokens = array_chunk($this->tokens, 100);
             foreach ($chunksTokens as $chunk) {
-                $response = Http::withHeaders([
+                //$response = 
+                Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'x-api-key' => env('PUSH_SERVICE_API_KEY')
                 ])->post(env('PUSH_SERVICE_URL') . '/send-push-difusion',[
@@ -45,7 +46,7 @@ class PushNativeJobs implements ShouldQueue
                     'body' => $this->body,
                     'type' => $this->type,
                 ]);
-                $json = $response->json();
+                //$json = $response->json();
             }
             Log::info('Notificaciones nativas enviadas con exito');
         } catch (\Throwable $th) {
