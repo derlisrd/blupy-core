@@ -9,8 +9,6 @@ use App\Models\Cliente;
 use App\Models\Device;
 use App\Services\InfinitaService;
 use App\Services\NotificationService;
-use App\Services\PushExpoService;
-use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
 use App\Services\WaService;
 use Illuminate\Http\Request;
@@ -102,20 +100,25 @@ class NotificacionesController extends Controller
 
         try {
 
-            //$expotokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
-
-            $androidDevices = Device::where('os', 'android')
+            $devices = Device::whereIn('os', ['android', 'ios'])
+                ->whereNot('devicetoken', 'web')
                 ->whereNotNull('devicetoken')
-                ->pluck('devicetoken')
-                ->toArray();
+                ->select('os', 'devicetoken')
+                ->get()
+                ->groupBy('os');
 
-            $iosDevices = Device::where('os', 'ios')
-                ->whereNotNull('devicetoken')
-                ->pluck('devicetoken')
-                ->toArray();
-            //NotificacionesJobs::dispatch($req->title, $req->text, $expotokens)->onConnection('database');
-            PushNativeJobs::dispatch($req->title, $req->text, $androidDevices, 'android')->onConnection('database');
-            PushNativeJobs::dispatch($req->title, $req->text, $iosDevices, 'ios')->onConnection('database');
+            $androidDevices = $devices->get('android')?->pluck('devicetoken')->toArray() ?? [];
+            $iosDevices = $devices->get('ios')?->pluck('devicetoken')->toArray() ?? [];
+
+            if (!empty($androidDevices)) {
+                PushNativeJobs::dispatch($req->title, $req->text, $androidDevices, 'android')
+                    ->onConnection('database');
+            }
+
+            if (!empty($iosDevices)) {
+                PushNativeJobs::dispatch($req->title, $req->text, $iosDevices, 'ios')
+                    ->onConnection('database');
+            }
             return response()->json(['success' => true, 'message' => 'Notificaciones enviadas en 2do plano']);
         } catch (\Throwable $th) {
             //throw $th;
