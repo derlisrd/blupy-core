@@ -74,7 +74,7 @@ class ContratosController extends Controller
         $results = [
             'contratos'=>$res->results,
             'cliente'=>$cliente,
-            'adjuntos'=>$adjuntos
+            'adjuntos'=>$adjuntos ?? null
         ];
         return response()->json(['success'=>true,'results'=>$results],$res->status);
 
