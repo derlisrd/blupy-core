@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\BlupyQrService;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
+use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -74,10 +75,7 @@ class QRController extends Controller
                          }, 3); // 3 intentos máximos
                      } catch (\Exception $innerException) {
                          // Capturar y loguear el error final después de todos los reintentos
-                         Log::error("Error final en FarmaService: " . $innerException->getMessage(), [
-                             'id' => $datasResults['id'],
-                             'exception' => $innerException
-                         ]);
+                         
                          // Decide si quieres continuar o relanzar la excepción
                          //throw $innerException;
                          return response()->json([
@@ -96,10 +94,8 @@ class QRController extends Controller
                 'message' => $data['message']
             ], $blupy['status']);
         } catch (\Throwable $th) {
-            Log::error('Error en autorizar QR: ' . $th->getMessage(), [
-                'user_id' => $req->user()->id ?? null,
-                'parametros'=>$parametrosPorArray
-            ]);
+            
+            SupabaseService::LOG('Error_autorizarQR_user',$req->user->id);
             return response()->json([
                 'success' => false,
                 'message' => 'Error de conexión. Por favor intente en unos momentos. CQ500'

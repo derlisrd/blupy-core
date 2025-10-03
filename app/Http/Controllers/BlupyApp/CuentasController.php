@@ -235,7 +235,7 @@ class CuentasController extends Controller
             }
 
         } catch (\Exception $e) {
-            Log::error('Error en llamadas concurrentes: ' . $e->getMessage());
+            
             
             // Fallback completo - usar services originales
             $results = $results->concat($this->procesarInfinitaFallback($cliente->cedula));
@@ -256,7 +256,7 @@ class CuentasController extends Controller
             $resInfinita = $this->infinitaService->ListarTarjetasPorDoc($cedula);
             return $this->buildInfinitaCards($resInfinita['data'] ?? null);
         } catch (\Exception $e) {
-            Log::error('Error API Infinita: ' . $e->getMessage(), ['cedula' => $cedula]);
+            
             SupabaseService::LOG('infinita_api_error', $e->getMessage());
             return collect();
         }
@@ -271,10 +271,7 @@ class CuentasController extends Controller
             
             return $this->buildFarmaCards($resFarma['data'] ?? null, $cliente->franquicia);
         } catch (\Exception $e) {
-            Log::error('Error API Farma: ' . $e->getMessage(), [
-                'cedula' => $cliente->cedula,
-                'extranjero' => $cliente->extranjero
-            ]);
+            
             SupabaseService::LOG('farma_api_error', $e->getMessage());
             return collect();
         }
@@ -430,7 +427,7 @@ class CuentasController extends Controller
                         $results = $results->concat($this->processFarmaMovimientos($responses['farma']->json()));
                     }
                 } catch (\Exception $e) {
-                    Log::error('Error en llamadas concurrentes de movimientos: ' . $e->getMessage());
+                    
                     
                     // Fallback - usar services originales
                     $results = $results->concat($this->getMovimientosInfinitaSync($req->cuenta, $periodo, $req->numero_tarjeta));
@@ -452,7 +449,6 @@ class CuentasController extends Controller
             ]);
 
         } catch (\Throwable $th) {
-            Log::error('Error en movimientos: ' . $th->getMessage());
             return response()->json(['success' => false, 'message' => 'Ocurrió un error inesperado', 'results' => []], 500);
         }
     }
@@ -464,7 +460,7 @@ class CuentasController extends Controller
             $resInfinita = $this->infinitaService->movimientosPorFecha($cuenta, $periodo, $numeroTarjeta);
             return $this->processInfinitaMovimientos($resInfinita['data'] ?? []);
         } catch (\Exception $e) {
-            Log::error('Error movimientos Infinita: ' . $e->getMessage());
+            
             return collect();
         }
     }
@@ -475,7 +471,7 @@ class CuentasController extends Controller
             $resFarma = $this->farmaService->movimientos2($cedula, $periodo);
             return $this->processFarmaMovimientos($resFarma['data'] ?? []);
         } catch (\Exception $e) {
-            Log::error('Error movimientos Farma: ' . $e->getMessage());
+            
             return collect();
         }
     }
@@ -549,7 +545,7 @@ class CuentasController extends Controller
                     'results' => ['url' => env('BASE_EXTRACTO') . $resultado->Url]
                 ]);
             } catch (\Throwable $th) {
-                Log::error('Error extracto: ' . $th->getMessage());
+                
                 return response()->json(['success' => false, 'message' => 'Error de servidor'], 500);
             }
         });
@@ -587,7 +583,7 @@ class CuentasController extends Controller
                 'results' => $user->fresh()->devices
             ]);
         } catch (\Exception $e) {
-            Log::error('Error eliminando dispositivo: ' . $e->getMessage());
+            
             return response()->json(['success' => false, 'message' => 'Error al eliminar dispositivo'], 500);
         }
     }

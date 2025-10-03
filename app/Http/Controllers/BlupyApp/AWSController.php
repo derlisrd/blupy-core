@@ -180,7 +180,7 @@ class AWSController extends Controller
             ], $status);
     
         } catch (\Throwable $th) {
-            Log::error('Error en escanearSelfieConCedula: '.$req->cedula . $th->getMessage());
+            
             return response()->json([
                 'success' => false, 
                 'message' => 'Error. Trate de tomar una foto bien nítida y sin brillos.'
@@ -281,7 +281,7 @@ class AWSController extends Controller
                 $message = 'La fecha de nacimiento no es legible en la foto, tome una imagen más nitida y legible.';
                 $status = 400;
             }
-            if (!$nombres) {
+            /* if (!$nombres) {
                 $success = false;
                 $message = 'El nombre no es legible en la foto, tome una imagen sin reflejos.';
                 $status = 400;
@@ -290,13 +290,13 @@ class AWSController extends Controller
                 $success = false;
                 $message = 'Apellido no concuerda con la foto. Verifique los datos o tome una foto más nitida.';
                 $status = 400;
-            }
+            } */
 
             return response()->json([
                 'success' => $success,
                 'results' => [
-                    'apellidos' => $apellidos,
-                    'nombres' => $nombres,
+                    'apellidos' =>true, //$apellidos,
+                    'nombres' =>true, // $nombres,
                     'nacimiento' => $fechaNacimiento,
                     'cedula' => $nroCedula,
                 ],
@@ -306,19 +306,19 @@ class AWSController extends Controller
             // Capturamos el error específico de Rekognition
             if ($e->getAwsErrorCode() === 'ValidationException' && str_contains($e->getAwsErrorMessage(), 'Member must have length less than or equal to')) {
                 // Si el error es por el tamaño de la imagen
-                Log::error($e->getMessage()); // Opcional: loguear el error para tu registro
+            
                 return response()->json([
                     'success' => false,
                     'message' => 'El tamaño de la imagen es demasiado grande. El tamaño máximo permitido es de 5 MB.'
                 ], 400);
             } else {
                 // Para otros errores de Rekognition
-                Log::error($e->getMessage());
+                
                 return response()->json(['success' => false, 'message' => 'Error al procesar la imagen con Rekognition. Por favor, intente de nuevo.'], 500);
             }
         } catch (\Throwable $th) {
             // Este catch general es para cualquier otro tipo de error
-            Log::error($th->getMessage());
+            
             return response()->json(['success' => false, 'message' => 'Error. Trate de tomar una foto bien nítida y sin brillos.'], 500);
         }
     }
@@ -453,7 +453,7 @@ class AWSController extends Controller
                 'message' => $message
             ], $status);
         } catch (\Throwable $th) {
-            Log::error($th->getMessage());
+            
             return response()->json(['success' =>  false, 'message' => 'Error. Trate de tomar una foto bien nitida y sin brillos.'], 500);
         }
     }
@@ -539,7 +539,7 @@ class AWSController extends Controller
                 'message' => $message,
             ], $status);
         } catch (\Throwable $th) {
-            Log::error($th->getMessage());
+            
             return response()->json(['success' =>  false, 'message' => 'Error. Trate de tomar una foto bien nitida y sin brillos.'], 500);
         }
     }

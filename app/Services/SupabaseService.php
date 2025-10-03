@@ -30,7 +30,6 @@ class SupabaseService
             ]);
             return true;
         } catch (\Throwable $th) {
-            Log::error($th);
             return false;
         }
     }
@@ -52,7 +51,6 @@ class SupabaseService
 
             return true;
         } catch (\Throwable $th) {
-            Log::error($th->getMessage());
             throw $th;
         }
     }
@@ -67,13 +65,11 @@ class SupabaseService
             ])->post(env('SUPABASE_URL') . '/rest/v1/ventas', $datas);
 
             if ($response->failed()) {
-                Log::error('Error en Supabase: ' . $response->body());
                 return false;
             }
 
             return true;
         } catch (\Throwable $th) {
-            Log::error('Excepción en SupabaseService::ventas: ' . $th->getMessage());
             return false;
         }
     }
@@ -88,13 +84,11 @@ class SupabaseService
             ])->get(env('SUPABASE_URL') . '/rest/v1/ventas', $querys);
 
             if ($response->failed()) {
-                Log::error('Error al obtener ventas de Supabase: ' . $response->body());
                 return null;
             }
 
             return $response->json();
         } catch (\Throwable $th) {
-            Log::error('Excepción en SupabaseService::obtenerVentas: ' . $th->getMessage());
             return null;
         }
     }

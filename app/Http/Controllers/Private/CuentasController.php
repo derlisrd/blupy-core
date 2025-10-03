@@ -84,11 +84,6 @@ class CuentasController extends Controller
             }
         } catch (\Exception $e) {
             // Log del error pero continúa la ejecución
-            Log::error('Error al consultar API Infinita: ' . $e->getMessage(), [
-                'cedula' => $cedula,
-                'trace' => $e->getTraceAsString()
-            ]);
-
             // Opcionalmente enviar notificación a Supabase
             SupabaseService::LOG('infinita_api_error', $e->getMessage());
         }
@@ -102,12 +97,6 @@ class CuentasController extends Controller
             }
         } catch (\Exception $e) {
             // Log del error pero continúa la ejecución
-            Log::error('Error al consultar API Farma: ' . $e->getMessage(), [
-                'cedula' => $cedula,
-                'extranjero' => $extranjero,
-                'codigo_farma' => $codigo_farma,
-                'trace' => $e->getTraceAsString()
-            ]);
 
             SupabaseService::LOG('farma_api_error', $e->getMessage());
 

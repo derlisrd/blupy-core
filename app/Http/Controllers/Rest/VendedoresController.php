@@ -43,7 +43,7 @@ class VendedoresController extends Controller
                 'message'=>'Ingresado'
             ]);
         } catch (\Throwable $th) {
-           Log::error($th);
+           
            return response()->json(['success'=>false,'message'=>"Error de servidor"],500);
         }
 

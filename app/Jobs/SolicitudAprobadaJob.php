@@ -43,11 +43,8 @@ class SolicitudAprobadaJob implements ShouldQueue
                 $message->subject($datos['asunto']);
                 $message->to($datos['email']);
         });
-        Log::info('Correo enviado');
         } catch (\Throwable $th) {
-            Log::error($th->getMessage());
             throw $th;
-
         }
     }
 }

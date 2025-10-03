@@ -256,7 +256,6 @@ class SolicitudesController extends Controller
                 'message' => $message
             ]);
         } catch (\Throwable $th) {
-            Log::error($th);
             SupabaseService::LOG($th->getMessage(), $th);
             return response()->json(['success' => false, 'message' => 'Hubo un error con el servidor. Contacte con nosotros por favor.'], 500);
         }
@@ -434,7 +433,6 @@ class SolicitudesController extends Controller
                 'message' => 'Solicitud ingresada correctamente.'
             ]);
         } catch (\Throwable $th) {
-            Log::error($th);
             SupabaseService::LOG($th->getMessage(), $th);
             return response()->json(['success' => false, 'message' => 'Hubo un error con el servidor. Contacte con nosotros por favor.'], 500);
         }
@@ -499,7 +497,6 @@ class SolicitudesController extends Controller
             ]);
             return response()->json(['success' => true, 'message' => 'La ampliación de la línea ha ingresado con éxito.']);
         } catch (\Throwable $th) {
-            //Log::error($th);
             SupabaseService::LOG('core_ampliacion_194', $th->getMessage());
 
             return response()->json(['success' => false, 'message' => 'Error de servidor. Contacto con atención al cliente'], 500);

@@ -236,11 +236,6 @@ class AuthController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             //SupabaseService::LOG('register', $th);
-            Log::error('Error en registro de usuario', [
-                'cedula' => $req->cedula ?? 'N/A',
-                'error' => $th->getMessage(),
-                'trace' => $th->getTraceAsString()
-            ]);
             return response()->json(['success' => false, 'message' => 'Error de servidor'], 500);
         }
     }
@@ -383,11 +378,6 @@ class AuthController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             //SupabaseService::LOG('register', $th);
-            Log::error('Error en registro de usuario', [
-                'cedula' => $req->cedula ?? 'N/A',
-                'error' => $th->getMessage(),
-                'trace' => $th->getTraceAsString()
-            ]);
             return response()->json(['success' => false, 'message' => 'Error de servidor'], 500);
         }
     }
@@ -635,14 +625,7 @@ class AuthController extends Controller
             // Retornar solo el nombre del archivo (o la ruta relativa)
             return $filename;
         } catch (\Throwable $th) {
-            Log::error('Error al subir imagen base64 a WebP: ' . $th->getMessage(), [
-                'file' => $th->getFile(),
-                'line' => $th->getLine(),
-                'imageName' => $imageName,
-                'directory_base' => $path,
-                'trace' => $th->getTraceAsString(),
-            ]);
-            return null;
+            throw $th;
         }
     }
 

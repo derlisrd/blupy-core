@@ -38,7 +38,7 @@ class IngresarContratoFarmaJobs implements ShouldQueue
         ->get();
         foreach($solicitudes as $val){
 
-            Log::info($val['cedula']);
+            //($val['cedula']);
         }
 
     }

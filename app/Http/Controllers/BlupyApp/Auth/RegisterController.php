@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\BlupyApp\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\SubirImages2doPlanoJob;
 use App\Models\Adicional;
 use App\Models\Adjunto;
 use App\Models\Cliente;
@@ -245,9 +244,7 @@ class RegisterController extends Controller
             'model' => $req->model ?? null,
             'ip' => $req->ip(),
             'web' => $req->web ?? false,
-            'desktop' => $req->desktop ?? false,
-            'created_at' => now(),
-            'updated_at' => now()
+            'desktop' => $req->desktop ?? false
         ]);
     }
 
@@ -286,10 +283,6 @@ class RegisterController extends Controller
 
         } catch (\Exception $e) {
             // Log pero no fallar el registro
-            Log::warning('Error en tareas post-registro', [
-                'cedula' => $req->cedula,
-                'error' => $e->getMessage()
-            ]);
         }
     }
 
@@ -402,14 +395,8 @@ class RegisterController extends Controller
             // Retornar solo el nombre del archivo (o la ruta relativa)
             return $filename;
         } catch (\Throwable $th) {
-            Log::error('Error al subir imagen base64 a WebP: ' . $th->getMessage(), [
-                'file' => $th->getFile(),
-                'line' => $th->getLine(),
-                'imageName' => $imageName,
-                'directory_base' => $path,
-                'trace' => $th->getTraceAsString(),
-            ]);
-            return null;
+            throw $th;
+            //return null;
         }
     }
 }

@@ -61,12 +61,12 @@ class ActualizarSolicitudesJobs implements ShouldQueue
                             );
                         }
                     } */
-                    Log::info($solicitud_actualizada);
+                    //($solicitud_actualizada);
                 }
             }
         } catch (\Throwable $th) {
             throw $th;
-            Log::error($th);
+            
         }
     }
 }

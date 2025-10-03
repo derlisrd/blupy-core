@@ -63,7 +63,7 @@ class ActualizarTarjetasJobs implements ShouldQueue
                     );
                 }
             } else{
-                Log::info($sol['cedula']);
+              //($sol['cedula']);
             }
         }
 

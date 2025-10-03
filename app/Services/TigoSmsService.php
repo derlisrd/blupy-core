@@ -20,8 +20,8 @@ class TigoSmsService
         try {
            return Http::get($this->url . 'key='.$this->key.'&message='.$texto.'&msisdn='.$numero);
         } catch (\Throwable $th) {
-            Log::error( $th->getMessage());
-            return [];
+            throw $th;
+            //return [];
         }
     }
 }

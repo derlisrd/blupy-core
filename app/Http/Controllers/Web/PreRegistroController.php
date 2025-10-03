@@ -41,7 +41,7 @@ class PreRegistroController extends Controller
             ]);
             return back()->with('success', 'Listo. La alianza se comunicará contigo.');
         } catch (\Throwable $th) {
-            Log::error($th);
+            
             return false;
         }
     }

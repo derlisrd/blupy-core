@@ -52,7 +52,7 @@ class UpdatePerfilJobs implements ShouldQueue
                 }
             } catch (\Exception $e) {
                 // Manejar el error o registrarlo
-                Log::error("Error al procesar cliente ID {$cliente->id}: " . $e->getMessage());
+                throw $e;
             }
         }
     }

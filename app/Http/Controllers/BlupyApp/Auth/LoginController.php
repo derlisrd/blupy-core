@@ -76,12 +76,7 @@ class LoginController extends Controller
             ]);
             
         } catch (\Throwable $th) {
-            Log::error('Login error', [
-                'cedula' => $req->cedula ?? 'N/A',
-                'error' => $th->getMessage(),
-                'trace' => $th->getTraceAsString()
-            ]);
-
+            
             return $this->errorResponse('Error interno del servidor', 500);
         }
     }

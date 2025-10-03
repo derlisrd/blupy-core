@@ -39,38 +39,13 @@ class SubirImages2doPlanoJob implements ShouldQueue
         try {
             $filename = $this->processAndSaveImage();
             
-            Log::info('Imagen subida correctamente en segundo plano', [
-                'filename' => $filename,
-                'path' => $this->path,
-                'original_name' => $this->imageName
-            ]);
-            
         } catch (\Throwable $th) {
-            Log::error('Error al subir imagen en segundo plano', [
-                'error' => $th->getMessage(),
-                'file' => $th->getFile(),
-                'line' => $th->getLine(),
-                'imageName' => $this->imageName,
-                'path' => $this->path,
-                'trace' => $th->getTraceAsString(),
-            ]);
             
             throw $th; // Re-lanzar para que Laravel maneje los reintentos
         }
     }
 
-    /**
-     * Handle a job failure.
-     */
-    public function failed(\Throwable $exception): void
-    {
-        Log::error('Job de subida de imagen falló después de todos los reintentos', [
-            'error' => $exception->getMessage(),
-            'imageName' => $this->imageName,
-            'path' => $this->path,
-            'attempts' => $this->attempts(),
-        ]);
-    }
+
 
     /**
      * Procesar y guardar la imagen
