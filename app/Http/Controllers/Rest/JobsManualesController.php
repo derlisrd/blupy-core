@@ -20,7 +20,7 @@ class JobsManualesController extends Controller
     }
     public function updatePerfilAlianzas()
     {
-        //UpdatePerfilJobs::dispatch();
+        UpdatePerfilJobs::dispatch()->onConnection('database');
 
         return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar perfiles de alianzas']);
     }
