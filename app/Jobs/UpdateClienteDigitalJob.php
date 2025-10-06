@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Cliente;
 use App\Services\InfinitaService;
+use App\Services\SupabaseService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -115,6 +116,7 @@ class UpdateClienteDigitalJob implements ShouldQueue
                     ->update(['digital' => $digitalValue]);
             }
         });
+        SupabaseService::LOG('update_cliente_digital','Job');
     }
 
     /**
