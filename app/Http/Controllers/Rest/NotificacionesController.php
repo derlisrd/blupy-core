@@ -9,6 +9,7 @@ use App\Models\Cliente;
 use App\Models\Device;
 use App\Services\InfinitaService;
 use App\Services\NotificationService;
+use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
 use App\Services\WaService;
 use Illuminate\Http\Request;
@@ -66,7 +67,7 @@ class NotificacionesController extends Controller
         try {
             $device = Device::find($req->device_id);
 
-            if($device->os == 'android'){
+            if ($device->os == 'android') {
                 (new NotificationService())->sendPushAndroid([
                     'tokens' => [$device->devicetoken],
                     'title' => $req->title,
@@ -74,15 +75,15 @@ class NotificacionesController extends Controller
                     'type' => 'android',
                 ]);
             }
-            if($device->os == 'ios'){
+            if ($device->os == 'ios') {
                 PushNativeJobs::dispatch($req->title, $req->body, [
                     $device->devicetoken
                 ], 'ios')->onConnection('database');
             }
-            return response()->json(['success' => true, 'message' => 'Notificaciones enviadas en 2do plano','results'=>[
-                
+            return response()->json(['success' => true, 'message' => 'Notificaciones enviadas en 2do plano', 'results' => [
+
                 'device' => $device
-            ] ]);
+            ]]);
         } catch (\Throwable $th) {
             throw $th;
             return response()->json(['success' => false, 'message' => 'Error de servidor. No se pudo enviar.'], 500);
@@ -126,39 +127,91 @@ class NotificacionesController extends Controller
         }
     }
 
+
+    
     public function difusionSelectiva(Request $req)
     {
         $validator = Validator::make($req->all(), [
-            'title' => 'required',
-            'text' => 'required'
+            'title' => 'required|string|max:255',
+            'text' => 'required|string|max:1000'
         ]);
-        if ($validator->fails())
-            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
 
         try {
-            
-            $devices = Cliente::join('users', 'users.cliente_id', '=', 'clientes.id')
-            ->where('clientes.digital', 1)
-            ->join('devices', 'users.id', '=', 'devices.user_id')
-            ->whereNotNull('devices.devicetoken')
-            ->select('devices.notitoken', 'devices.os', 'devices.devicetoken')
-            ->get();
-            $androidDevices = $devices->where('os', 'android')->pluck('devicetoken')->toArray();
-            $iosDevices = $devices->where('os', 'ios')->pluck('devicetoken')->toArray();
-            //$expo = $devices->pluck('notitoken')->toArray();
-            //$expotokens = Device::whereNotNull('notitoken')->pluck('notitoken')->toArray();
+            // Obtener devices agrupados por OS de manera optimizada
+            $devices = Device::join('users', 'users.id', '=', 'devices.user_id')
+                ->join('clientes', 'clientes.id', '=', 'users.cliente_id')
+                ->where('clientes.digital', 1)
+                ->whereIn('devices.os', ['android', 'ios'])
+                ->whereNotNull('devices.devicetoken')
+                ->whereNot('devices.devicetoken', 'web')
+                ->select('devices.os', 'devices.devicetoken')
+                ->distinct()
+                ->get()
+                ->groupBy('os');
 
-            //NotificacionesJobs::dispatch($req->title, $req->text, $devices)->onConnection('database');
-            PushNativeJobs::dispatch($req->title,$req->text,$androidDevices,'android')->onConnection('database');
-            PushNativeJobs::dispatch($req->title,$req->text,$iosDevices,'ios')->onConnection('database'); 
-            return response()->json(['success' => true, 'message' => 'Notificaciones enviadas en 2do plano','results'=>[
-                
-                'android' => $androidDevices,
-                'ios' => $iosDevices
-            ] ]);
+            $androidDevices = $devices->get('android')?->pluck('devicetoken')->toArray() ?? [];
+            $iosDevices = $devices->get('ios')?->pluck('devicetoken')->toArray() ?? [];
+
+            // Validar que existan dispositivos
+            if (empty($androidDevices) && empty($iosDevices)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se encontraron dispositivos digitales para enviar notificaciones'
+                ], 404);
+            }
+
+            // Dispatch jobs solo si hay dispositivos
+            $jobsDispatched = [];
+
+            if (!empty($androidDevices)) {
+                PushNativeJobs::dispatch($req->title, $req->text, $androidDevices, 'android')
+                    ->onConnection('database');
+                $jobsDispatched[] = 'android';
+            }
+
+            if (!empty($iosDevices)) {
+                PushNativeJobs::dispatch($req->title, $req->text, $iosDevices, 'ios')
+                    ->onConnection('database');
+                $jobsDispatched[] = 'ios';
+            }
+
+            $androidCount = count($androidDevices);
+            $iosCount = count($iosDevices);
+            $totalCount = $androidCount + $iosCount;
+
+            SupabaseService::LOG('Notification', json_encode([
+                'evento' => 'Difusión selectiva enviada',
+                'title' => $req->title,
+                'android_count' => $androidCount,
+                'ios_count' => $iosCount,
+                'total' => $totalCount
+            ]));
+            return response()->json([
+                'success' => true,
+                'message' => 'Notificaciones enviadas en segundo plano',
+                'data' => [
+                    'platforms' => $jobsDispatched,
+                    'counts' => [
+                        'android' => count($androidDevices),
+                        'ios' => count($iosDevices),
+                        'total' => count($androidDevices) + count($iosDevices)
+                    ]
+                ]
+            ]);
         } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(['success' => false, 'message' => 'Error al enviar notificaciones: ' . $th->getMessage()], 500);
+
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar notificaciones'
+            ], 500);
         }
     }
 
