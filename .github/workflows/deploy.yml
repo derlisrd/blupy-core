@@ -1,28 +1,57 @@
-name: deploy
+name: Deploy
 
 # Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
+  # Triggers the workflow on push events for dev and main branches
   push:
-    branches: [ dev ]
+    branches: [ dev, main ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  # Deploy to DEV environment
+  deploy-dev:
+    name: Deploy to DEV
+    if: github.ref == 'refs/heads/dev'
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - name: Deploy using ssh
+    - name: Deploy to DEV using SSH
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.IP_HOST }}
+        host: ${{ secrets.IP_HOST}}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: |
           cd /var/www/html/dev-blupy-core/
           git pull origin dev
-          php artisan migrate
+          php artisan migrate --force
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan queue:restart
+
+  # Deploy to PRODUCTION environment
+  deploy-production:
+    name: Deploy to PRODUCTION
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to PRODUCTION using SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.IP_HOST_PROD }}
+        username: ${{ secrets.USERNAME_PROD }}
+        key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
+        port: 22
+        script: |
+          cd /var/www/html/blupy-core/
+          git pull origin main
+          composer install --no-dev --optimize-autoloader
+          php artisan down
+          php artisan migrate --force
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan optimize
