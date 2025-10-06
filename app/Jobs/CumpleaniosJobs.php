@@ -49,20 +49,8 @@ class CumpleaniosJobs implements ShouldQueue
             ]);
             $devices = Device::where('user_id',$noti->user_id)->pluck('notitoken')->toArray();
             $emailService->enviarEmail($cliente->email,'Feliz cumpleaños','email.cumpleanios',['nombre'=>$cliente->nombre]);
-            $chunks = array_chunk($devices, 100);
-            foreach ($chunks as $chunk) {
-                    $response = Http::withHeaders([
-                        'Content-Type' => 'application/json',
-                    ])->post('https://exp.host/--/api/v2/push/send', [
-                        'to' => $chunk,
-                        'title' => $noti->title,
-                        'body' => $noti->body,
-                        'data' => [
-                            'info'=>'notificaciones',
-                            'title'=>$noti->title,
-                            'body'=>$noti->body
-                        ]]);
-            }
+           
+            
         }
         SupabaseService::LOG('cumpleanios','Job');
 
