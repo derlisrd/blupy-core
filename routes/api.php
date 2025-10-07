@@ -102,7 +102,7 @@ Route::middleware('auth:api')->group(function(){
     Route::delete('/eliminar-cuenta',[AuthController::class,'eliminarCuenta'])->name('api_eliminar_cuenta');
     
     Route::prefix('/cuenta')->group(function(){
-        Route::get('/tarjetas',[CuentasController::class,'tarjetas2'])->name('api_tarjetas');
+        Route::get('/tarjetas',[CuentasController::class,'tarjetas2'])->name('api_tarjetas_2');
     });
     Route::get('/tarjetas',[CuentasController::class,'tarjetas'])->name('api_tarjetas');
     Route::get('/movimientos',[MovimientosController::class,'movimientos'])->name('api_movimientos');
