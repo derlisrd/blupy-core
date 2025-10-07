@@ -318,7 +318,7 @@ class AWSController extends Controller
             }
         } catch (\Throwable $th) {
             // Este catch general es para cualquier otro tipo de error
-            
+            Log::error('Error en escanearCedula: ' . $th->getMessage());
             return response()->json(['success' => false, 'message' => 'Error. Trate de tomar una foto bien nítida y sin brillos.'], 500);
         }
     }
