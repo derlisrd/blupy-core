@@ -13,58 +13,63 @@ use Illuminate\Support\Facades\RateLimiter;
 
 class AWSController extends Controller
 {
-    public function escanearSelfieConCedula(Request $req){
+    public function escanearSelfieConCedula(Request $req)
+    {
         $validator = Validator::make($req->all(), [
-            'selfie64'=>'required'
+            'selfie64' => 'required'
         ]);
-        
+
         if ($validator->fails())
             return response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first()
             ], 400);
-    
+
         $ip = $req->ip();
         $rateKey = "scanCedula:$ip";
-    
+
         if (RateLimiter::tooManyAttempts($rateKey, 5)) {
             return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 2 minutos.'], 429);
         }
         RateLimiter::hit($rateKey, 120);
-    
+
         try {
             $amazon = new RekognitionClient([
+                'credentials' => [
+                    'key'    => env('AWS_ACCESS_KEY_ID'), // Get from .env file
+                    'secret' => env('AWS_SECRET_ACCESS_KEY'), // Get from .env file
+                ],
                 'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
                 'version' => 'latest',
             ]);
-    
+
             // Procesa la imagen
             $base64Image = explode(";base64,", $req->selfie64);
             $image_base64 = base64_decode($base64Image[1]);
-    
+
             // Verificamos si la decodificación fue exitosa
             if (!$image_base64) {
                 return response()->json(['success' => false, 'message' => 'Error en formato de la imagen. Trate de subir desde galeria. E64'], 400);
             }
-    
+
             // 1. Detectar rostros con atributos detallados
             $faceDetect = $amazon->detectFaces([
-                'Image' => ['Bytes' => $image_base64], 
+                'Image' => ['Bytes' => $image_base64],
                 'Attributes' => ['ALL']
             ]);
-    
+
             // 2. Detectar objetos/etiquetas en la imagen
             $labelsDetect = $amazon->detectLabels([
                 'Image' => ['Bytes' => $image_base64],
                 'MaxLabels' => 20,
                 'MinConfidence' => 60
             ]);
-    
+
             $message = '';
             $success = true;
             $status = 200;
             $validations = [];
-    
+
             // Validar que hay rostros detectados
             if (empty($faceDetect['FaceDetails'])) {
                 $success = false;
@@ -72,7 +77,7 @@ class AWSController extends Controller
                 $status = 400;
             } else {
                 $face = $faceDetect['FaceDetails'][0]; // Tomamos el primer rostro detectado
-                
+
                 // Validar calidad del rostro
                 $faceQuality = $face['Quality'];
                 if ($faceQuality['Brightness'] < 30) {
@@ -80,34 +85,34 @@ class AWSController extends Controller
                     $message = 'La imagen está muy oscura. Tome la foto con mejor iluminación.';
                     $status = 400;
                 }
-                
+
                 if ($faceQuality['Sharpness'] < 30) {
                     $success = false;
                     $message = 'La imagen está borrosa. Tome una foto más nítida.';
                     $status = 400;
                 }
-    
+
                 // Validar que no tenga lentes/gafas
                 if (isset($face['Eyeglasses']) && $face['Eyeglasses']['Value'] === true && $face['Eyeglasses']['Confidence'] > 80) {
                     $success = false;
                     $message = 'Por favor retire los lentes/gafas para la verificación.';
                     $status = 400;
                 }
-    
+
                 // Validar que no tenga gafas de sol
                 if (isset($face['Sunglasses']) && $face['Sunglasses']['Value'] === true && $face['Sunglasses']['Confidence'] > 80) {
                     $success = false;
                     $message = 'Por favor retire las gafas de sol para la verificación.';
                     $status = 400;
                 }
-    
+
                 // Validar que los ojos estén abiertos
                 if (isset($face['EyesOpen']) && $face['EyesOpen']['Value'] === false && $face['EyesOpen']['Confidence'] > 80) {
                     $success = false;
                     $message = 'Por favor mantenga los ojos abiertos durante la foto.';
                     $status = 400;
                 }
-    
+
                 // Validar que la boca esté cerrada (opcional, para mejor calidad)
                 if (isset($face['MouthOpen']) && $face['MouthOpen']['Value'] === true && $face['MouthOpen']['Confidence'] > 80) {
                     $success = false;
@@ -120,7 +125,7 @@ class AWSController extends Controller
                     $message = 'Por favor no se tape el rostro.';
                     $status = 400;
                 }
-    
+
                 // Información de las validaciones del rostro
                 $validations['face'] = [
                     'detected' => true,
@@ -132,15 +137,15 @@ class AWSController extends Controller
                     'mouth_open' => isset($face['MouthOpen']) ? $face['MouthOpen']['Value'] : false,
                 ];
             }
-    
+
             // Validar presencia de documento de identidad
             $labels = $labelsDetect['Labels'];
             $documentDetected = false;
             $documentConfidence = 0;
-    
+
             // Buscar etiquetas relacionadas con documentos
             $documentKeywords = ['Document', 'Id Cards', 'Text', 'Paper', 'License', 'Card', 'Identity'];
-            
+
             foreach ($labels as $label) {
                 if (in_array($label['Name'], $documentKeywords)) {
                     if ($label['Confidence'] > $documentConfidence) {
@@ -151,38 +156,37 @@ class AWSController extends Controller
                     }
                 }
             }
-    
+
             // Validar documento específicamente
             $idCardFound = collect($labels)->firstWhere('Name', 'Id Cards');
             $documentFound = collect($labels)->firstWhere('Name', 'Document');
-            
+
             if (!$documentDetected && (!$idCardFound || $idCardFound['Confidence'] < 70) && (!$documentFound || $documentFound['Confidence'] < 70)) {
                 $success = false;
                 $message = 'No se detectó un documento de identidad en la imagen. Asegúrese de tener la cédula visible en tu mano.';
                 $status = 400;
             }
-    
+
             $validations['document'] = [
                 'detected' => $documentDetected,
                 'confidence' => $documentConfidence,
                 'id_card_found' => $idCardFound ? $idCardFound['Confidence'] : 0,
                 'document_found' => $documentFound ? $documentFound['Confidence'] : 0,
             ];
-    
+
             // Si todo está bien
             if ($success) {
                 $message = 'Verificación exitosa. Rostro y documento detectados correctamente.';
             }
-    
+
             return response()->json([
                 'success' => $success,
                 'message' => $message
             ], $status);
-    
         } catch (\Throwable $th) {
-            
+
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Error. Trate de tomar una foto bien nítida y sin brillos.'
             ], 500);
         }
@@ -192,11 +196,11 @@ class AWSController extends Controller
     public function escanearCedula(Request $req)
     {
         $validator = Validator::make($req->all(), [
-            'fotofrontal64'=>'required',
-            'cedula'=>'required',
-            'nombres'=>'required',
-            'apellidos'=>'required',
-            'nacimiento'=>'required',
+            'fotofrontal64' => 'required',
+            'cedula' => 'required',
+            'nombres' => 'required',
+            'apellidos' => 'required',
+            'nacimiento' => 'required',
         ]);
 
         if ($validator->fails())
@@ -215,6 +219,10 @@ class AWSController extends Controller
 
         try {
             $amazon = new RekognitionClient([
+                'credentials' => [
+                    'key'    => env('AWS_ACCESS_KEY_ID'), // Get from .env file
+                    'secret' => env('AWS_SECRET_ACCESS_KEY'), // Get from .env file
+                ],
                 'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
                 'version' => 'latest',
             ]);
@@ -295,8 +303,8 @@ class AWSController extends Controller
             return response()->json([
                 'success' => $success,
                 'results' => [
-                    'apellidos' =>true, //$apellidos,
-                    'nombres' =>true, // $nombres,
+                    'apellidos' => true, //$apellidos,
+                    'nombres' => true, // $nombres,
                     'nacimiento' => $fechaNacimiento,
                     'cedula' => $nroCedula,
                 ],
@@ -306,14 +314,14 @@ class AWSController extends Controller
             // Capturamos el error específico de Rekognition
             if ($e->getAwsErrorCode() === 'ValidationException' && str_contains($e->getAwsErrorMessage(), 'Member must have length less than or equal to')) {
                 // Si el error es por el tamaño de la imagen
-            
+
                 return response()->json([
                     'success' => false,
                     'message' => 'El tamaño de la imagen es demasiado grande. El tamaño máximo permitido es de 5 MB.'
                 ], 400);
             } else {
                 // Para otros errores de Rekognition
-                
+
                 return response()->json(['success' => false, 'message' => 'Error al procesar la imagen con Rekognition. Por favor, intente de nuevo.'], 500);
             }
         } catch (\Throwable $th) {
@@ -341,6 +349,10 @@ class AWSController extends Controller
 
         try {
             $amazon = new RekognitionClient([
+                'credentials' => [
+                    'key'    => env('AWS_ACCESS_KEY_ID'), // Get from .env file
+                    'secret' => env('AWS_SECRET_ACCESS_KEY'), // Get from .env file
+                ],
                 'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
                 'version' => 'latest',
             ]);
@@ -453,7 +465,7 @@ class AWSController extends Controller
                 'message' => $message
             ], $status);
         } catch (\Throwable $th) {
-            
+
             return response()->json(['success' =>  false, 'message' => 'Error. Trate de tomar una foto bien nitida y sin brillos.'], 500);
         }
     }
@@ -482,6 +494,10 @@ class AWSController extends Controller
 
         try {
             $amazon = new RekognitionClient([
+                'credentials' => [
+                    'key'    => env('AWS_ACCESS_KEY_ID'), // Get from .env file
+                    'secret' => env('AWS_SECRET_ACCESS_KEY'), // Get from .env file
+                ],
                 'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
                 'version' => 'latest',
             ]);
@@ -539,7 +555,7 @@ class AWSController extends Controller
                 'message' => $message,
             ], $status);
         } catch (\Throwable $th) {
-            
+
             return response()->json(['success' =>  false, 'message' => 'Error. Trate de tomar una foto bien nitida y sin brillos.'], 500);
         }
     }
