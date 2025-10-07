@@ -158,11 +158,5 @@ Route::middleware('auth:api')->group(function(){
 });
 
 
-Route::get('/check-env', function () {
-    return response()->json( [
-        'AWS_ACCESS_KEY_ID'     => env('APP_DEBUG'),
-        'AWS_SECRET_ACCESS_KEY' => env('AWS_SECRET_ACCESS_KEY') ? 'OK (oculta)' : 'NO ENCONTRADA',
-        'AWS_DEFAULT_REGION'    => env('AWS_DEFAULT_REGION'),
-    ]);
-})->name('check_env');
+
 
