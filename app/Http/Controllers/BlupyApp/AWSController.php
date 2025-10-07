@@ -7,6 +7,7 @@ use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Aws\Rekognition\RekognitionClient;
+use Aws\Credentials\Credentials;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\RateLimiter;
@@ -34,15 +35,17 @@ class AWSController extends Controller
         RateLimiter::hit($rateKey, 120);
 
         try {
+
+            $credentials = new Credentials(
+                env('AWS_ACCESS_KEY_ID'),
+                env('AWS_SECRET_ACCESS_KEY')
+            );
             $amazon = new RekognitionClient([
-                'credentials' => [
-                    'key'    => env('AWS_ACCESS_KEY_ID'), // Get from .env file
-                    'secret' => env('AWS_SECRET_ACCESS_KEY'), // Get from .env file
-                ],
-                'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
+                'credentials' => $credentials,
+                'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
                 'version' => 'latest',
             ]);
-
+            
             // Procesa la imagen
             $base64Image = explode(";base64,", $req->selfie64);
             $image_base64 = base64_decode($base64Image[1]);
@@ -184,7 +187,7 @@ class AWSController extends Controller
                 'message' => $message
             ], $status);
         } catch (\Throwable $th) {
-
+            Log::error('Error en escanearSelfieConCedula: ' . $th->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error. Trate de tomar una foto bien nítida y sin brillos.'

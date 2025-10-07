@@ -137,13 +137,13 @@ Route::middleware('auth:api')->group(function(){
         Route::get('/ciudades',[ConsultasController::class,'ciudades'])->name('api_ciudades2');
         Route::get('/barrios',[ConsultasController::class,'barrios'])->name('api_barrios');
         Route::get('/tipos-laboral',[ConsultasController::class,'tiposLaboral'])->name('api_tipos_laboral');
-        Route::get('/profesiones',[ConsultasController::class,'profesiones'])->name('api_profesiones');
+        Route::get('/profesiones',[ConsultasController::class,'profesiones'])->name('api_profesiones2');
     });
 
     Route::get('/ciudades',[ConsultasController::class,'ciudades'])->name('api_ciudades');
     Route::get('/barrios-por-ciudad/{idCiudad}',[ConsultasController::class,'barriosPorCiudad'])->name('api_barrios_por_ciudad');
 
-    Route::get('/tipos-laboral',[ConsultasController::class,'tiposLaboral'])->name('api_tipos_laboral');
+    Route::get('/tipos-laboral',[ConsultasController::class,'tiposLaboral'])->name('api_tipos_laboral2');
     Route::get('/profesiones',[ConsultasController::class,'profesiones'])->name('api_profesiones');
 
     Route::get('/sucursales-cercanas',[FarmaController::class,'sucursalesCercanas'])->name('api_sucursales_cercanas');
