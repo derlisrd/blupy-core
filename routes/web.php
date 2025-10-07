@@ -9,3 +9,4 @@ Route::get('/pre-registro',[PreRegistroController::class, 'preRegistro'])->name(
 Route::post('/pre-registro',[PreRegistroController::class, 'store'])->name('pre-registro.store');
 
 Route::view('/politicas-de-privacidad','politicas');
+

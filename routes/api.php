@@ -42,9 +42,7 @@ Route::post('/restablecer-contrasena',[UserPublic::class,'restablecerContrasena'
 
 Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDocumento'])->name('api_verificar_documento');
 
-/**
- * RUTAS NUEVAS
- */
+
 Route::prefix('/auth')->group(function(){
     Route::post('/login',[LoginController::class,'login']);
     Route::post('/register',[RegisterController::class,'register']);
@@ -160,4 +158,11 @@ Route::middleware('auth:api')->group(function(){
 });
 
 
+Route::get('/check-env', function () {
+    return response()->json( [
+        'AWS_ACCESS_KEY_ID'     => env('APP_DEBUG'),
+        'AWS_SECRET_ACCESS_KEY' => env('AWS_SECRET_ACCESS_KEY') ? 'OK (oculta)' : 'NO ENCONTRADA',
+        'AWS_DEFAULT_REGION'    => env('AWS_DEFAULT_REGION'),
+    ]);
+})->name('check_env');
 
