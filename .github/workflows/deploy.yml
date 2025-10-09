@@ -25,6 +25,9 @@ jobs:
         script: |
           cd /var/www/html/dev-blupy-core/
           git pull origin dev
+          php artisan config:clear
+          php artisan cache:clear
+          php artisan route:clear
 
   # Deploy to PRODUCTION environment
   deploy-production:
@@ -48,7 +51,7 @@ jobs:
           php artisan migrate --force
           php artisan config:clear
           php artisan cache:clear
-          php artisan route:cache
+          php artisan route:clear
           php artisan view:cache
           php artisan optimize
           php artisan up
