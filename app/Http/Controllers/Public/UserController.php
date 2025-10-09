@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\RateLimiter;
 
@@ -73,6 +74,7 @@ class UserController extends Controller
                 'message'=>'Código enviado correctamente al ' . $forma
             ]);
         } catch (\Throwable $th) {
+            Log::error('Error olvido password: ' . $th->getMessage());
             SupabaseService::LOG('olvido_password',$th->getMessage());
             return response()->json(['success'=>false,'message'=>'Error de servidor. Intente en unos minutos.'],500);
         }
