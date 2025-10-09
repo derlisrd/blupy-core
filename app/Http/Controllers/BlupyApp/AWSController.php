@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\RateLimiter;
 
 class AWSController extends Controller
 {
+    // activo
     public function escanearSelfieConCedula(Request $req)
     {
         $validator = Validator::make($req->all(), [

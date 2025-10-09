@@ -9,6 +9,7 @@ use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\User;
 use App\Services\FarmaService;
+use App\Services\SupabaseService;
 use App\Traits\Helpers;
 use App\Traits\RegisterTraits;
 use Illuminate\Http\Request;
@@ -87,37 +88,12 @@ class RegisterController extends Controller
             );
         } catch (\Throwable $th) {
             DB::rollBack();
-            $this->logRegistrationError($th, $req);
+            SupabaseService::LOG('Error Registro. Ci: '.$req->cedula . ' tel: '.$req->celular , $th->getMessage() );
             return $this->errorResponse('Error interno del servidor', 500);
         }
     }
 
-    // Métodos auxiliares para mejor organización
 
-    private function validateRegistrationRequest(Request $req)
-    {
-        return Validator::make($req->all(), [
-            'cedula' => 'required|string|unique:clientes,cedula',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'nombres' => 'required|string|max:100',
-            'apellidos' => 'required|string|max:100',
-            'fecha_nacimiento' => 'required|date|before:today',
-            'celular' => 'required|string|max:20',
-            'fotocedulafrente' => 'required|string', // base64
-            'fotoceduladorso' => 'required|string', // base64
-            'fotoselfie' => 'required|string', // base64
-            'vendedor_id' => 'nullable|integer|exists:vendedores,id',
-            'notitoken' => 'nullable|string',
-            'os' => 'sometimes|string',
-            'devicetoken' => 'sometimes|string',
-            'version' => 'sometimes|string',
-            'device' => 'sometimes|string',
-            'model' => 'sometimes|string',
-            'web' => 'sometimes|boolean',
-            'desktop' => 'sometimes|boolean'
-        ]);
-    }
 
 
 
@@ -286,18 +262,7 @@ class RegisterController extends Controller
         }
     }
 
-    private function logRegistrationError(\Throwable $th, Request $req): void
-    {
-        Log::error('Error en registro de usuario', [
-            'cedula' => $req->cedula ?? 'N/A',
-            'email' => $req->email ?? 'N/A',
-            'error' => $th->getMessage(),
-            'file' => $th->getFile(),
-            'line' => $th->getLine(),
-            'trace' => $th->getTraceAsString(),
-            'request_data' => $req->except(['password', 'password_confirmation', 'fotocedulafrente', 'fotoceduladorso', 'fotoselfie'])
-        ]);
-    }
+
 
     private function errorResponse(string $message, int $code)
     {
