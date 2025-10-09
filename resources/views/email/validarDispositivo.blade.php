@@ -48,8 +48,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{!! asset('assets/img/logo.png') !!}" alt="Blupy Logo">
-            <h1>Verificación de dispositivo</h1>
+            <h1>Verificación de dispositivo en BLUPY</h1>
         </div>
         <div class="content">
             <h3>Hemos detectado que se ha ingresado a tu cuenta de BLUPY, si fuiste tu utiliza este código</h3>
@@ -63,7 +62,7 @@
             <p>El equipo de BLUPY</p>
         </div>
         <div class="footer">
-            <p>&copy; 2024 Blupy es un empresa registrada de Mi Credito S.A. Todos los derechos reservados.</p>
+            <p>&copy; 2025 Blupy es un empresa registrada de Mi Credito S.A. Todos los derechos reservados.</p>
         </div>
     </div>
 </body>
