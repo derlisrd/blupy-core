@@ -39,7 +39,7 @@ class DatosController extends Controller
 
             $cliente = $user->cliente;
 
-            $randomNumber = random_int(100000, 999999);
+            $randomNumber = random_int(1000, 9999);
             $emailService = new EmailService();
             $emailService->enviarEmail($req->email,"[".$randomNumber."]Blupy confirmar email",'email.validar',['code'=>$randomNumber]);
             $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email,'cliente_id'=>$cliente->id,'origen'=>'cambioemail']);
@@ -121,7 +121,7 @@ class DatosController extends Controller
 
             $cliente = $user->cliente;
 
-            $randomNumber = random_int(100000, 999999);
+            $randomNumber = random_int(1000, 9999);
             $tigoService = new TigoSmsService();
             $hora = Carbon::now()->format('H:i');
             $mensaje = $randomNumber." es tu codigo de verificacion de BLUPY. ". $hora  ;
