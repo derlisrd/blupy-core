@@ -73,7 +73,7 @@ class UserController extends Controller
                 'message'=>'Código enviado correctamente al ' . $forma
             ]);
         } catch (\Throwable $th) {
-            SupabaseService::LOG('olvido_password',$th);
+            SupabaseService::LOG('olvido_password',$th->getMessage());
             return response()->json(['success'=>false,'message'=>'Error de servidor. Intente en unos minutos.'],500);
         }
     }
