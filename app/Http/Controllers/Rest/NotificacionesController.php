@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\PushNativeJobs;
+use App\Jobs\SendSmsToMorososJob;
 use App\Models\Cliente;
 use App\Models\Device;
 use App\Services\InfinitaService;
@@ -247,5 +248,24 @@ class NotificacionesController extends Controller
             'micredito' => $miCreditoResult,
         ];
         return response()->json(['success' => true, 'message' => 'Datos del cliente', 'results' => $results]);
+    }
+
+
+    public function smsToMorosos(Request $req){
+
+        $validator = Validator::make($req->all(), [
+            'mensaje' => 'required'
+        ]);
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        $mensaje = $req->mensaje;
+
+        SendSmsToMorososJob::dispatch($mensaje)->onConnection('database');
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Sms enviados en segundo plano.'
+        ]);
     }
 }

@@ -57,10 +57,12 @@ Route::group(['middleware' => ['auth:admin']], function() {
         Route::post('/individual',[NotificacionesController::class,'individual'])->name('rest_enviar_notificacion_individual');
         Route::post('/wa',[NotificacionesController::class,'wa'])->name('rest_enviar_wa');
         Route::post('/difusion',[NotificacionesController::class,'difusion'])->middleware('permiso.admin:notificaciones,enviar_difusion_masiva')->name('rest_difusion');
+        
         Route::post('/difusion-selectiva',[NotificacionesController::class,'difusionSelectiva'])->middleware('permiso.admin:notificaciones,enviar_difusion_selectiva')->name('rest_selectiva');
-        // Corregido: Se eliminó el duplicado ->name('rest_ficha') y se mantuvo el más específico.
+        Route::post('/sms-to-morosos',[NotificacionesController::class,'smsToMorosos'])->name('rest_sms_to_morosos');
+        
         Route::get('/ficha',[NotificacionesController::class,'ficha'])->name('rest_notificacion_ficha');
-        // Corregido: Se eliminó el duplicado ->name('rest_enviar_sms')
+        
         Route::post('/enviar-sms',[NotificacionesController::class,'enviarSms'])->name('rest_enviar_sms');
     });
 

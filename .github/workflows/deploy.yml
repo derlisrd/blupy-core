@@ -46,12 +46,4 @@ jobs:
         script: |
           cd /var/www/html/blupy-core/
           git pull origin main
-          composer install --no-dev --optimize-autoloader
-          php artisan down
-          php artisan migrate --force
-          php artisan config:clear
-          php artisan cache:clear
           php artisan route:clear
-          php artisan view:cache
-          php artisan optimize
-          php artisan up
