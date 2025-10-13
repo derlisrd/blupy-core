@@ -48,7 +48,7 @@ class TigoSmsService
      */
     public function enviarSmsMasivo(array $numeros, string $texto, int $concurrency = 10)
     {
-        $textoEncoded = urlencode($texto);
+        
         
         // Dividir en chunks según la concurrencia permitida
         $chunks = array_chunk($numeros, $concurrency);
@@ -56,7 +56,7 @@ class TigoSmsService
 
         foreach ($chunks as $chunkNumeros) {
             try {
-                $respuestas = Http::pool(function ($pool) use ($chunkNumeros, $textoEncoded) {
+                $respuestas = Http::pool(function ($pool) use ($chunkNumeros, $texto) {
                     $requests = [];
                     
                     foreach ($chunkNumeros as $numero) {
@@ -64,7 +64,7 @@ class TigoSmsService
                             ->retry($this->retries, 100)
                             ->get($this->url, [
                                 'key' => $this->key,
-                                'message' => $textoEncoded,
+                                'message' => $texto,
                                 'msisdn' => $numero
                             ]);
                     }
