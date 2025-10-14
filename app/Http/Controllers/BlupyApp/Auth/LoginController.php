@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Jobs\DispositivoInusualJob;
 use App\Models\Adicional;
 use App\Models\Cliente;
+use App\Models\Device;
 use App\Models\Validacion;
+use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
@@ -25,15 +27,27 @@ class LoginController extends Controller
             
 
             // 2. Control de rate limiting
-            $rateLimitResponse = $this->checkRateLimit($req->ip());
-            if ($rateLimitResponse) 
-                return $rateLimitResponse;
+            $ip = ($req->ip());
+
+
+                $rateKey = "login:$ip";
+                if (RateLimiter::tooManyAttempts($rateKey, 5)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Demasiadas peticiones. Espere 1 minuto.'
+                    ], 400);
+                }
+
+                RateLimiter::hit($rateKey, 60);
             
 
             // 3. Buscar cliente
             $cliente = Cliente::with(['user'])->where('cedula', $req->cedula)->first();
-            if (!$cliente) 
-                return $this->errorResponse('Usuario no existe. Regístrese', 404);
+            if (!$cliente)
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no existe. Regístrese'
+                ], 400);
             
 
             // 4. Verificar estado de cuenta
@@ -48,16 +62,39 @@ class LoginController extends Controller
 
             if (!$token) {
                 $this->incrementLoginAttempts($cliente->user);
-                return $this->errorResponse('Credenciales incorrectas', 401);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Credenciales incorrectas'
+                ], 401);
             }
             
 
             // 6. Verificar dispositivo de confianza (solo para rol 0)
             if ($cliente->user->rol === 0) {
-                $deviceVerificationResponse = $this->verifyTrustedDevice($cliente, $req);
-                if ($deviceVerificationResponse) {
-                    return $deviceVerificationResponse;
-                }
+                $user = $cliente->user;
+                $dispositoDeConfianza = Device::where('user_id', $user->id)
+                        ->where('desktop', $req->desktop)
+                        ->where('web', $req->web)
+                        ->where('device', $req->device)
+                        ->where('devicetoken', $req->devicetoken)
+                        ->first();
+                        if (!$dispositoDeConfianza) {
+                            //SupabaseService::LOG('newDevice', $req->cedula);
+                            $pistaEmail =  $user->email; //$this->ocultarParcialmenteEmail($user->email);
+                            $pistaDeNumero = $this->ocultarParcialmenteTelefono($cliente->celular);
+                            $idValidacion = $this->enviarSMSyEmaildispositivoInusual($user->email, $cliente->celular, $cliente->id, $req);
+                            return response()->json([
+                                'success' => true,
+                                'results' => null,
+                                'id' => $idValidacion,
+                                'message' => 'Valida el dispositivo. PIN enviado a ' . $pistaDeNumero . '. y al correo ' . $pistaEmail . '. Verifica tu whatsapp.'
+                            ]);
+                        }
+                        $dispositoDeConfianza->update([
+                            'version' => $req->version,
+                            'ip' => $req->ip()
+                        ]);
+                        $dispositoDeConfianza->touch();
             }
             $cliente->user->update([
                 'intentos' => 0,
@@ -76,8 +113,11 @@ class LoginController extends Controller
             ]);
             
         } catch (\Throwable $th) {
-            
-            return $this->errorResponse('Error interno del servidor', 500);
+            SupabaseService::LOG('loginError',$th->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de servidor. Contacte con soporte.'
+            ], 400);
         }
     }
 
@@ -100,21 +140,6 @@ class LoginController extends Controller
         ]);
     }
 
-    private function checkRateLimit(string $ip)
-    {
-        $rateKey = "login:$ip";
-
-        if (RateLimiter::tooManyAttempts($rateKey, 5)) {
-            return $this->errorResponse(
-                'Demasiadas peticiones. Espere 1 minuto.',
-                429
-            );
-        }
-
-        RateLimiter::hit($rateKey, 60);
-        return null;
-    }
-
   
     private function checkAccountStatus($user)
     {
@@ -128,53 +153,10 @@ class LoginController extends Controller
     }
 
 
-    private function verifyTrustedDevice(Cliente $cliente, Request $req)
-    {
-        $trustedDevice = $cliente->user->devices()
-            ->where([
-                'desktop' => $req->desktop ?? false,
-                'web' => $req->web ?? false,
-                'device' => $req->device ?? '',
-                'devicetoken' => $req->devicetoken ?? ''
-            ])
-            ->first();
 
-        if (!$trustedDevice) {
-            return $this->handleNewDevice($cliente, $req);
-        }
 
-        $this->updateDeviceInfo($trustedDevice, $req);
-        return null;
-    }
 
-    private function handleNewDevice(Cliente $cliente, Request $req)
-    {
-        $maskedEmail = $this->maskEmail($cliente->user->email);
-        $maskedPhone = $this->ocultarParcialmenteTelefono($cliente->celular);
 
-        $validationId = $this->enviarSMSyEmaildispositivoInusual(
-            $cliente->user->email,
-            $cliente->celular,
-            $cliente->id,
-            $req
-        );
-
-        return response()->json([
-            'success' => true,
-            'results' => null,
-            'id' => $validationId,
-            'message' => "Valida el dispositivo. PIN enviado a $maskedPhone y al correo $maskedEmail"
-        ]);
-    }
-
-    private function updateDeviceInfo($device, Request $req)
-    {
-        $device->update([
-            'version' => $req->version,
-            'ip' => $req->ip(),
-            'last_used_at' => now()
-        ]);
-    }
 
 
     private function incrementLoginAttempts($user)
@@ -187,15 +169,6 @@ class LoginController extends Controller
         }
     }
 
-    private function maskEmail(string $email): string
-    {
-        $parts = explode('@', $email);
-        $username = $parts[0];
-        $domain = $parts[1];
-
-        $maskedUsername = substr($username, 0, 2) . str_repeat('*', strlen($username) - 2);
-        return $maskedUsername . '@' . $domain;
-    }
 
     private function errorResponse(string $message, int $code)
     {
@@ -205,7 +178,7 @@ class LoginController extends Controller
         ], $code);
     }
 
-    private function enviarSMSyEmailDispositivoInusual($email, $celular, $clienteId, $req)
+    private function enviarSMSyEmailDispositivoInusual($email, $celular, $clienteId, $req) : int
     {
         $codigo = random_int(1000, 9999);
 
@@ -216,7 +189,7 @@ class LoginController extends Controller
             'ip' => $req->ip(),
         ];
 
-        $mensaje = "Utiliza el código _". $codigo."_ para confirmar tu dispositivo en Blupy.";
+        $mensaje = "Utiliza el código ". $codigo." para confirmar tu dispositivo en Blupy.";
         $numeroTelefonoWa = '595' . substr($celular, 1);
 
         DispositivoInusualJob::dispatch($celular, $mensaje, $email, $codigo, $datosEmail, $numeroTelefonoWa)->onConnection('database');

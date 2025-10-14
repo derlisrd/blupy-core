@@ -555,7 +555,7 @@ class AuthController extends Controller
             'ip' => $req->ip(),
         ];
 
-        $mensaje = "Utiliza el código _".$codigo."_ para confirmar tu dispositivo en Blupy.";
+        $mensaje = "Utiliza el código ".$codigo." para confirmar tu dispositivo en Blupy.";
         $numeroTelefonoWa = '595' . substr($celular, 1);
 
         DispositivoInusualJob::dispatch($celular, $mensaje, $email, $codigo, $datosEmail, $numeroTelefonoWa)->onConnection('database');
