@@ -20,14 +20,13 @@ class TigoSmsService
 
     public function enviarSms(string $numero, string $texto)
     {
-        $textoEncoded = urlencode($texto);
         
         try {
             return Http::timeout($this->timeout)
                 ->retry($this->retries, 100)
                 ->get($this->url, [
                     'key' => $this->key,
-                    'message' => $textoEncoded,
+                    'message' => $texto,
                     'msisdn' => $numero
                 ]);
         } catch (\Throwable $th) {
