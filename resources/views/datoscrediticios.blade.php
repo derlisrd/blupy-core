@@ -10,8 +10,7 @@
             background-color: #f9f9f9;
             color: #222;
             margin: 0;
-            padding: 20px;
-            line-height: 1.6;
+            line-height: 1.5;
         }
         .container {
             max-width: 800px;
