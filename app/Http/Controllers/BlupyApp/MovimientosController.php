@@ -53,7 +53,7 @@ class MovimientosController extends Controller
                     $date = Carbon::parse($val['evenFecha'], 'UTC')->setTimezone('America/Asuncion');
                     $results[] = [
                         'comercio' => 'Farma S.A.',
-                        'descripcion' => $val['ticoDescripcion'],
+                        'descripcion' => $val['ticoDescripcion']. ' - ' . $val['frpaDescripcion'],
                         'detalles' => $val['ticoCodigo'] . ' ' . $val['evenNumero'],
                         'fecha' => $date->format('Y-m-d'),
                         'hora' => $date->format('H:i:s'),
@@ -81,7 +81,7 @@ class MovimientosController extends Controller
                     
                     $results[] = [
                         'comercio' => $val['TcComNom'],
-                        'descripcion' => $val['MvDes'],
+                        'descripcion' => $val['MvDes']. ' - Blupy Digital' ,
                         'detalles' => $val['TcMovDes'],
                         'fecha' => $date->format('Y-m-d'),
                         'hora' => $horario->format('H:i:s'),
