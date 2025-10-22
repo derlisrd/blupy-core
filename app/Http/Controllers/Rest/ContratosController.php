@@ -44,7 +44,9 @@ class ContratosController extends Controller
         ->select('clientes.foto_ci_frente','clientes.cedula','clientes.selfie','clientes.nombre_primero',
         'clientes.apellido_primero','clientes.celular','s.tipo','s.estado','s.codigo','s.estado_id','s.created_at','clientes.id')
         ->first();
-
+        if(!$cliente){
+            return response()->json(['success'=>false,'message'=>'Not found', 'results'=>null],404);
+        }
         $adjuntos = Adjunto::where('cliente_id',$cliente->id)->get();
         $results = [
             'contratos'=>$res->results,
@@ -70,6 +72,9 @@ class ContratosController extends Controller
         ->join('solicitud_creditos as s','clientes.id','=','s.cliente_id')
         ->select('clientes.foto_ci_frente','clientes.cedula','clientes.id','clientes.selfie','clientes.nombre_primero',
         'clientes.apellido_primero','clientes.celular','s.tipo','s.estado','s.codigo','s.estado_id','s.created_at')->first();
+        if(!$cliente){
+            return response()->json(['success'=>false,'message'=>'Not found', 'results'=>null],404);
+        }
         $adjuntos = Adjunto::where('cliente_id',$cliente->id)->get();
         $results = [
             'contratos'=>$res->results,
