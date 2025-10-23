@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ReclamarDeudaMorososSmsJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -36,6 +37,7 @@ class MorososController extends Controller
             if (!$path) {
                 return response()->json(['success'=>false, 'message' => 'Error al guardar el archivo.'], 500);
             }
+            ReclamarDeudaMorososSmsJob::dispatch($path, $text)->onConnection('database');
         return response()->json([
             'success'=>true,
             'message'=>'Mensajes enviados en 2do plano'
