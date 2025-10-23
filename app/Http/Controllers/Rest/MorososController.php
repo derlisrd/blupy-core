@@ -22,11 +22,24 @@ class MorososController extends Controller
         $file = $req->file('csv_file');
         $text = $req->text;
         try {
-            $path = $file->store('morosos_temp', 'local');
+            // GENERACIÓN DEL NOMBRE DE ARCHIVO
+            // ----------------------------------------------------
+            $originalExtension = $file->getClientOriginalExtension();
+            // Creamos un nombre único basado en la fecha/tiempo actual y un ID único
+            $fileName = 'morosos_' . time() . '_' . uniqid() . '.' . $originalExtension;
+            
+            // 2. Almacenamiento del archivo usando storeAs()
+            // Argumentos: storeAs( [Ruta dentro del disco], [Nombre del archivo], [Nombre del disco] )
+            $path = $file->storeAs('morosos_temp', $fileName, 'local'); 
+            // ----------------------------------------------------
 
             if (!$path) {
-                return response()->json(['message' => 'Error al guardar el archivo.'], 500);
+                return response()->json(['success'=>false, 'message' => 'Error al guardar el archivo.'], 500);
             }
+        return response()->json([
+            'success'=>true,
+            'message'=>'Mensajes enviados en 2do plano'
+        ]);
         } catch (\Throwable $th) {
             throw $th;
         }
