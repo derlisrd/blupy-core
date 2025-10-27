@@ -14,7 +14,7 @@ class MorososController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'csv_file' => 'required|file|mimes:csv,txt|max:10240',
-            'text' => 'required|string|min:5|max:100'
+            'text' => 'required|string|min:5|max:120'
         ]);
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
