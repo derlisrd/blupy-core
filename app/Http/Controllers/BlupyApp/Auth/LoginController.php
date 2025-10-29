@@ -70,7 +70,7 @@ class LoginController extends Controller
             
 
             // 6. Verificar dispositivo de confianza (solo para rol 0)
-            if ($cliente->user->rol === 0) {
+            /* if ($cliente->user->rol === 0) {
                 $user = $cliente->user;
                 $dispositoDeConfianza = Device::where('user_id', $user->id)
                         ->where('desktop', $req->desktop)
@@ -79,8 +79,8 @@ class LoginController extends Controller
                         ->where('devicetoken', $req->devicetoken)
                         ->first();
                         if (!$dispositoDeConfianza) {
-                            //SupabaseService::LOG('newDevice', $req->cedula);
-                            $pistaEmail =  $user->email; //$this->ocultarParcialmenteEmail($user->email);
+                            $pistaEmail =  $user->email; 
+                            //$this->ocultarParcialmenteEmail($user->email);
                             $pistaDeNumero = $this->ocultarParcialmenteTelefono($cliente->celular);
                             $idValidacion = $this->enviarSMSyEmaildispositivoInusual($user->email, $cliente->celular, $cliente->id, $req);
                             return response()->json([
@@ -95,7 +95,7 @@ class LoginController extends Controller
                             'ip' => $req->ip()
                         ]);
                         $dispositoDeConfianza->touch();
-            }
+            } */
             $cliente->user->update([
                 'intentos' => 0,
                 'ultimo_ingreso' => now(),
