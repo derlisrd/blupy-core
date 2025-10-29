@@ -169,7 +169,7 @@ class InfinitaService
 
     public function ampliacionCredito($cliente,$solicitudDeLineaAmpliada,$numeroCuenta)
     {
-        $datosDeCliente = $this->datosCliente($cliente,174,null,$solicitudDeLineaAmpliada,null);
+        $datosDeCliente = $this->datosCliente($cliente,174,[],$solicitudDeLineaAmpliada,$numeroCuenta);
         return $this->post('IngresarSolicitud',$datosDeCliente);
     }
 
