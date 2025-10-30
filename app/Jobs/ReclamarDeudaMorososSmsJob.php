@@ -56,7 +56,7 @@ class ReclamarDeudaMorososSmsJob implements ShouldQueue
                     fclose($handle);
                 }
             })
-            ->chunk(1000) // Procesa 1000 cédulas a la vez
+            ->chunk(500) // Procesa 500 cédulas a la vez
             ->each(function (LazyCollection $chunk) use (&$numerosParaLote) { // ¡Uso de &!
                 
                 // 1. Obtener las cédulas del chunk actual
@@ -124,10 +124,7 @@ class ReclamarDeudaMorososSmsJob implements ShouldQueue
                     $enviados++;
                 } else {
                     $fallidos++;
-                    Log::warning("SMS fallido al número index {$index}", [
-                        'status' => $respuesta->status(),
-                        'body' => $respuesta->body()
-                    ]);
+                    SupabaseService::LOG("JOBS morosos sms","SMS fallido al número index {$index}");
                 }
             }
             
@@ -158,7 +155,7 @@ class ReclamarDeudaMorososSmsJob implements ShouldQueue
         
         // Si excedemos el límite con esta cantidad, esperamos
         if (($attempts + $cantidad) > $maxPerMinute) {
-            $waitSeconds = 60;
+            $waitSeconds = 10;
             Log::info("Rate limit alcanzado, esperando {$waitSeconds} segundos...");
             sleep($waitSeconds);
             Cache::put($key, $cantidad, 60);
