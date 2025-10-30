@@ -89,7 +89,7 @@ class RegisterController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             SupabaseService::LOG('Error Registro. Ci: '.$req->cedula . ' tel: '.$req->celular , $th->getMessage() );
-            return $this->errorResponse('Error interno del servidor', 500);
+            return $this->errorResponse('Error interno del servidor. BCR800', 500);
         }
     }
 
