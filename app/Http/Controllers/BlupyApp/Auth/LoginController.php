@@ -145,7 +145,7 @@ class LoginController extends Controller
     {
         if (!$user->active) {
             return $this->errorResponse(
-                'Cuenta inhabilitada. Contacte con soporte.',
+                'Cuenta inhabilitada o registro eliminado. Contacte con soporte.',
                 403
             );
         }
