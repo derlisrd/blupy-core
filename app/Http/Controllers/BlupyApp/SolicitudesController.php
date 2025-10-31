@@ -230,7 +230,7 @@ class SolicitudesController extends Controller
             $titulo = '¡Solicitud de crédito!';
             $message = 'Tu solicitud ha sido ingresada correctamente.';
             if ($solicitud->id == 5) {
-                $message = '¡Felicitaciones! Tu solicitud de crédito ha sido aprobada.';
+                $message = '¡Felicitaciones! Tu solicitud de crédito ha sido aprobada. Tienes hasta 30 dias para activarla.';
                 SolicitudAprobadaJob::dispatch($user->email, $cliente->celular)->onConnection('database');
                 Informacion::create([
                     'user_id' => $user->id,
