@@ -185,15 +185,8 @@ class NotificacionesController extends Controller
 
             $androidCount = count($androidDevices);
             $iosCount = count($iosDevices);
-            $totalCount = $androidCount + $iosCount;
 
-            SupabaseService::LOG('Notification', json_encode([
-                'evento' => 'Difusión selectiva enviada',
-                'title' => $req->title,
-                'android_count' => $androidCount,
-                'ios_count' => $iosCount,
-                'total' => $totalCount
-            ]));
+            SupabaseService::LOG('Notification selectiva', "android = $androidCount | ios = $iosCount ");
             return response()->json([
                 'success' => true,
                 'message' => 'Notificaciones enviadas en segundo plano',
@@ -208,7 +201,7 @@ class NotificacionesController extends Controller
             ]);
         } catch (\Throwable $th) {
 
-
+            SupabaseService::LOG("Error en notificacion selectiva", $th->getMessage() );
             return response()->json([
                 'success' => false,
                 'message' => 'Error al enviar notificaciones'
