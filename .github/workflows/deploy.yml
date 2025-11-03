@@ -47,3 +47,4 @@ jobs:
           cd /var/www/html/blupy-core/
           git pull origin main
           php artisan route:clear
+          pm2 restart blupy-core-queue-worker
