@@ -42,6 +42,6 @@ class JobsManualesController extends Controller
 
     public function updateClienteDigital(){
         UpdateClienteDigitalJob::dispatch()->onConnection('database');
-        return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar ventas']);
+        return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar perfiles de digital']);
     }
 }
