@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\SolicitudCredito;
 use App\Services\InfinitaService;
 use App\Services\SupabaseService;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -19,9 +20,7 @@ class UpdateSolicitudesJobs implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(){
-
-    }
+    public function __construct() {}
 
     /**
      * Execute the job.
@@ -29,25 +28,29 @@ class UpdateSolicitudesJobs implements ShouldQueue
     public function handle(): void
     {
 
-        SupabaseService::LOG('JOB','Job de solicitudes iniciadada');
-        $soli2 = SolicitudCredito::where('estado_id',5)->get();
-        $webserviceInfinita = new InfinitaService();
-        foreach ($soli2 as $key => $val) {
-            if($val['estado_id'] == 5){
-                $resultado = (object)$webserviceInfinita->ConsultaEstadoSolicitud($val['codigo']);
+        SupabaseService::LOG('JOB', 'Job de solicitudes iniciadada');
+        //created_at sea de una mes para atras
+        $fechaCorte = Carbon::now()->subDays(30);
+        SolicitudCredito::where('estado_id', 5)
+        ->where('created_at', '<', $fechaCorte) 
+        ->chunkById(50, function ($solicitudes) { // Procesa en lotes de 50
+            $webserviceInfinita = new InfinitaService();
 
-                if($resultado && property_exists($resultado, 'wDato')){
-                    if($resultado->wDato[0]['DatoDesc'] != 'Contrato Pendiente')
-                    {
-                    SolicitudCredito::where('id', $val['id'])
-                    ->update([
-                        'estado' => $resultado->wDato[0]['DatoDesc'],
-                        'estado_id'=> $resultado->wDato[0]['DatoId']
-                    ]);
-                    }
-
-                }
+            foreach ($solicitudes as $solicitud) {
+                // Llama a la API de Infinita
+                $webserviceInfinita->anularSolicitud($solicitud->codigo);
+                
+                // Actualiza el estado
+                $solicitud->update([
+                    'estado' => 'Anulada',
+                    'estado_id' => 13
+                ]);
             }
-        }
+            
+            // 😴 Pausa de 1 a 2 segundos entre cada lote para evitar la saturación de la API externa
+            sleep(1); 
+        });
+        
+    SupabaseService::LOG('JOB', 'Job de solicitudes finalizado');
     }
 }

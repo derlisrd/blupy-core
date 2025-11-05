@@ -96,6 +96,7 @@ Route::group(['middleware' => ['auth:admin']], function() {
         Route::post('/update-sucursales-farma',[JobsManualesController::class,'updateSucursalesFarma'])->name('rest_jobs_update_sucursales'); // << CORREGIDO
         Route::post('/update-ventas-farma',[JobsManualesController::class,'updateVentasFarma'])->name('rest_jobs_ventas'); // << CORREGIDO
         Route::post('/update-cliente-digital',[JobsManualesController::class,'updateClienteDigital'])->name('rest_jobs_digital'); // << CORREGIDO
+        Route::post('/update-solicitudes-pendientes',[JobsManualesController::class,'updateSolicitudesPendientes'])->name('rest_jobs_solicitudes_pendientes'); // << CORREGIDO
     });
 
 

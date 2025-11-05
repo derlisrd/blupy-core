@@ -157,9 +157,6 @@ Route::middleware('auth:api')->group(function(){
 
 
 
-Route::get('/check-env',function(){
-    return [
-        'APP_ENV' => env('APP_ENV'),
-        'TIGO_URL'=>env('TIGO_API_URL','not set'),
-    ];
+Route::get('/salud',function(){
+    return response()->json(['success'=>true,'message'=>'Salud optima']);
 })->name('api_check_env');

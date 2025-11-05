@@ -7,6 +7,7 @@ use App\Jobs\ActualizarSucursalesFarmaJobs;
 use App\Jobs\ProcesarVentasDelDiaFarmaJobs;
 use App\Jobs\UpdateClienteDigitalJob;
 use App\Jobs\UpdatePerfilJobs;
+use App\Jobs\UpdateSolicitudesJobs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -42,6 +43,10 @@ class JobsManualesController extends Controller
 
     public function updateClienteDigital(){
         UpdateClienteDigitalJob::dispatch()->onConnection('database');
+        return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar perfiles de digital']);
+    }
+    public function updateSolicitudesPendientes(){
+        UpdateSolicitudesJobs::dispatch()->onConnection('database');
         return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar perfiles de digital']);
     }
 }
