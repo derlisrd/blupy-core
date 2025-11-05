@@ -122,7 +122,7 @@ trait SolicitudesInfinitaTraits
         }
             $resultado = [
                 'success'=>true,
-                'codigo'=>$res->$res->SolId,
+                'codigo'=>$res->SolId,
                 'estado'=>trim($res->SolEstado),
                 'message'=>'Ingresado'
             ];
