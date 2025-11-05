@@ -128,7 +128,7 @@ trait SolicitudesInfinitaTraits
             ];
 
 
-        return (object) $resultado;
+        return $resultado;
     }
 
 

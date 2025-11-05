@@ -479,18 +479,19 @@ class SolicitudesController extends Controller
 
             $ingreso = preg_replace('#data:image/[^;]+;base64,#', '', $fotoIngreso);
             $ande = preg_replace('#data:image/[^;]+;base64,#', '', $fotoAnde);
-            app(InfinitaService::class)->enviarComprobantes($cliente->cedula, $ingreso, $ande);
+            $infinitaService = new InfinitaService();
+            $infinitaService->enviarComprobantes($cliente->cedula, $ingreso, $ande);
 
-            $ampliacion = (object) $this->ampliacionEnInfinita($datosAenviar, $lineaSolicitada, $nroCuenta);
+            $ampliacion = $this->ampliacionEnInfinita($datosAenviar, $lineaSolicitada, $nroCuenta);
 
-            if (!$ampliacion->success) {
+            if (!$ampliacion['success']) {
                 SupabaseService::LOG('core_ampliacion_178', $ampliacion);
-                return response()->json(['success' => false, 'message' => $ampliacion->message], 400);
+                return response()->json(['success' => false, 'message' => $ampliacion['message']], 400);
             }
             SolicitudCredito::create([
                 'cliente_id' => $cliente->id,
-                'codigo' => $ampliacion->codigo,
-                'estado' => $ampliacion->estado,
+                'codigo' => $ampliacion['codigo'],
+                'estado' => $ampliacion['estado'],
                 'estado_id' => 3,
                 'importe' => $lineaSolicitada,
                 'tipo' => 3
@@ -499,7 +500,7 @@ class SolicitudesController extends Controller
         } catch (\Throwable $th) {
             SupabaseService::LOG('core_ampliacion_194', $th->getMessage());
 
-            return response()->json(['success' => false, 'message' => 'Error de servidor. Contacto con atención al cliente'], 500);
+            return response()->json(['success' => false, 'message' => 'Error de servidor. Contacte con atención al cliente'], 500);
         }
     }
 
