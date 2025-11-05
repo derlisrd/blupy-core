@@ -47,6 +47,6 @@ class JobsManualesController extends Controller
     }
     public function updateSolicitudesPendientes(){
         UpdateSolicitudesJobs::dispatch()->onConnection('database');
-        return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar perfiles de digital']);
+        return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar solicitudes pendientes de digital']);
     }
 }
