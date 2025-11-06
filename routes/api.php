@@ -81,7 +81,9 @@ Route::post('/re-enviar-codigo-wa', [ValidacionesController::class, 'reEnviarCod
 
 Route::get('/verificar-version',[VersionController::class,'verificarVersion'])->name('api_verificar_version');
 
-
+/*
+ =========RUTAS PROTEGIDAS ==================
+ */
 Route::middleware('auth:api')->group(function(){
 
     Route::get('/info',[InformacionesController::class,'infoPopUpInicial'])->name('api_info');

@@ -113,13 +113,14 @@ trait SolicitudesInfinitaTraits
         $infinitaService = new InfinitaService();
         $infinita = $infinitaService->ampliacionCredito($datosDeCliente,$lineaSolicitada,$numeroCuenta);
         $res = (object) $infinita['data'];
-        $resultado = ['success'=>false];
+        $resultado = ['success'=>false,'codigo'=>null,'estado'=>'No ingresado','message'=>'Error 89'];
         SupabaseService::LOG('core_infinita_ampliacion_86',$res);
         if($res->CliId == "0"){
             SupabaseService::LOG('core_infinita_ampliacion_88',$res);
             $message = property_exists($res,'Messages') ? $res->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';
             return ['success' => false,'message' => $message];
         }
+            
             $resultado = [
                 'success'=>true,
                 'codigo'=>$res->SolId,

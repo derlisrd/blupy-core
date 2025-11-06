@@ -482,16 +482,19 @@ class SolicitudesController extends Controller
             $infinitaService = new InfinitaService();
             $infinitaService->enviarComprobantes($cliente->cedula, $ingreso, $ande);
 
-            $ampliacion = $this->ampliacionEnInfinita($datosAenviar, $lineaSolicitada, $nroCuenta);
-
-            if (!$ampliacion['success']) {
-                SupabaseService::LOG('core_ampliacion_178', $ampliacion);
-                return response()->json(['success' => false, 'message' => $ampliacion['message']], 400);
+            //$ampliacion = $this->ampliacionEnInfinita($datosAenviar, $lineaSolicitada, $nroCuenta);
+            $ampliacionRes = $infinitaService->ampliacionCredito($datosAenviar,$lineaSolicitada,$nroCuenta);
+            $resData = (object) $ampliacionRes['data'];
+            if($resData->CliId == "0"){
+                SupabaseService::LOG('core_infinita_ampliacion_88',$resData);
+                $message = property_exists($resData,'Messages') ? $resData->Messages[0]['Description'] : 'Error de servidor. ERROR_CLI';
+                return response()->json(['success' => false,'message' => $message],400);
             }
+
             SolicitudCredito::create([
                 'cliente_id' => $cliente->id,
-                'codigo' => $ampliacion['codigo'],
-                'estado' => $ampliacion['estado'],
+                'codigo'=>$resData->SolId,
+                'estado'=>trim($resData->SolEstado),
                 'estado_id' => 3,
                 'importe' => $lineaSolicitada,
                 'tipo' => 3
