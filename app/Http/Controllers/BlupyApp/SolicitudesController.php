@@ -491,19 +491,20 @@ class SolicitudesController extends Controller
                 return response()->json(['success' => false,'message' => $message],400);
             }
 
+
             SolicitudCredito::create([
                 'cliente_id' => $cliente->id,
-                'codigo'=>$resData->SolId,
+                'codigo'=>$resData->SolId ?? 0,
                 'estado'=>trim($resData->SolEstado),
                 'estado_id' => 3,
                 'importe' => $lineaSolicitada,
                 'tipo' => 3
-            ]);
+            ]); 
             return response()->json(['success' => true, 'message' => 'La ampliación de la línea ha ingresado con éxito.']);
         } catch (\Throwable $th) {
             SupabaseService::LOG('core_ampliacion_194', $th->getMessage());
 
-            return response()->json(['success' => false, 'message' => 'Error de servidor. Contacte con atención al cliente'], 500);
+            return response()->json(['success' => false, 'message' => 'Error de servidor. Contacte con atención al cliente. E194'], 500);
         }
     }
 
