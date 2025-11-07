@@ -17,7 +17,8 @@ class ClienteController extends Controller
 
         $cliente = $user->cliente;
         $fotoEnBase64 = $req->fotoSelfie;
-        $infinitaService->enviarSelfie($cliente->cedula, $fotoEnBase64);
+        $fotoRecibida = preg_replace('#data:image/[^;]+;base64,#', '', $fotoEnBase64);
+        $infinitaService->enviarSelfie($cliente->cedula, $fotoRecibida);
 
         return response()->json(['success'=>true,'message'=>'Ingresado correctamente']);
     }
@@ -27,7 +28,8 @@ class ClienteController extends Controller
 
         $cliente = $user->cliente;
         $fotoEnBase64 = $req->fotoFrente;
-        $infinitaService->enviarFoto($cliente->cedula,'Cedula frente', 'Cedula Frente', $fotoEnBase64);
+        $fotoRecibida = preg_replace('#data:image/[^;]+;base64,#', '', $fotoEnBase64);
+        $infinitaService->enviarFoto($cliente->cedula,'Cedula frente', 'Cedula Frente', $fotoRecibida);
 
         return response()->json(['success'=>true,'message'=>'Ingresado correctamente']);
     }
@@ -37,7 +39,8 @@ class ClienteController extends Controller
 
         $cliente = $user->cliente;
         $fotoEnBase64 = $req->fotoDorso;
-        $infinitaService->enviarFoto($cliente->cedula,'Cedula dorso', 'Cedula dorso', $fotoEnBase64);
+        $fotoRecibida = preg_replace('#data:image/[^;]+;base64,#', '', $fotoEnBase64);
+        $infinitaService->enviarFoto($cliente->cedula,'Cedula dorso', 'Cedula dorso', $fotoRecibida);
 
         return response()->json(['success'=>true,'message'=>'Ingresado correctamente']);
     }
