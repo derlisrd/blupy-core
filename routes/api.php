@@ -142,6 +142,13 @@ Route::middleware('auth:api')->group(function(){
     });
 
 
+    Route::prefix('/clientes')->group(function(){
+        Route::post('/actualizar-selfie-cedula',[ClienteController::class,'actualizarSelfieCedula']);
+        Route::post('/actualizar-cedula-frente',[ClienteController::class,'actualizarCedulaFrente']);
+        Route::post('/actualizar-cedula-dorso',[ClienteController::class,'actualizarCedulaDorso']);
+    });
+
+
 
     Route::get('/sucursales-cercanas',[FarmaController::class,'sucursalesCercanas'])->name('api_sucursales_cercanas');
 

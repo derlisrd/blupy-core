@@ -10,6 +10,39 @@ use Illuminate\Http\Request;
 
 class ClienteController extends Controller
 {
+
+    public function actualizarSelfieCedula(Request $req){
+        $user = $req->user();
+        $infinitaService = new InfinitaService();
+
+        $cliente = $user->cliente;
+        $fotoEnBase64 = $req->fotoSelfie;
+        $infinitaService->enviarSelfie($cliente->cedula, $fotoEnBase64);
+
+        return response()->json(['success'=>true,'message'=>'Ingresado correctamente']);
+    }
+    public function actualizarCedulaFrente(Request $req){
+        $user = $req->user();
+        $infinitaService = new InfinitaService();
+
+        $cliente = $user->cliente;
+        $fotoEnBase64 = $req->fotoFrente;
+        $infinitaService->enviarFoto($cliente->cedula,'Cedula frente', 'Cedula Frente', $fotoEnBase64);
+
+        return response()->json(['success'=>true,'message'=>'Ingresado correctamente']);
+    }
+    public function actualizarCedulaDorso(Request $req){
+        $user = $req->user();
+        $infinitaService = new InfinitaService();
+
+        $cliente = $user->cliente;
+        $fotoEnBase64 = $req->fotoDorso;
+        $infinitaService->enviarFoto($cliente->cedula,'Cedula dorso', 'Cedula dorso', $fotoEnBase64);
+
+        return response()->json(['success'=>true,'message'=>'Ingresado correctamente']);
+    }
+
+
     public function misDescuentos(Request $req){
         $user = $req->user();
 

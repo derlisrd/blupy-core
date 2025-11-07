@@ -131,6 +131,23 @@ class InfinitaService
         ];
         return $this->post('IngresarAdj',$data);
     }
+
+    public function enviarFoto($cedula, $titulo, $detalle, $fotoEnBase64)
+    {
+        $data = (object)[
+            "CliAdj" => (object)[
+                "CliDocu" => $cedula,
+                "adjunto" => array(
+                    (object)[
+                        "titulo" => $titulo,
+                        "detalle" => $detalle,
+                        "imagen" => $fotoEnBase64
+                    ]
+                )
+            ]
+        ];
+        return $this->post('IngresarAdj',$data);
+    }
     public function enviarFotoCedula($cedula, $fotoFrontEnBase64, $fotoBackEnBase64)
     {
         $data = (object)[
