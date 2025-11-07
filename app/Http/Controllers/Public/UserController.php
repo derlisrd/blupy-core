@@ -58,9 +58,9 @@ class UserController extends Controller
             if($req->forma == 1){
                 $forma = $this->ocultarParcialmenteTelefono($user->cliente->celular);
                 $this->enviarMensajeDeTextoRecuperacion($user->cliente->celular,$randomNumber);
-                $mensaje = "Blupy te ha enviado el código *".$randomNumber."* para restablecer tu contraseña";
-                $numeroTelefonoWa = '595' . substr($user->cliente->celular, 1);
-                (new WaService())->send($numeroTelefonoWa, $mensaje);
+                //$mensaje = "Blupy te ha enviado el código ".$randomNumber." para restablecer tu contraseña";
+                //$numeroTelefonoWa = '595' . substr($user->cliente->celular, 1);
+                //(new WaService())->send($numeroTelefonoWa, $mensaje);
                 $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$cliente->celular,'cliente_id'=>$cliente->id,'origen'=>'rec. por celular']);
             }
 
