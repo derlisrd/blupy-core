@@ -3,15 +3,26 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cliente;
 use App\Models\Venta;
 use App\Services\InfinitaService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ClienteController extends Controller
 {
 
     public function actualizarSelfieCedula(Request $req){
+        $validator = Validator::make($req->all(), [
+            'fotoSelfie' => 'required|string', // Se requiere y debe ser una cadena (Base64)
+            // Agrega aquí otras validaciones si son necesarias, por ejemplo, para 'cedula' si viniera en el request
+        ], [
+            'fotoSelfie.required' => 'La foto selfie es obligatorio.',
+            'fotoSelfie.string' => 'El formato de la foto selfie es inválido.'
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
         $user = $req->user();
         $infinitaService = new InfinitaService();
 
@@ -22,7 +33,20 @@ class ClienteController extends Controller
 
         return response()->json(['success'=>true,'message'=>'Ingresado correctamente']);
     }
+
+
     public function actualizarCedulaFrente(Request $req){
+        $validator = Validator::make($req->all(), [
+            'fotoFrente' => 'required|string', // Se requiere y debe ser una cadena (Base64)
+            // Agrega aquí otras validaciones si son necesarias, por ejemplo, para 'cedula' si viniera en el request
+        ], [
+            'fotoFrente.required' => 'La foto de la cedula es obligatoria.',
+            'fotoFrente.string' => 'El formato de la foto selfie es inválido.'
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
         $user = $req->user();
         $infinitaService = new InfinitaService();
 
@@ -33,7 +57,20 @@ class ClienteController extends Controller
 
         return response()->json(['success'=>true,'message'=>'Ingresado correctamente']);
     }
+
+
+
     public function actualizarCedulaDorso(Request $req){
+        $validator = Validator::make($req->all(), [
+            'fotoDorso' => 'required|string', // Se requiere y debe ser una cadena (Base64)
+            // Agrega aquí otras validaciones si son necesarias, por ejemplo, para 'cedula' si viniera en el request
+        ], [
+            'fotoDorso.required' => 'La foto de la cedula es obligatoria.',
+            'fotoDorso.string' => 'El formato de la foto selfie es inválido.'
+        ]);
+
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
         $user = $req->user();
         $infinitaService = new InfinitaService();
 
@@ -44,6 +81,7 @@ class ClienteController extends Controller
 
         return response()->json(['success'=>true,'message'=>'Ingresado correctamente']);
     }
+
 
 
     public function misDescuentos(Request $req){
