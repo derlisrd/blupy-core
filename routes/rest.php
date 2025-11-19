@@ -114,6 +114,7 @@ Route::group(['middleware' => ['auth:admin']], function() {
     // CONTRATOS
     Route::prefix('contrato')->group(function(){
         // Corregido: Duplicación de nombre en /cedula y /codigo. Se renombra /cedula.
+        Route::get('/impresos-en-farma',[ContratosController::class,'contratosImpresosEnFarma'])->name('rest_contratos_impresos');
         Route::get('/cedula',[ContratosController::class,'contratoPorDocumento'])->name('rest_contratos_por_cedula');
         Route::get('/codigo',[ContratosController::class,'contratoPorCodigo'])->name('rest_contratos_por_codigo');
         Route::post('/recibir',[ContratosController::class,'recibirContrato'])->middleware('permiso.admin:contratos,recibir')->name('rest_contratos_recibir'); // << AÑADIDO

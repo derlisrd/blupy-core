@@ -21,6 +21,9 @@ class FarmaService
         ];
     }
 
+    public function contratosImpresos(){
+        return $this->get('micredito-contratos/contratos-impresos',[]);
+    }
     public function esAlianzaOFuncionario(String $documento){
         return $this->get('cliente/alianza-funcionario/',['documento' => $documento]);
     }

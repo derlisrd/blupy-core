@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Rest;
 use App\Http\Controllers\Controller;
 use App\Models\Adjunto;
 use App\Models\Cliente;
+use App\Services\FarmaService;
 use App\Traits\ContratosBlupyFarmaTraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -12,6 +13,19 @@ use Illuminate\Support\Facades\Validator;
 class ContratosController extends Controller
 {
     use ContratosBlupyFarmaTraits;
+
+
+    public function contratosImpresosEnFarma(){
+        $farmaService = new FarmaService();
+        $farmaRes = $farmaService->contratosImpresos();
+        $farmaData = $farmaRes['data'];
+
+        if($farmaData && $farmaData['result']){
+            return response()->json(['success'=>true,'results'=>$farmaData['result']]);
+        }
+        return response()->json(['success'=>false,'message'=>'No existen contratos']);
+    }
+
 
     public function recibirContrato(Request $req)
     {
