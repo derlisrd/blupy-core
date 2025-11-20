@@ -27,6 +27,19 @@ class ContratosController extends Controller
     }
 
 
+    public function firmadoContrato(Request $req)
+    {
+        $validator = Validator::make($req->all(),['codigo'=>'required']);
+        if($validator->fails())
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
+        $codigoDeContrato = $req->codigo;
+
+        $res = $this->firmadoContratoPorCodigo($codigoDeContrato);
+        if(!$res['results'])
+            return response()->json(['success' => false, 'message' => 'No se encontraron contratos para el codigo ingresado'], 404);
+
+        return response()->json(['success'=>true,'results'=>$res['results']],$res['status']);
+    }
     public function recibirContrato(Request $req)
     {
         $validator = Validator::make($req->all(),['codigo'=>'required']);
@@ -35,10 +48,10 @@ class ContratosController extends Controller
         $codigoDeContrato = $req->codigo;
 
         $res = $this->recibirContratoPorCodigo($codigoDeContrato);
-        if(!$res->success)
+        if(!$res['results'])
             return response()->json(['success' => false, 'message' => 'No se encontraron contratos para el codigo ingresado'], 404);
 
-        return response()->json(['success'=>true,'results'=>$res->results],$res->status);
+        return response()->json(['success'=>true,'results'=>$res['results']],$res['status']);
     }
 
     public function contratoPorDocumento(Request $req){

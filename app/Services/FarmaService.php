@@ -49,6 +49,9 @@ class FarmaService
         return $this->get('info/sucursal',['punto' => $punto]);
     }
 
+    public function MiCreditoContratosFirmado(String $codigoDeContrato){
+        return $this->post('micredito-contratos/firmado',['codigo' => $codigoDeContrato]);
+    }
     public function MiCreditoContratosRecibir(String $codigoDeContrato){
         return $this->post('micredito-contratos/recibir',['codigo' => $codigoDeContrato]);
     }
