@@ -34,7 +34,7 @@ trait ContratosBlupyFarmaTraits
         $results = null;
         $status = 400;
 
-        if($data->ok){
+        if($data['ok']){
             $success = true;
             $results = $data['result'];
             $status = 200;
