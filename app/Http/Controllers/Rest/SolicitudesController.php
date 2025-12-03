@@ -98,8 +98,8 @@ class SolicitudesController extends Controller
                 foreach($tokens as $token){
                     PushNativeJobs::dispatch($titulo, $message, [$token['devicetoken']], $token['os'])->onConnection('database');
                 }
-                $farma = new FarmaService();
-                $farma->MiCreditoContratosFirmado($codigo);
+                /* $farma = new FarmaService();
+                $farma->MiCreditoContratosFirmado($codigo); */
                 //$numeroTelefonoWa = '595' . substr($user->cliente->celular, 1);
                 //(new WaService())->send($numeroTelefonoWa, "¡Buenas noticias! 🎉 Tu línea de crédito ha sido activada. ¡Aprovecha ahora un 30% de descuento en tu primera compra en las sucursales de Punto Farma! ¡Te esperamos! 😊");
                 Cliente::where('id', $solicitud->cliente_id)->update(['digital' => 1]);
