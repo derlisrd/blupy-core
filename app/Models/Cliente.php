@@ -59,6 +59,7 @@ class Cliente extends Model
         'empresa_email',
         'asofarma',
         'digital',
+        'aceptado',
         'funcionario',
         'extranjero',
         'solicitud_credito',

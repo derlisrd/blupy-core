@@ -22,6 +22,7 @@ use App\Jobs\PushNativeJobs;
 use App\Jobs\SolicitudAprobadaJob;
 use App\Models\Adjunto;
 use App\Models\Device;
+use App\Models\TerminosAceptados;
 use App\Services\InfinitaService;
 
 class SolicitudesController extends Controller
@@ -241,6 +242,16 @@ class SolicitudesController extends Controller
                     'active' => 1,
                     'leido' => 0,
                     'general' => 0,
+                ]);
+                TerminosAceptados::create([
+                    'cliente_id' => $cliente->id,
+                    'cedula' => $cliente->cedula,
+                    'telefono' => $req->telefono ?? null,
+                    'termino_tipo' => 'Datos personales crediticios',
+                    'version' => 'v1.0',
+                    'enlace' => 'https://core.blupy.com.py/datos-crediticios',
+                    'aceptado' => true,
+                    'aceptado_fecha' => now()
                 ]);
                 PushNativeJobs::dispatch($titulo, $message, [$req->devicetoken], $req->os)->onConnection('database');
             }

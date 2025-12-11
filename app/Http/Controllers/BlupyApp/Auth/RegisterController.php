@@ -7,6 +7,7 @@ use App\Models\Adicional;
 use App\Models\Adjunto;
 use App\Models\Cliente;
 use App\Models\Device;
+use App\Models\TerminosAceptados;
 use App\Models\User;
 use App\Services\FarmaService;
 use App\Services\SupabaseService;
@@ -15,7 +16,6 @@ use App\Traits\RegisterTraits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 
@@ -37,9 +37,9 @@ class RegisterController extends Controller
             $ip = $req->ip();
             $rateKey = "login:$ip";
 
-            if (RateLimiter::tooManyAttempts($rateKey, 5)) 
+            if (RateLimiter::tooManyAttempts($rateKey, 5))
                 return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
-            
+
             RateLimiter::hit($rateKey, 60);
 
             /// aqui debe subir imagenes en 2do plano para no bloquear todo
@@ -53,7 +53,7 @@ class RegisterController extends Controller
             foreach ($imageFields as $key => $value) {
                 //string $imagenBase64, string $imageName, string $path
                 //SubirImages2doPlanoJob::dispatch($req->$key, ($req->cedula . '_' . $value), 'clientes')->onConnection('database');
-                $this->subirBase64ToWebp($req->$key,($req->cedula . '_' . $value),'clientes');
+                $this->subirBase64ToWebp($req->$key, ($req->cedula . '_' . $value), 'clientes');
                 //formato '.webp'
                 $imagesData[$value] = $req->cedula . '_' . $value . '.webp';
             }
@@ -69,7 +69,7 @@ class RegisterController extends Controller
 
             if (!$registroResult['success']) {
                 DB::rollBack();
-                return $this->errorResponse($registroResult['message'], 500);
+                return response()->json(['success' => false, 'message' => $registroResult['message']], 500);
             }
 
             DB::commit();
@@ -77,19 +77,17 @@ class RegisterController extends Controller
             // 6. Procesos post-registro (async si es posible)
             $this->enviarFotosAInfinita($req, $registroResult['cliente']);
 
-            return $this->successResponse(
-                'Usuario registrado correctamente',
-                $this->userInformacion(
-                    $registroResult['cliente'],
-                    $registroResult['token'],
-                    $userInfoDatosFarma['esAdicional']
-                ),
-                201
-            );
+            $results = $this->userInformacion($registroResult['cliente'], $registroResult['token'], $userInfoDatosFarma['esAdicional']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario registrado correctamente',
+                'results' => $results
+            ], 201);
         } catch (\Throwable $th) {
             DB::rollBack();
-            SupabaseService::LOG('Error Registro. Ci: '.$req->cedula . ' tel: '.$req->celular , $th->getMessage() );
-            return $this->errorResponse('Error interno del servidor. BCR800', 500);
+            SupabaseService::LOG('Error Registro. Ci: ' . $req->cedula . ' tel: ' . $req->celular, $th->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error interno del servidor. BCR800'], 500);
         }
     }
 
@@ -167,12 +165,41 @@ class RegisterController extends Controller
             unset($clienteData['email']); // Email va en la tabla users
 
             $cliente = Cliente::create($clienteData);
-            $user = $this->createUserRecord($req, $cliente->id);
-            $this->createDeviceRecord($req, $user->id);
+            $telefono = $req->device . $req->model;
+            TerminosAceptados::create([
+                'cliente_id' => $cliente->id,
+                'cedula' => $req->cedula,
+                'telefono' => $telefono ?? null,
+                'termino_tipo' => 'Terminos y Condiciones del usuario',
+                'version' => 'v1.0',
+                'enlace' => 'https://core.blupy.com.py/terminos',
+                'aceptado' => true,
+                'aceptado_fecha' => now()
+            ]);
+
+            $user = User::create([
+                'cliente_id' => $cliente->id,
+                'name' => trim($req->nombres . ' ' . $req->apellidos),
+                'email' => $req->email,
+                'password' => Hash::make($req->password),
+                'vendedor_id' => $req->vendedor_id ?? null,
+                'email_verified_at' => now(),
+            ]);
+            // registrar dispositivo
+            Device::create([
+                'user_id' => $user->id,
+                'notitoken' => $req->notitoken ?? null,
+                'os' => $req->os ?? null,
+                'devicetoken' => $req->devicetoken ?? null,
+                'version' => $req->version ?? null,
+                'device' => $req->device ?? null,
+                'model' => $req->model ?? null,
+                'ip' => $req->ip(),
+                'web' => $req->web ?? false,
+                'desktop' => $req->desktop ?? false
+            ]);
             $this->crearAdjuntos($cliente->id, $images);
-
             $token = JWTAuth::fromUser($user);
-
             return [
                 'success' => true,
                 'cliente' => $cliente,
@@ -187,42 +214,6 @@ class RegisterController extends Controller
         }
     }
 
-
-    private function createClienteRecord(array $clienteData, int $cliId): Cliente
-    {
-        $clienteData['cliid'] = $cliId;
-        unset($clienteData['email']); // Email va en la tabla users
-
-        return Cliente::create($clienteData);
-    }
-
-    private function createUserRecord(Request $req, int $clienteId): User
-    {
-        return User::create([
-            'cliente_id' => $clienteId,
-            'name' => trim($req->nombres . ' ' . $req->apellidos),
-            'email' => $req->email,
-            'password' => Hash::make($req->password),
-            'vendedor_id' => $req->vendedor_id ?? null,
-            'email_verified_at' => null, // Considerar verificación por email
-        ]);
-    }
-
-    private function createDeviceRecord(Request $req, int $userId): void
-    {
-        Device::create([
-            'user_id' => $userId,
-            'notitoken' => $req->notitoken ?? null,
-            'os' => $req->os ?? null,
-            'devicetoken' => $req->devicetoken ?? null,
-            'version' => $req->version ?? null,
-            'device' => $req->device ?? null,
-            'model' => $req->model ?? null,
-            'ip' => $req->ip(),
-            'web' => $req->web ?? false,
-            'desktop' => $req->desktop ?? false
-        ]);
-    }
 
     private function crearAdjuntos(int $clienteId, array $images): void
     {
@@ -264,22 +255,6 @@ class RegisterController extends Controller
 
 
 
-    private function errorResponse(string $message, int $code)
-    {
-        return response()->json([
-            'success' => false,
-            'message' => $message
-        ], $code);
-    }
-
-    private function successResponse(string $message, $data = null, int $code = 200)
-    {
-        return response()->json([
-            'success' => true,
-            'message' => $message,
-            'results' => $data
-        ], $code);
-    }
 
     private function userInformacion($cliente, string $token, bool $esAdicional)
     {
