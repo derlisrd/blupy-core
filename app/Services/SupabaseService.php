@@ -16,7 +16,7 @@ class SupabaseService
                 'apikey' => env('SUPABASE_API_KEY'),
                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
                 'Content-Type' => 'application/json',
-            ])->post(env('SUPABASE_URL') . '/rest/v1/logs', [
+            ])->post(env('SUPABASE_URL') . '/rest/v1/sesiones', [
                 'cedula' => $cedula,
                 'telefono' => $telefono
             ]);
