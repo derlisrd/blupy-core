@@ -104,7 +104,7 @@ class LoginController extends Controller
     
             // Verificar si es adicional
             $esAdicional = Adicional::where('cedula', $req->cedula)->exists();
-    
+            SupabaseService::registrarSesion($req->cedula,$req->device . ' | ' . $req->ip());
             return response()->json([
                 'success' => true,
                 'message' => 'Ingreso exitoso',

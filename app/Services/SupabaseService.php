@@ -3,20 +3,28 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+
 
 class SupabaseService
 {
-    private string $url;
-    private string $apiKey;
 
-    public function __construct()
+
+    public static function registrarSesion($cedula,$telefono)
     {
-        $this->url = env('SUPABASE_URL');
-        $this->apiKey = env('SUPABASE_API_KEY');
+        try {
+            Http::withHeaders([
+                'apikey' => env('SUPABASE_API_KEY'),
+                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                'Content-Type' => 'application/json',
+            ])->post(env('SUPABASE_URL') . '/rest/v1/logs', [
+                'cedula' => $cedula,
+                'telefono' => $telefono
+            ]);
+            return true;
+        } catch (\Throwable $th) {
+            return false;
+        }
     }
-
     public static function LOG($origen, $detalles)
     {
         try {
