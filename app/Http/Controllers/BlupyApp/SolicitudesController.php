@@ -250,7 +250,7 @@ class SolicitudesController extends Controller
                     'termino_tipo' => 'Datos personales crediticios',
                     'version' => 'v1.0',
                     'enlace' => 'https://core.blupy.com.py/datos-crediticios',
-                    'aceptado' => true,
+                    'aceptado' => 1,
                     'aceptado_fecha' => now()
                 ]);
                 PushNativeJobs::dispatch($titulo, $message, [$req->devicetoken], $req->os)->onConnection('database');

@@ -173,7 +173,7 @@ class RegisterController extends Controller
                 'termino_tipo' => 'Terminos y Condiciones del usuario',
                 'version' => 'v1.0',
                 'enlace' => 'https://core.blupy.com.py/terminos',
-                'aceptado' => true,
+                'aceptado' => 1,
                 'aceptado_fecha' => now()
             ]);
 

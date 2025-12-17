@@ -37,6 +37,7 @@ Route::post('/codigo-nuevo-dispositivo',[DeviceController::class,'codigoNuevoDis
 Route::post('/register',[AuthController::class,'register'])->name('api_register');
 
 Route::post('/olvide-contrasena',[UserPublic::class,'olvideContrasena'])->name('api_olvide_contrasena');
+Route::post('/reenviar-codigo-recuperacion-wa',[UserPublic::class,'reenviarCodigoRecuperacionWa'])->name('api_reenviar_codigo_recuperacion_wa');
 Route::post('/validar-codigo-recuperacion',[UserPublic::class,'validarCodigoRecuperacion'])->name('api_validar_codigo_recuperacion');
 Route::post('/restablecer-contrasena',[UserPublic::class,'restablecerContrasena'])->name('api_restablecer_contrasena');
 

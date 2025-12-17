@@ -80,7 +80,34 @@ class UserController extends Controller
         }
     }
 
+    public function reenviarCodigoRecuperacionWa(Request $req){
+        $validator = Validator::make($req->all(),['id'=>'required'],['id.required'=>'El id de la validación es obligatorio.']);
+        if($validator->fails())
+            return response()->json(['success'=>false,'message'=>$validator->errors()->first() ], 400);
 
+        $ip = $req->ip();
+        $executed = RateLimiter::attempt($ip,5,function() {});
+        if (!$executed)
+            return response()->json(['success'=>false, 'message'=>'Demasiadas peticiones. Espere 1 minuto.' ],500);
+        $validacion = Validacion::find($req->id);
+
+        $currentTime = Carbon::now();
+        $tokenTime = Carbon::parse($validacion->created_at);
+
+        if ($currentTime->diffInMinutes($tokenTime) > 15){
+            return response()->json(['success'=>false,'message' => 'El código de verificación ha expirado.'], 400);
+        }
+
+        $mensaje = "Tu código de recuperación de Blupy es _" . $validacion->codigo . "_  Este código es válido por 10 minutos.";
+            $numeroTelefonoWa = '595' . substr($validacion->celular, 1);
+            (new WaService())->send($numeroTelefonoWa, $mensaje);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Codigo enviado. Verifique su buzon de mensajes',
+            ]);
+
+    }
 
 
     public function validarCodigoRecuperacion(Request $req){
