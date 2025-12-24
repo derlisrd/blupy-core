@@ -105,8 +105,9 @@ class LoginController extends Controller
             $telefono = $req->device ?? 'Telefono Desconocido. '; ;
             $model = $req->model ?? 'Modelo Desconocido. ';
             $web = $req->web ? 'web' : 'Dispositivo movil';
-            $deviceInfo = $telefono . ' | ' . $model . ' | ' . $web;
-            SupabaseService::registrarSesion($req->cedula,$deviceInfo . ' | ' . $req->ip());
+            $version = $req->version ?? 'sin version';
+            $deviceInfo = $version .' | ' . $telefono . ' | ' . $model . ' | ' . $web;
+            SupabaseService::registrarSesion($req->cedula,$deviceInfo .' | ' . $req->ip());
             return response()->json([
                 'success' => true,
                 'message' => 'Ingreso exitoso',
