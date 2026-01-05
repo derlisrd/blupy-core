@@ -43,6 +43,11 @@ class CuentasController extends Controller
 
             $tarjetasInfinita = $infinitaCardData['Tarjetas'];
             foreach($tarjetasInfinita as $tarjeta){
+                $linea = (int)$tarjeta['MTLinea'];
+                $deuda = (int)$tarjeta['MTSaldo'];
+                $disponible2 = $linea - $deuda;
+                $disponible = $disponible2 < 0 ? 0 : $disponible2;
+                
                 $tarjetasResults[] = [
                 'id' => 2,
                 'descripcion' => 'Blupy Digital',
@@ -59,8 +64,8 @@ class CuentasController extends Controller
                 'numeroTarjeta' => $tarjeta['MTNume'],
                 'linea' => (int)$tarjeta['MTLinea'],
                 'pagoMinimo' => (int)$tarjeta['MCPagMin'],
-                'deuda' => (int)$tarjeta['MTSaldo'],
-                'disponible' => (int)$tarjeta['MTLinea'] - (int)$tarjeta['MTSaldo'],
+                'deuda' => $deuda,
+                'disponible' => $disponible,
                 'alianzas' => null,
                 ];
             }
@@ -83,6 +88,9 @@ class CuentasController extends Controller
                     $linea = $linea + $tarjetasFarma['clerLimiteCreditoAdic'];
                 } 
                 $deuda = $tarjetasFarma['deuda'];
+                
+                $disponible2 = $linea - $deuda;
+                $disponible = $disponible2 < 0 ? 0 : $disponible2;
 
                 $tarjetasResults[] = [
                 'id' => 1,
@@ -101,7 +109,7 @@ class CuentasController extends Controller
                 'linea' => $linea,
                 'pagoMinimo' => 0,
                 'deuda' => $deuda,
-                'disponible' => $linea - $deuda,
+                'disponible' => $disponible,
                 'alianzas' => $alianza,
                 ];
             }
