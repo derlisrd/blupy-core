@@ -335,6 +335,7 @@ class RegisterController extends Controller
             // Retornar solo el nombre del archivo (o la ruta relativa)
             return $filename;
         } catch (\Throwable $th) {
+            SupabaseService::LOG('Error al subir imagen base64 a WebP: ' . $imageName, $th->getMessage());
             throw $th;
             //return null;
         }
