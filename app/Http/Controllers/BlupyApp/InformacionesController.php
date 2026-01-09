@@ -29,7 +29,7 @@ class InformacionesController extends Controller
                 'user' =>$user->info(),
                 'digital'=>$digital,
                 'aso'=>null,
-                'aceptar_contrato'=>$aceptado
+                'aceptado'=>$aceptado
             ]
         ]);
     }
