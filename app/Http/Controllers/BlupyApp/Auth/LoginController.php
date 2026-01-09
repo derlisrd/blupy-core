@@ -213,6 +213,7 @@ class LoginController extends Controller
     private function userInformacion($cliente, string $token, bool $esAdicional)
     {
         return [
+            'aceptado'=>$cliente->aceptado,
             'adicional' => $esAdicional,
             'cliid' => $cliente->cliid,
             'name' => $cliente->user->name,
