@@ -187,11 +187,11 @@ class SolicitudesController extends Controller
             ];
             
             
-            return response()->json([
+            /* return response()->json([
                 'success' => true,
                 'results' => null,
                 'message' => 'Funcionalidad en mantenimiento.'
-            ],500);
+            ],500); */
 
             $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
             if (!$solicitud->success)

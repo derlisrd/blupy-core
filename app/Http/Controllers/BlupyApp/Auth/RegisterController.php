@@ -151,6 +151,7 @@ class RegisterController extends Controller
                 'direccion_completado' => $additionalData['direccionCompletado'],
                 'cliid' => 0,
                 'solicitud_credito' => 0,
+                'aceptado'=>true
             ];
             // Registrar en sistema externo (Infinita)
             $infinitaResult = $this->registrarInfinita((object) $clienteData);

@@ -19,7 +19,7 @@ class InformacionesController extends Controller
             $digital = Informacion::where('active',1)
             ->where('digital',1)->latest()->first();
         }
-
+        $aceptado = $cliente->aceptado ;
 
         return response()->json([
             'success'=>true,
@@ -28,7 +28,8 @@ class InformacionesController extends Controller
                 'general'=>$general,
                 'user' =>$user->info(),
                 'digital'=>$digital,
-                'aso'=>null
+                'aso'=>null,
+                'aceptar_contrato'=>$aceptado
             ]
         ]);
     }
