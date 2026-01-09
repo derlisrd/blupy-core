@@ -19,7 +19,18 @@ class InformacionesController extends Controller
             $digital = Informacion::where('active',1)
             ->where('digital',1)->latest()->first();
         }
-        $aceptado = $cliente->aceptado ;
+        $resultsAceptado = null;
+        if($cliente->aceptado == 0){
+            $resultsAceptado = [
+                'id'=>1,
+                'user_id'=>$user->id,
+                'title'=>'Términos y condiciones',
+                'description'=>'Para continuar utilizando la aplicación, es necesario que aceptes los términos y condiciones actualizados.',
+                'text'=>'Para continuar utilizando la aplicación, es necesario que aceptes los términos y condiciones actualizados.',
+                'url'=>'https://www.blupy.com/terminos-y-condiciones',
+                'imgUrl'=>null
+            ];
+        } 
 
         return response()->json([
             'success'=>true,
@@ -29,7 +40,7 @@ class InformacionesController extends Controller
                 'user' =>$user->info(),
                 'digital'=>$digital,
                 'aso'=>null,
-                'aceptado'=>$aceptado
+                'aceptado'=>$resultsAceptado
             ]
         ]);
     }
