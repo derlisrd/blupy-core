@@ -5,6 +5,7 @@ use App\Http\Controllers\Rest\AuthController;
 use App\Http\Controllers\Rest\ClientesController;
 use App\Http\Controllers\Rest\ConsultasController;
 use App\Http\Controllers\Rest\ContratosController;
+use App\Http\Controllers\Rest\DevicesController;
 use App\Http\Controllers\Rest\EstadisticasController;
 use App\Http\Controllers\Rest\JobsManualesController;
 use App\Http\Controllers\Rest\MorososController;
@@ -156,11 +157,17 @@ Route::group(['middleware' => ['auth:admin']], function() {
     Route::prefix('admin')->group(function () {
         Route::post('/reset-password', [AdminController::class, 'resetPassword'])
         ->middleware('permiso.admin:admins,reset_password')
-        ->name('rest_admin_reset_password'); // << AÑADIDO
+        ->name('rest_admin_reset_password');
 
         Route::post('/add', [AdminController::class, 'store'])
         ->middleware('permiso.admin:admins,crear')
-        ->name('rest_admin_add'); // << AÑADIDO
+        ->name('rest_admin_add'); 
+    });
+
+
+    Route::prefix('/devices')->group(function () {
+        Route::get('/solicitudes', [DevicesController::class, 'listado'])->name('rest_devices_listado');
+        Route::get('/aprobadr', [DevicesController::class, 'aprobar'])->name('rest_devices_aprobar');
     });
 
 });

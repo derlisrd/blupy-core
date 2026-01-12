@@ -82,10 +82,19 @@ Route::post('/re-enviar-codigo-wa', [ValidacionesController::class, 'reEnviarCod
 
 Route::get('/verificar-version',[VersionController::class,'verificarVersion'])->name('api_verificar_version');
 
+
+
+Route::prefix('/dispositivos')->group(function () {
+    Route::post('/solicitar', [DeviceController::class, 'requestNewDevice'])->name('api_solicitar_device');
+});
+
 /*
  =========RUTAS PROTEGIDAS ==================
  */
 Route::middleware('auth:api')->group(function(){
+
+    
+
 
     Route::get('/info',[InformacionesController::class,'infoPopUpInicial'])->name('api_info');
     Route::get('/info-lista',[InformacionesController::class,'infoLista'])->name('api_info_lista');
