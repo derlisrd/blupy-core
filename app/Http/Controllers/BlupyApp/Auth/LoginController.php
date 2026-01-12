@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\DispositivoInusualJob;
 use App\Models\Adicional;
 use App\Models\Cliente;
+use App\Models\Device;
 use App\Models\Validacion;
 use App\Services\SupabaseService;
 use Illuminate\Http\Request;
@@ -68,7 +69,7 @@ class LoginController extends Controller
             
 
             // 6. Verificar dispositivo de confianza (solo para rol 0)
-            /* if ($cliente->user->rol === 0) {
+            if ($cliente->user->rol === 0) {
                 $user = $cliente->user;
                 $dispositoDeConfianza = Device::where('user_id', $user->id)
                         ->where('desktop', $req->desktop)
@@ -93,7 +94,7 @@ class LoginController extends Controller
                             'ip' => $req->ip()
                         ]);
                         $dispositoDeConfianza->touch();
-            } */
+            } 
             $cliente->user->update([
                 'intentos' => 0,
                 'ultimo_ingreso' => now(),
