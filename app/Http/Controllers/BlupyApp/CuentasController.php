@@ -63,7 +63,7 @@ class CuentasController extends Controller
                 'adicional' => $tarjeta['MTTipo'] === 'A',
                 'numeroTarjeta' => $tarjeta['MTNume'],
                 'linea' => (int)$tarjeta['MTLinea'],
-                'pagoMinimo' => (int)$tarjeta['MCPagMin'],
+                'pagoMinimo' => 0,//(int)$tarjeta['MCPagMin'],
                 'deuda' => $deuda,
                 'disponible' => $disponible,
                 'alianzas' => null,
