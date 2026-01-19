@@ -41,7 +41,7 @@ class DeviceController extends Controller
         $validator = Validator::make($req->all(), [
             'validacion_id' => 'required',
             'device'      => 'required',
-            'email'       => 'required|email',
+            //'email'       => 'required|email',
             'celular'     => 'required',
             'devicetoken' => 'required',
             'model' => 'required',
@@ -50,6 +50,7 @@ class DeviceController extends Controller
             'cedula_selfie' => 'required',
             'os' => 'required',
             'model' => 'required',
+            'cliente_validacion_id' => 'required'
         ]);
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
@@ -68,7 +69,7 @@ class DeviceController extends Controller
         }
 
         try {
-            $validacion = Validacion::find($req->validacion_id);
+            $validacion = Validacion::find($req->cliente_validacion_id);
             if (!$validacion) {
                 return response()->json(['success' => false, 'message' => 'No existe validacion'], 404);
             }

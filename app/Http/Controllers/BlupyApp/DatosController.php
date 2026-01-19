@@ -5,7 +5,6 @@ namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use App\Models\HistorialDato;
-use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
 use App\Services\InfinitaService;
@@ -13,7 +12,6 @@ use App\Services\TigoSmsService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 

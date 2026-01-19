@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Validator;
 class ValidacionesController extends Controller
 {
 
+
+    
+
+
     public function enviarCodigoPorSmsParaValidarNroTelefono(Request $req){
         try {
             $validator = Validator::make($req->all(), trans('validation.verificaciones.celular'), trans('validation.verificaciones.celular.messages'));
