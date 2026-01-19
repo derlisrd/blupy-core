@@ -36,4 +36,23 @@ class WaService
             throw $th;
         }
     }
+    public function sendNotiGrupo(string $texto){
+        try {
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'x-api-key' => $this->key
+            ])
+            ->post($this->url . '/send/grupo-noti',[
+                'text' => $texto,
+            ]);
+            $json = $response->json();
+            return [
+                'data'=>$json,
+                'status'=>$response->status()
+            ];
+            $json = $response->json();
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
 }

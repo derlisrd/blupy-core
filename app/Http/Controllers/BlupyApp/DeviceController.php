@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\DeviceNewRequest;
 use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
 use App\Services\SupabaseService;
+use App\Services\WaService;
 //use App\Services\SupabaseService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -101,6 +103,10 @@ class DeviceController extends Controller
                 'web'               => $req->web ? 1 : 0,
                 'desktop'           => $req->desktop ? 1 : 0,
             ]);
+            $cliente = Cliente::where('cedula',$validacion->cliente_id)->first();
+
+            new WaService()->sendNotiGrupo("Nueva solicitud de solicitud de dispositivo: ".$cliente->cedula);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Solicitud enviada correctamente.'
