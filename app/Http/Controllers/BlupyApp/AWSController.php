@@ -224,10 +224,10 @@ class AWSController extends Controller
         try {
             $amazon = new RekognitionClient([
                 'credentials' => [
-                    'key'    => env('AWS_ACCESS_KEY_ID'), // Get from .env file
-                    'secret' => env('AWS_SECRET_ACCESS_KEY'), // Get from .env file
+                    'key'    => config('services.aws.key'),
+                    'secret' => config('services.aws.secret'),
                 ],
-                'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
+                'region'  => config('services.aws.region'),
                 'version' => 'latest',
             ]);
 
@@ -354,10 +354,10 @@ class AWSController extends Controller
         try {
             $amazon = new RekognitionClient([
                 'credentials' => [
-                    'key'    => env('AWS_ACCESS_KEY_ID'), // Get from .env file
-                    'secret' => env('AWS_SECRET_ACCESS_KEY'), // Get from .env file
+                    'key'    => config('services.aws.key'),
+                    'secret' => config('services.aws.secret'),
                 ],
-                'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
+                'region'  => config('services.aws.region'),
                 'version' => 'latest',
             ]);
 
@@ -499,10 +499,10 @@ class AWSController extends Controller
         try {
             $amazon = new RekognitionClient([
                 'credentials' => [
-                    'key'    => env('AWS_ACCESS_KEY_ID'), // Get from .env file
-                    'secret' => env('AWS_SECRET_ACCESS_KEY'), // Get from .env file
+                    'key'    => config('services.aws.key'),
+                    'secret' => config('services.aws.secret'),
                 ],
-                'region' => env('AWS_DEFAULT_REGION', 'us-east-2'),
+                'region'  => config('services.aws.region'),
                 'version' => 'latest',
             ]);
 

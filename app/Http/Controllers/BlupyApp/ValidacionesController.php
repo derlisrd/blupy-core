@@ -37,7 +37,9 @@ class ValidacionesController extends Controller
 
             (new TigoSmsService())->enviarSms($celularFormateado, $mensaje);
 
-            $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 1, 'celular' => $req->celular, 'origen' => 'registro']);
+            $origen = $req->origen ?? 'registro';
+
+            $validacion = Validacion::create(['codigo' => $randomNumber, 'forma' => 1, 'celular' => $req->celular, 'origen' => $origen]);
 
             return response()->json(['success' => true, 'results' => ['id' => $validacion->id], 'message' => 'Mensaje enviado']);
         } catch (\Throwable $th) {
