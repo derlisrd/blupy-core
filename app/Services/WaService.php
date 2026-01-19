@@ -44,6 +44,7 @@ class WaService
             ])
             ->post($this->url . '/send/grupo-noti',[
                 'text' => $texto,
+                'name' => 'noti',
             ]);
             $json = $response->json();
             return [
