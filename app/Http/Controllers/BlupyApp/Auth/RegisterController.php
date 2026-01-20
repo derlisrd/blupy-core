@@ -189,10 +189,15 @@ class RegisterController extends Controller
             // registrar dispositivo
             Device::create([
                 'user_id' => $user->id,
-                'notitoken' => $req->notitoken ?? null,
+                'device_id_app' => $req->deviceIdApp ?? null,
                 'os' => $req->os ?? null,
                 'devicetoken' => $req->devicetoken ?? null,
-                'version' => $req->version ?? null,
+
+                'version' => $req->versionApp ?? null,
+                'build_version' => $req->buildVersion ?? null,
+                'time' => $req->time ?? null,
+                'device_id_app'=> $req->deviceIdApp,
+                
                 'device' => $req->device ?? null,
                 'model' => $req->model ?? null,
                 'ip' => $req->ip(),

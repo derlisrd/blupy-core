@@ -21,8 +21,14 @@ class Device extends Model
         'model',
         'web',
         'desktop',
-        'notitoken',
+        'device_id_app',
         'ip',
-        'version'
+        'version',
+        'build_version',
+        'time'
+    ];
+
+    protected $casts = [
+        
     ];
 }

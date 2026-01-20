@@ -69,7 +69,10 @@ trait RegisterTraits
             return  $response;
 
         } catch (\Throwable $th) {
-            throw $th;
+            return [
+                'register'=>false
+            ];
+            //throw $th;
         }
     }
 

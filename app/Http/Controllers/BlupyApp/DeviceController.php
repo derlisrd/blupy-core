@@ -102,8 +102,13 @@ class DeviceController extends Controller
                 'cedula_selfie_url' => $urlSelfie,
                 'web'               => $req->web ? 1 : 0,
                 'desktop'           => $req->desktop ? 1 : 0,
+                'version' => $req->versionApp ?? null,
+                
+                'build_version' => $req->buildVersion ?? null,
+                'time' => $req->time ?? null,
+                'device_id_app' => $req->deviceIdApp,
             ]);
-            $cliente = Cliente::where('cedula',$validacion->cliente_id)->first();
+            $cliente = Cliente::find($validacion->cliente_id);
 
             new WaService()->sendNotiGrupo("Nueva solicitud de solicitud de dispositivo: ".$cliente->cedula);
 
@@ -168,6 +173,9 @@ class DeviceController extends Controller
             $desktop = $req->desktop ? 1 : 0;
             $confianza = $req->confianza ? 1 : 0;
 
+
+            
+
             $validacion = Validacion::where('id', $id)->where('codigo', $codigo)->where('validado', 0)->latest('created_at')->first();
             if (!$validacion)
                 return response()->json(['success' => false, 'message' => 'Código inválido.'], 400);
@@ -192,7 +200,12 @@ class DeviceController extends Controller
                 'model' => $model,
                 'ip' => $ip,
                 'desktop' => $desktop,
-                'confianza' => $confianza
+                'confianza' => $confianza,
+
+                'version' => $req->versionApp ?? null,
+                'build_version' => $req->buildVersion ?? null,
+                'time' => $req->time ?? null,
+                'device_id_app' => $req->deviceIdApp,
             ]);
 
             return response()->json(['success' => true, 'message' => 'Dispositivo registrado correctamente']);

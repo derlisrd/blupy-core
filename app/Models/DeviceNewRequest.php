@@ -24,7 +24,11 @@ class DeviceNewRequest extends Model
         'desktop',
         'version',
         'devicetoken',
-        'aprobado'
+        'aprobado',
+
+        'build_version',
+        'time' ,
+        'device_id_app'
     ];
 
     /**

@@ -69,13 +69,12 @@ class LoginController extends Controller
             
 
             // 6. Verificar dispositivo de confianza (solo para rol 0)
-             /* if ($cliente->user->rol === 0) {
+             if ($cliente->user->rol === 0) {
+                
                 $user = $cliente->user;
                 $dispositoDeConfianza = Device::where('user_id', $user->id)
-                        ->where('desktop', $req->desktop)
-                        ->where('web', $req->web)
-                        ->where('device', $req->device)
-                        ->where('devicetoken', $req->devicetoken)
+                        ->where('time',$req->time)
+                        ->where('device_id_app',$req->deviceIdApp)
                         ->first();
                         if (!$dispositoDeConfianza) {
                             $pistaEmail =  $user->email; 
@@ -94,7 +93,7 @@ class LoginController extends Controller
                             'ip' => $req->ip()
                         ]);
                         $dispositoDeConfianza->touch();
-            }    */
+            }   
             $cliente->user->update([
                 'intentos' => 0,
                 'ultimo_ingreso' => now(),
