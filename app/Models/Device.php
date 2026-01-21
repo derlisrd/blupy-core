@@ -21,8 +21,9 @@ class Device extends Model
         'model',
         'web',
         'desktop',
-        'device_id_app',
         'ip',
+        
+        'device_id_app',
         'version',
         'build_version',
         'time'

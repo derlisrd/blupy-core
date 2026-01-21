@@ -28,12 +28,18 @@ class DevicesController extends Controller
             'desktop'=>$newDevice->desktop,
             'notitoken'=>$newDevice->desktop,
             'ip'=>$newDevice->ip,
-            'version'=>$newDevice->version
+            'version'=>$newDevice->version,
+
+            'device_id_app'=>$newDevice->device_id_app,
+            'build_version'=>$newDevice->build_version,
+            'time'=>$newDevice->time
         ]);
+
+        $devices = Device::where('user_id',$newDevice->user_id)->get();
 
         return response()->json([
             'success'=>true,
-            'results'=>null
+            'results'=>$devices
         ]);
     }
 
