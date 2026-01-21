@@ -44,7 +44,9 @@ class DevicesController extends Controller
     }
 
     public function listado(){
-        $results = DeviceNewRequest::where('aprobado',0)->get();
+        $results = DeviceNewRequest::where('aprobado',0)
+        ->orderBy('id','DESC')
+        ->get();
         return response()->json([
             'success'=>true,
             'message'=>'',
