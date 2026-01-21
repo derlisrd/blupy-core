@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\BlupyApp\Auth\LoginController;
 use App\Http\Controllers\BlupyApp\Auth\RegisterController;
-use App\Http\Controllers\BlupyApp\AuthController;
+//use App\Http\Controllers\BlupyApp\AuthController;
 use App\Http\Controllers\BlupyApp\AutorizacionesQRController;
 use App\Http\Controllers\BlupyApp\AWSController;
 use App\Http\Controllers\BlupyApp\ClienteController;
@@ -29,12 +29,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/vendedor/{id}',[VendedorController::class,'consultar']);
 
 
-Route::post('/login',[AuthController::class,'login'])->name('api_login');
+//Route::post('/login',[AuthController::class,'login'])->name('api_login');
+//Route::post('/register',[AuthController::class,'register'])->name('api_register');
 
 Route::post('/confirmar-nuevo-dispositivo',[DeviceController::class,'confirmarNuevoDispositivo'])->name('api_confirmar_nuevo_dispositivo');
 Route::post('/codigo-nuevo-dispositivo',[DeviceController::class,'codigoNuevoDispositivo'])->name('api_codigo_nuevo_dispositivo');
 
-Route::post('/register',[AuthController::class,'register'])->name('api_register');
 
 Route::post('/olvide-contrasena',[UserPublic::class,'olvideContrasena'])->name('api_olvide_contrasena');
 Route::post('/reenviar-codigo-recuperacion-wa',[UserPublic::class,'reenviarCodigoRecuperacionWa'])->name('api_reenviar_codigo_recuperacion_wa');
@@ -105,11 +105,7 @@ Route::middleware('auth:api')->group(function(){
 
     Route::get('/notificaciones',[NotificacionesController::class,'NotificacionesPorUser'])->name('api_notificaciones');
 
-    Route::post('/check-token',[AuthController::class,'checkToken'])->name('api_check_token');
-    Route::put('/refresh-token',[AuthController::class,'refreshToken'])->name('api_refresh_token');
-    Route::delete('/logout',[AuthController::class,'logout'])->name('api_logout');
 
-    Route::delete('/eliminar-cuenta',[AuthController::class,'eliminarCuenta'])->name('api_eliminar_cuenta');
     
     Route::prefix('/cuenta')->group(function(){
         Route::get('/tarjetas',[CuentasController::class,'tarjetas2'])->name('api_tarjetas_2');

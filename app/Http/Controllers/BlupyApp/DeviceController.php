@@ -166,7 +166,7 @@ class DeviceController extends Controller
             $ip = $req->ip();
             $devicetoken = $req->devicetoken;
             $os = $req->os;
-            $notitoken = $req->notitoken;
+            //$notitoken = $req->notitoken;
             $device = $req->device;
             $web = $req->web ? 1 : 0;
             $model = $req->model;
@@ -189,10 +189,11 @@ class DeviceController extends Controller
 
             $validacion->validado = 1;
             $validacion->save();
+
             $user = User::where('cliente_id', $validacion->cliente_id)->first();
             Device::create([
                 'device' => $device,
-                'notitoken' => $notitoken,
+                //'notitoken' => $notitoken,
                 'devicetoken' => $devicetoken,
                 'os' => $os,
                 'user_id' => $user->id,
@@ -210,6 +211,8 @@ class DeviceController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Dispositivo registrado correctamente']);
         } catch (\Throwable $th) {
+            Log::error('Error en el registro del dispositivo',$th->getMessage());
+            return response()->json(['success' => false, 'message' => 'Dispositivo no registrado'],500);
             throw $th;
         }
     }
