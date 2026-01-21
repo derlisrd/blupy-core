@@ -7,6 +7,7 @@ use App\Http\Controllers\BlupyApp\AutorizacionesQRController;
 use App\Http\Controllers\BlupyApp\AWSController;
 use App\Http\Controllers\BlupyApp\ClienteController;
 use App\Http\Controllers\BlupyApp\ConsultasController;
+use App\Http\Controllers\BlupyApp\ContratoController;
 use App\Http\Controllers\BlupyApp\CuentasController;
 use App\Http\Controllers\BlupyApp\DatosController;
 use App\Http\Controllers\BlupyApp\DeviceController;
@@ -29,8 +30,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/vendedor/{id}',[VendedorController::class,'consultar']);
 
 
-//Route::post('/login',[AuthController::class,'login'])->name('api_login');
-//Route::post('/register',[AuthController::class,'register'])->name('api_register');
 
 Route::post('/confirmar-nuevo-dispositivo',[DeviceController::class,'confirmarNuevoDispositivo'])->name('api_confirmar_nuevo_dispositivo');
 Route::post('/codigo-nuevo-dispositivo',[DeviceController::class,'codigoNuevoDispositivo'])->name('api_codigo_nuevo_dispositivo');
@@ -107,6 +106,10 @@ Route::middleware('auth:api')->group(function(){
 
 
     
+    Route::prefix('/contratos')->group(function(){
+        Route::post('/aceptar-blupy-digital',[ContratoController::class,'aceptarContrato'])->name('aceptar_contrato_blupy_digital');
+    });
+
     Route::prefix('/cuenta')->group(function(){
         Route::get('/tarjetas',[CuentasController::class,'tarjetas2'])->name('api_tarjetas_2');
     });
