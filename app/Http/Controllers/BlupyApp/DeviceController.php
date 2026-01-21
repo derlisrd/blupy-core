@@ -110,7 +110,7 @@ class DeviceController extends Controller
             ]);
             $cliente = Cliente::find($validacion->cliente_id);
 
-            new WaService()->sendNotiGrupo("Nueva solicitud de solicitud de dispositivo: ".$cliente->cedula);
+            //new WaService()->sendNotiGrupo("Nueva solicitud de solicitud de dispositivo: ".$cliente->cedula);
 
             return response()->json([
                 'success' => true,
