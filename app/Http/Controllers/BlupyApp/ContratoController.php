@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
+use App\Models\Informacion;
 use Illuminate\Http\Request;
 
 class ContratoController extends Controller
@@ -20,7 +21,9 @@ class ContratoController extends Controller
 
         $cliente->aceptado = 1;
         $cliente->save();
-        
+        $info = Informacion::where('user_id', $user->id)->where('codigo_info', 1)->first();
+        $info->delete();
+
         return response()->json([
             'success'=>true,
             'message'=>'Contrato aceptado']);

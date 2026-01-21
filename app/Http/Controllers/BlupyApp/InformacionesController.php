@@ -24,10 +24,10 @@ class InformacionesController extends Controller
             $resultsAceptado = [
                 'id'=>1,
                 'user_id'=>$user->id,
-                'title'=>'Términos y condiciones',
-                'description'=>'Para continuar utilizando la aplicación, es necesario que aceptes los términos y condiciones actualizados.',
-                'text'=>'Para continuar utilizando la aplicación, es necesario que aceptes los términos y condiciones actualizados.',
-                'url'=>'https://www.blupy.com/terminos-y-condiciones',
+                'title'=>'Términos de contrato',
+                'description'=>'Para activar su linea, es necesario que aceptes los términos y condiciones del contrato',
+                'text'=> 'Para activar su linea, es necesario que aceptes los términos y condiciones del contrato',
+                'url'=>'',
                 'imgUrl'=>null
             ];
         } 
