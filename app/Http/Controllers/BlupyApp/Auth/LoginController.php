@@ -8,7 +8,9 @@ use App\Models\Adicional;
 use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\Validacion;
+use App\Services\EmailService;
 use App\Services\SupabaseService;
+use App\Services\TigoSmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
@@ -69,7 +71,7 @@ class LoginController extends Controller
             
 
             // 6. Verificar dispositivo de confianza (solo para rol 0)
-             /* if ($cliente->user->rol === 0) {
+             if ($cliente->user->rol === 0) {
                 
                 $user = $cliente->user;
                 $dispositoDeConfianza = Device::where('user_id', $user->id)
@@ -93,7 +95,7 @@ class LoginController extends Controller
                             'ip' => $req->ip()
                         ]);
                         $dispositoDeConfianza->touch();
-            }    */
+            }    
             $cliente->user->update([
                 'intentos' => 0,
                 'ultimo_ingreso' => now(),
@@ -195,7 +197,18 @@ class LoginController extends Controller
         $mensaje = "Utiliza el código ". $codigo." para confirmar tu dispositivo en Blupy.";
         $numeroTelefonoWa = '595' . substr($celular, 1);
 
-        DispositivoInusualJob::dispatch($celular, $mensaje, $email, $codigo, $datosEmail, $numeroTelefonoWa)->onConnection('database');
+        //DispositivoInusualJob::dispatch($celular, $mensaje, $email, $codigo, $datosEmail, $numeroTelefonoWa)->onConnection('database');
+
+        (new TigoSmsService())->enviarSms($celular, $mensaje);
+        //(new WaService())->send($this->numeroTelefonoWa, $this->mensaje);
+        // Enviar Email
+        (new EmailService())->enviarEmail(
+            $email,
+            "[$codigo] Blupy confirmar dispositivo",
+            'email.validarDispositivo',
+            $datosEmail
+        );
+
 
         // Guardar validación
         $validacion = Validacion::create([
