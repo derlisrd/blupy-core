@@ -51,7 +51,8 @@ class DevicesController extends Controller
                 ->onConnection('database');
         }
 
-       
+        $newDevice->aprobado = 1;
+        $newDevice->save();
 
         return response()->json([
             'success'=>true,
