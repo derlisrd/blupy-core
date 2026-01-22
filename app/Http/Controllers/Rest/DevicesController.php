@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Rest;
 use App\Http\Controllers\Controller;
 use App\Models\Device;
 use App\Models\DeviceNewRequest;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class DevicesController extends Controller
@@ -26,7 +27,9 @@ class DevicesController extends Controller
             'model'=>$newDevice->model,
             'web'=>$newDevice->web,
             'desktop'=>$newDevice->desktop,
-            'notitoken'=>$newDevice->desktop,
+
+            
+
             'ip'=>$newDevice->ip,
             'version'=>$newDevice->version,
 
@@ -36,6 +39,27 @@ class DevicesController extends Controller
         ]);
 
         $devices = Device::where('user_id',$newDevice->user_id)->get();
+
+       $notiService = new  NotificationService();
+
+       if($newDevice->os === 'android'){
+            $notiService->sendPushSingle([
+                'tokens' => [$newDevice->devicetoken],
+                'title' => "Dispositivo registrado",
+                'body' => "Su dispositivo fue registrado correctamente",
+                'type'=>'android'
+            ]);
+       }
+
+
+        if ($newDevice->os === 'ios') {
+            $notiService->sendPushSingle([
+                'tokens' => [$newDevice->devicetoken],
+                'title' => "Dispositivo registrado",
+                'body' => "Su dispositivo fue registrado correctamente",
+                'type' => 'ios'
+            ]);
+        }
 
         return response()->json([
             'success'=>true,
