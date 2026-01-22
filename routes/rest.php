@@ -167,7 +167,7 @@ Route::group(['middleware' => ['auth:admin']], function() {
 
     Route::prefix('/devices')->group(function () {
         Route::get('/solicitudes', [DevicesController::class, 'listado'])->name('rest_devices_listado');
-        Route::get('/aprobar', [DevicesController::class, 'aprobar'])->name('rest_devices_aprobar');
+        Route::post('/aprobar', [DevicesController::class, 'aprobar'])->name('rest_devices_aprobar');
     });
 
 });
