@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\PushNativeJobs;
 use App\Models\Device;
 use App\Models\DeviceNewRequest;
 use App\Services\NotificationService;
@@ -40,26 +41,17 @@ class DevicesController extends Controller
 
         $devices = Device::where('user_id',$newDevice->user_id)->get();
 
-       $notiService = new  NotificationService();
-
-       if($newDevice->os === 'android'){
-            $notiService->sendPushSingle([
-                'tokens' => [$newDevice->devicetoken],
-                'title' => "Dispositivo registrado",
-                'body' => "Su dispositivo fue registrado correctamente",
-                'type'=>'android'
-            ]);
-       }
-
-
-        if ($newDevice->os === 'ios') {
-            $notiService->sendPushSingle([
-                'tokens' => [$newDevice->devicetoken],
-                'title' => "Dispositivo registrado",
-                'body' => "Su dispositivo fue registrado correctamente",
-                'type' => 'ios'
-            ]);
+        if ($newDevice->os == 'android') {
+            PushNativeJobs::dispatch($req->title, $req->text, [$newDevice->devicetoken], 'android')
+                ->onConnection('database');
         }
+
+        if ($newDevice->os == 'ios') {
+            PushNativeJobs::dispatch($req->title, $req->text, [$newDevice->devicetoken], 'ios')
+                ->onConnection('database');
+        }
+
+       
 
         return response()->json([
             'success'=>true,
