@@ -62,9 +62,9 @@ class DevicesController extends Controller
 
     public function listado(){
         $results = DeviceNewRequest::where('aprobado',0)
-        /* ->join('users as u','u.id','=','device_new_requests.user_id')
-        ->join('clientes as c','c.id','=','u.cliente_id') */
-        
+        ->join('users as u','u.id','=','device_new_requests.user_id')
+        ->join('clientes as c','c.id','=','u.cliente_id') 
+        ->select('device_new_requests.*','u.name','c.cedula')
         ->get();
         return response()->json([
             'success'=>true,
