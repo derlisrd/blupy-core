@@ -111,7 +111,7 @@ Route::middleware('auth:api')->group(function(){
     });
 
     Route::prefix('/cuenta')->group(function(){
-        Route::get('/eliminar',[CuentasController::class,'eliminarCuenta'])->name('api_eliminar_cuenta');
+        Route::delete('/eliminar',[CuentasController::class,'eliminarCuenta'])->name('api_eliminar_cuenta');
         Route::get('/tarjetas',[CuentasController::class,'tarjetas2'])->name('api_tarjetas_2');
     });
     Route::get('/tarjetas',[CuentasController::class,'tarjetas'])->name('api_tarjetas');
