@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
 use App\Models\Device;
+use App\Models\User;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
 use App\Services\SupabaseService;
@@ -28,6 +29,21 @@ class CuentasController extends Controller
         $this->infinitaService = new InfinitaService();
         $this->farmaService = new FarmaService();
     }
+
+
+    public function eliminarCuenta(Request $req){
+        $user = User::find($req->user()->id);
+
+        $user->active = 0;
+
+        $user->save();
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'Su cuenta ha sido eliminada'
+        ]);
+    }
+
 
     public function tarjetas2(Request $req){
         $user = $req->user();

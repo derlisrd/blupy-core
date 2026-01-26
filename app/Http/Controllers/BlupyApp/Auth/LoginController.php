@@ -47,15 +47,15 @@ class LoginController extends Controller
             if (!$cliente)
                 return response()->json([
                     'success' => false,
-                    'message' => 'Usuario no existe. Regístrese'
+                    'message' => 'Usuario no existe.'
                 ], 400);
             
 
-            // 4. Verificar estado de cuenta
-            $accountStatusResponse = $this->checkAccountStatus($cliente->user);
-            if ($accountStatusResponse) 
-                return $accountStatusResponse;
             
+            
+            if (!$cliente->user->active) {
+                return response()->json(['success' => false, 'message' => 'Cuenta no existe'], 404);
+            }
 
             // 5. Intentar autenticación
             $credentials = ['email' => $cliente->user->email, 'password' => $req->password];
@@ -146,16 +146,7 @@ class LoginController extends Controller
     }
 
   
-    private function checkAccountStatus($user)
-    {
-        if (!$user->active) {
-            return $this->errorResponse(
-                'Cuenta inhabilitada o registro eliminado. Contacte con soporte.',
-                403
-            );
-        }
-        return null;
-    }
+
 
 
 
