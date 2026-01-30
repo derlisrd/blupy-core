@@ -131,7 +131,7 @@ class LoginController extends Controller
     private function validateLoginRequest(Request $req)
     {
         return Validator::make($req->all(), [
-            'cedula' => 'required|string|regex:/^[0-9\-]+$/',
+            'cedula' => 'required|string',
             'password' => 'required|string|min:6',
             'desktop' => 'nullable|boolean',
             'web' => 'nullable|boolean',
