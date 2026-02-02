@@ -168,6 +168,7 @@ Route::group(['middleware' => ['auth:admin']], function() {
     Route::prefix('/devices')->group(function () {
         Route::get('/solicitudes', [DevicesController::class, 'listado'])->name('rest_devices_listado');
         Route::post('/aprobar', [DevicesController::class, 'aprobar'])->name('rest_devices_aprobar');
+        Route::delete('/{id}',[DevicesController::class, 'destroyRequestDevice'])->name('rest_devices_delete');
     });
 
 });

@@ -218,17 +218,5 @@ class DeviceController extends Controller
     }
 
 
-    public function destroy($id){
-        try {
-            $device = DeviceNewRequest::find($id);
-            $device->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Eliminado correctamente'
-            ]);
-        } catch (\Throwable $th) {
-            throw $th;
-        }
-    }
+    
 }

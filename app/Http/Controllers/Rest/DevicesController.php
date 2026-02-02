@@ -93,6 +93,21 @@ class DevicesController extends Controller
         ]);
     }
 
+    public function destroyRequestDevice($id)
+    {
+        try {
+            $device = DeviceNewRequest::find($id);
+            $device->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Eliminado correctamente'
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
 
     private function cambiosEnInfinita($cliid, $email, $telefono): void
     {
