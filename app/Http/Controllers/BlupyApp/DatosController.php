@@ -178,8 +178,8 @@ class DatosController extends Controller
 
         $webserviceInfinita = new InfinitaService();
 
-        $cliente = (object) $webserviceInfinita->TraerDatosCliente($cliid);
-        $clienteDatos = (object) $cliente->data;
+        $cliente =  $webserviceInfinita->TraerDatosCliente($cliid);
+        $clienteDatos = (object) $cliente['data'];
 
         $cliObj = (object)$clienteDatos->wCliente;
 

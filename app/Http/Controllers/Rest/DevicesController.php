@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\PushNativeJobs;
+use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\DeviceNewRequest;
+use App\Models\HistorialDato;
+use App\Models\User;
+use App\Services\InfinitaService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
@@ -51,6 +55,22 @@ class DevicesController extends Controller
                 ->onConnection('database');
         }
 
+
+        $user = User::find($newDevice->user_id);
+        $cliente = $user->cliente;
+
+        HistorialDato::create([
+            'user_id' => $newDevice->user_id,
+            'celular' => $cliente->celular
+        ]);
+
+        
+
+        Cliente::find($cliente->id)->update([
+            'celular' => $newDevice->celular
+        ]);
+        $this->cambiosEnInfinita($user->cliente->cliid, null, $newDevice->celular);
+
         $newDevice->aprobado = 1;
         $newDevice->save();
 
@@ -71,5 +91,79 @@ class DevicesController extends Controller
             'message'=>'',
             'results'=>$results
         ]);
+    }
+
+
+    private function cambiosEnInfinita($cliid, $email, $telefono): void
+    {
+
+        $webserviceInfinita = new InfinitaService();
+
+        $cliente =  $webserviceInfinita->TraerDatosCliente($cliid);
+        $clienteDatos = (object) $cliente['data'];
+
+        $cliObj = (object)$clienteDatos->wCliente;
+
+        $telefonoNuevo = [
+            (object)[
+                'CliTelId' => $cliObj->Tel[0]['CliTelId'],
+                'CliTelNot' => $cliObj->Tel[0]['CliTelNot'],
+                'CliTelUb' => $cliObj->Tel[0]['CliTelUb'],
+                'CliTelef' => $telefono ?  $telefono : $cliObj->Tel[0]['CliTelef']
+            ]
+        ];
+
+        $clienteModificado = [
+            'ActComId' => 0,
+            'CliApe' => $cliObj->CliApe,
+            'CliApe1' => $cliObj->CliApe1,
+            'CliApe2' => $cliObj->CliApe2,
+            'CliApe3' => $cliObj->CliApe3,
+            'CliCobId' => $cliObj->CliCobId,
+            'CliContrib' => $cliObj->CliContrib,
+            'CliCumple' => $cliObj->CliCumple,
+            'CliDocDv' => $cliObj->CliDocDv,
+            'CliDocu' => $cliObj->CliDocu,
+            'CliEdad' => $cliObj->CliEdad,
+            'CliEmail' => $email ? $email :  $cliObj->CliEmail,
+            'CliEsAso' => $cliObj->CliEsAso,
+            'CliEstCiv' => $cliObj->CliEstCiv,
+            'CliEstado' => $cliObj->CliEstado,
+            'CliFecNac' => $cliObj->CliFecNac,
+            'CliIVAEx' => $cliObj->CliIVAEx,
+            'CliId' => $cliObj->CliId,
+            'CliLabCar' => $cliObj->CliLabCar,
+            'CliLabFecIng' => $cliObj->CliLabFecIng,
+            'CliLabLug' => $cliObj->CliLabLug,
+            'CliLabSal' => $cliObj->CliLabSal,
+            'CliLabSec' => $cliObj->CliLabSec,
+            'CliLisPreId' => $cliObj->CliLisPreId,
+            'CliNacId' => $cliObj->CliNacId,
+            'CliNom' => $cliObj->CliNom,
+            'CliNom1' => $cliObj->CliNom1,
+            'CliNom2' => $cliObj->CliNom2,
+            'CliNomFan' => $cliObj->CliNomFan,
+            'CliNombre' => $cliObj->CliNombre,
+            'CliNro' => $cliObj->CliNro,
+            'CliObs' => $cliObj->CliObs,
+            'CliProfId' => $cliObj->CliProfId,
+            'CliRUC' => $cliObj->CliRUC,
+            'CliRazon' => $cliObj->CliRazon,
+            'CliSepBi' => $cliObj->CliSepBi,
+            'CliSexo' => $cliObj->CliSexo,
+            'CliTipEst' => $cliObj->CliTipEst,
+            'CliTipId' => $cliObj->CliTipId,
+            'CliTipImg' => $cliObj->CliTipImg,
+            'CliTipViv' => $cliObj->CliTipViv,
+            'CliTipo' => $cliObj->CliTipo,
+            'CliVenId' => $cliObj->CliVenId,
+            'Dir' => $cliObj->Dir,
+            'LugTrabDir' => $cliObj->LugTrabDir,
+            'LugTrabId' => $cliObj->LugTrabId,
+            'LugTrabTel' => $cliObj->LugTrabTel,
+            'Tel' => $telefono ? $telefonoNuevo : $cliObj->Tel,
+            'TipDocId' => $cliObj->TipDocId
+        ];
+        $webserviceInfinita->ModificarCliente($cliid, $clienteModificado);
     }
 }
