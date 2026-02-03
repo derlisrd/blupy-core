@@ -25,21 +25,22 @@ class LoginController extends Controller
             $validator = $this->validateLoginRequest($req);
             if ($validator->fails()) 
                 return $this->errorResponse($validator->errors()->first(), 400);
-            
+
 
             // 2. Control de rate limiting
-            $ip = ($req->ip());
+            $ip = $req->ip();
+            $rateKey = "login:$ip";
 
 
-                $rateKey = "login:$ip";
-                if (RateLimiter::tooManyAttempts($rateKey, 5)) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Demasiadas peticiones. Espere 1 minuto.'
-                    ], 400);
-                }
+            if (RateLimiter::tooManyAttempts($rateKey, 3)) {
+                $seconds = RateLimiter::availableIn($rateKey);
+                return response()->json([
+                    'success' => false,
+                    'message' => "Demasiadas peticiones. Espere $seconds segundos."
+                ], 429); // 429 es el código HTTP correcto para Too Many Requests
+            }
 
-                RateLimiter::hit($rateKey, 60);
+            RateLimiter::hit($rateKey, 60);
             
 
             // 3. Buscar cliente
@@ -92,7 +93,8 @@ class LoginController extends Controller
                         }
                         $dispositoDeConfianza->update([
                             'version' => $req->version,
-                            'ip' => $req->ip()
+                            'ip' => $req->ip(),
+                            'devicetoken' =>$req->devicetoken
                         ]);
                         $dispositoDeConfianza->touch();
             }    
