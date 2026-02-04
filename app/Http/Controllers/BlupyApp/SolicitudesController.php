@@ -105,6 +105,11 @@ class SolicitudesController extends Controller
 
     public function verificarEstadoSolicitud(Request $req)
     {
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Nuestro sistema de solicitudes se encuentra en mantenimiento.'
+        ], 400);
         $user = $req->user();
         $cliente = $user->cliente;
         $solicitudes = SolicitudCredito::where('cliente_id', $cliente->id)->where('tipo', 1)->latest()->first();
