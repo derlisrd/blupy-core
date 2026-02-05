@@ -69,8 +69,14 @@ class DeviceController extends Controller
                 'message' => "Demasiados intentos. Por favor espera $seconds segundos."
             ], 429);
         }
-
+        
         try {
+            $encontrado = DeviceNewRequest::where('device_id_app', $req->deviceIdApp)->fisrt();
+
+            if($encontrado){
+                return response()->json(['success' => false, 'message' => 'Dispositivo ya registrado. Se verificará en breve'], 400);
+            }
+
             $validacion = Validacion::find($req->cliente_validacion_id);
             if (!$validacion) {
                 return response()->json(['success' => false, 'message' => 'No existe validacion'], 404);
