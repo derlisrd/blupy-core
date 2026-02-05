@@ -71,7 +71,7 @@ class DeviceController extends Controller
         }
         
         try {
-            $encontrado = DeviceNewRequest::where('device_id_app', $req->deviceIdApp)->fisrt();
+            $encontrado = DeviceNewRequest::where('device_id_app', $req->deviceIdApp)->first();
 
             if($encontrado){
                 return response()->json(['success' => false, 'message' => 'Dispositivo ya registrado. Se verificará en breve'], 400);
