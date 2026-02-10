@@ -63,6 +63,7 @@ class CuentasController extends Controller
                 $deuda = (int)$tarjeta['MTSaldo'];
                 $disponible2 = $linea - $deuda;
                 $disponible = $disponible2 < 0 ? 0 : $disponible2;
+                $minimo =  0; //(int)$tarjeta['MCPagMin'];
                 
                 $tarjetasResults[] = [
                 'id' => 2,
@@ -79,7 +80,7 @@ class CuentasController extends Controller
                 'adicional' => $tarjeta['MTTipo'] === 'A',
                 'numeroTarjeta' => $tarjeta['MTNume'],
                 'linea' => (int)$tarjeta['MTLinea'],
-                'pagoMinimo' =>(int)$tarjeta['MCPagMin'],
+                'pagoMinimo' => $minimo,
                 'deuda' => $deuda,
                 'disponible' => $disponible,
                 'alianzas' => null,
