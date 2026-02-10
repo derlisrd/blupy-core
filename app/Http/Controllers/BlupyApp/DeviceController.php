@@ -69,11 +69,11 @@ class DeviceController extends Controller
                 'message' => "Demasiados intentos. Por favor espera $seconds segundos."
             ], 429);
         }
-        
+
         try {
             $encontrado = DeviceNewRequest::where('device_id_app', $req->deviceIdApp)->first();
 
-            if($encontrado){
+            if ($encontrado) {
                 return response()->json(['success' => false, 'message' => 'Dispositivo ya registrado. Se verificará en breve'], 400);
             }
 
@@ -108,8 +108,8 @@ class DeviceController extends Controller
                 'cedula_selfie_url' => $urlSelfie,
                 'web'               => $req->web ? 1 : 0,
                 'desktop'           => $req->desktop ? 1 : 0,
-                'version' => $req->versionApp ?? null,
-                
+                'version' => $req->version ?? null,
+                'device' => $req->device ?? null,
                 'build_version' => $req->buildVersion ?? null,
                 'time' => $req->time ?? null,
                 'device_id_app' => $req->deviceIdApp,
@@ -180,7 +180,7 @@ class DeviceController extends Controller
             $confianza = $req->confianza ? 1 : 0;
 
 
-            
+
 
             $validacion = Validacion::where('id', $id)->where('codigo', $codigo)->where('validado', 0)->latest('created_at')->first();
             if (!$validacion)
@@ -217,12 +217,9 @@ class DeviceController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Dispositivo registrado correctamente']);
         } catch (\Throwable $th) {
-            Log::error('Error en el registro del dispositivo',$th->getMessage());
-            return response()->json(['success' => false, 'message' => 'Dispositivo no registrado'],500);
+            Log::error('Error en el registro del dispositivo', $th->getMessage());
+            return response()->json(['success' => false, 'message' => 'Dispositivo no registrado'], 500);
             throw $th;
         }
     }
-
-
-    
 }
