@@ -26,7 +26,7 @@ class CuentasController extends Controller
 
     public function __construct()
     {
-        $this->infinitaService = new InfinitaService();
+        //$this->infinitaService = new InfinitaService();
         $this->farmaService = new FarmaService();
     }
 
@@ -45,48 +45,15 @@ class CuentasController extends Controller
     }
 
 
+
     public function tarjetas2(Request $req){
         $user = $req->user();
         $cliente = $user->cliente;
 
         $tarjetasResults = [];
-
-        $infinitaCards = $this->infinitaService->ListarTarjetasPorDoc($cliente->cedula);
         
-        $infinitaCardData = $infinitaCards['data'];
-
-        if($infinitaCardData &&  isset($infinitaCardData['Tarjetas'])){
-
-            $tarjetasInfinita = $infinitaCardData['Tarjetas'];
-            foreach($tarjetasInfinita as $tarjeta){
-                $linea = (int)$tarjeta['MTLinea'];
-                $deuda = (int)$tarjeta['MTSaldo'];
-                $disponible2 = $linea - $deuda;
-                $disponible = $disponible2 < 0 ? 0 : $disponible2;
-                $minimo =  0; //(int)$tarjeta['MCPagMin'];
-                
-                $tarjetasResults[] = [
-                'id' => 2,
-                'descripcion' => 'Blupy Digital',
-                'otorgadoPor' => 'Mi crédito S.A.',
-                'ruc'=>null,
-                'tipo' => 1,
-                'emision' => $tarjeta['MTFEmi'],
-                'bloqueo' => !empty($tarjeta['MTBloq']),
-                'condicion' => 'Contado',
-                'condicionVenta' => 1,
-                'cuenta' => $tarjeta['MaeCtaId'],
-                'principal' => $tarjeta['MTTipo'] === 'P',
-                'adicional' => $tarjeta['MTTipo'] === 'A',
-                'numeroTarjeta' => $tarjeta['MTNume'],
-                'linea' => (int)$tarjeta['MTLinea'],
-                'pagoMinimo' => $minimo,
-                'deuda' => $deuda,
-                'disponible' => $disponible,
-                'alianzas' => null,
-                ];
-            }
-        }
+        $infinitaCards = $this->getTarjetasInfinita($cliente->cedula);
+        $tarjetasResults = array_merge($tarjetasResults, $infinitaCards);
 
         $farmaCardsF = $this->farmaService->cliente2($cliente->cedula);
         $farmaCardDataF = $farmaCardsF['data'];
@@ -167,6 +134,58 @@ class CuentasController extends Controller
             'results'=>$tarjetasResults,
         ]);
     }
+
+
+
+    private function getTarjetasInfinita($cedula){
+        
+        $tarjetasResults = [];
+        try {
+            $infinitaService = new InfinitaService();
+            $infinitaCards = $infinitaService->ListarTarjetasPorDoc($cedula);
+
+            $infinitaCardData = $infinitaCards['data'];
+
+            if ($infinitaCardData &&  isset($infinitaCardData['Tarjetas'])) {
+
+                $tarjetasInfinita = $infinitaCardData['Tarjetas'];
+                foreach ($tarjetasInfinita as $tarjeta) {
+                    $linea = (int)$tarjeta['MTLinea'];
+                    $deuda = (int)$tarjeta['MTSaldo'];
+                    $disponible2 = $linea - $deuda;
+                    $disponible = $disponible2 < 0 ? 0 : $disponible2;
+                    $minimo =  0; //(int)$tarjeta['MCPagMin'];
+
+                    $tarjetasResults[] = [
+                        'id' => 2,
+                        'descripcion' => 'Blupy Digital',
+                        'otorgadoPor' => 'Mi crédito S.A.',
+                        'ruc' => null,
+                        'tipo' => 1,
+                        'emision' => $tarjeta['MTFEmi'],
+                        'bloqueo' => !empty($tarjeta['MTBloq']),
+                        'condicion' => 'Contado',
+                        'condicionVenta' => 1,
+                        'cuenta' => $tarjeta['MaeCtaId'],
+                        'principal' => $tarjeta['MTTipo'] === 'P',
+                        'adicional' => $tarjeta['MTTipo'] === 'A',
+                        'numeroTarjeta' => $tarjeta['MTNume'],
+                        'linea' => (int)$tarjeta['MTLinea'],
+                        'pagoMinimo' => $minimo,
+                        'deuda' => $deuda,
+                        'disponible' => $disponible,
+                        'alianzas' => null,
+                    ];
+                }
+            }
+            return $tarjetasResults;
+        } catch (\Throwable $th) {
+            return [];
+        }
+        
+    }
+
+
 
 
     
