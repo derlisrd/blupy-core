@@ -589,7 +589,7 @@ class CuentasController extends Controller
                     'results' => ['url' => env('BASE_EXTRACTO') . $resultado->Url]
                 ]);
             } catch (\Throwable $th) {
-                
+                Log::error($th->getMessage());
                 return response()->json(['success' => false, 'message' => 'Error de servidor'], 500);
             }
         });
