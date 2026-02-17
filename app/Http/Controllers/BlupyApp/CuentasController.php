@@ -573,9 +573,9 @@ class CuentasController extends Controller
         // Cache para extractos (10 minutos)
         $infinitaService = new InfinitaService();
         $periodo = $req->periodo ?? Carbon::now()->format('m-Y');
-        $cacheKey = "extracto_{$req->cuenta}_{$periodo}";
+        //$cacheKey = "extracto_{$req->cuenta}_{$periodo}";
         
-        return Cache::remember($cacheKey, 600, function () use ($req, $periodo, $infinitaService) {
+        //return Cache::remember($cacheKey, 600, function () use ($req, $periodo, $infinitaService) {
             try {
                 $res = $infinitaService->extractoCerrado($req->cuenta, 1, $periodo);
                 $resultado = (object)$res['data'];
@@ -593,7 +593,7 @@ class CuentasController extends Controller
                 Log::error($th->getMessage());
                 return response()->json(['success' => false, 'message' => 'Error de servidor'], 500);
             }
-        });
+        //});
     }
 
     public function misDispositivos(Request $req)
