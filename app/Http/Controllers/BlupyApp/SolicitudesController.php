@@ -70,6 +70,11 @@ class SolicitudesController extends Controller
     }
     public function verificarDisponibilidad(Request $req)
     {
+        return response()->json([
+            'success' => true,
+            'results' => null,
+            'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpenos las molestias.'
+        ], 400);
         $user = $req->user();
         $fechaLimite = Carbon::now()->subDays(2);
 
@@ -195,8 +200,8 @@ class SolicitudesController extends Controller
             return response()->json([
                 'success' => true,
                 'results' => null,
-                'message' => 'Funcionalidad en mantenimiento.'
-            ],500);
+                'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpenos las molestias.'
+            ],400);
 
             $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
             if (!$solicitud->success)
@@ -467,6 +472,11 @@ class SolicitudesController extends Controller
     public function solicitarAmpliacion(Request $req)
     {
         try {
+            return response()->json([
+                'success' => true,
+                'results' => null,
+                'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpenos las molestias.'
+            ], 400);
             $validator = Validator::make($req->all(), trans('validation.solicitudes.ampliacion'), trans('validation.solicitudes.ampliacion.messages'));
             if ($validator->fails())
                 return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
@@ -539,6 +549,12 @@ class SolicitudesController extends Controller
     public function agregarAdicional(Request $req)
     {
         try {
+
+            return response()->json([
+                'success' => true,
+                'results' => null,
+                'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpenos las molestias.'
+            ], 400);
 
             $validator = Validator::make($req->all(), trans('validation.solicitudes.adicional'), trans('validation.solicitudes.adicional.messages'));
             if ($validator->fails())
