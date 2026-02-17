@@ -47,5 +47,5 @@ jobs:
           cd /var/www/html/blupy-core/
           git pull origin main
           php artisan optimize:clear
-          php artisan optimeze
+          php artisan optimize
           pm2 restart blupy-core-queue-worker

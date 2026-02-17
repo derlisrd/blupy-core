@@ -571,13 +571,14 @@ class CuentasController extends Controller
         }
 
         // Cache para extractos (10 minutos)
+        $infinitaService = new InfinitaService();
         $periodo = $req->periodo ?? Carbon::now()->format('m-Y');
         $cacheKey = "extracto_{$req->cuenta}_{$periodo}";
         
-        return Cache::remember($cacheKey, 600, function () use ($req, $periodo) {
+        return Cache::remember($cacheKey, 600, function () use ($req, $periodo, $infinitaService) {
             try {
-                $res = (object)$this->infinitaService->extractoCerrado($req->cuenta, 1, $periodo);
-                $resultado = (object)$res->data;
+                $res = $infinitaService->extractoCerrado($req->cuenta, 1, $periodo);
+                $resultado = (object)$res['data'];
                 
                 if ($resultado->Retorno == 'Extracto no encontrado.') {
                     return response()->json(['success' => false, 'message' => 'Extracto no disponible', 'results' => null], 404);
