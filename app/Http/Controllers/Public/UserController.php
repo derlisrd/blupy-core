@@ -75,7 +75,7 @@ class UserController extends Controller
             ]);
         } catch (\Throwable $th) {
             Log::error('Error olvido password: ' . $th->getMessage());
-            SupabaseService::LOG('olvido_password',$th->getMessage());
+            //SupabaseService::LOG('olvido_password',$th->getMessage());
             return response()->json(['success'=>false,'message'=>'Error de servidor. Intente en unos minutos.'],500);
         }
     }
