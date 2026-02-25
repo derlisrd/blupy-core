@@ -58,40 +58,48 @@ class CuentasController extends Controller
         $tarjetasFarma = $this->getTarjetasFarma($cliente->cedula);
         $tarjetasResults = array_merge($tarjetasResults, $tarjetasFarma);
 
-        $farmaCards = $this->farmaService->empresaAutorizados($cliente->cedula);
-        $farmaCardData = $farmaCards['data'];
-
-        if($farmaCardData && isset($farmaCardData['result'])){
-            $result = $farmaCardData['result'];
-            if($result != null){
-                $tarjetasResults[] = [
-                'id' => 3,
-                'descripcion' => 'Blupy empresa',
-                'otorgadoPor' => $result['empresa'],
-                'ruc' => $result['ruc'],
-                'tipo' => 0,
-                'emision' => null,
-                'bloqueo' => false,
-                'condicion' => 'Credito',
-                'condicionVenta' => 2,
-                'cuenta' => null,
-                'principal' => false,
-                'adicional' => false,
-                'numeroTarjeta' => 0,
-                'linea' => $result['clerLimiteCreditoAdic'],
-                'pagoMinimo' => 0,
-                'deuda' => $result['deuda'],
-                'disponible' => $result['clerLimiteCreditoAdic'] - $result['deuda'],
-                'alianzas' => null,
-                ];
-            } 
-        }
+        
 
         return response()->json([
             'success'=>true,
             'message'=>'',
             'results'=>$tarjetasResults,
         ]);
+    }
+
+    private function getTarjetaBlupyEmpresas($cedula){
+        $tarjetasResults = [];
+        $farmaService = new FarmaService();
+        $farmaCards = $farmaService->empresaAutorizados($cedula);
+        $farmaCardData = $farmaCards['data'];
+
+        if ($farmaCardData && isset($farmaCardData['result'])) {
+            $result = $farmaCardData['result'];
+            if ($result != null) {
+                $tarjetasResults[] = [
+                    'id' => 3,
+                    'descripcion' => 'Blupy empresa',
+                    'otorgadoPor' => $result['empresa'],
+                    'ruc' => $result['ruc'],
+                    'tipo' => 0,
+                    'emision' => null,
+                    'bloqueo' => false,
+                    'condicion' => 'Credito',
+                    'condicionVenta' => 2,
+                    'cuenta' => null,
+                    'principal' => false,
+                    'adicional' => false,
+                    'numeroTarjeta' => 0,
+                    'linea' => $result['clerLimiteCredito'],
+                    'pagoMinimo' => 0,
+                    'deuda' => $result['deuda'],
+                    'disponible' => $result['clerLimiteCredito'] - $result['deuda'],
+                    'alianzas' => null,
+                ];
+            }
+        }
+
+        return $tarjetasResults;
     }
 
 
