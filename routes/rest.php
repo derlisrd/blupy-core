@@ -88,7 +88,7 @@ Route::group(['middleware' => ['auth:admin']], function() {
         Route::post('/reclamo-sms-excel',[MorososController::class,'reclamoPorSmsConListadoCSV']);
     });
 
-    Route::prefix(('/valicaciones'))->group(function(){
+    Route::prefix(('/validaciones'))->group(function(){
         Route::get('/ultimas',[DevicesController::class, 'ultimasValidaciones'])->name('rest_ultimas_validaciones');
     });
 
