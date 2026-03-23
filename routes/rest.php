@@ -13,6 +13,7 @@ use App\Http\Controllers\Rest\NotificacionesController;
 use App\Http\Controllers\Rest\PermisoAdminController;
 use App\Http\Controllers\Rest\SolicitudesController;
 use App\Http\Controllers\Rest\VentasController;
+use App\Models\Device;
 //use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
 
@@ -85,6 +86,10 @@ Route::group(['middleware' => ['auth:admin']], function() {
     // NOTIFICACIONES
     Route::prefix('/morosos')->group(function(){
         Route::post('/reclamo-sms-excel',[MorososController::class,'reclamoPorSmsConListadoCSV']);
+    });
+
+    Route::prefix(('/valicaciones'))->group(function(){
+        Route::get('/ultimas',[DevicesController::class, 'ultimasValidaciones'])->name('rest_ultimas_validaciones');
     });
 
 

@@ -9,6 +9,7 @@ use App\Models\Device;
 use App\Models\DeviceNewRequest;
 use App\Models\HistorialDato;
 use App\Models\User;
+use App\Models\Validacion;
 use App\Services\InfinitaService;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -180,5 +181,19 @@ class DevicesController extends Controller
             'TipDocId' => $cliObj->TipDocId
         ];
         $webserviceInfinita->ModificarCliente($cliid, $clienteModificado);
+    }
+
+
+    public function ultimasValidaciones(){
+        $results = Validacion::where('validado',0)
+        ->orderBy('created_at','desc')
+        ->limit(10)
+        ->get();
+
+        return response()->json([
+            'success'=>true,
+            'message'=>'',
+            'results'=>$results
+        ]);
     }
 }
