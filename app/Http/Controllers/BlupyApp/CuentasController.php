@@ -107,7 +107,61 @@ class CuentasController extends Controller
         $tarjetasResults = [];
         $farmaService = new FarmaService();
 
-        
+
+        $farmaCardsF = $farmaService->clienteExtranjero($codigo_cliente, $codigo_persona);
+
+        $farmaCardDataF = $farmaCardsF['data'];
+
+
+
+        if ($farmaCardDataF && isset($farmaCardDataF['result'])) {
+            $tarjetasFarma = $farmaCardDataF['result'];
+            if ($tarjetasFarma != null) {
+
+                $funcionario = $tarjetasFarma['funcionario'];
+                $alianza = $tarjetasFarma['alianza'] ?? null;
+
+                //if($funcionario === false && $alianza === null){
+                //  return [];
+                //}
+
+                $linea = $tarjetasFarma['clerLimiteCredito'];
+
+                $hoy = Carbon::now()->startOfDay();
+                $fechaVigencia = Carbon::parse($tarjetasFarma['clerFchFinVigencia'])
+                    ->setTimezone('America/Asuncion')
+                    ->startOfDay();
+                if ($fechaVigencia >= $hoy) { // aqui debo comparar la fecha
+                    $linea = $linea + $tarjetasFarma['clerLimiteCreditoAdic'];
+                }
+                $deuda = $tarjetasFarma['deuda'];
+
+                $disponible2 = $linea - $deuda;
+                $disponible = $disponible2 < 0 ? 0 : $disponible2;
+
+                $tarjetasResults[] = [
+                    'id' => 1,
+                    'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Farma',
+                    'otorgadoPor' => 'Farma S.A.',
+                    'ruc' => null,
+                    'tipo' => 0,
+                    'emision' => null,
+                    'bloqueo' => false,
+                    'condicion' => 'Credito',
+                    'condicionVenta' => 2,
+                    'cuenta' => null,
+                    'principal' => false,
+                    'adicional' => false,
+                    'numeroTarjeta' => 0,
+                    'linea' => $linea,
+                    'pagoMinimo' => 0,
+                    'deuda' => $deuda,
+                    'disponible' => $disponible,
+                    'alianzas' => $alianza,
+                    'funcionario' => $funcionario
+                ];
+            }
+        }
         return $tarjetasResults;
     }
 
