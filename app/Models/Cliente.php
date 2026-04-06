@@ -66,6 +66,7 @@ class Cliente extends Model
         'linea_farma',
         'importe_credito_farma',
         'codigo_farma',
+        'codigo_persona',
         'extranjero'
     ];
 

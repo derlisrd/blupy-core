@@ -33,6 +33,9 @@ class FarmaService
     public function cliente2(String $cedula){
         return $this->get('cliente/',['documento' => $cedula]);
     }
+    public function clienteExtranjero(String $codigo, String $pers_codigo){
+        return $this->get('cliente/codigo',['codigo' => $codigo, 'pers_codigo' => $pers_codigo]);
+    }
     public function ventaPorCodigo(String $codigo){
         return $this->get('ventas/codigo/',['codigo' => $codigo]);
     }

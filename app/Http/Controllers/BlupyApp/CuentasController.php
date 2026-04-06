@@ -46,8 +46,14 @@ class CuentasController extends Controller
         $infinitaCards = $this->getTarjetasInfinita($cliente->cedula);
         $tarjetasResults = array_merge($tarjetasResults, $infinitaCards);
 
-        $tarjetasFarma = $this->getTarjetasFarma($cliente->cedula);
-        $tarjetasResults = array_merge($tarjetasResults, $tarjetasFarma);
+        $tarjetasFarma = null;
+        if($cliente->extranjero === 1){
+            $tarjetasFarma = $this->getTarjetasFarmaExtranjero($cliente->codigo_farma, $cliente->codigo_persona);
+            $tarjetasResults = array_merge($tarjetasResults, $tarjetasFarma);
+        }else{
+            $tarjetasFarma = $this->getTarjetasFarma($cliente->cedula);
+            $tarjetasResults = array_merge($tarjetasResults, $tarjetasFarma);
+        }
 
         $tarjetasBlupyEmpresas = $this->getTarjetaBlupyEmpresas($cliente->cedula);
         $tarjetasResults = array_merge($tarjetasResults, $tarjetasBlupyEmpresas);
@@ -95,12 +101,24 @@ class CuentasController extends Controller
         return $tarjetasResults;
     }
 
+    private function getTarjetasFarmaExtranjero($codigo_cliente, $codigo_persona)
+    {
+
+        $tarjetasResults = [];
+        $farmaService = new FarmaService();
+
+        
+        return $tarjetasResults;
+    }
+
 
     private function getTarjetasFarma($cedula){
         
         $tarjetasResults = [];
         $farmaService = new FarmaService();
+
         $farmaCardsF = $farmaService->cliente2($cedula);
+        
         $farmaCardDataF = $farmaCardsF['data'];
 
 
