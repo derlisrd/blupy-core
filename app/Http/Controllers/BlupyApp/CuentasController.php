@@ -7,15 +7,11 @@ use App\Models\Device;
 use App\Models\User;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
-use App\Services\SupabaseService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Client\Pool;
 
 class CuentasController extends Controller
 {
@@ -54,9 +50,10 @@ class CuentasController extends Controller
             $tarjetasFarma = $this->getTarjetasFarma($cliente->cedula);
             $tarjetasResults = array_merge($tarjetasResults, $tarjetasFarma);
         }
-
-        $tarjetasBlupyEmpresas = $this->getTarjetaBlupyEmpresas($cliente->cedula);
-        $tarjetasResults = array_merge($tarjetasResults, $tarjetasBlupyEmpresas);
+        if($cliente->empresa_autorizado === 1){
+            $tarjetasBlupyEmpresas = $this->getTarjetaBlupyEmpresas($cliente->cedula);
+            $tarjetasResults = array_merge($tarjetasResults, $tarjetasBlupyEmpresas);
+        }
         
 
         return response()->json([
@@ -85,6 +82,7 @@ class CuentasController extends Controller
                     'bloqueo' => false,
                     'condicion' => 'Credito',
                     'condicionVenta' => 2,
+                    'codigoPersona'=>$result['codigoPersAutorizada'],
                     'cuenta' => null,
                     'principal' => false,
                     'adicional' => false,
@@ -158,7 +156,8 @@ class CuentasController extends Controller
                     'deuda' => $deuda,
                     'disponible' => $disponible,
                     'alianzas' => $alianza,
-                    'funcionario' => $funcionario
+                    'funcionario' => $funcionario,
+                    'codigoPersona' => $codigo_persona
                 ];
             }
         }
@@ -221,7 +220,8 @@ class CuentasController extends Controller
                     'deuda' => $deuda,
                     'disponible' => $disponible,
                     'alianzas' => $alianza,
-                    'funcionario' => $funcionario
+                    'funcionario' => $funcionario,
+                    'codigoPersona' => null
                 ];
             }
         }
@@ -267,6 +267,7 @@ class CuentasController extends Controller
                         'deuda' => $deuda,
                         'disponible' => $disponible,
                         'alianzas' => null,
+                        'codigoPersona' => null
                     ];
                 }
             }

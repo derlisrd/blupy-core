@@ -64,10 +64,12 @@ class Cliente extends Model
         'extranjero',
         'solicitud_credito',
         'linea_farma',
+        'empresa_autorizado',
         'importe_credito_farma',
         'codigo_farma',
         'codigo_persona',
-        'extranjero'
+        'extranjero',
+
     ];
 
     public function user(){
