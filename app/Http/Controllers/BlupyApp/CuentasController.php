@@ -92,6 +92,7 @@ class CuentasController extends Controller
                     'deuda' => $result['deuda'],
                     'disponible' => $result['clerLimiteCredito'] - $result['deuda'],
                     'alianzas' => null,
+                    'bloqueoMotivo' => ''
                 ];
             }
         }
@@ -157,7 +158,8 @@ class CuentasController extends Controller
                     'disponible' => $disponible,
                     'alianzas' => $alianza,
                     'funcionario' => $funcionario,
-                    'codigoPersona' => $codigo_persona
+                    'codigoPersona' => $codigo_persona,
+                    'bloqueoMotivo' => ''
                 ];
             }
         }
@@ -221,7 +223,8 @@ class CuentasController extends Controller
                     'disponible' => $disponible,
                     'alianzas' => $alianza,
                     'funcionario' => $funcionario,
-                    'codigoPersona' => null
+                    'codigoPersona' => null,
+                    'bloqueoMotivo' => ''
                 ];
             }
         }
@@ -267,7 +270,8 @@ class CuentasController extends Controller
                         'deuda' => $deuda,
                         'disponible' => $disponible,
                         'alianzas' => null,
-                        'codigoPersona' => null
+                        'codigoPersona' => null,
+                        'bloqueoMotivo' => $tarjeta['MotBloqNom']
                     ];
                 }
             }
