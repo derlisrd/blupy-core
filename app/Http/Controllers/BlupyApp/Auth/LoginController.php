@@ -241,7 +241,8 @@ class LoginController extends Controller
             'tokenRaw' => $token,
             'changepass' => $cliente->user->changepass,
             'digital' => $cliente->digital,
-            'codigoPersona' => $cliente->codigo_persona
+            'codigoPersona' => $cliente->codigo_persona,
+            'autorizadoEmpresa' => $cliente->empresa_autorizado
         ];
     }
 
