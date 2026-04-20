@@ -114,7 +114,6 @@ Route::middleware('auth:api')->group(function(){
         Route::delete('/eliminar',[CuentasController::class,'eliminarCuenta'])->name('api_eliminar_cuenta');
         Route::get('/tarjetas',[CuentasController::class,'tarjetas2'])->name('api_tarjetas_2');
     });
-    Route::get('/tarjetas',[CuentasController::class,'tarjetas'])->name('api_tarjetas');
     Route::get('/movimientos',[MovimientosController::class,'movimientos'])->name('api_movimientos');
     Route::get('/extracto',[CuentasController::class,'extracto'])->name('api_extracto');
 

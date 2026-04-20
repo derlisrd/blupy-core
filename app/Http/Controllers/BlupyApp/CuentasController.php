@@ -15,10 +15,11 @@ use Illuminate\Support\Facades\Cache;
 
 class CuentasController extends Controller
 {
-    
-    
 
-    public function eliminarCuenta(Request $req){
+
+
+    public function eliminarCuenta(Request $req)
+    {
         $user = User::find($req->user()->id);
 
         $user->active = 0;
@@ -26,44 +27,46 @@ class CuentasController extends Controller
         $user->save();
 
         return response()->json([
-            'success'=>true,
-            'message'=>'Su cuenta ha sido eliminada'
+            'success' => true,
+            'message' => 'Su cuenta ha sido eliminada'
         ]);
     }
 
 
 
-    public function tarjetas2(Request $req){
+    public function tarjetas2(Request $req)
+    {
         $user = $req->user();
         $cliente = $user->cliente;
 
         $tarjetasResults = [];
-        
+
         $infinitaCards = $this->getTarjetasInfinita($cliente->cedula);
         $tarjetasResults = array_merge($tarjetasResults, $infinitaCards);
 
         $tarjetasFarma = null;
-        if($cliente->extranjero === 1){
+        if ($cliente->extranjero === 1) {
             $tarjetasFarma = $this->getTarjetasFarmaExtranjero($cliente->codigo_farma, $cliente->codigo_persona);
             $tarjetasResults = array_merge($tarjetasResults, $tarjetasFarma);
-        }else{
+        } else {
             $tarjetasFarma = $this->getTarjetasFarma($cliente->cedula);
             $tarjetasResults = array_merge($tarjetasResults, $tarjetasFarma);
         }
-        if($cliente->empresa_autorizado === 1){
+        if ($cliente->empresa_autorizado === 1) {
             $tarjetasBlupyEmpresas = $this->getTarjetaBlupyEmpresas($cliente->cedula);
             $tarjetasResults = array_merge($tarjetasResults, $tarjetasBlupyEmpresas);
         }
-        
+
 
         return response()->json([
-            'success'=>true,
-            'message'=>'',
-            'results'=>$tarjetasResults,
+            'success' => true,
+            'message' => '',
+            'results' => $tarjetasResults,
         ]);
     }
 
-    private function getTarjetaBlupyEmpresas($cedula){
+    private function getTarjetaBlupyEmpresas($cedula)
+    {
         $tarjetasResults = [];
         $farmaService = new FarmaService();
         $farmaCards = $farmaService->empresaAutorizados($cedula);
@@ -77,12 +80,13 @@ class CuentasController extends Controller
                     'descripcion' => 'Blupy empresa',
                     'otorgadoPor' => $result['empresa'],
                     'ruc' => $result['ruc'],
+                    'funcionario' => false,
                     'tipo' => 0,
                     'emision' => null,
                     'bloqueo' => false,
                     'condicion' => 'Credito',
                     'condicionVenta' => 2,
-                    'codigoPersona'=>$result['codigoPersAutorizada'],
+                    'codigoPersona' => $result['codigoPersAutorizada'],
                     'cuenta' => null,
                     'principal' => false,
                     'adicional' => false,
@@ -143,6 +147,7 @@ class CuentasController extends Controller
                     'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Farma',
                     'otorgadoPor' => 'Farma S.A.',
                     'ruc' => null,
+                    'funcionario' => $funcionario,
                     'tipo' => 0,
                     'emision' => null,
                     'bloqueo' => false,
@@ -157,7 +162,6 @@ class CuentasController extends Controller
                     'deuda' => $deuda,
                     'disponible' => $disponible,
                     'alianzas' => $alianza,
-                    'funcionario' => $funcionario,
                     'codigoPersona' => $codigo_persona,
                     'bloqueoMotivo' => ''
                 ];
@@ -167,13 +171,14 @@ class CuentasController extends Controller
     }
 
 
-    private function getTarjetasFarma($cedula){
-        
+    private function getTarjetasFarma($cedula)
+    {
+
         $tarjetasResults = [];
         $farmaService = new FarmaService();
 
         $farmaCardsF = $farmaService->cliente2($cedula);
-        
+
         $farmaCardDataF = $farmaCardsF['data'];
 
 
@@ -186,15 +191,15 @@ class CuentasController extends Controller
                 $alianza = $tarjetasFarma['alianza'] ?? null;
 
                 //if($funcionario === false && $alianza === null){
-                  //  return [];
+                //  return [];
                 //}
 
                 $linea = $tarjetasFarma['clerLimiteCredito'];
 
                 $hoy = Carbon::now()->startOfDay();
                 $fechaVigencia = Carbon::parse($tarjetasFarma['clerFchFinVigencia'])
-                ->setTimezone('America/Asuncion')
-                ->startOfDay();
+                    ->setTimezone('America/Asuncion')
+                    ->startOfDay();
                 if ($fechaVigencia >= $hoy) { // aqui debo comparar la fecha
                     $linea = $linea + $tarjetasFarma['clerLimiteCreditoAdic'];
                 }
@@ -208,6 +213,7 @@ class CuentasController extends Controller
                     'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Farma',
                     'otorgadoPor' => 'Farma S.A.',
                     'ruc' => null,
+                    'funcionario' => $funcionario,
                     'tipo' => 0,
                     'emision' => null,
                     'bloqueo' => false,
@@ -222,7 +228,6 @@ class CuentasController extends Controller
                     'deuda' => $deuda,
                     'disponible' => $disponible,
                     'alianzas' => $alianza,
-                    'funcionario' => $funcionario,
                     'codigoPersona' => null,
                     'bloqueoMotivo' => ''
                 ];
@@ -232,8 +237,9 @@ class CuentasController extends Controller
     }
 
 
-    private function getTarjetasInfinita($cedula){
-        
+    private function getTarjetasInfinita($cedula)
+    {
+
         $tarjetasResults = [];
         try {
             $infinitaService = new InfinitaService();
@@ -256,6 +262,7 @@ class CuentasController extends Controller
                         'descripcion' => 'Blupy Digital',
                         'otorgadoPor' => 'Mi crédito S.A.',
                         'ruc' => null,
+                        'funcionario' => false,
                         'tipo' => 1,
                         'emision' => $tarjeta['MTFEmi'],
                         'bloqueo' => !empty($tarjeta['MTBloq']),
@@ -279,27 +286,10 @@ class CuentasController extends Controller
         } catch (\Throwable $th) {
             return [];
         }
-        
     }
 
 
 
-
-    public function movimientos(Request $req){
-
-        return response()->json([
-            'success'=>true,
-            'message'=>'',
-            'results'=>[]
-        ]);
-
-    }
-
-
-  
-
-
-    
 
 
 
@@ -314,32 +304,32 @@ class CuentasController extends Controller
         $infinitaService = new InfinitaService();
         $periodo = $req->periodo ?? Carbon::now()->format('m-Y');
         //$cacheKey = "extracto_{$req->cuenta}_{$periodo}";
-        
+
         //return Cache::remember($cacheKey, 600, function () use ($req, $periodo, $infinitaService) {
-            try {
-                $res = $infinitaService->extractoCerrado($req->cuenta, 1, $periodo);
-                $resultado = (object)$res['data'];
-                
-                if ($resultado->Retorno == 'Extracto no encontrado.') {
-                    return response()->json(['success' => false, 'message' => 'Extracto no disponible', 'results' => null], 404);
-                }
-                
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Extracto disponible',
-                    'results' => ['url' => env('BASE_EXTRACTO') . $resultado->Url]
-                ]);
-            } catch (\Throwable $th) {
-                Log::error($th->getMessage());
-                return response()->json(['success' => false, 'message' => 'Error de servidor'], 500);
+        try {
+            $res = $infinitaService->extractoCerrado($req->cuenta, 1, $periodo);
+            $resultado = (object)$res['data'];
+
+            if ($resultado->Retorno == 'Extracto no encontrado.') {
+                return response()->json(['success' => false, 'message' => 'Extracto no disponible', 'results' => null], 404);
             }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Extracto disponible',
+                'results' => ['url' => env('BASE_EXTRACTO') . $resultado->Url]
+            ]);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error de servidor'], 500);
+        }
         //});
     }
 
     public function misDispositivos(Request $req)
     {
         $user = $req->user();
-        
+
         // Cache para dispositivos (1 minuto)
         return Cache::remember("dispositivos_usuario_{$user->id}", 60, function () use ($user) {
             return response()->json(['success' => true, 'results' => $user->devices]);
@@ -351,24 +341,24 @@ class CuentasController extends Controller
         try {
             $device = Device::findOrFail($req->id);
             $user = $req->user();
-            
+
             // Verificar que el dispositivo pertenece al usuario
             if ($device->user_id !== $user->id) {
                 return response()->json(['success' => false, 'message' => 'Dispositivo no autorizado'], 403);
             }
-            
+
             $device->delete();
-            
+
             // Limpiar cache de dispositivos
             Cache::forget("dispositivos_usuario_{$user->id}");
-            
+
             return response()->json([
-                'success' => true, 
-                'message' => 'Dispositivo eliminado con éxito', 
+                'success' => true,
+                'message' => 'Dispositivo eliminado con éxito',
                 'results' => $user->fresh()->devices
             ]);
         } catch (\Exception $e) {
-            
+
             return response()->json(['success' => false, 'message' => 'Error al eliminar dispositivo'], 500);
         }
     }
