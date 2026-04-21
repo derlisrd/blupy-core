@@ -77,7 +77,7 @@ class LoginController extends Controller
                 $user = $cliente->user;
                 $dispositoDeConfianza = Device::where('user_id', $user->id)
                         ->where('time',$req->time)
-                        ->where('device_id_app',$req->deviceIdApp)
+                        ->where('device_id_app',$req->device_id_app)
                         ->first();
                         if (!$dispositoDeConfianza) {
                             $pistaEmail =  $user->email; 
