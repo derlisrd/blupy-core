@@ -209,10 +209,10 @@ class DeviceController extends Controller
                 'desktop' => $desktop,
                 'confianza' => $confianza,
 
-                'version' => $req->versionApp ?? null,
-                'build_version' => $req->buildVersion ?? null,
+                'version' => $req->version ?? null,
+                'build_version' => $req->build_version ?? null,
                 'time' => $req->time ?? null,
-                'device_id_app' => $req->deviceIdApp,
+                'device_id_app' => $req->device_id_app ?? null,
             ]);
 
             return response()->json(['success' => true, 'message' => 'Dispositivo registrado correctamente']);
