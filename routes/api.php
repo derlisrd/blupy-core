@@ -106,10 +106,17 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/mis-dispositivos',[CuentasController::class,'misDispositivos'])->name('api_mis_dispositivos');
     Route::delete('/eliminar-dispositivo',[CuentasController::class,'eliminarDispositivo'])->name('api_eliminar_dispositivo');
 
+
+
+
     Route::get('/notificaciones',[NotificacionesController::class,'NotificacionesPorUser'])->name('api_notificaciones');
 
 
     
+    Route::prefix('/devices')->group(function(){
+        Route::get('/', [CuentasController::class, 'misDispositivos'])->name('api_mis_dispositivos');
+        Route::delete('/{id}', [CuentasController::class, 'eliminarDispositivo'])->name('api_eliminar_dispositivo');
+    });
     Route::prefix('/contratos')->group(function(){
         Route::post('/aceptar-blupy-digital',[ContratoController::class,'aceptarContrato'])->name('aceptar_contrato_blupy_digital');
     });

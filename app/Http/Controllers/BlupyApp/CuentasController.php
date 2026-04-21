@@ -336,10 +336,10 @@ class CuentasController extends Controller
         });
     }
 
-    public function eliminarDispositivo(Request $req)
+    public function eliminarDispositivo(Request $req, $id)
     {
         try {
-            $device = Device::findOrFail($req->id);
+            $device = Device::findOrFail($id);
             $user = $req->user();
 
             // Verificar que el dispositivo pertenece al usuario
