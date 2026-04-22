@@ -27,13 +27,19 @@ class AutorizacionesQRController extends Controller
             $blupy = $blupyQrService->consultarPorDocumento($documento);
             $data = (object) $blupy['data'];
 
+            if ($data->success) {
                 return response()->json([
                     'success' => $data->success,
                     'message' => '',
                     'results' => $data->results,
                 ], $blupy['status']);
-            
+            }
 
+            return response()->json([
+                'success' => $data->success,
+                'message' => $data->message
+            ], $blupy['status']);
+            ///return response()->json(['cedula'=>$cliente->cedula]);
 
         } catch (\Exception $e) {
             throw $e;
