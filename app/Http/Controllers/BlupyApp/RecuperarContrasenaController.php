@@ -152,7 +152,6 @@ class RecuperarContrasenaController extends Controller
     {
         $validator = Validator::make($req->all(), [
             'id'    => 'required|exists:validaciones,id',
-            'forma' => 'required|in:0,1',
         ]);
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
@@ -192,7 +191,7 @@ class RecuperarContrasenaController extends Controller
             $validacion->save();
 
             $forma = '';
-            if ($req->forma == 0) {
+            if ($validacion->forma == 0) {
                 $forma = $this->ocultarParcialmenteEmail($user->email);
                 (new EmailService())->enviarEmail(
                     $user->email,
@@ -202,7 +201,7 @@ class RecuperarContrasenaController extends Controller
                 );
             }
 
-            if ($req->forma == 1) {
+            if ($validacion->forma == 1) {
                 $forma = $this->ocultarParcialmenteTelefono($cliente->celular);
                 $this->enviarMensajeDeTextoRecuperacion($cliente->celular, $randomNumber);
             }
