@@ -23,7 +23,42 @@ class RecuperarContrasenaController extends Controller
 {
     use Helpers;
 
-    
+    public function confirmarElCodigoDeRecuperacion(Request $req)
+    {
+        $validator = Validator::make($req->all(), trans('validation.verify.codigo'), trans('validation.verify.codigo.messages'));
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        $validacion = Validacion::where('id', $req->id)->where('codigo', $req->codigo)->where('validado', 0)->first();
+        if (!$validacion)
+            return response()->json(['success' => false, 'message' => 'Código inválido.'], 400);
+
+        $fechaInicial = Carbon::parse($validacion->created_at);
+        $fechaActual = Carbon::now();
+        $diferenciaEnMinutos = $fechaInicial->diffInMinutes($fechaActual);
+
+        if ($diferenciaEnMinutos >= 10)
+            return response()->json(['success' => false, 'message' => 'Código ha expirado'], 401);
+
+        $validacion->validado = 1;
+        $validacion->save();
+
+        $user = User::where('cliente_id', $validacion->cliente_id)->first();
+
+        $token = Str::random(64);
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => $token,
+                'created_at' => Carbon::now()
+            ]
+        );
+
+        return response()->json(['success' => true, 'results' => [
+            'token' => $token
+        ]]);
+    }
+
     public function enviameElCodigoDeRecuperacion(Request $req)
     {
 
