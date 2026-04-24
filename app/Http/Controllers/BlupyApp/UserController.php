@@ -40,7 +40,7 @@ class UserController extends Controller
             return response()->json(['success'=>false,'message'=>'No existe cliente'],404);
 
         if (!Hash::check($req->old_password, $user->password))
-            return response()->json(['success'=>false,'message'=>'Contraseña incorrecta.'],401);
+            return response()->json(['success'=>false,'message'=>'Contraseña incorrecta.'],400);
 
 
         $user->update(['password' => Hash::make($req->password), 'changepass'=>0]);
