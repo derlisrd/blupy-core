@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\BlupyApp\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\DispositivoInusualJob;
 use App\Models\Adicional;
 use App\Models\Cliente;
 use App\Models\Device;
@@ -242,7 +241,8 @@ class LoginController extends Controller
             'changepass' => $cliente->user->changepass,
             'digital' => $cliente->digital,
             'codigoPersona' => $cliente->codigo_persona,
-            'autorizadoEmpresa' => $cliente->empresa_autorizado
+            'autorizadoEmpresa' => $cliente->empresa_autorizado,
+            'extranjero' => $cliente->extranjeto
         ];
     }
 

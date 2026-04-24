@@ -72,14 +72,14 @@ class AutorizacionesQRController extends Controller
             $user = $req->user();
             $cliente = $user->cliente;
 
-            
+            $documento = $req->documento ?? $cliente->cedula;
 
             if (!Hash::check($req->password, $user->password))
-                return response()->json(['success' => false, 'message' => 'Contraseña incorrecta.'], 401);
+                return response()->json(['success' => false, 'message' => 'Contraseña incorrecta.'], 400);
 
             $parametrosPorArray = [
                 'id' => $req->id,
-                'documento' => $cliente->cedula,
+                'documento' => $documento,
                 'numeroCuenta' => $req->numeroCuenta,
                 'numeroTarjeta' => $req->numeroTarjeta,
                 'telefono' => $req->telefono,
@@ -129,8 +129,6 @@ class AutorizacionesQRController extends Controller
                 'message' => $data->message,
                 'results' => $datasResults,
             ], $blupy['status']);
-
-            return response()->json();
         } catch (\Exception $e) {
             throw $e;
             return response()->json([
