@@ -41,7 +41,9 @@ Route::post('/codigo-nuevo-dispositivo',[DeviceController::class,'codigoNuevoDis
 
 Route::prefix('/recuperar-contrasena')->group(function(){
     Route::post('/enviame-el-codigo', [RecuperarContrasenaController::class, 'enviameElCodigoDeRecuperacion'])->name('api_enviame_codigo_recuperacion');
+    Route::post('/reenviame-el-codigo', [RecuperarContrasenaController::class, 'reEnviameElCodigoDeRecuperacion'])->name('api_reenviame_codigo_recuperacion');
     Route::post('/confirmar-el-codigo', [RecuperarContrasenaController::class, 'confirmarElCodigoDeRecuperacion'])->name('api_confirmar_codigo_recuperacion');
+    Route::put('/establecer-contrasena-nueva', [RecuperarContrasenaController::class, 'establecerContrasenaNueva'])->name('api_establecer_contrasena_nueva');
 });
 
 Route::post('/olvide-contrasena',[UserPublic::class,'olvideContrasena'])->name('api_olvide_contrasena');
