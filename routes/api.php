@@ -17,6 +17,7 @@ use App\Http\Controllers\BlupyApp\MovimientosController;
 use App\Http\Controllers\BlupyApp\NotificacionesController;
 use App\Http\Controllers\BlupyApp\PdfController;
 use App\Http\Controllers\BlupyApp\QRController;
+use App\Http\Controllers\BlupyApp\RecuperarContrasenaController;
 use App\Http\Controllers\BlupyApp\SolicitudesController;
 use App\Http\Controllers\BlupyApp\UserController as UserPrivate;
 use App\Http\Controllers\Public\UserController as UserPublic;
@@ -38,6 +39,9 @@ Route::prefix('/device')->group(function () {
 Route::post('/confirmar-nuevo-dispositivo',[DeviceController::class,'confirmarNuevoDispositivo'])->name('api_confirmar_nuevo_dispositivo');
 Route::post('/codigo-nuevo-dispositivo',[DeviceController::class,'codigoNuevoDispositivo'])->name('api_codigo_nuevo_dispositivo');
 
+Route::prefix('/recuperar-contrasena')->group(function(){
+    Route::post('/enviame-el-codigo', [RecuperarContrasenaController::class, 'enviameElCodigoDeRecuperacion'])->name('api_enviame_codigo_recuperacion');
+});
 
 Route::post('/olvide-contrasena',[UserPublic::class,'olvideContrasena'])->name('api_olvide_contrasena');
 Route::post('/reenviar-codigo-recuperacion-wa',[UserPublic::class,'reenviarCodigoRecuperacionWa'])->name('api_reenviar_codigo_recuperacion_wa');

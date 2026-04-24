@@ -8,7 +8,6 @@ use App\Models\Cliente;
 use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
-use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
 use App\Services\WaService;
 use App\Traits\Helpers;
