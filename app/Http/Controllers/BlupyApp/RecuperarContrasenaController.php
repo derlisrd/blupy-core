@@ -187,7 +187,8 @@ class RecuperarContrasenaController extends Controller
 
             // Actualizar el registro existente — mismo ID, código nuevo
             $validacion->codigo     = $randomNumber;
-            $validacion->created_at = Carbon::now(); // Resetea la expiración de 10 min
+            $validacion->timestamps = false;
+            $validacion->created_at = Carbon::now();
             $validacion->save();
 
             $forma = '';
