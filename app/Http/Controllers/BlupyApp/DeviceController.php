@@ -215,7 +215,7 @@ class DeviceController extends Controller
                 'device_id_app' => $req->device_id_app ?? null,
             ]);
 
-            return response()->json(['success' => true, 'message' => 'Dispositivo registrado correctamente']);
+            return response()->json(['success' => true, 'message' => 'Dispositivo registrado. Ya puede iniciar sesión correctamente.']);
         } catch (\Throwable $th) {
             Log::error('Error en el registro del dispositivo', $th->getMessage());
             return response()->json(['success' => false, 'message' => 'Dispositivo no registrado'], 500);
