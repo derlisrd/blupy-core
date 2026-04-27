@@ -38,6 +38,8 @@ class QRController extends Controller
                 'localizacion' => $req->localizacion,
                 'adicional' => $req->adicional,
                 'extranjero' => $cliente->extranjero,
+                'condicion' => $req->condicion,
+                'token'=> $req->token
             ];
             //Verificar si tiene saldo
             if($req->numeroCuenta !== '0'){
