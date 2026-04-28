@@ -151,6 +151,11 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/consultar-qr/{id}',[QRController::class,'consultar'])->name('api_consultar_qr');
     Route::post('/autorizar-qr',[QRController::class,'autorizar'])->name('api_autorizar_qr');
 
+    Route::prefix('/qr')->group(function () {
+        Route::get('/consultar/{id}', [QRController::class, 'consultar'])->name('api_consultar_qr');
+        Route::post('/autorizar', [QRController::class, 'autorizar'])->name('api_autorizar_qr');
+    });
+
     Route::get('/solicitar-autorizacion-compra',[AutorizacionesQRController::class,'solicitarAutorizacion'])->name('api_solicitar_compra');
     Route::post('/autorizar-compra',[AutorizacionesQRController::class,'autorizar'])->name('api_autorizar_compra');
 
