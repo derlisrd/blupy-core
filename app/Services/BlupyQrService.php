@@ -38,6 +38,7 @@ class BlupyQrService
             'adicional'=>$params['adicional'],
             'numero_tarjeta'=>$params['numeroTarjeta'],
             'extranjero'=>$params['extranjero'],
+            'token' => $params['token']
         ];
         return $this->post('cliente/autorizar-qr',$data);
     }
