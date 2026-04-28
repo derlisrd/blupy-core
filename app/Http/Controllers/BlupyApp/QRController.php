@@ -13,12 +13,8 @@ use Illuminate\Support\Facades\Log;
 
 class QRController extends Controller
 {
-    private $webserviceBlupyQRCore;
 
-    public function __construct()
-    {
-        $this->webserviceBlupyQRCore = new BlupyQrService();
-    }
+
 
     public function autorizar(Request $req)
     {
@@ -52,6 +48,7 @@ class QRController extends Controller
                      return response()->json([
                          'success' => false,
                          'message' => 'Saldo insuficiente',
+                            'results' => null
                      ], 400);
                  }
                 }
@@ -83,6 +80,7 @@ class QRController extends Controller
                          return response()->json([
                              'success' => false,
                              'message' => 'Error al procesar el pedido.',
+                             'results' =>null
                          ], 500);
                      }
                  }
@@ -93,7 +91,8 @@ class QRController extends Controller
 
             return response()->json([
                 'success' => $data['success'],
-                'message' => $data['message']
+                'message' => $data['message'],
+                'results' => $data['results']
             ], $blupy['status']);
         } catch (\Throwable $th) {
             
@@ -105,10 +104,10 @@ class QRController extends Controller
         }
     }
 
-    public function consultar($id)
+    public function consultar(String $id)
     {
 
-        $blupy = $this->webserviceBlupyQRCore->consultarQR($id);
+        $blupy = app(BlupyQrService::class)->consultarQR($id);
         $data = (object) $blupy['data'];
 
         if ($data->success) {
@@ -146,7 +145,7 @@ class QRController extends Controller
                     'extranjero' => $cliente->extranjero,
                 ];
 
-            $blupy = $this->webserviceBlupyQRCore->autorizarQR($parametrosPorArray);
+            $blupy = app(BlupyQrService::class)->autorizarQR($parametrosPorArray);
             $data = (object) $blupy['data'];
 
             if (isset($data->results)){
