@@ -89,7 +89,8 @@ class QRController extends Controller
  
             if($data && $data['results'] && $req->token){
                $push = new PushService();
-               $push->sendPushNotification($req->token,'Compra realizada','Ha comprado');
+               $tokens = $user->nativeTokens();
+               $push->sendPushMulti($tokens,['screen'=>'notificaciones'],'Compra realizada','Ha comprado');
             }
 
 
