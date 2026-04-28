@@ -24,3 +24,5 @@ composer.lock
 *.p8
 .p8
 .DS_Store
+
+firebase.json
