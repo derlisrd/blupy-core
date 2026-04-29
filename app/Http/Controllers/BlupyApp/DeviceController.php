@@ -21,6 +21,40 @@ use Illuminate\Support\Facades\RateLimiter;
 class DeviceController extends Controller
 {
 
+    public function verificarNumeroDeTelefono(Request $req){
+        $validator = Validator::make($req->all(), [
+            'numero' => 'required|digits:10',
+        ]);
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        $key = 'verificar-nro:' . $req->ip();
+        $executed = RateLimiter::attempt($key, $maxAttempts = 2, function () {
+            return true;
+        }, 120);
+
+        if (!$executed) {
+            $seconds = RateLimiter::availableIn($key);
+            return response()->json([
+                'success' => false,
+                'message' => "Demasiados intentos. Por favor espera $seconds segundos."
+            ], 400);
+        }
+
+        $cliente =  Cliente::where('celular',$req->numero)->first();
+        if($cliente){
+            return response()->json([
+                'success'=>false,
+                'message' => 'Número no disponible. Ingrese un número nuevo.'
+            ],400);
+        }
+        return response()->json([
+            'success'=>true,
+            'message' => 'Número disponible.'
+        ]);
+    }
+
+
     private function convertirImagenYSubir($imagenBase64, $imageName)
     {
         if (!$imagenBase64 || !str_contains($imagenBase64, ';base64,')) {
@@ -51,7 +85,6 @@ class DeviceController extends Controller
             'cedula_dorso' => 'required',
             'cedula_selfie' => 'required',
             'os' => 'required',
-            'model' => 'required',
             'cliente_validacion_id' => 'required'
         ]);
         if ($validator->fails())

@@ -98,6 +98,12 @@ Route::prefix('/dispositivos')->group(function () {
     Route::post('/solicitar', [DeviceController::class, 'requestNewDevice'])->name('api_solicitar_device');
 });
 
+
+Route::prefix('/vincular')->group(function () {
+    Route::get('/verificar-numero', [DeviceController::class, 'verificarNumeroDeTelefono'])->name('api_verificar_nro_tel');
+});
+
+
 /*
  =========RUTAS PROTEGIDAS ==================
  */
