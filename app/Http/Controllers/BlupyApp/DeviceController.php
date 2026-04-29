@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
 use App\Services\SupabaseService;
+use App\Services\TigoSmsService;
 use App\Services\WaService;
 //use App\Services\SupabaseService;
 use Carbon\Carbon;
@@ -21,7 +22,33 @@ use Illuminate\Support\Facades\RateLimiter;
 class DeviceController extends Controller
 {
 
-    public function verificarNumeroDeTelefono(Request $req){
+    public function confirmarCodigoValidando(Request $req){
+
+        $validator = Validator::make($req->all(), trans('validation.verificaciones.confirmar'), trans('validation.verificaciones.confirmar.messages'));
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        $validacion = Validacion::where('id', $req->id)->where('validado', 0)->where('codigo', $req->codigo)->first();
+        if (!$validacion)
+            return response()->json(['success' => false, 'message' => 'Codigo invalido'], 400);
+
+        $fechaCreado = Carbon::parse($validacion->created_at);
+        $fechaActual = Carbon::now();
+        $diferenciaEnMinutos = $fechaCreado->diffInMinutes($fechaActual);
+
+        if ($diferenciaEnMinutos >= 10)
+            return response()->json(['success' => false, 'message' => 'Código ha expirado'], 400);
+
+        $validacion->validado = 1;
+        $validacion->save();
+
+        return response()->json(['success' => true, 'message' => 'Telefono verificado.']);
+
+    }
+
+
+    public function verificarNumeroDeTelefono(Request $req)
+    {
         $validator = Validator::make($req->all(), [
             'numero' => 'required|digits:10',
         ]);
@@ -40,17 +67,30 @@ class DeviceController extends Controller
                 'message' => "Demasiados intentos. Por favor espera $seconds segundos."
             ], 400);
         }
-
-        $cliente =  Cliente::where('celular',$req->numero)->first();
-        if($cliente){
+        $celular = $req->numero;
+        $cliente =  Cliente::where('celular', $celular)->first();
+        if ($cliente) {
             return response()->json([
-                'success'=>false,
-                'message' => 'Número no disponible. Ingrese un número nuevo.'
-            ],400);
+                'success' => false,
+                'message' => 'Número no disponible. Ingrese un número nuevo.',
+                'results' => null
+            ], 400);
         }
+        $randomNumber = random_int(1000, 9999);
+        $validacion = Validacion::create([
+            'codigo' => $randomNumber,
+            'forma' => 1,
+            'celular' => $req->numero,
+            'origen' => 'nuevo-dispositivo'
+        ]);
+        $mensaje = "Utiliza el código " . $randomNumber . " para confirmar tu dispositivo en Blupy.";
+        (new TigoSmsService())->enviarSms($celular, $mensaje);
         return response()->json([
-            'success'=>true,
-            'message' => 'Número disponible.'
+            'success' => true,
+            'message' => 'Número disponible.',
+            'results' => [
+                'id' => $validacion->id
+            ]
         ]);
     }
 
@@ -252,7 +292,6 @@ class DeviceController extends Controller
         } catch (\Throwable $th) {
             Log::error('Error en el registro del dispositivo', $th->getMessage());
             return response()->json(['success' => false, 'message' => 'Dispositivo no registrado'], 500);
-            throw $th;
         }
     }
 }
