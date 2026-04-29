@@ -47,6 +47,57 @@ class DeviceController extends Controller
     }
 
 
+
+
+    public function reVerificarNumeroDeTelefono(Request $req)
+    {
+        $validator = Validator::make($req->all(), [
+            'id'    => 'required|exists:validaciones,id',
+        ]);
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        // Rate limit por IP Y por ID de validación
+        $ipKey        = 'reenvio_verificar_ip:' . $req->ip();
+        $validacionKey = 'reenvio_verificar_ip:' . $req->id;
+
+        if (
+            !RateLimiter::attempt($ipKey, 5, fn() => null) ||
+            !RateLimiter::attempt($validacionKey, 3, fn() => null)
+        )
+            return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
+
+        try {
+            $validacion = Validacion::where('id', $req->id)
+                ->where('validado', 0)  // No reenviar si ya fue validado
+                ->first();
+
+            if (!$validacion)
+                return response()->json(['success' => false, 'message' => 'Código ya utilizado o inválido.'], 400);
+
+            $randomNumber = random_int(1000, 9999);
+
+            // Actualizar el registro existente — mismo ID, código nuevo
+            $validacion->codigo     = $randomNumber;
+            $validacion->timestamps = false;
+            $validacion->created_at = Carbon::now();
+            $validacion->save();
+
+            $mensaje = "Utiliza el código " . $randomNumber . " para confirmar tu dispositivo en Blupy.";
+            (new TigoSmsService())->enviarSms($validacion->celular, $mensaje);
+            return response()->json([
+                'success' => true,
+                'results' => ['id' => $validacion->id],
+                'message'  => 'Código reenviado correctamente' 
+            ]);
+        } catch (\Throwable $th) {
+            Log::error('Error reenvio codigo: ' . $th->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error de servidor. Intente en unos minutos.'], 500);
+        }
+    }
+
+
+
     public function verificarNumeroDeTelefono(Request $req)
     {
         $validator = Validator::make($req->all(), [
