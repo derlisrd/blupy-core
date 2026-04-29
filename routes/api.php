@@ -101,7 +101,8 @@ Route::prefix('/dispositivos')->group(function () {
 
 Route::prefix('/vincular')->group(function () {
     Route::get('/verificar-numero', [DeviceController::class, 'verificarNumeroDeTelefono'])->name('api_verificar_nro_tel');
-    Route::get('/confirmar-codigo-validando', [DeviceController::class, 'confirmarCodigoValidando'])->name('api_confirmar_codigo_validando');
+    Route::post('/confirmar-codigo-validando', [DeviceController::class, 'confirmarCodigoValidando'])->name('api_confirmar_codigo_validando');
+    Route::post('/confirmar-nuevo-dispositivo', [DeviceController::class, 'confirmarNuevoDispositivo'])->name('api_confirmar_nuevo_dispositivo_2');
 });
 
 
