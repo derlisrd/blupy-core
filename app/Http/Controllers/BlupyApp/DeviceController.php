@@ -163,7 +163,7 @@ class DeviceController extends Controller
         return SupabaseService::uploadImage($imageFinalName, $image_binary, $imageType);
     }
 
-    public function requestNewDevice(Request $req)
+    public function solicitarNuevosDatos(Request $req)
     {
         $validator = Validator::make($req->all(), [
             'validacion_id' => 'required',

@@ -94,9 +94,6 @@ Route::get('/verificar-version',[VersionController::class,'verificarVersion'])->
 
 
 
-Route::prefix('/dispositivos')->group(function () {
-    Route::post('/solicitar', [DeviceController::class, 'requestNewDevice'])->name('api_solicitar_device');
-});
 
 
 Route::prefix('/vincular')->group(function () {
@@ -104,6 +101,8 @@ Route::prefix('/vincular')->group(function () {
     Route::get('/reverificar-numero', [DeviceController::class, 'reVerificarNumeroDeTelefono'])->name('api_reverificar_nro_tel');
     Route::post('/confirmar-codigo-validando', [DeviceController::class, 'confirmarCodigoValidando'])->name('api_confirmar_codigo_validando');
     Route::post('/confirmar-nuevo-dispositivo', [DeviceController::class, 'confirmarNuevoDispositivo'])->name('api_confirmar_nuevo_dispositivo_2');
+
+    Route::post('/solicitar-nuevos-datos', [DeviceController::class, 'solicitarNuevosDatos'])->name('api_solicitar_device');
 });
 
 
