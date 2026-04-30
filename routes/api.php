@@ -23,6 +23,7 @@ use App\Http\Controllers\BlupyApp\UserController as UserPrivate;
 use App\Http\Controllers\Public\UserController as UserPublic;
 use App\Http\Controllers\BlupyApp\ValidacionesController;
 use App\Http\Controllers\BlupyApp\VendedorController;
+use App\Http\Controllers\BlupyApp\WaController;
 use App\Http\Controllers\Public\VersionController;
 
 use Illuminate\Support\Facades\Route;
@@ -94,6 +95,9 @@ Route::get('/verificar-version',[VersionController::class,'verificarVersion'])->
 
 
 
+Route::prefix('/wa')->group(function () {
+    Route::post('/verificar-numero', [WaController::class, 'codigoVincularNuevoDispositivo'])->name('api_wa_verificar_nro');
+});
 
 
 Route::prefix('/vincular')->group(function () {
