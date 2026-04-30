@@ -234,9 +234,9 @@ class DeviceController extends Controller
                 'desktop'           => $req->desktop ? 1 : 0,
                 'version' => $req->version ?? null,
                 'device' => $req->device ?? null,
-                'build_version' => $req->buildVersion ?? null,
+                'build_version' => $req->build_version ?? null,
                 'time' => $req->time ?? null,
-                'device_id_app' => $req->deviceIdApp,
+                'device_id_app' => $req->device_id_app,
             ]);
             $cliente = Cliente::find($validacion->cliente_id);
 
