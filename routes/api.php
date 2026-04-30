@@ -96,7 +96,7 @@ Route::get('/verificar-version',[VersionController::class,'verificarVersion'])->
 
 
 Route::prefix('/wa')->group(function () {
-    Route::post('/verificar-numero', [WaController::class, 'codigoVincularNuevoDispositivo'])->name('api_wa_verificar_nro');
+    Route::post('/vincular/verificar-numero', [WaController::class, 'codigoVincularNuevoDispositivo'])->name('api_wa_verificar_nro');
 });
 
 
