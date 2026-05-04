@@ -122,10 +122,6 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/info-lista',[InformacionesController::class,'infoLista'])->name('api_info_lista');
     Route::put('/marcar-info-leida/{id}',[InformacionesController::class,'marcarInfoLeida'])->name('api_marcar_info');
 
-    Route::get('/mis-dispositivos',[CuentasController::class,'misDispositivos'])->name('api_mis_dispositivos');
-    Route::delete('/eliminar-dispositivo',[CuentasController::class,'eliminarDispositivo'])->name('api_eliminar_dispositivo');
-
-
 
 
     Route::get('/notificaciones',[NotificacionesController::class,'NotificacionesPorUser'])->name('api_notificaciones');
@@ -155,14 +151,17 @@ Route::middleware('auth:api')->group(function(){
 
     Route::put('/cambiar-contrasena',[UserPrivate::class,'cambiarContrasena'])->name('api_cambiar_contrasena');
 
-    Route::put('/solicitar-cambiar-celular',[DatosController::class,'solicitarCambiarCelular'])->name('api_solicitar_cambiar_celular');
-    Route::put('/confirmar-cambiar-celular',[DatosController::class,'confirmarCambiarCelular'])->name('api_confirmar_cambiar_celular');
-    Route::put('/solicitar-cambiar-email',[DatosController::class,'solicitarCambiarEmail'])->name('api_solicitar_cambiar_email');
-    Route::put('/confirmar-cambiar-email',[DatosController::class,'confirmarCambiarEmail'])->name('api_confirmar_cambiar_email');
+    
 
     Route::get('/consultar-qr/{id}',[QRController::class,'consultar'])->name('api_consultar_qr');
     Route::post('/autorizar-qr',[QRController::class,'autorizar'])->name('api_autorizar_qr');
 
+    Route::prefix('/datos')->group(function () {
+        Route::put('/solicitar-cambiar-celular', [DatosController::class, 'solicitarCambiarCelular'])->name('api_solicitar_cambiar_celular');
+        Route::put('/confirmar-cambiar-celular', [DatosController::class, 'confirmarCambiarCelular'])->name('api_confirmar_cambiar_celular');
+        Route::put('/solicitar-cambiar-email', [DatosController::class, 'solicitarCambiarEmail'])->name('api_solicitar_cambiar_email');
+        Route::put('/confirmar-cambiar-email', [DatosController::class, 'confirmarCambiarEmail'])->name('api_confirmar_cambiar_email');
+    });
     Route::prefix('/qr')->group(function () {
         Route::get('/consultar/{id}', [QRController::class, 'consultar'])->name('api_consultar_qr');
         Route::post('/autorizar', [QRController::class, 'autorizar'])->name('api_autorizar_qr');
