@@ -42,7 +42,7 @@ class DatosController extends Controller
             $emailService->enviarEmail($req->email,"[".$randomNumber."]Blupy confirmar email",'email.validar',['code'=>$randomNumber]);
             $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>0,'email'=>$req->email,'cliente_id'=>$cliente->id,'origen'=>'cambioemail']);
 
-            return response()->json(['success' =>true,'results'=>null,'message'=>'Hemos enviado un email con el codigo']);
+            return response()->json(['success' =>true,'results'=>['id'=>$validacion->id],'message'=>'Hemos enviado un email con el codigo']);
 
         } catch (\Throwable $th) {
             return response()->json(['success'=>false,'message'=>'Error de servidor']);
