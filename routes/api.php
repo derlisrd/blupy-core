@@ -29,7 +29,7 @@ use App\Http\Controllers\Public\VersionController;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/vendedor/{id}',[VendedorController::class,'consultar']);
+
 
 
 Route::prefix('/device')->group(function () {
@@ -108,7 +108,7 @@ Route::prefix('/vincular')->group(function () {
     Route::post('/confirmar-nuevo-dispositivo', [DeviceController::class, 'confirmarNuevoDispositivo'])->name('api_confirmar_nuevo_dispositivo_2');
     Route::post('/solicitar-nuevos-datos', [DeviceController::class, 'solicitarNuevosDatos'])->name('api_solicitar_device');
 });
-
+Route::get('/consultar-vendedor', [VendedorController::class, 'consultar']);
 
 /*
  =========RUTAS PROTEGIDAS ==================
