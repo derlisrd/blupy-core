@@ -12,8 +12,16 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\RateLimiter;
 
+
+
 class AWSController extends Controller
 {
+
+    public function __construct(
+        private readonly RekognitionClient $rekognition
+    ) {}
+
+
     // activo
     public function escanearSelfieConCedula(Request $req)
     {
@@ -222,14 +230,7 @@ class AWSController extends Controller
         RateLimiter::hit($rateKey, 120);
 
         try {
-            $amazon = new RekognitionClient([
-                'credentials' => [
-                    'key'    => config('services.aws.key'),
-                    'secret' => config('services.aws.secret'),
-                ],
-                'region'  => config('services.aws.region'),
-                'version' => 'latest',
-            ]);
+            
 
             // Procesa la imagen frontal de la cédula
             $base64Image = explode(";base64,", $req->fotofrontal64);
@@ -240,11 +241,15 @@ class AWSController extends Controller
                 return response()->json(['success' => false, 'message' => 'Error en formato de la imagen. Trate de subir desde galeria. E64'], 400);
             }
 
+            if (strlen($image_base64) > 5 * 1024 * 1024) {
+                return response()->json(['success' => false, 'message' => 'Imagen demasiado grande. Máximo 5MB.'], 400);
+            }
+
             // Pasamos los bytes decodificados directamente a Rekognition.
-            $analysis1 = $amazon->detectText([
+            $analysis1 = $this->rekognition->detectText([
                 'Image' => ['Bytes' => $image_base64],
-                'MaxLabels' => 10,
-                'MinConfidence' => 77
+                /* 'MaxLabels' => 10,
+                'MinConfidence' => 77 */
             ]);
 
             $results1 = $analysis1['TextDetections'];
@@ -257,22 +262,28 @@ class AWSController extends Controller
                     'message' => 'No se pudo subir la imagen o no se detecta el documento.'
                 ], 400);
             }
-            $string = '';
+            /* $string = '';
             foreach ($results1 as $item) {
                 if ($item['Type'] === 'WORD' || $item['Type'] === 'LINE') {
                     $string .= $item['DetectedText'] . ' ';
                 }
-            }
+            } */
+
+            $string = implode(' ', array_map(
+                fn($item) => $item['DetectedText'],
+                array_filter($results1, fn($item) => $item['Type'] === 'LINE')
+            ));
 
 
             $scaned = $this->CleanScan($string);
-            $name = $this->CleanText($req->nombres);
-            $lastname = $this->CleanText($req->apellidos);
+            //$name = $this->CleanText($req->nombres);
+            //$lastname = $this->CleanText($req->apellidos);
             $nacimiento = str_replace('/', '-', $req->nacimiento);
-            $nombres = Str::contains($scaned, [$name]);
-            $apellidos = Str::contains($scaned, [$lastname]);
+            //$nombres = Str::contains($scaned, [$name]);
+            //$apellidos = Str::contains($scaned, [$lastname]);
             $fechaNacimiento = Str::contains($scaned, [$nacimiento]);
-            $nroCedula = Str::contains($scaned, [$req->cedula]);
+            preg_match('/\b' . preg_quote($req->cedula, '/') . '\b/', $scaned, $matches);
+            $nroCedula = !empty($matches);
             $extraidoCedula = (int)strstr($scaned, $req->cedula);
             $cedula = (int) $req->cedula;
 
