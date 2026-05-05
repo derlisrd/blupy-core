@@ -45,12 +45,14 @@ class AWSController extends Controller
 
         try {
 
-            
-            
-            // Procesa la imagen
-            $base64Image = explode(";base64,", $req->selfie64);
-            $image_base64 = base64_decode($base64Image[1]);
 
+
+            // Procesa la imagen
+            //$base64Image = explode(";base64,", $req->selfie64);
+            //$image_base64 = base64_decode($base64Image[1]);
+
+            //$base64Image = explode(";base64,", $req->selfie64);
+            $image_base64 = $req->selfie64;
             // Verificamos si la decodificación fue exitosa
             if (!$image_base64) {
                 return response()->json(['success' => false, 'message' => 'Error en formato de la imagen. Trate de subir desde galeria. E64'], 400);
@@ -225,9 +227,9 @@ class AWSController extends Controller
             
 
             // Procesa la imagen frontal de la cédula
-            $base64Image = explode(";base64,", $req->fotofrontal64);
-            $image_base64 = base64_decode($base64Image[1]);
-
+            //$base64Image = explode(";base64,", $req->fotofrontal64);
+            //$image_base64 = base64_decode($base64Image[1]);
+            $image_base64 = $req->fotofrontal64;
             // Verificamos si la decodificación fue exitosa
             if (!$image_base64) {
                 return response()->json(['success' => false, 'message' => 'Error en formato de la imagen. Trate de subir desde galeria. E64'], 400);
