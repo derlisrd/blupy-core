@@ -30,7 +30,7 @@ class RegisterController extends Controller
     public function register(Request $req)
     {
         try {
-            $validator = Validator::make($req->all(), trans('validation.auth.login'), trans('validation.auth.login.messages'));
+            $validator = Validator::make($req->all(), trans('validation.auth.register'), trans('validation.auth.register.messages'));
 
             if ($validator->fails()) return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
@@ -75,7 +75,7 @@ class RegisterController extends Controller
             DB::commit();
 
             // 6. Procesos post-registro (async si es posible)
-            $this->enviarFotosAInfinita($req, $registroResult['cliente']);
+            $this->enviarFotosAInfinita($req);
 
             $results = $this->userInformacion($registroResult['cliente'], $registroResult['token'], $userInfoDatosFarma['esAdicional']);
 
@@ -98,7 +98,7 @@ class RegisterController extends Controller
 
     private function getDataInfoFarma(string $cedula): array
     {
-        $adicional = Adicional::where('cedula', $cedula)->first();
+        $adicional = Adicional::where('cedula','=',$cedula)->first();
         $esAdicional = (bool) $adicional;
         //$clienteFarma = $this->clienteFarma($cedula);
         $farmaResponse = (new FarmaService())->esAlianzaOFuncionario($cedula);
@@ -196,8 +196,7 @@ class RegisterController extends Controller
                 'version' => $req->versionApp ?? null,
                 'build_version' => $req->buildVersion ?? null,
                 'time' => $req->time ?? null,
-                'device_id_app'=> $req->deviceIdApp,
-                
+
                 'device' => $req->device ?? null,
                 'model' => $req->model ?? null,
                 'ip' => $req->ip(),
