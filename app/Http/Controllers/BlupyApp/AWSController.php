@@ -45,15 +45,7 @@ class AWSController extends Controller
 
         try {
 
-            $credentials = new Credentials(
-                env('AWS_ACCESS_KEY_ID'),
-                env('AWS_SECRET_ACCESS_KEY')
-            );
-            $amazon = new RekognitionClient([
-                'credentials' => $credentials,
-                'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
-                'version' => 'latest',
-            ]);
+            
             
             // Procesa la imagen
             $base64Image = explode(";base64,", $req->selfie64);
@@ -65,13 +57,13 @@ class AWSController extends Controller
             }
 
             // 1. Detectar rostros con atributos detallados
-            $faceDetect = $amazon->detectFaces([
+            $faceDetect = $this->rekognition->detectFaces([
                 'Image' => ['Bytes' => $image_base64],
                 'Attributes' => ['ALL']
             ]);
 
             // 2. Detectar objetos/etiquetas en la imagen
-            $labelsDetect = $amazon->detectLabels([
+            $labelsDetect = $this->rekognition->detectLabels([
                 'Image' => ['Bytes' => $image_base64],
                 'MaxLabels' => 20,
                 'MinConfidence' => 60
