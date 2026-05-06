@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Adicional;
 use App\Models\Cliente;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
@@ -46,9 +47,7 @@ class ActualizarDatosFarmaJob implements ShouldQueue
                 }
             }
 
-            $esAdicional = Cliente::where('cedula', $this->cedula)
-                ->whereHas('adicional')
-                ->exists();
+            $esAdicional = (bool) Adicional::where('cedula', $req->cedula)->first();
 
             $direccionCompletado = ($funcionario == 1 || $esAdicional || $asofarma == 1) ? 1 : 0;
 

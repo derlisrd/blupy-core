@@ -66,7 +66,7 @@ class RegisterController extends Controller
             //$userInfoDatosFarma = $this->getDataInfoFarma($req->cedula, $req->funcionario);
 
             $userInfoDatosFarma = [
-                'esAdicional'        => (bool) Adicional::where('cedula', $req->cedula)->first(),
+                'esAdicional'        =>  false,
                 'asofarma'           => 0,
                 'funcionario'        => $req->funcionario ? 1 : 0,
                 'direccionCompletado' => $req->funcionario ? 1 : 0,
