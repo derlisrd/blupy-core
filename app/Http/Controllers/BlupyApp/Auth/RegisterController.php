@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BlupyApp\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ActualizarDatosFarmaJob;
 use App\Jobs\ProcesarImagenesInfinitaJob;
 use App\Jobs\ProcesarImagenesRegistroJob;
 use App\Models\Adicional;
@@ -62,8 +63,16 @@ class RegisterController extends Controller
 
 
             // 4. Obtener datos adicionales de farma
-            $userInfoDatosFarma = $this->getDataInfoFarma($req->cedula, $req->funcionario);
+            //$userInfoDatosFarma = $this->getDataInfoFarma($req->cedula, $req->funcionario);
 
+            $userInfoDatosFarma = [
+                'esAdicional'        => (bool) Adicional::where('cedula', $req->cedula)->first(),
+                'asofarma'           => 0,
+                'funcionario'        => $req->funcionario ? 1 : 0,
+                'direccionCompletado' => $req->funcionario ? 1 : 0,
+            ];
+
+            
             // 5. Ejecutar registro en transacción
             DB::beginTransaction();
 
@@ -81,7 +90,7 @@ class RegisterController extends Controller
             ->onConnection('database');
 
             $results = $this->userInformacion($registroResult['cliente'], $registroResult['token'], $userInfoDatosFarma['esAdicional']);
-
+            ActualizarDatosFarmaJob::dispatch($req->cedula)->onConnection('database');
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario registrado correctamente',
