@@ -54,7 +54,7 @@ class RegisterController extends Controller
             foreach ($imageFields as $key => $value) {
                 //string $imagenBase64, string $imageName, string $path
                 //SubirImages2doPlanoJob::dispatch($req->$key, ($req->cedula . '_' . $value), 'clientes')->onConnection('database');
-                ProcesarImagenesRegistroJob::dispatch($req->$key, ($req->cedula . '_' . $value), 'clientes');
+                ProcesarImagenesRegistroJob::dispatch($req->$key, ($req->cedula . '_' . $value), 'clientes')->onConnection('database');
                 //formato '.webp'
                 $imagesData[$value] = $req->cedula . '_' . $value . '.webp';
             }
