@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BlupyApp\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcesarImagenesInfinitaJob;
 use App\Jobs\ProcesarImagenesRegistroJob;
 use App\Models\Adicional;
 use App\Models\Adjunto;
@@ -76,7 +77,8 @@ class RegisterController extends Controller
             DB::commit();
 
             // 6. Procesos post-registro (async si es posible)
-            $this->enviarFotosAInfinita($req);
+            ProcesarImagenesInfinitaJob::dispatch($req->cedula,$req->fotoselfie,$req->fotocedulafrente,$req->fotoceduladorso)
+            ->onConnection('database');
 
             $results = $this->userInformacion($registroResult['cliente'], $registroResult['token'], $userInfoDatosFarma['esAdicional']);
 

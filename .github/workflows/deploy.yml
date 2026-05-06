@@ -28,6 +28,7 @@ jobs:
           php artisan config:clear
           php artisan cache:clear
           php artisan route:clear
+          pm2 restart blupy-core-queue-worker
 
   # Deploy to PRODUCTION environment
   deploy-production:
