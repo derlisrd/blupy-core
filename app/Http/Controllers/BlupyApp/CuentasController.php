@@ -171,7 +171,7 @@ class CuentasController extends Controller
     }
 
 
-    private function getTarjetasFarma($cedula)
+    private function getTarjetasFarma(String $cedula)
     {
 
         $tarjetasResults = [];

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BlupyApp\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcesarImagenesRegistroJob;
 use App\Models\Adicional;
 use App\Models\Adjunto;
 use App\Models\Cliente;
@@ -53,14 +54,14 @@ class RegisterController extends Controller
             foreach ($imageFields as $key => $value) {
                 //string $imagenBase64, string $imageName, string $path
                 //SubirImages2doPlanoJob::dispatch($req->$key, ($req->cedula . '_' . $value), 'clientes')->onConnection('database');
-                $this->subirBase64ToWebp($req->$key, ($req->cedula . '_' . $value), 'clientes');
+                ProcesarImagenesRegistroJob::dispatch($req->$key, ($req->cedula . '_' . $value), 'clientes');
                 //formato '.webp'
                 $imagesData[$value] = $req->cedula . '_' . $value . '.webp';
             }
 
 
             // 4. Obtener datos adicionales de farma
-            $userInfoDatosFarma = $this->getDataInfoFarma($req->cedula);
+            $userInfoDatosFarma = $this->getDataInfoFarma($req->cedula, $req->funcionario);
 
             // 5. Ejecutar registro en transacción
             DB::beginTransaction();
@@ -96,32 +97,43 @@ class RegisterController extends Controller
 
 
 
-    private function getDataInfoFarma(string $cedula): array
+    private function getDataInfoFarma(string $cedula, bool $funcionarioParam): array
     {
         $adicional = Adicional::where('cedula','=',$cedula)->first();
         $esAdicional = (bool) $adicional;
         //$clienteFarma = $this->clienteFarma($cedula);
-        $farmaResponse = (new FarmaService())->esAlianzaOFuncionario($cedula);
-        $farmaData = $farmaResponse['data'];
         $direccionCompletado = 0;
         $asofarma = 0;
         $funcionario = 0;
-        if ($farmaData && isset($farmaData['result'])) {
-            $result = $farmaData['result'];
-            if ($result['alianza'] === true) {
-                $asofarma = 1;
+
+        if(!$funcionarioParam){
+            $farmaResponse = (new FarmaService())->esAlianzaOFuncionario($cedula);
+            $farmaData = $farmaResponse['data'];
+            
+            if ($farmaData && isset($farmaData['result'])) {
+                $result = $farmaData['result'];
+                if ($result['alianza'] === true) {
+                    $asofarma = 1;
+                }
+                if ($result['funcionario'] === true) {
+                    $funcionario = 1;
+                }
             }
-            if ($result['funcionario'] === true) {
-                $funcionario = 1;
-            }
+            $direccionCompletado = ($funcionario == 1 || $esAdicional || $asofarma == 1) ? 1 : 0;
+
+            return [
+                'esAdicional' => $esAdicional,
+                'asofarma' => $asofarma,
+                'funcionario' => $funcionario,
+                'direccionCompletado' => $direccionCompletado
+            ];
         }
-        $direccionCompletado = ($funcionario == 1 || $esAdicional || $asofarma == 1) ? 1 : 0;
 
         return [
             'esAdicional' => $esAdicional,
             'asofarma' => $asofarma,
-            'funcionario' => $funcionario,
-            'direccionCompletado' => $direccionCompletado
+            'funcionario' => 1,
+            'direccionCompletado' => 1
         ];
     }
 
@@ -261,7 +273,7 @@ class RegisterController extends Controller
 
 
 
-    private function userInformacion($cliente, string $token, bool $esAdicional)
+    private function userInformacion(Cliente $cliente, string $token, bool $esAdicional)
     {
         return [
             'adicional' => $esAdicional,
