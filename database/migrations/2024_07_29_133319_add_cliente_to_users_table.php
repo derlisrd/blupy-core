@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+
+            $table->bigInteger('cliente_id')->unsigned()->nullable();
+            $table->bigInteger('vendedor_id')->unsigned()->nullable();
+
+            
             $table->foreign('cliente_id')->references('id')->on('clientes');
             $table->foreign('vendedor_id')->references('id')->on('vendedores');
+
+            
         });
     }
 
@@ -23,8 +30,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //$table->dropColumn('cliente_id');
-            //$table->dropColumn('vendedor_id');
+            $table->dropColumn('cliente_id');
+            $table->dropColumn('vendedor_id');
         });
     }
 };
