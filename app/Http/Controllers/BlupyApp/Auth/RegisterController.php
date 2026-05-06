@@ -278,6 +278,7 @@ class RegisterController extends Controller
     private function userInformacion(Cliente $cliente, string $token, bool $esAdicional)
     {
         return [
+            'id'=>$cliente->id,
             'adicional' => $esAdicional,
             'cliid' => $cliente->cliid,
             'name' => $cliente->user->name,
