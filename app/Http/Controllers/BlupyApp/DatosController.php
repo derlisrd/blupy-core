@@ -169,7 +169,7 @@ class DatosController extends Controller
             'celular'=>$validacion->celular
         ]);
         $this->cambiosEnInfinita($user->cliente->cliid,null,$validacion->celular);
-        return response()->json(['success'=>true,'message'=>'Telefono celular ha cambiado.']);
+        return response()->json(['success'=>true,'message'=>'Telefono celular ha cambiado correctamente.']);
     }
 
 
