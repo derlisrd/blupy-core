@@ -12,11 +12,14 @@ class InformacionesController extends Controller
         $user = $req->user();
         $cliente = $user->cliente;
 
-        $userInfo = Informacion::where('user_id', $user->id)->get();
+        $userInfo = Informacion::where('user_id', $user->id)
+        ->get();
 
         $general = Informacion::where('active',1)
         ->whereNull('user_id')
         ->where('general',1)
+        ->where('digital',0)
+        ->where('aso',0)
         ->get();
         $digital = null;
         if($cliente->digital == 1){
