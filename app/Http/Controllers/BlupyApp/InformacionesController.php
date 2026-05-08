@@ -15,6 +15,7 @@ class InformacionesController extends Controller
         $userInfo = Informacion::where('user_id', $user->id)->get();
 
         $general = Informacion::where('active',1)
+        ->whereNull('user_id')
         ->where('general',1)
         ->get();
         $digital = null;
