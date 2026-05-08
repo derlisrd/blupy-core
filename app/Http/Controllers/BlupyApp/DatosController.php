@@ -125,9 +125,9 @@ class DatosController extends Controller
             $mensaje = $randomNumber." es tu codigo de verificacion de BLUPY. ". $hora  ;
             $tigoService->enviarSms($req->celular,$mensaje);
 
-            Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->celular,'cliente_id'=>$cliente->id,'origen'=>'cambiocelular']);
+           $validacion = Validacion::create(['codigo'=>$randomNumber,'forma'=>1,'celular'=>$req->celular,'cliente_id'=>$cliente->id,'origen'=>'cambiocelular']);
 
-            return response()->json(['success' =>true,'results'=>null,'message'=>'Mensaje enviado']);
+            return response()->json(['success' => true, 'results' => ['id' => $validacion->id], 'message' => 'Hemos enviado un sms con el codigo']);
         } catch (\Throwable $th) {
             return response()->json(['success'=>false,'message'=>'Error de servidor']);
         }
