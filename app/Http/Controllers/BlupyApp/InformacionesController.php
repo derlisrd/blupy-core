@@ -11,13 +11,16 @@ class InformacionesController extends Controller
     public function infoPopUpInicial(Request $req){
         $user = $req->user();
         $cliente = $user->cliente;
+
+        $userInfo = Informacion::where('user_id', $user->id)->get();
+
         $general = Informacion::where('active',1)
         ->where('general',1)
-        ->latest()->first();
+        ->get();
         $digital = null;
         if($cliente->digital == 1){
             $digital = Informacion::where('active',1)
-            ->where('digital',1)->latest()->first();
+            ->where('digital',1)->get();
         }
         $resultsAceptado = null;
         if($cliente->aceptado == 0){
@@ -37,7 +40,7 @@ class InformacionesController extends Controller
             'message'=>'',
             'results'=>[
                 'general'=>$general,
-                'user' =>$user->info(),
+                'user' =>$userInfo,
                 'digital'=>$digital,
                 'aso'=>null,
                 'aceptado'=>$resultsAceptado

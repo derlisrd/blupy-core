@@ -15,6 +15,7 @@ use App\Http\Controllers\BlupyApp\FarmaController;
 use App\Http\Controllers\BlupyApp\InformacionesController;
 use App\Http\Controllers\BlupyApp\MovimientosController;
 use App\Http\Controllers\BlupyApp\NotificacionesController;
+use App\Http\Controllers\BlupyApp\PageController;
 use App\Http\Controllers\BlupyApp\PdfController;
 use App\Http\Controllers\BlupyApp\QRController;
 use App\Http\Controllers\BlupyApp\RecuperarContrasenaController;
@@ -30,7 +31,7 @@ use Illuminate\Support\Facades\Route;
 
 
 
-
+Route::get('/pages/{sku}', [PageController::class, 'show']);
 
 Route::prefix('/device')->group(function () {
     Route::post('/confirmar-nuevo', [DeviceController::class, 'confirmarNuevoDispositivo'])->name('api_confirmar_nuevo_dispositivo');
