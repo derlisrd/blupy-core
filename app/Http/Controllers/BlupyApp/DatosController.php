@@ -30,7 +30,7 @@ class DatosController extends Controller
 
             $user = $req->user();
             if (!Hash::check($req->password, $user->password))
-                return response()->json(['success'=>false,'message'=>'Contraseña incorrecta.'],401);
+                return response()->json(['success'=>false,'message'=>'Contraseña incorrecta.'],400);
 
             if(!$user)
                 return response()->json(['success'=>false, 'message'=>'No existe.' ],404);
@@ -77,7 +77,7 @@ class DatosController extends Controller
             $diferenciaEnMinutos = $fechaCreado->diffInMinutes($fechaActual);
 
             if ($diferenciaEnMinutos >= 10)
-                return response()->json(['success'=>false,'message'=>'Código ha expirado'],401);
+                return response()->json(['success'=>false,'message'=>'Código ha expirado'],400);
 
             $validacion->validado = 1;
             $validacion->save();
@@ -112,7 +112,7 @@ class DatosController extends Controller
 
             $user = $req->user();
             if (!Hash::check($req->password, $user->password))
-                return response()->json(['success'=>false,'message'=>'Contraseña incorrecta.'],401);
+                return response()->json(['success'=>false,'message'=>'Contraseña incorrecta.'],400);
 
             if(!$user)
                 return response()->json(['success'=>false, 'message'=>'No existe.' ],404);
@@ -154,7 +154,7 @@ class DatosController extends Controller
         $diferenciaEnMinutos = $fechaCreado->diffInMinutes($fechaActual);
 
         if ($diferenciaEnMinutos >= 10)
-            return response()->json(['success'=>false,'message'=>'Código ha expirado'],401);
+            return response()->json(['success'=>false,'message'=>'Código ha expirado'],400);
 
         $validacion->validado = 1;
         $validacion->save();
