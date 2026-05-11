@@ -129,7 +129,7 @@ class AutorizacionesQRController extends Controller
                 'results' => $datasResults,
             ], $blupy['status']);
         } catch (\Exception $e) {
-            throw $e;
+            Log::info('Error en autorizacion QR: ',$e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error al solicitar autorización',
