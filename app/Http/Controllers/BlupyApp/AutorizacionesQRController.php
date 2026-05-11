@@ -42,7 +42,6 @@ class AutorizacionesQRController extends Controller
             ///return response()->json(['cedula'=>$cliente->cedula]);
 
         } catch (\Exception $e) {
-            throw $e;
             return response()->json([
                 'success' => false,
                 'message' => 'Error al solicitar autorización',
@@ -72,7 +71,7 @@ class AutorizacionesQRController extends Controller
             $user = $req->user();
             $cliente = $user->cliente;
 
-            $documento = $req->documento ?? $cliente->cedula;
+            $documento = $req->ruc ? $req->ruc : $cliente->cedula;
 
             if (!Hash::check($req->password, $user->password))
                 return response()->json(['success' => false, 'message' => 'Contraseña incorrecta.'], 400);
