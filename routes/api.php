@@ -166,10 +166,12 @@ Route::middleware('auth:api')->group(function(){
     Route::prefix('/qr')->group(function () {
         Route::get('/consultar/{id}', [QRController::class, 'consultar'])->name('api_consultar_qr');
         Route::post('/autorizar', [QRController::class, 'autorizar'])->name('api_autorizar_qr');
+
+        Route::get('/solicitar-autorizacion-compra', [AutorizacionesQRController::class, 'solicitarAutorizacion'])->name('api_solicitar_compra');
+        Route::post('/autorizar-compra', [AutorizacionesQRController::class, 'autorizar'])->name('api_autorizar_compra');
     });
 
-    Route::get('/solicitar-autorizacion-compra',[AutorizacionesQRController::class,'solicitarAutorizacion'])->name('api_solicitar_compra');
-    Route::post('/autorizar-compra',[AutorizacionesQRController::class,'autorizar'])->name('api_autorizar_compra');
+    
 
     Route::prefix('/solicitudes')->group(function(){
         Route::post('/solicitar-credito-digital',[SolicitudesController::class,'solicitarCreditoDigital']);
