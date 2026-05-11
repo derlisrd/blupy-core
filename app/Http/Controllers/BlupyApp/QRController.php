@@ -86,12 +86,15 @@ class QRController extends Controller
                      }
                  }
              }
- 
-            if($data && $data['results'] && $req->token){
+
+            /* if($data && $data['results'] && $req->token){
                $push = new PushService();
                $tokens = $user->nativeTokens();
+
+                SendCompraPushJob::dispatch($tokens)
+                    ->delay(now()->addMinute());
                $push->sendPushMulti($tokens,['screen'=>'notificaciones'],'Compra realizada','Ha comprado');
-            }
+            } */
 
 
             return response()->json([
