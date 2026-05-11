@@ -79,8 +79,8 @@ class AutorizacionesQRController extends Controller
             $parametrosPorArray = [
                 'id' => $req->id,
                 'documento' => $documento,
-                'numeroCuenta' => $req->numeroCuenta,
-                'numeroTarjeta' => $req->numeroTarjeta,
+                'numeroCuenta' => $req->numeroCuenta ?? 0,
+                'numeroTarjeta' => $req->numeroTarjeta ?? 1,
                 'telefono' => $req->telefono,
                 'ip' => $req->ip(),
                 'localizacion' => $req->localizacion,
