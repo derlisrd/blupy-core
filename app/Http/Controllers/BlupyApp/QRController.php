@@ -91,7 +91,7 @@ class QRController extends Controller
                $push = new PushService();
                $tokens = $user->nativeTokens();
 
-                SendCompraPushJob::dispatch($tokens)
+                SendCompraPushJob::dispatch($tokens)->onConnection('database')
                     ->delay(now()->addMinute());
                $push->sendPushMulti($tokens,['screen'=>'notificaciones'],'Compra realizada','Ha comprado');
             } */
