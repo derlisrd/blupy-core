@@ -47,7 +47,7 @@ class ActualizarDatosFarmaJob implements ShouldQueue
                 }
             }
 
-            $esAdicional = (bool) Adicional::where('cedula', $req->cedula)->first();
+            $esAdicional = (bool) Adicional::where('cedula', $this->cedula)->first();
 
             $direccionCompletado = ($funcionario == 1 || $esAdicional || $asofarma == 1) ? 1 : 0;
 
