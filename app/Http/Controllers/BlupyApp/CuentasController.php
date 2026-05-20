@@ -65,7 +65,7 @@ class CuentasController extends Controller
         ]);
     }
 
-    private function getTarjetaBlupyEmpresas($cedula)
+    private function getTarjetaBlupyEmpresas(string $cedula)
     {
         $tarjetasResults = [];
         $farmaService = new FarmaService();
@@ -77,6 +77,7 @@ class CuentasController extends Controller
             if ($result != null) {
                 $tarjetasResults[] = [
                     'id' => 3,
+                    'formaPago' => 'BLUPY 30 DIAS',
                     'descripcion' => 'Blupy empresa',
                     'otorgadoPor' => $result['empresa'],
                     'ruc' => $result['ruc'],
@@ -144,6 +145,7 @@ class CuentasController extends Controller
 
                 $tarjetasResults[] = [
                     'id' => 1,
+                    'formaPago' => 'BLUPY 1 DIA',
                     'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Farma',
                     'otorgadoPor' => 'Farma S.A.',
                     'ruc' => null,
@@ -210,6 +212,7 @@ class CuentasController extends Controller
 
                 $tarjetasResults[] = [
                     'id' => 1,
+                    'formaPago' => 'BLUPY 1 DIA',
                     'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Farma',
                     'otorgadoPor' => 'Farma S.A.',
                     'ruc' => null,
@@ -259,6 +262,7 @@ class CuentasController extends Controller
 
                     $tarjetasResults[] = [
                         'id' => 2,
+                        'formaPago' => 'BLUPY DIGITAL',
                         'descripcion' => 'Blupy Digital',
                         'otorgadoPor' => 'Mi crédito S.A.',
                         'ruc' => null,
@@ -336,7 +340,7 @@ class CuentasController extends Controller
         });
     }
 
-    public function eliminarDispositivo(Request $req, $id)
+    public function eliminarDispositivo(Request $req, String $id)
     {
         try {
             $device = Device::findOrFail($id);

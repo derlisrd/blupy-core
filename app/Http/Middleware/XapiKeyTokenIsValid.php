@@ -20,7 +20,7 @@ class XapiKeyTokenIsValid
         if ( !$key || $key !== config('app.x_api_key')) {
             return response()->json([
                 'success'=>false,
-                'message'=>'Api key invalid',
+                'message'=>'Autorizacion inválida. Comuniquese con ATC o actualize su app.',
             ],401);
         }
         return $next($request);
