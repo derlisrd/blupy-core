@@ -56,7 +56,7 @@ trait SolicitudesInfinitaTraits
         return (object) $results;
     }
 
-    public function listaSolicitudes($cedula,$desde,$hasta){
+    public function listaSolicitudes(String $cedula,String $desde, String $hasta){
 
         $res = app(InfinitaService::class)->ListarSolicitudes($cedula,$desde,$hasta);
         $solicitudes = (object)$res['data'];
