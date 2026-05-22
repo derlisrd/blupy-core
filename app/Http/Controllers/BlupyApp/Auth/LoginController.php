@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Adicional;
 use App\Models\Cliente;
 use App\Models\Device;
+use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
 use App\Services\SupabaseService;
@@ -156,7 +157,7 @@ class LoginController extends Controller
 
 
 
-    private function incrementLoginAttempts($user)
+    private function incrementLoginAttempts(User $user)
     {
         $user->increment('intentos');
 
@@ -175,7 +176,7 @@ class LoginController extends Controller
         ], $code);
     }
 
-    private function enviarSMSyEmailDispositivoInusual($email, $celular, $clienteId, $req) : int
+    private function enviarSMSyEmailDispositivoInusual(String $email, String $celular, int $clienteId, Request $req) : int
     {
         $codigo = random_int(1000, 9999);
 
@@ -215,7 +216,7 @@ class LoginController extends Controller
         return $validacion->id;
     }
 
-    private function userInformacion($cliente, string $token, bool $esAdicional)
+    private function userInformacion(Cliente $cliente, string $token, bool $esAdicional)
     {
         return [
             'aceptado'=>$cliente->aceptado,
@@ -246,7 +247,7 @@ class LoginController extends Controller
         ];
     }
 
-    private function ocultarParcialmenteTelefono($phoneNumber) {
+    private function ocultarParcialmenteTelefono(String $phoneNumber) {
         if (strlen($phoneNumber) < 7) {
             return $phoneNumber;
         }
