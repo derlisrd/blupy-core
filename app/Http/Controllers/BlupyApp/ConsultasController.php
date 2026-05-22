@@ -59,12 +59,12 @@ class ConsultasController extends Controller
         {
             if($clienteExiste->active == 0)
             {
-                return response()->json(['success'=>false,'message'=>'El cliente ha sido eliminado.']);
+                return response()->json(['success'=>false,'message'=>'El cliente ha sido eliminado.'],400);
             }
-                return response()->json(['success'=>true,'message'=>'El cliente ya existe. Puede iniciar sesión.']);
+                return response()->json(['success'=>false,'message'=>'El cliente ya existe. Puede iniciar sesión.'], 400);
         }
 
-        return response()->json(['success'=>true,'message'=>'El cliente no existe.']);
+        return response()->json(['success'=>true,'message'=>'El cliente no existe.', 'results' => $clienteExiste]);
     }
 
 
