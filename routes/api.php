@@ -146,7 +146,6 @@ Route::middleware('auth:api')->group(function(){
 
     Route::prefix('/solicitudes')->group(function () {
         Route::get('/', [SolicitudesController::class, 'solicitudes'])->name('api_solicitudes');
-        Route::post('/solicitar-credito', [SolicitudesController::class, 'solicitarCredito'])->name('api_solicitar_credito');
         Route::post('/solicitar-ampliacion', [SolicitudesController::class, 'solicitarAmpliacion'])->name('api_solicitar_ampliacion');
         Route::post('/agregar-adicional', [SolicitudesController::class, 'agregarAdicional'])->name('api_agregar_adicional');
         Route::get('/verificar-estado-solicitud', [SolicitudesController::class, 'verificarEstadoSolicitud'])->name('api_verificar_estado_solicitud');
