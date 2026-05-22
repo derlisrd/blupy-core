@@ -55,7 +55,7 @@ class LoginController extends Controller
             
             
             if (!$cliente->user->active) {
-                return response()->json(['success' => false, 'message' => 'Cuenta no existe o ha sido desactivada'], 404);
+                return response()->json(['success' => false, 'message' => 'Cuenta no existe o ha sido eliminada'], 404);
             }
 
             // 5. Intentar autenticación
