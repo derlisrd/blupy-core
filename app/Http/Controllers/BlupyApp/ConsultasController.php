@@ -50,10 +50,19 @@ class ConsultasController extends Controller
             $clienteExiste = Cliente::join('users', 'users.cliente_id', '=', 'clientes.id')
             ->where('clientes.cedula', $req->cedula)
             ->where('users.rol', 0)
-            ->exists();
+            ->select('users.active')
+            ->first();
+
+            
 
         if($clienteExiste)
-            return response()->json(['success'=>false,'message'=>'El número de cédula de cliente ya existe.'],403);
+        {
+            if($clienteExiste->active == 0)
+            {
+                return response()->json(['success'=>false,'message'=>'El cliente ha sido eliminado.']);
+            }
+                return response()->json(['success'=>true,'message'=>'El cliente ya existe. Puede iniciar sesión.']);
+        }
 
         return response()->json(['success'=>true,'message'=>'El cliente no existe.']);
     }
