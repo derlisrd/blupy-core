@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Models\Adicional;
 use App\Models\Cliente;
 use App\Services\FarmaService;
-use App\Services\InfinitaService;
 use App\Services\SupabaseService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
