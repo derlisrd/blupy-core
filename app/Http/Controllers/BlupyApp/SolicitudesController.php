@@ -157,7 +157,7 @@ class SolicitudesController extends Controller
             $departamento_empresa = Departamento::find($req->empresa_departamento_id);
 
 
-            $datosAenviar = (object) [
+            $datosAenviar =  [
                 'cedula' => $cliente->cedula,
                 'apellido_primero' => $cliente->apellido_primero,
                 'apellido_segundo' => $cliente->apellido_segundo,
@@ -199,11 +199,11 @@ class SolicitudesController extends Controller
             
             return response()->json([
                 'success' => true,
-                'results' => null,
+                'results' => $datosAenviar,
                 'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpenos las molestias.'
             ],400);
 
-            $solicitud = $this->ingresarSolicitudInfinita($datosAenviar);
+            $solicitud = $this->ingresarSolicitudInfinita((object)$datosAenviar);
             if (!$solicitud->success)
                 return response()->json(['success' => false, 'message' => $solicitud->message], 400); 
 
