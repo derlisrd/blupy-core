@@ -124,9 +124,10 @@ Route::middleware('auth:api')->group(function(){
     Route::put('/marcar-info-leida/{id}',[InformacionesController::class,'marcarInfoLeida'])->name('api_marcar_info');
 
 
-
-    Route::get('/notificaciones',[NotificacionesController::class,'NotificacionesPorUser'])->name('api_notificaciones');
-
+    Route::prefix('/notificaciones')->group(function () {
+        Route::get('/por-user',[NotificacionesController::class,'NotificacionesPorUser'])->name('api_notificaciones_por_user');
+        Route::get('/contar-no-leidos',[NotificacionesController::class, 'ContarNotificacionesNoLeidos'])->name('api_notificaciones_count_no_leidos');
+    });
 
     
     Route::prefix('/devices')->group(function(){

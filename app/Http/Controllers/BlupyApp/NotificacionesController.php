@@ -23,4 +23,19 @@ class NotificacionesController extends Controller
             throw $th;
         }
     }
+    public function ContarNotificacionesNoLeidas(Request $req){
+        try {
+            $user = $req->user();
+            $results = Notificacion::where('user_id',$user->id)
+            ->where('leido',0)
+            ->count();
+            return response()->json([
+                'success'=>true,
+                'results' =>$results
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+
+    }
 }
