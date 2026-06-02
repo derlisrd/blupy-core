@@ -11,7 +11,7 @@ use App\Models\Validacion;
 use App\Services\EmailService;
 use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
-use App\Services\WaService;
+//use App\Services\WaService;
 //use App\Services\SupabaseService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -21,6 +21,30 @@ use Illuminate\Support\Facades\RateLimiter;
 
 class DeviceController extends Controller
 {
+
+    public function updateTokenDevice(Request $req){
+        $validator = Validator::make($req->all(), [
+            'devicetoken' => 'required',
+            'time' => 'required',
+            'device_id_app' => 'required'
+        ]);
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        $device = Device::where('device_id_app', $req->device_id_app)
+        ->where('time', $req->time)
+        ->where('user_id', $req->user()->id)->first();
+        if (!$device)
+            return response()->json(['success' => false, 'message' => 'Dispositivo no encontrado'], 404);
+
+        $device->devicetoken = $req->devicetoken;
+        $device->save();
+
+        return response()->json(['success' => true, 'message' => 'Token actualizado correctamente']);
+
+
+    }
+
 
     public function confirmarCodigoValidando(Request $req){
 

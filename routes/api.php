@@ -127,12 +127,14 @@ Route::middleware('auth:api')->group(function(){
     Route::prefix('/notificaciones')->group(function () {
         Route::get('/por-user',[NotificacionesController::class,'NotificacionesPorUser'])->name('api_notificaciones_por_user');
         Route::get('/contar-no-leidos',[NotificacionesController::class, 'ContarNotificacionesNoLeidos'])->name('api_notificaciones_count_no_leidos');
+        Route::put('/marcar-como-leida/{id}', [NotificacionesController::class, 'marcarComoLeida'])->name('api_marcar_notificacion_leida');
     });
 
     
     Route::prefix('/devices')->group(function(){
         Route::get('/', [CuentasController::class, 'misDispositivos'])->name('api_mis_dispositivos');
         Route::delete('/{id}', [CuentasController::class, 'eliminarDispositivo'])->name('api_eliminar_dispositivo');
+        Route::put('/actualizar-token', [DeviceController::class, 'updateTokenDevice'])->name('api_update_device_token');
     });
     Route::prefix('/contratos')->group(function(){
         Route::post('/aceptar-blupy-digital',[ContratoController::class,'aceptarContrato'])->name('aceptar_contrato_blupy_digital');

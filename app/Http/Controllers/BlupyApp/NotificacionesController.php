@@ -38,4 +38,24 @@ class NotificacionesController extends Controller
         }
 
     }
+
+    public function marcarComoLeida(String $id){
+        try {
+            $notificacion = Notificacion::find($id);
+            if(!$notificacion){
+                return response()->json([
+                    'success'=>false,
+                    'message' =>'Notificación no encontrada'
+                ],404);
+            }
+            $notificacion->leido = 1;
+            $notificacion->save();
+            return response()->json([
+                'success'=>true,
+                'message' =>'Notificación marcada como leída'
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
 }
