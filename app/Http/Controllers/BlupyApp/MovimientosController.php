@@ -20,7 +20,9 @@ class MovimientosController extends Controller
         $cliente = $req->user()->cliente;
         $results = [];
 
-        if($req->cuenta == '0' && $req->id==3 && $req->ruc){
+        // empresa
+        //if($req->cuenta == '0' && $req->id==3 && $req->ruc){
+        if ($req->id == 3 && $req->ruc) {
             $farmaResponse = (new FarmaService())->movimientosEmpresa($req->ruc,$req->periodo);
             $farmaData = $farmaResponse['data'];
             if ($farmaData && isset($farmaData['result'])) {
@@ -43,8 +45,9 @@ class MovimientosController extends Controller
                 'results'=>$results
             ]);
         }
-        
-        if($req->cuenta == '0'){
+        // alianza
+        //if($req->cuenta == '0'){
+        if ($req->id == 1) {
             $farmaResponse = (new FarmaService())->movimientos2($cliente->cedula,$req->periodo);
             $farmaData = $farmaResponse['data'];
             if ($farmaData && isset($farmaData['result'])) {
@@ -68,7 +71,7 @@ class MovimientosController extends Controller
             ]); 
         }
 
-        if($req->cuenta>0){
+        if($req->cuenta>0 && $req->id == 2){
             $infiService = (new InfinitaService())->movimientosPorFecha($req->cuenta,$req->periodo,$req->numero_tarjeta);
             $infiData = $infiService['data'];
 
