@@ -97,7 +97,8 @@ class CuentasController extends Controller
                     'deuda' => $result['deuda'],
                     'disponible' => $result['clerLimiteCredito'] - $result['deuda'],
                     'alianzas' => null,
-                    'bloqueoMotivo' => ''
+                    'bloqueoMotivo' => '',
+                    'creditoUniforme' => null
                 ];
             }
         }
@@ -165,7 +166,8 @@ class CuentasController extends Controller
                     'disponible' => $disponible,
                     'alianzas' => $alianza,
                     'codigoPersona' => $codigo_persona,
-                    'bloqueoMotivo' => ''
+                    'bloqueoMotivo' => '',
+                    'creditoUniforme' => null
                 ];
             }
         }
@@ -232,7 +234,8 @@ class CuentasController extends Controller
                     'disponible' => $disponible,
                     'alianzas' => $alianza,
                     'codigoPersona' => null,
-                    'bloqueoMotivo' => ''
+                    'bloqueoMotivo' => '',
+                    'creditoUniforme' => $tarjetasFarma['creditoUniforme'] ?? null
                 ];
             }
         }
@@ -240,7 +243,7 @@ class CuentasController extends Controller
     }
 
 
-    private function getTarjetasInfinita($cedula)
+    private function getTarjetasInfinita(String $cedula)
     {
 
         $tarjetasResults = [];
@@ -282,7 +285,8 @@ class CuentasController extends Controller
                         'disponible' => $disponible,
                         'alianzas' => null,
                         'codigoPersona' => null,
-                        'bloqueoMotivo' => $tarjeta['MotBloqNom']
+                        'bloqueoMotivo' => $tarjeta['MotBloqNom'],
+                        'creditoUniforme' => null
                     ];
                 }
             }

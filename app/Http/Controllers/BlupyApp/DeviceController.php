@@ -41,8 +41,6 @@ class DeviceController extends Controller
         $device->save();
 
         return response()->json(['success' => true, 'message' => 'Token actualizado correctamente']);
-
-
     }
 
 
