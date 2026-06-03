@@ -39,9 +39,11 @@ class NotificacionesController extends Controller
 
     }
 
-    public function marcarComoLeida(String $id){
+    public function marcarComoLeido(Request $req,String $id){
         try {
-            $notificacion = Notificacion::find($id);
+            $notificacion = Notificacion::where('id',$id)
+            ->where('user_id',$req->user()->id)
+            ->first();
             if(!$notificacion){
                 return response()->json([
                     'success'=>false,
