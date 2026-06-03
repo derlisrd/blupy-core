@@ -235,7 +235,7 @@ class CuentasController extends Controller
                     'alianzas' => $alianza,
                     'codigoPersona' => null,
                     'bloqueoMotivo' => '',
-                    'creditoUniforme' => $tarjetasFarma['creditoUniforme'] ?? null
+                    'creditoUniforme' => $tarjetasFarma['creditoUniforme'] > 0 ? $tarjetasFarma['creditoUniforme'] : null
                 ];
             }
         }
