@@ -104,8 +104,8 @@ class QRController extends Controller
             ], $blupy['status']);
         } catch (\Throwable $th) {
             
-            //SupabaseService::LOG('Error_autorizarQR_user',$req->user->id);
-            Log::error($th->getMessage());
+            SupabaseService::LOG('Error_autorizarQR_user',$req->user->id);
+            Log::error($th);
             return response()->json([
                 'success' => false,
                 'message' => 'Error de conexión. Por favor intente en unos momentos. CQ500'

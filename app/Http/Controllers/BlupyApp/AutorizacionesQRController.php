@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
-use App\Models\Notificacion;
 use App\Services\BlupyQrService;
 use App\Services\FarmaService;
-use App\Services\PushExpoService;
-use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
