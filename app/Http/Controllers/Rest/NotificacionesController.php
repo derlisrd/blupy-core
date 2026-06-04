@@ -10,6 +10,7 @@ use App\Models\Cliente;
 use App\Models\Device;
 use App\Services\InfinitaService;
 use App\Services\NotificationService;
+use App\Services\PushService;
 use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
 use App\Services\WaService;
@@ -67,8 +68,10 @@ class NotificacionesController extends Controller
 
         try {
             $device = Device::find($req->device_id);
-
-            if ($device->os == 'android') {
+            //$device = Device::all();
+            $push = new PushService();
+            $push->sendPushNotification($device->devicetoken, $req->title, $req->body);
+            /* if ($device->os == 'android') {
                 (new NotificationService())->sendPushAndroid([
                     'tokens' => [$device->devicetoken],
                     'title' => $req->title,
@@ -80,7 +83,7 @@ class NotificacionesController extends Controller
                 PushNativeJobs::dispatch($req->title, $req->body, [
                     $device->devicetoken
                 ], 'ios')->onConnection('database');
-            }
+            } */
             return response()->json(['success' => true, 'message' => 'Notificaciones enviadas en 2do plano', 'results' => [
 
                 'device' => $device
