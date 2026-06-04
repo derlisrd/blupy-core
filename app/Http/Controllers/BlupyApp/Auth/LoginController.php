@@ -12,6 +12,7 @@ use App\Services\EmailService;
 use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
@@ -120,6 +121,7 @@ class LoginController extends Controller
             ]);
             
         } catch (\Throwable $th) {
+            Log::error($th);
             SupabaseService::LOG('loginError',$th->getMessage());
             return response()->json([
                 'success' => false,
