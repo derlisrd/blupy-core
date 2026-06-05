@@ -12,18 +12,32 @@ class EmailService
 
     }
 
-    public function enviarEmail(string $email,$asunto, $view, array $params){
+    public function enviarEmail(string $email,string $asunto, $view, array $params){
+        $datos = [
+            'email' => $email,
+            'asunto' => $asunto
+        ];
+
         try {
-            $datos = [
-                'email'=>$email,
-                'asunto'=>$asunto
-            ];
+            
             Mail::send($view, $params, function ($message) use($datos) {
                 $message->subject($datos['asunto']);
                 $message->to($datos['email']);
             });
         } catch (\Throwable $th) {
-            throw $th;
+            SupabaseService::LOG('Error SMTP mail: ', $th->getMessage());
+            Mail::mailer('gmail')->send($view, $params, function ($message) use ($datos) {
+                $message->subject($datos['asunto']);
+                $message->to($datos['email']);
+            });
+            try {
+            } catch (\Throwable $gmailError) {
+                //SupabaseService::LOG('email registro', $e->getMessage());
+                SupabaseService::LOG('Error SMTP Gmail: ', $gmailError->getMessage());
+                throw $gmailError;
+            }
         }
     }
+
+    
 }
