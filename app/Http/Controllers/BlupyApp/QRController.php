@@ -104,7 +104,7 @@ class QRController extends Controller
             ], $blupy['status']);
         } catch (\Throwable $th) {
             
-            SupabaseService::LOG('Qr Autorizar', $th->getLine());
+            SupabaseService::LOG('Qr Autorizar', 'linea ='. $th->getLine() . ' mensaje ='. $th->getMessage());
             //Log::error($th->getLine());
             return response()->json([
                 'success' => false,

@@ -61,7 +61,8 @@ class NotificacionesController extends Controller
         $validator = Validator::make($req->all(), [
             'device_id' => 'required|exists:devices,id',
             'title' => 'required',
-            'body' => 'required'
+            'body' => 'required',
+            'data' => 'nullable'
         ]);
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
@@ -70,7 +71,7 @@ class NotificacionesController extends Controller
             $device = Device::find($req->device_id);
             //$device = Device::all();
             $push = new PushService();
-            $push->sendPushNotification($device->devicetoken, $req->title, $req->body);
+            $push->sendPushNotification($device->devicetoken, $req->title, $req->body, $req->data);
             /* if ($device->os == 'android') {
                 (new NotificationService())->sendPushAndroid([
                     'tokens' => [$device->devicetoken],
