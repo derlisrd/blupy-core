@@ -63,14 +63,14 @@ class RegisterController extends Controller
 
 
             // 4. Obtener datos adicionales de farma
-            //$userInfoDatosFarma = $this->getDataInfoFarma($req->cedula, $req->funcionario);
+            $userInfoDatosFarma = $this->getDataInfoFarma($req->cedula, $req->funcionario);
 
-            $userInfoDatosFarma = [
+            /* $userInfoDatosFarma = [
                 'esAdicional'        =>  false,
                 'asofarma'           => 0,
                 'funcionario'        => $req->funcionario ? 1 : 0,
                 'direccionCompletado' => $req->funcionario ? 1 : 0,
-            ];
+            ]; */
 
             
             // 5. Ejecutar registro en transacción
@@ -90,7 +90,7 @@ class RegisterController extends Controller
             ->onConnection('database');
 
             $results = $this->userInformacion($registroResult['cliente'], $registroResult['token'], $userInfoDatosFarma['esAdicional']);
-            ActualizarDatosFarmaJob::dispatch($req->cedula)->onConnection('database');
+            //ActualizarDatosFarmaJob::dispatch($req->cedula)->onConnection('database');
             return response()->json([
                 'success' => true,
                 'message' => 'Usuario registrado correctamente',
@@ -117,7 +117,7 @@ class RegisterController extends Controller
         $asofarma = 0;
         $funcionario = 0;
 
-        if(!$funcionarioParam){
+        //if(!$funcionarioParam){
             $farmaResponse = (new FarmaService())->esAlianzaOFuncionario($cedula);
             $farmaData = $farmaResponse['data'];
             
@@ -138,7 +138,7 @@ class RegisterController extends Controller
                 'funcionario' => $funcionario,
                 'direccionCompletado' => $direccionCompletado
             ];
-        }
+        //}
 
         return [
             'esAdicional' => $esAdicional,
@@ -286,7 +286,7 @@ class RegisterController extends Controller
 
     private function userInformacion(Cliente $cliente, string $token, bool $esAdicional)
     {
-        return [
+        /* return [
             'id'=>$cliente->id,
             'adicional' => $esAdicional,
             'cliid' => $cliente->cliid,
@@ -309,6 +309,34 @@ class RegisterController extends Controller
             'tokenRaw' => $token,
             'changepass' => $cliente->user->changepass,
             'digital' => $cliente->digital,
+        ]; */
+        return [
+            'id' => $cliente->id,
+            'aceptado' => $cliente->aceptado,
+            'adicional' => $esAdicional,
+            'cliid' => $cliente->cliid,
+            'name' => $cliente->user->name,
+            'primerNombre' => $cliente->nombre_primero,
+            'nombres' => trim($cliente->nombre_primero . ' ' . $cliente->nombre_segundo),
+            'apellidos' => trim($cliente->apellido_primero . ' ' . $cliente->apellido_segundo),
+            'cedula' => $cliente->cedula,
+            'fechaNacimiento' => $cliente->fecha_nacimiento,
+            'email' => $cliente->user->email,
+            'telefono' => $cliente->celular,
+            'celular' => $cliente->celular,
+            'solicitudCredito' => $cliente->solicitud_credito,
+            'solicitudCompletada' => $cliente->direccion_completado,
+            'funcionario' => $cliente->funcionario,
+            'aso' => $cliente->asofarma,
+            'vendedorId' => $cliente->user->vendedor_id,
+            'tokenType' => 'Bearer',
+            'token' => 'Bearer ' . $token,
+            'tokenRaw' => $token,
+            'changepass' => $cliente->user->changepass,
+            'digital' => $cliente->digital,
+            'codigoPersona' => $cliente->codigo_persona,
+            'autorizadoEmpresa' => $cliente->empresa_autorizado,
+            'extranjero' => $cliente->extranjeto
         ];
     }
 
