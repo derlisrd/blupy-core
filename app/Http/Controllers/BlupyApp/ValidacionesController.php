@@ -5,6 +5,7 @@ namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
 use App\Models\Validacion;
+use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
 use App\Services\WaService;
 use Carbon\Carbon;
@@ -407,19 +408,40 @@ class ValidacionesController extends Controller
     }
 
 
-    private function enviarEmail(String $email, int $code)
+    private function enviarEmail(string $email, int $code)
     {
         $datos = [
             'email' => $email,
             'code' => $code
         ];
+
         try {
+
             Mail::send('email.validar', ['code' => $code], function ($message) use ($datos) {
-                $message->subject('[' . $datos['code'] . '] Blupy confirmacion');
+                $message->subject("[{$datos['code']}] Blupy registro");
                 $message->to($datos['email']);
             });
-        } catch (\Throwable $th) {
-            throw $th;
+        } catch (\Throwable $e) {
+            SupabaseService::LOG('Error SMTP principal', $e->getMessage());
+            //Log::error('Error SMTP principal: ' . $e->getMessage());
+
+            try {
+
+                Mail::mailer('gmail')->send(
+                    'email.validar',
+                    ['code' => $code],
+                    function ($message) use ($datos) {
+                        $message->subject("[{$datos['code']}] Blupy confirmacion");
+                        $message->to($datos['email']);
+                    }
+                );
+            } catch (\Throwable $gmailError) {
+
+                //SupabaseService::LOG('email registro', $e->getMessage());
+                SupabaseService::LOG('Error SMTP Gmail: ' , $gmailError->getMessage());
+
+                throw $gmailError;
+            }
         }
     }
 

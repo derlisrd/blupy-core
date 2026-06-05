@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\BlupyApp\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\ActualizarDatosFarmaJob;
+//use App\Jobs\ActualizarDatosFarmaJob;
 use App\Jobs\ProcesarImagenesInfinitaJob;
 use App\Jobs\ProcesarImagenesRegistroJob;
 use App\Models\Adicional;

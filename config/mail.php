@@ -36,6 +36,18 @@ return [
 
     'mailers' => [
 
+        'gmail' => [
+            'transport' => 'smtp',
+            'url' => env('GMAIL_URL'),
+            'host' => env('GMAIL_HOST', '127.0.0.1'),
+            'port' => env('GMAIL_PORT', 2525),
+            'encryption' => env('GMAIL_ENCRYPTION', 'tls'),
+            'username' => env('GMAIL_USERNAME'),
+            'password' => env('GMAIL_PASSWORD'),
+            'timeout' => null,
+            'local_domain' => env('MAIL_EHLO_DOMAIN'),
+        ],
+
         'smtp' => [
             'transport' => 'smtp',
             'url' => env('MAIL_URL'),
