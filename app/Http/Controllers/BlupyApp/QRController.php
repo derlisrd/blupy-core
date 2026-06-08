@@ -19,11 +19,14 @@ class QRController extends Controller
 
     public function autorizar(Request $req)
     {
-        try {
-            $user = $req->user();
-            $cliente = $user->cliente;
+        $user = $req->user();
+        $cliente = $user->cliente;
 
-            $documento = $req->ruc ? $req->ruc : $cliente->cedula;
+        $documento = $req->ruc ? $req->ruc : $cliente->cedula;
+
+
+        try {
+            
 
             $parametrosPorArray = [
                 'id' => $req->id,
@@ -104,7 +107,7 @@ class QRController extends Controller
             ], $blupy['status']);
         } catch (\Throwable $th) {
             
-            SupabaseService::LOG('Qr Autorizar', 'linea ='. $th->getLine() . ' mensaje ='. $th->getMessage());
+            SupabaseService::LOG('Qr Autorizar '.$documento, 'linea ='. $th->getLine() );
             //Log::error($th->getLine());
             return response()->json([
                 'success' => false,
