@@ -207,7 +207,7 @@ class CuentasController extends Controller
                 if ($fechaVigencia && $fechaVigencia >= $hoy) { // aqui debo comparar la fecha
                     $linea = $linea + $tarjetasFarma['clerLimiteCreditoAdic'];
                 }
-                $deuda = $tarjetasFarma['deuda'];
+                $deuda = $tarjetasFarma['deuda'] ?? 0;
 
                 $disponible2 = $linea - $deuda;
                 $disponible = $disponible2 < 0 ? 0 : $disponible2;
