@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notificacion;
 use App\Services\BlupyQrService;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
@@ -90,14 +91,15 @@ class QRController extends Controller
                  }
              }
 
-            /* if($data && $data['results'] && $req->token){
-               $push = new PushService();
-               $tokens = $user->nativeTokens();
-
-                SendCompraPushJob::dispatch($tokens)->onConnection('database')
-                    ->delay(now()->addMinute());
-               $push->sendPushMulti($tokens,['screen'=>'notificaciones'],'Compra realizada','Ha comprado');
-            } */
+            if($data && $data['results']){
+               Notificacion::create([
+                    'user_id'=>$user->id,
+                    'title' => 'Compra realizada',
+                    'description' =>'Su compra fue realizada correctamente',
+                    'body'=>'Muchas gracias por comprar con blupy.',
+                    'leido'=>0
+               ]);
+            }
 
 
             return response()->json([
