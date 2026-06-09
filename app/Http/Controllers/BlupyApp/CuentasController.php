@@ -204,7 +204,7 @@ class CuentasController extends Controller
                 $fechaVigencia = Carbon::parse($tarjetasFarma['clerFchFinVigencia'])
                     ->setTimezone('America/Asuncion')
                     ->startOfDay();
-                if ($fechaVigencia >= $hoy) { // aqui debo comparar la fecha
+                if ($fechaVigencia && $fechaVigencia >= $hoy) { // aqui debo comparar la fecha
                     $linea = $linea + $tarjetasFarma['clerLimiteCreditoAdic'];
                 }
                 $deuda = $tarjetasFarma['deuda'];
