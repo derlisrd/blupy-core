@@ -38,7 +38,7 @@ class LoginController extends Controller
 
         
 
-            if (RateLimiter::tooManyAttempts($rateKey, 3)) {
+            if (RateLimiter::tooManyAttempts($rateKey, 5)) {
                 $seconds = RateLimiter::availableIn($rateKey);
                 return response()->json([
                     'success' => false,
@@ -46,7 +46,7 @@ class LoginController extends Controller
                 ], 429); // 429 es el código HTTP correcto para Too Many Requests
             }
 
-            RateLimiter::hit($rateKey, 30);
+            RateLimiter::hit($rateKey, 60);
             
 
             // 3. Buscar cliente
