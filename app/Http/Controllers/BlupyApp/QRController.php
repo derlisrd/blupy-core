@@ -105,7 +105,7 @@ class QRController extends Controller
             return response()->json([
                 'success' => $data['success'],
                 'message' => $data['message'],
-                'results' => $data['results']
+                'results' => $data['results'] ?? null
             ], $blupy['status']);
         } catch (\Throwable $th) {
             
