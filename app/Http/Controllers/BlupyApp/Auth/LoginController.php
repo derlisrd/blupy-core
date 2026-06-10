@@ -9,9 +9,9 @@ use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\User;
 use App\Models\Validacion;
-use App\Services\EmailService;
+//use App\Services\EmailService;
 use App\Services\SupabaseService;
-use App\Services\TigoSmsService;
+//use App\Services\TigoSmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
@@ -28,11 +28,15 @@ class LoginController extends Controller
             if ($validator->fails()) 
                 return $this->errorResponse($validator->errors()->first(), 400);
 
+            if($req->version != '3.2.6'){
+                return response()->json(['success'=>false,'message'=>'Por favor actualice la app de BLUPY'],400);
+            }
 
             // 2. Control de rate limiting
             $ip = $req->ip();
             $rateKey = "login:$ip";
 
+        
 
             if (RateLimiter::tooManyAttempts($rateKey, 3)) {
                 $seconds = RateLimiter::availableIn($rateKey);
@@ -42,7 +46,7 @@ class LoginController extends Controller
                 ], 429); // 429 es el código HTTP correcto para Too Many Requests
             }
 
-            RateLimiter::hit($rateKey, 60);
+            RateLimiter::hit($rateKey, 120);
             
 
             // 3. Buscar cliente
