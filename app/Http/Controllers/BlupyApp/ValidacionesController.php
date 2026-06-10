@@ -48,6 +48,7 @@ class ValidacionesController extends Controller
 
             return response()->json(['success' => true, 'results' => ['id' => $validacion->id], 'message' => 'Mensaje enviado']);
         } catch (\Throwable $th) {
+            Log::error($th);
             SupabaseService::LOG('mensaje de validacion registro',$th->getMessage());
             return response()->json(['success' => false, 'message' => 'Error en el servidor'], 500);
         }
