@@ -99,13 +99,18 @@ class QRController extends Controller
                     'body'=>'Muchas gracias por comprar con blupy.',
                     'leido'=>0
                ]);
+                return response()->json([
+                    'success' => $data['success'],
+                    'message' => $data['message'],
+                    'results' => $data['results'] 
+                ], $blupy['status']);
             }
 
 
             return response()->json([
                 'success' => $data['success'],
                 'message' => $data['message'],
-                'results' => $data['results'] ?? null
+                'results' => null
             ], $blupy['status']);
         } catch (\Throwable $th) {
             
