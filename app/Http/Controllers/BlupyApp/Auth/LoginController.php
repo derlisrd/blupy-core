@@ -28,9 +28,9 @@ class LoginController extends Controller
             if ($validator->fails()) 
                 return $this->errorResponse($validator->errors()->first(), 400);
 
-            if($req->version != '3.2.6'){
+            /* if($req->version != '3.2.6'){
                 return response()->json(['success'=>false,'message'=>'Por favor actualice la app de BLUPY'],400);
-            }
+            } */
 
             // 2. Control de rate limiting
             $ip = $req->ip();
