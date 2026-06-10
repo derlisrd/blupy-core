@@ -46,7 +46,7 @@ class LoginController extends Controller
                 ], 429); // 429 es el código HTTP correcto para Too Many Requests
             }
 
-            RateLimiter::hit($rateKey, 120);
+            RateLimiter::hit($rateKey, 30);
             
 
             // 3. Buscar cliente

@@ -84,7 +84,7 @@ class QRController extends Controller
                          //throw $innerException;
                          return response()->json([
                              'success' => false,
-                             'message' => 'Error al procesar el pedido.',
+                             'message' => 'Error al procesar el pedido intente en unos minutos.',
                              'results' =>null
                          ], 500);
                      }
