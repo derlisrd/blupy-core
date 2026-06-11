@@ -92,7 +92,7 @@ class QRController extends Controller
                  }
              }
 
-            if($data && $data->results){
+            if (property_exists($data, 'results')) {
                Notificacion::create([
                     'user_id'=>$user->id,
                     'title' => 'Compra realizada',
