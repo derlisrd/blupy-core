@@ -92,7 +92,7 @@ class QRController extends Controller
                  }
              }
 
-            if($data && $data['results']){
+            if($data && $data->results){
                Notificacion::create([
                     'user_id'=>$user->id,
                     'title' => 'Compra realizada',
@@ -100,11 +100,6 @@ class QRController extends Controller
                     'body'=>'Muchas gracias por comprar con blupy.',
                     'leido'=>0
                ]);
-                return response()->json([
-                    'success' => $data['success'],
-                    'message' => $data['message'],
-                    'results' => $data['results'] 
-                ], $blupy['status']);
             }
 
 
