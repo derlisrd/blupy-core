@@ -65,7 +65,7 @@ class QRController extends Controller
             $datasResults = null;
             if (property_exists($data, 'results')) {
  
-                 $datasResults = $data['results'];
+                 $datasResults = $data->results;
                  if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
                      $farmaService = new FarmaService();
  
