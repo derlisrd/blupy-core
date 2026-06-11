@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notificacion;
 use App\Services\BlupyQrService;
 use App\Services\FarmaService;
 use App\Services\SupabaseService;
@@ -129,13 +130,23 @@ class AutorizacionesQRController extends Controller
                 }
             }
 
+            if (property_exists($data, 'results')) {
+                Notificacion::create([
+                    'user_id' => $user->id,
+                    'title' => 'Compra autorizada',
+                    'description' => 'Su compra fue autorizada y realizada correctamente',
+                    'body' => 'Muchas gracias por comprar con blupy.',
+                    'leido' => 0
+                ]);
+            }
+
 
             return response()->json([
                 'success' => $data->success,
                 'message' => $data->message,
                 'results' => $datasResults,
             ], $blupy['status']);
-            
+
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json([
