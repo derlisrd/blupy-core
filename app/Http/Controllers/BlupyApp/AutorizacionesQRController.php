@@ -25,6 +25,14 @@ class AutorizacionesQRController extends Controller
             $data = (object) $blupy['data'];
 
             if ($data->success) {
+
+                if($data->results['condicion'] !== $req->condicion){
+                    return response()->json([
+                        'success'=>false,
+                        'message'=> 'No posee tarjeta para esta forma de pago',
+                    ],400);
+                }
+
                 return response()->json([
                     'success' => $data->success,
                     'message' => '',
