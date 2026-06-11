@@ -18,15 +18,15 @@ class AutorizacionesQRController extends Controller
             $user = $req->user();
             $cliente = $user->cliente;
             $documento = $req->documento ?? $cliente->cedula;
-
+            $condicion = $req->query('condicion');
             $blupyQrService = new BlupyQrService();
 
             $blupy = $blupyQrService->consultarPorDocumento($documento);
             $data = (object) $blupy['data'];
 
             if ($data->success) {
-
-                if($data->results['condicion'] !== $req->condicion){
+                $results = (object) $data->results;
+                if($results->condicion !== $condicion){
                     return response()->json([
                         'success'=>false,
                         'message'=> 'No posee tarjeta para esta forma de pago',
