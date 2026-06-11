@@ -5,6 +5,7 @@ namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
 use App\Services\BlupyQrService;
 use App\Services\FarmaService;
+use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -26,6 +27,8 @@ class AutorizacionesQRController extends Controller
 
             if ($data->success) {
                 $results = (object) $data->results;
+
+                Log::info('results '. $results->condicion . ' por query '.$condicion);
                 if($results->condicion !== $condicion){
                     return response()->json([
                         'success'=>false,
