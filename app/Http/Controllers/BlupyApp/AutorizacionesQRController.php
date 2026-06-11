@@ -135,6 +135,7 @@ class AutorizacionesQRController extends Controller
                 'message' => $data->message,
                 'results' => $datasResults,
             ], $blupy['status']);
+            
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json([

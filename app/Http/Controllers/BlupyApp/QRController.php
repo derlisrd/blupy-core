@@ -61,10 +61,9 @@ class QRController extends Controller
              }
 
              $blupy = app(BlupyQrService::class)->autorizarQR($parametrosPorArray);
-             $data = $blupy['data'];
-             $datasResults = null;
-             Log::info($data);
-             if ($data && isset($data['results']) ) {
+            $data = (object) $blupy['data'];
+            $datasResults = null;
+            if (property_exists($data, 'results')) {
  
                  $datasResults = $data['results'];
                  if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
@@ -110,10 +109,11 @@ class QRController extends Controller
 
 
             return response()->json([
-                'success' => $data['success'],
-                'message' => $data['message'],
-                'results' => null
+                'success' => $data->success,
+                'message' => $data->message,
+                'results' => $datasResults,
             ], $blupy['status']);
+
         } catch (\Throwable $th) {
             
             SupabaseService::LOG('Qr Autorizar '.$documento, 'linea ='. $th->getLine() . ' message= '.$th->getMessage() );
