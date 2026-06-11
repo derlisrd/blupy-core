@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notificacion;
 use App\Services\BlupyQrService;
 use App\Services\FarmaService;
+use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -18,13 +20,21 @@ class AutorizacionesQRController extends Controller
             $user = $req->user();
             $cliente = $user->cliente;
             $documento = $req->documento ?? $cliente->cedula;
-
+            $condicion = $req->query('condicion');
             $blupyQrService = new BlupyQrService();
 
             $blupy = $blupyQrService->consultarPorDocumento($documento);
             $data = (object) $blupy['data'];
 
             if ($data->success) {
+
+                if ((int)$data->results['condicion'] !== (int)$condicion){
+                    return response()->json([
+                        'success'=>false,
+                        'message'=> 'No posee tarjeta para esta forma de pago',
+                    ],400);
+                }
+
                 return response()->json([
                     'success' => $data->success,
                     'message' => '',
@@ -120,12 +130,23 @@ class AutorizacionesQRController extends Controller
                 }
             }
 
+            if (property_exists($data, 'results')) {
+                Notificacion::create([
+                    'user_id' => $user->id,
+                    'title' => 'Compra autorizada',
+                    'description' => 'Su compra fue autorizada y realizada correctamente',
+                    'body' => 'Muchas gracias por comprar con blupy.',
+                    'leido' => 0
+                ]);
+            }
+
 
             return response()->json([
                 'success' => $data->success,
                 'message' => $data->message,
                 'results' => $datasResults,
             ], $blupy['status']);
+
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json([

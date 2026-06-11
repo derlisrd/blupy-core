@@ -42,6 +42,7 @@ class QRController extends Controller
                 'condicion' => $req->condicion,
                 'token'=> $req->token
             ];
+
             //Verificar si tiene saldo
             if($req->numeroCuenta !== '0'){
                 $resInfinita = app(InfinitaService::class)->ListarTarjetasPorDoc($cliente->cedula);
@@ -60,11 +61,11 @@ class QRController extends Controller
              }
 
              $blupy = app(BlupyQrService::class)->autorizarQR($parametrosPorArray);
-             $data = $blupy['data'];
-             $datasResults = null;
-             if ($data && isset($data['results']) ) {
+            $data = (object) $blupy['data'];
+            $datasResults = null;
+            if (property_exists($data, 'results')) {
  
-                 $datasResults = $data['results'];
+                 $datasResults = $data->results;
                  if ($datasResults['web'] === 0 && $datasResults['farma'] === 1) {
                      $farmaService = new FarmaService();
  
@@ -91,7 +92,7 @@ class QRController extends Controller
                  }
              }
 
-            if($data && $data['results']){
+            if (property_exists($data, 'results')) {
                Notificacion::create([
                     'user_id'=>$user->id,
                     'title' => 'Compra realizada',
@@ -99,19 +100,15 @@ class QRController extends Controller
                     'body'=>'Muchas gracias por comprar con blupy.',
                     'leido'=>0
                ]);
-                return response()->json([
-                    'success' => $data['success'],
-                    'message' => $data['message'],
-                    'results' => $data['results'] 
-                ], $blupy['status']);
             }
 
 
             return response()->json([
-                'success' => $data['success'],
-                'message' => $data['message'],
-                'results' => null
+                'success' => $data->success,
+                'message' => $data->message,
+                'results' => $datasResults,
             ], $blupy['status']);
+
         } catch (\Throwable $th) {
             
             SupabaseService::LOG('Qr Autorizar '.$documento, 'linea ='. $th->getLine() . ' message= '.$th->getMessage() );
