@@ -42,6 +42,7 @@ class QRController extends Controller
                 'condicion' => $req->condicion,
                 'token'=> $req->token
             ];
+
             //Verificar si tiene saldo
             if($req->numeroCuenta !== '0'){
                 $resInfinita = app(InfinitaService::class)->ListarTarjetasPorDoc($cliente->cedula);
@@ -62,6 +63,7 @@ class QRController extends Controller
              $blupy = app(BlupyQrService::class)->autorizarQR($parametrosPorArray);
              $data = $blupy['data'];
              $datasResults = null;
+             Log::info($data);
              if ($data && isset($data['results']) ) {
  
                  $datasResults = $data['results'];
