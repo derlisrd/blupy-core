@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Farma\ContactoBlupyController;
 use App\Http\Controllers\Rest\AdminController;
 use App\Http\Controllers\Rest\AuthController;
 use App\Http\Controllers\Rest\ClientesController;
@@ -177,5 +178,7 @@ Route::group(['middleware' => ['auth:admin']], function() {
     });
 
 });
+
+Route::get('/contacto/cliente',[ContactoBlupyController::class, 'getNroTelefono']);
 
 //Route::post('/individual', [NotificacionesController::class, 'individual'])->name('rest_enviar_notificacion_individual');
