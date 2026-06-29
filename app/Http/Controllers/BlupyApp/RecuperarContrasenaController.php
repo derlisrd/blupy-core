@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\EnviarSmsJob;
 use Illuminate\Http\Request;
 use App\Models\Cliente;
 use App\Models\User;
@@ -72,7 +73,7 @@ class RecuperarContrasenaController extends Controller
             return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 500);
 
         try {
-            $cliente = Cliente::where('cedula', $req->cedula)->first();
+            $cliente = Cliente::where('cedula','=', $req->cedula,false)->first();
             if (!$cliente)
                 return response()->json(['success' => false, 'message' => 'No existe registro en nuestras bases de datos.'], 404);
 
@@ -90,7 +91,9 @@ class RecuperarContrasenaController extends Controller
             }
             if ($req->forma == 1) {
                 $forma = $this->ocultarParcialmenteTelefono($user->cliente->celular);
-                $this->enviarMensajeDeTextoRecuperacion($user->cliente->celular, $randomNumber);
+                $mensaje = "Blupy te ha enviado el código $randomNumber para restablecer tu contraseña";
+                $numero = str_replace('+595', '0', $user->cliente->celular);
+                EnviarSmsJob::dispatch($numero, $mensaje)->onConnection('database');
                 //$mensaje = "Blupy te ha enviado el código ".$randomNumber." para restablecer tu contraseña";
                 //$numeroTelefonoWa = '595' . substr($user->cliente->celular, 1);
                 //(new WaService())->send($numeroTelefonoWa, $mensaje);
