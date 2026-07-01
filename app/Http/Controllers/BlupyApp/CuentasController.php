@@ -194,9 +194,9 @@ class CuentasController extends Controller
                 $funcionario = $tarjetasFarma['funcionario'];
                 $alianza = $tarjetasFarma['alianza'] ?? null;
 
-                //if($funcionario === false && $alianza === null){
-                //  return [];
-                //}
+                if($funcionario === false && $alianza === null){
+                 return [];
+                }
 
                 $linea = $tarjetasFarma['clerLimiteCredito'];
 
