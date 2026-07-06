@@ -181,4 +181,4 @@ Route::group(['middleware' => ['auth:admin']], function() {
 
 Route::get('/contacto/cliente',[ContactoBlupyController::class, 'getNroTelefono']);
 
-//Route::post('/individual', [NotificacionesController::class, 'individual'])->name('rest_enviar_notificacion_individual');
+Route::post('/individual', [NotificacionesController::class, 'individual'])->name('rest_enviar_notificacion_individual');
