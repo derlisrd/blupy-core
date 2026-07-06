@@ -14,7 +14,7 @@ use App\Http\Controllers\Rest\NotificacionesController;
 use App\Http\Controllers\Rest\PermisoAdminController;
 use App\Http\Controllers\Rest\SolicitudesController;
 use App\Http\Controllers\Rest\VentasController;
-use App\Models\Device;
+//use App\Models\Device;
 //use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
 
@@ -181,4 +181,4 @@ Route::group(['middleware' => ['auth:admin']], function() {
 
 Route::get('/contacto/cliente',[ContactoBlupyController::class, 'getNroTelefono']);
 
-Route::post('/individual', [NotificacionesController::class, 'individual'])->name('rest_enviar_notificacion_individual');
+//Route::post('/individual', [NotificacionesController::class, 'individual'])->name('rest_enviar_notificacion_individual');
