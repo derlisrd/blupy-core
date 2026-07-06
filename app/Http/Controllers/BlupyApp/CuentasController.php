@@ -178,68 +178,73 @@ class CuentasController extends Controller
     private function getTarjetasFarma(String $cedula)
     {
 
-        $tarjetasResults = [];
-        $farmaService = new FarmaService();
+        try {
+            $tarjetasResults = [];
+            $farmaService = new FarmaService();
 
-        $farmaCardsF = $farmaService->cliente2($cedula);
+            $farmaCardsF = $farmaService->cliente2($cedula);
 
-        $farmaCardDataF = $farmaCardsF['data'];
+            $farmaCardDataF = $farmaCardsF['data'];
 
 
 
-        if ($farmaCardDataF && isset($farmaCardDataF['result'])) {
-            $tarjetasFarma = $farmaCardDataF['result'];
-            if ($tarjetasFarma != null) {
+            if ($farmaCardDataF && isset($farmaCardDataF['result'])) {
+                $tarjetasFarma = $farmaCardDataF['result'];
+                if ($tarjetasFarma != null) {
 
-                $funcionario = $tarjetasFarma['funcionario'];
-                $alianza = $tarjetasFarma['alianza'] ?? null;
+                    $funcionario = $tarjetasFarma['funcionario'];
+                    $alianza = $tarjetasFarma['alianza'] ?? null;
 
-                if($funcionario === false && $alianza === null){
-                 return [];
+                    if ($funcionario === false && $alianza === null) {
+                        return [];
+                    }
+
+                    $linea = $tarjetasFarma['clerLimiteCredito'];
+
+                    $hoy = Carbon::now()->startOfDay();
+                    $fechaVigencia = Carbon::parse($tarjetasFarma['clerFchFinVigencia'])
+                        ->setTimezone('America/Asuncion')
+                        ->startOfDay();
+                    if ($fechaVigencia && $fechaVigencia >= $hoy) { // aqui debo comparar la fecha
+                        $linea = $linea + $tarjetasFarma['clerLimiteCreditoAdic'];
+                    }
+                    $deuda = $tarjetasFarma['deuda'] ?? 0;
+
+                    $disponible2 = $linea - $deuda;
+                    $disponible = $disponible2 < 0 ? 0 : $disponible2;
+
+                    $tarjetasResults[] = [
+                        'id' => 1,
+                        'formaPago' => 'BLUPY 1 DIA',
+                        'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Farma',
+                        'otorgadoPor' => 'Farma S.A.',
+                        'ruc' => null,
+                        'funcionario' => $funcionario,
+                        'tipo' => 0,
+                        'emision' => null,
+                        'bloqueo' => false,
+                        'condicion' => 'Credito',
+                        'condicionVenta' => 2,
+                        'cuenta' => null,
+                        'principal' => false,
+                        'adicional' => false,
+                        'numeroTarjeta' => 0,
+                        'linea' => $linea,
+                        'pagoMinimo' => 0,
+                        'deuda' => $deuda,
+                        'disponible' => $disponible,
+                        'alianzas' => $alianza,
+                        'codigoPersona' => null,
+                        'bloqueoMotivo' => '',
+                        'creditoUniforme' => $tarjetasFarma['creditoUniforme'] > 0 ? $tarjetasFarma['creditoUniforme'] : null
+                    ];
                 }
-
-                $linea = $tarjetasFarma['clerLimiteCredito'];
-
-                $hoy = Carbon::now()->startOfDay();
-                $fechaVigencia = Carbon::parse($tarjetasFarma['clerFchFinVigencia'])
-                    ->setTimezone('America/Asuncion')
-                    ->startOfDay();
-                if ($fechaVigencia && $fechaVigencia >= $hoy) { // aqui debo comparar la fecha
-                    $linea = $linea + $tarjetasFarma['clerLimiteCreditoAdic'];
-                }
-                $deuda = $tarjetasFarma['deuda'] ?? 0;
-
-                $disponible2 = $linea - $deuda;
-                $disponible = $disponible2 < 0 ? 0 : $disponible2;
-
-                $tarjetasResults[] = [
-                    'id' => 1,
-                    'formaPago' => 'BLUPY 1 DIA',
-                    'descripcion' => $alianza ? 'Blupy Alianza' : 'Blupy Farma',
-                    'otorgadoPor' => 'Farma S.A.',
-                    'ruc' => null,
-                    'funcionario' => $funcionario,
-                    'tipo' => 0,
-                    'emision' => null,
-                    'bloqueo' => false,
-                    'condicion' => 'Credito',
-                    'condicionVenta' => 2,
-                    'cuenta' => null,
-                    'principal' => false,
-                    'adicional' => false,
-                    'numeroTarjeta' => 0,
-                    'linea' => $linea,
-                    'pagoMinimo' => 0,
-                    'deuda' => $deuda,
-                    'disponible' => $disponible,
-                    'alianzas' => $alianza,
-                    'codigoPersona' => null,
-                    'bloqueoMotivo' => '',
-                    'creditoUniforme' => $tarjetasFarma['creditoUniforme'] > 0 ? $tarjetasFarma['creditoUniforme'] : null
-                ];
             }
+            return $tarjetasResults;
+        } catch (\Throwable $th) {
+            //throw $th;
+            return [];
         }
-        return $tarjetasResults;
     }
 
 
