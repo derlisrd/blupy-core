@@ -14,7 +14,7 @@ use App\Http\Controllers\Rest\NotificacionesController;
 use App\Http\Controllers\Rest\PermisoAdminController;
 use App\Http\Controllers\Rest\SolicitudesController;
 use App\Http\Controllers\Rest\VentasController;
-use App\Models\Device;
+//use App\Models\Device;
 //use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
 

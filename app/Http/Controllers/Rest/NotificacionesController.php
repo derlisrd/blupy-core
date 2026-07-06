@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\PushNativeJobs;
+use App\Jobs\SendPushJob;
 use App\Jobs\SendSmsToMorososJob;
 use App\Models\Cliente;
 use App\Models\Device;
@@ -172,34 +173,22 @@ class NotificacionesController extends Controller
                 ], 404);
             }
 
-            // Dispatch jobs solo si hay dispositivos
-            $jobsDispatched = [];
+            $allTokens = array_merge($androidDevices, $iosDevices);
 
-            if (!empty($androidDevices)) {
-                PushNativeJobs::dispatch($req->title, $req->text, $androidDevices, 'android')
-                    ->onConnection('database');
-                $jobsDispatched[] = 'android';
-            }
+            SendPushJob::dispatch(
+                $allTokens,
+                $req->input('title'),
+                $req->input('text')
+            );
 
-            if (!empty($iosDevices)) {
-                PushNativeJobs::dispatch($req->title, $req->text, $iosDevices, 'ios')
-                    ->onConnection('database');
-                $jobsDispatched[] = 'ios';
-            }
-
-            $androidCount = count($androidDevices);
-            $iosCount = count($iosDevices);
-
-            SupabaseService::LOG('Notification selectiva', "android = $androidCount | ios = $iosCount ");
             return response()->json([
                 'success' => true,
-                'message' => 'Notificaciones enviadas en segundo plano',
-                'data' => [
-                    'platforms' => $jobsDispatched,
+                'message' => 'Notificaciones encoladas para envío en segundo plano',
+                'results' => [
                     'counts' => [
                         'android' => count($androidDevices),
                         'ios' => count($iosDevices),
-                        'total' => count($androidDevices) + count($iosDevices)
+                        'total' => count($allTokens),
                     ]
                 ]
             ]);
