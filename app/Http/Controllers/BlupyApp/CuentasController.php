@@ -68,39 +68,44 @@ class CuentasController extends Controller
     private function getTarjetaBlupyEmpresas(string $cedula)
     {
         $tarjetasResults = [];
-        $farmaService = new FarmaService();
-        $farmaCards = $farmaService->empresaAutorizados($cedula);
-        $farmaCardData = $farmaCards['data'];
+        try {
+            $farmaService = new FarmaService();
+            $farmaCards = $farmaService->empresaAutorizados($cedula);
+            $farmaCardData = $farmaCards['data'];
 
-        if ($farmaCardData && isset($farmaCardData['result'])) {
-            $result = $farmaCardData['result'];
-            if ($result != null) {
-                $tarjetasResults[] = [
-                    'id' => 3,
-                    'formaPago' => 'BLUPY 30 DIAS',
-                    'descripcion' => 'Blupy empresa',
-                    'otorgadoPor' => $result['empresa'],
-                    'ruc' => $result['ruc'],
-                    'funcionario' => false,
-                    'tipo' => 0,
-                    'emision' => null,
-                    'bloqueo' => false,
-                    'condicion' => 'Credito',
-                    'condicionVenta' => 2,
-                    'codigoPersona' => $result['codigoPersAutorizada'],
-                    'cuenta' => null,
-                    'principal' => false,
-                    'adicional' => false,
-                    'numeroTarjeta' => 0,
-                    'linea' => $result['clerLimiteCredito'],
-                    'pagoMinimo' => 0,
-                    'deuda' => $result['deuda'],
-                    'disponible' => $result['clerLimiteCredito'] - $result['deuda'],
-                    'alianzas' => null,
-                    'bloqueoMotivo' => '',
-                    'creditoUniforme' => null
-                ];
+            if ($farmaCardData && isset($farmaCardData['result'])) {
+                $result = $farmaCardData['result'];
+                if ($result != null) {
+                    $tarjetasResults[] = [
+                        'id' => 3,
+                        'formaPago' => 'BLUPY 30 DIAS',
+                        'descripcion' => 'Blupy empresa',
+                        'otorgadoPor' => $result['empresa'],
+                        'ruc' => $result['ruc'],
+                        'funcionario' => false,
+                        'tipo' => 0,
+                        'emision' => null,
+                        'bloqueo' => false,
+                        'condicion' => 'Credito',
+                        'condicionVenta' => 2,
+                        'codigoPersona' => $result['codigoPersAutorizada'],
+                        'cuenta' => null,
+                        'principal' => false,
+                        'adicional' => false,
+                        'numeroTarjeta' => 0,
+                        'linea' => $result['clerLimiteCredito'],
+                        'pagoMinimo' => 0,
+                        'deuda' => $result['deuda'],
+                        'disponible' => $result['clerLimiteCredito'] - $result['deuda'],
+                        'alianzas' => null,
+                        'bloqueoMotivo' => '',
+                        'creditoUniforme' => null
+                    ];
+                }
             }
+        } catch (\Throwable $th) {
+            return [];
+            //throw $th;
         }
 
         return $tarjetasResults;
