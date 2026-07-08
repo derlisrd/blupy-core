@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ReclamarDeudaMorososSmsJob;
+use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -28,21 +29,22 @@ class MorososController extends Controller
             $originalExtension = $file->getClientOriginalExtension();
             // Creamos un nombre único basado en la fecha/tiempo actual y un ID único
             $fileName = 'morosos_' . time() . '_' . uniqid() . '.' . $originalExtension;
-            
+
             // 2. Almacenamiento del archivo usando storeAs()
             // Argumentos: storeAs( [Ruta dentro del disco], [Nombre del archivo], [Nombre del disco] )
-            $path = $file->storeAs('morosos_temp', $fileName, 'local'); 
+            $path = $file->storeAs('morosos_temp', $fileName, 'local');
             // ----------------------------------------------------
 
             if (!$path) {
-                return response()->json(['success'=>false, 'message' => 'Error al guardar el archivo.'], 500);
+                return response()->json(['success' => false, 'message' => 'Error al guardar el archivo.'], 500);
             }
             ReclamarDeudaMorososSmsJob::dispatch($path, $text)->onConnection('database');
-        return response()->json([
-            'success'=>true,
-            'message'=>'Mensajes enviados en 2do plano'
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Mensajes enviados en 2do plano'
+            ]);
         } catch (\Throwable $th) {
+            SupabaseService::LOG('error', 'Error al procesar el reclamo por SMS con listado CSV: ' . $th->getMessage());
             throw $th;
         }
     }

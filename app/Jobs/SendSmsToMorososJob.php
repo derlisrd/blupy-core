@@ -68,8 +68,7 @@ class SendSmsToMorososJob implements ShouldQueue
 
         SupabaseService::LOG(
             'JOB DE SMS MASIVOS COMPLETADO', 
-            "Total SMS enviados: $totalEnviados, fallidos: $totalFallidos", 
-            'info'
+            "Total SMS enviados: $totalEnviados fallidos: $totalFallidos"
         );
     }
 
