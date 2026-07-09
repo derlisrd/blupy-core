@@ -7,7 +7,7 @@ use App\Jobs\ReclamarDeudaMorososSmsJob;
 use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Storage;
 
 class MorososController extends Controller
 {
@@ -34,6 +34,9 @@ class MorososController extends Controller
             // Argumentos: storeAs( [Ruta dentro del disco], [Nombre del archivo], [Nombre del disco] )
             $path = $file->storeAs('morosos_temp', $fileName, 'local');
             // ----------------------------------------------------
+            if (!Storage::disk('local')->exists($path)) {
+                return response()->json(['success' => false, 'message' => 'El archivo no se guardó correctamente.'], 500);
+            }
 
             if (!$path) {
                 return response()->json(['success' => false, 'message' => 'Error al guardar el archivo.'], 500);
