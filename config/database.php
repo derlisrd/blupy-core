@@ -30,6 +30,20 @@ return [
     */
 
     'connections' => [
+        'pgsql_externa' => [
+            'driver' => 'pgsql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_EXT_HOST', '127.0.0.1'),
+            'port' => env('DB_EXT_PORT', '5432'),
+            'database' => env('DB_EXT_DATABASE', 'forge'),
+            'username' => env('DB_EXT_USERNAME', 'forge'),
+            'password' => env('DB_EXT_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public', // Ojo aquí si la DB usa otro esquema
+            'sslmode' => 'prefer',
+        ],
 
         'sqlite' => [
             'driver' => 'sqlite',

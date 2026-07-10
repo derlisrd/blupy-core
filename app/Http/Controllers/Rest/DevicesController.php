@@ -185,9 +185,9 @@ class DevicesController extends Controller
 
 
     public function ultimasValidaciones(){
-        $results = Validacion::where('validado',0)
-        ->orderBy('created_at','desc')
-        ->limit(10)
+        $results = Validacion::
+        orderBy('created_at','desc')
+        ->limit(20)
         ->get();
 
         return response()->json([
