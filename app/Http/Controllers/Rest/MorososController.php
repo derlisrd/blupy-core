@@ -8,9 +8,42 @@ use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+
 
 class MorososController extends Controller
 {
+
+    public function morosos()
+    {
+        try {
+
+
+            $resultados = DB::connection('pgsql_externa')->select("
+            SELECT 
+                m.maectaid, 
+                c.clidocu, 
+                c.clinombre, 
+                m.mcsalact, 
+                m.mcpagmin, 
+                m.mclincre, 
+                m.mcatraso  
+            FROM maecta m 
+            INNER JOIN cliente c ON c.cliid = m.cliid 
+            WHERE m.mcsitu = 'A' 
+            AND m.mcatraso > 0 
+            ORDER BY m.maectaid ASC
+        ");
+
+            return response()->json([
+                'success' => true,
+                'results' => $resultados
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
     public function reclamoPorSmsConListadoCSV(Request $req)
     {
         $validator = Validator::make($req->all(), [

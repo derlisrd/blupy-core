@@ -40,8 +40,7 @@ class ConsultasController extends Controller
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-        $cliente = Cliente::where('cedula', $req->cedula)->first();
-
+        $registro = Cliente::where('cedula', $req->cedula)->exists();
 
 
 
@@ -52,7 +51,7 @@ class ConsultasController extends Controller
             $infinitaResult = $infinitaData->Tarjetas[0];
         }
 
-        $res = (new FarmaService())->cliente($req->cedula);
+        $res = (new FarmaService())->cliente2($req->cedula);
         $dataFarma = (object)$res['data'];
 
         $farmaResult = null;
@@ -67,7 +66,7 @@ class ConsultasController extends Controller
             'success' => true,
             'message' => '',
             'results' => [
-                'registro' => $cliente ? true : false,
+                'registro' => $registro ? true : false,
                 'farma' => $farmaResult,
                 'micredito' => $infinitaResult,
             ]
