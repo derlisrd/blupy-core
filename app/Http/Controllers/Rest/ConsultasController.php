@@ -44,33 +44,37 @@ class ConsultasController extends Controller
 
 
 
-        $infinitaRes =  (new InfinitaService())->ListarTarjetasPorDoc($req->cedula);
-        $infinitaData = (object)$infinitaRes['data'];
-        $infinitaResult = null;
-        if (property_exists($infinitaData, 'Tarjetas')) {
-            $infinitaResult = $infinitaData->Tarjetas[0];
-        }
-
-        $res = (new FarmaService())->cliente2($req->cedula);
-        $dataFarma = (object)$res['data'];
-
-        $farmaResult = null;
-
-        if (property_exists($dataFarma, 'result')) {
-            $result = $dataFarma->result;
-            if (count($result) > 0) {
-                $farmaResult = $result[0];
+        try {
+            $infinitaRes =  (new InfinitaService())->ListarTarjetasPorDoc($req->cedula);
+            $infinitaData = (object)$infinitaRes['data'];
+            $infinitaResult = null;
+            if (property_exists($infinitaData, 'Tarjetas')) {
+                $infinitaResult = $infinitaData->Tarjetas[0];
             }
+
+            $res = (new FarmaService())->cliente2($req->cedula);
+            $dataFarma = (object)$res['data'];
+
+            $farmaResult = null;
+
+            if (property_exists($dataFarma, 'result')) {
+                $result = $dataFarma->result;
+                if (count($result) > 0) {
+                    $farmaResult = $result[0];
+                }
+            }
+            return response()->json([
+                'success' => true,
+                'message' => '',
+                'results' => [
+                    'registro' => $registro ? true : false,
+                    'farma' => $farmaResult,
+                    'micredito' => $infinitaResult,
+                ]
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
         }
-        return response()->json([
-            'success' => true,
-            'message' => '',
-            'results' => [
-                'registro' => $registro ? true : false,
-                'farma' => $farmaResult,
-                'micredito' => $infinitaResult,
-            ]
-        ]);
     }
 
     public function clienteFarmaPorCodigo(Request $req)
