@@ -58,10 +58,8 @@ class ConsultasController extends Controller
             $farmaResult = null;
 
             if (property_exists($dataFarma, 'result')) {
-                $result = $dataFarma->result;
-                if (count($result) > 0) {
-                    $farmaResult = $result[0];
-                }
+                $farmaResult = $dataFarma->result;
+               
             }
             return response()->json([
                 'success' => true,
