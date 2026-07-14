@@ -7,6 +7,7 @@ use App\Models\Device;
 use App\Models\User;
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
+use App\Services\SupabaseService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -247,7 +248,7 @@ class CuentasController extends Controller
             }
             return $tarjetasResults;
         } catch (\Throwable $th) {
-            //throw $th;
+            SupabaseService::LOG('error en tarjetas', $th->getMessage());
             return [];
         }
     }
