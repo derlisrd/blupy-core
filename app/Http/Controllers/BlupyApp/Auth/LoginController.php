@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -34,34 +35,36 @@ class LoginController extends Controller
 
             // 2. Control de rate limiting
             $ip = $req->ip();
-            $rateKey = "login:$ip";
+            $cedula = $req->cedula;
+            $throttleKey = Str::transliterate($cedula . '|' . $ip);
+            $globalCedulaKey = 'login_account:' . $cedula;
 
-        
+            if (RateLimiter::tooManyAttempts($throttleKey, 5) || RateLimiter::tooManyAttempts($globalCedulaKey, 10)) {
+                $seconds = max(
+                    RateLimiter::availableIn($throttleKey),
+                    RateLimiter::availableIn($globalCedulaKey)
+                );
 
-            if (RateLimiter::tooManyAttempts($rateKey, 5)) {
-                $seconds = RateLimiter::availableIn($rateKey);
                 return response()->json([
                     'success' => false,
-                    'message' => "Demasiadas peticiones. Espere $seconds segundos."
-                ], 429); // 429 es el código HTTP correcto para Too Many Requests
+                    'message' => "Demasiados intentos de inicio de sesión. Intente de nuevo en {$seconds} segundos."
+                ], 429);
             }
 
-            RateLimiter::hit($rateKey, 60);
-            
-
             // 3. Buscar cliente
-            $cliente = Cliente::with(['user'])->where('cedula', $req->cedula)->first();
-            if (!$cliente)
+            // 3. Buscar cliente y usuario
+            $cliente = Cliente::with(['user'])->where('cedula', $cedula)->first();
+
+            // Evitar enumeración de usuarios: Si no existe el cliente o usuario no está activo
+            if (!$cliente || !$cliente->user || !$cliente->user->active) {
+                // Incrementar RateLimiter aunque no exista para frenar escaneos
+                RateLimiter::hit($throttleKey, 60);
+                RateLimiter::hit($globalCedulaKey, 60);
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Usuario no existe.'
-                ], 400);
-            
-
-            
-            
-            if (!$cliente->user->active) {
-                return response()->json(['success' => false, 'message' => 'Cuenta no existe o ha sido eliminada'], 404);
+                    'message' => 'Credenciales incorrectas o no existe cuenta.' // Genérico por seguridad
+                ], 401);
             }
 
             // 5. Intentar autenticación
@@ -69,13 +72,16 @@ class LoginController extends Controller
             $token = JWTAuth::attempt($credentials);
 
             if (!$token) {
+                RateLimiter::hit($throttleKey, 60);
+                RateLimiter::hit($globalCedulaKey, 60);
                 $this->incrementLoginAttempts($cliente->user);
                 return response()->json([
                     'success' => false,
                     'message' => 'Credenciales incorrectas'
                 ], 401);
             }
-            
+            RateLimiter::clear($throttleKey);
+            RateLimiter::clear($globalCedulaKey);
 
             // 6. Verificar dispositivo de confianza (solo para rol 0)
              if ($cliente->user->rol === 0) {

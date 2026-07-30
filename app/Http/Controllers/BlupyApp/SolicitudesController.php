@@ -70,11 +70,7 @@ class SolicitudesController extends Controller
     }
     public function verificarDisponibilidad(Request $req)
     {
-        return response()->json([
-            'success' => true,
-            'results' => null,
-            'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpenos las molestias.'
-        ], 400);
+        
         $user = $req->user();
         $fechaLimite = Carbon::now()->subDays(2);
 

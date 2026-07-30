@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::get('/pages/{sku}', [PageController::class, 'show']);
+Route::get('/pages/{sku}', [PageController::class, 'show'])->middleware('throttle:60,1');
 
 Route::prefix('/device')->group(function () {
     Route::post('/confirmar-nuevo', [DeviceController::class, 'confirmarNuevoDispositivo'])->name('api_confirmar_nuevo_dispositivo');

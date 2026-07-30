@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\LocalEnviarSmsMorosoJob;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ContactoBlupyController extends Controller
@@ -47,7 +48,7 @@ class ContactoBlupyController extends Controller
             ], 422);
         }
 
-        $texto = $request->texto;
+        //$texto = $request->texto;
 
         // Leer CSV
         $cedulas = [];
@@ -71,7 +72,7 @@ class ContactoBlupyController extends Controller
 
         $cedulas = array_unique($cedulas);
 
-        $clientes = Cliente::select('cedula', 'celular')
+        $clientes = Cliente::select('cedula', 'celular','nombre_primero')
             ->whereIn('cedula', $cedulas)
             ->whereNotNull('celular')
             ->where('celular', '!=', '')
@@ -80,13 +81,14 @@ class ContactoBlupyController extends Controller
         $delay = 0;
 
         foreach ($clientes as $cliente) {
-
+            $texto = 'Estimado/a ' . $cliente->nombre_primero . '. Blupy le recuerda su deuda pendiente a regularizar. Favor comunicarse al 0985713544';
+            
             LocalEnviarSmsMorosoJob::dispatch(
                 $cliente->celular,
                 $texto
             )->delay(now()->addSeconds($delay));
 
-            $delay += 3;
+            $delay += 3; 
         }
 
         return response()->json([
