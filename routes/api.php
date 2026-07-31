@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BlupyApp\AdjuntosController;
 use App\Http\Controllers\BlupyApp\Auth\LoginController;
 use App\Http\Controllers\BlupyApp\Auth\RegisterController;
 //use App\Http\Controllers\BlupyApp\AuthController;
@@ -152,6 +153,7 @@ Route::middleware('auth:api')->group(function(){
 
     Route::prefix('/solicitudes')->group(function () {
         Route::get('/', [SolicitudesController::class, 'solicitudes'])->name('api_solicitudes');
+        Route::post('/subir-comprobantes',[AdjuntosController::class,'subirComprobantes']);
         Route::post('/solicitar-ampliacion', [SolicitudesController::class, 'solicitarAmpliacion'])->name('api_solicitar_ampliacion');
         Route::post('/agregar-adicional', [SolicitudesController::class, 'agregarAdicional'])->name('api_agregar_adicional');
         Route::get('/verificar-estado-solicitud', [SolicitudesController::class, 'verificarEstadoSolicitud'])->name('api_verificar_estado_solicitud');
