@@ -39,17 +39,21 @@ class InfinitaService
         return $this->get('TarjMovimPorFecha',['Maectaid'=>$cuenta,'Periodo'=>$periodo,'Mtnume'=>$numeroTarjeta]);
     }
 
-    public function TraerDatosCliente($cliid){
+    public function TraerDatosCliente(string $cliid){
         return $this->get('TraerDatosCliente',['Cliid'=>$cliid]);
     }
 
-    public function ListarTarjetasPorDoc($cedula)
+    public function ListarTarjetasPorDoc(string $cedula)
     {
         return $this->get('ListarTarjetasPorDoc',['Mtdocu' => $cedula]);
     }
 
     public function listarProfesiones(){
         return $this->get('ListarProfesiones',[]);
+    }
+
+    public function ConsultaSaldoCierre(string $cedula){
+        return $this->get('ConsultaSaldo', ['Documento' => $cedula]);
     }
 
     public function listarBarrios($departamentoId,$ciudadId)

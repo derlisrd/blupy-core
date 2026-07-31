@@ -34,6 +34,34 @@ class CuentasController extends Controller
     }
 
 
+    public function SaldoCierre(Request $req){
+        try {
+            $user = $req->user();
+            $cliente = $user->cliente;
+            $infinitaService = new InfinitaService();
+            $consultaSaldo = $infinitaService->ConsultaSaldoCierre($cliente->cedula);
+            $data = $consultaSaldo['data'];
+
+            if(!isset($data['Cuentas']) || !$data['Cuentas']){
+                return response()->json([
+                    'success'=>false,
+                    'message'=>'Error. No existe cuenta.'
+                ],400);
+            }
+
+            $cuentas = $data['Cuentas'];
+
+            return response()->json([
+                'success'=>true,
+                'results' => $cuentas
+            ]);
+
+
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
 
     public function tarjetas2(Request $req)
     {
