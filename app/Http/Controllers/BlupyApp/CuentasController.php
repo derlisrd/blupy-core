@@ -52,7 +52,7 @@ class CuentasController extends Controller
             $cuentas = [];
 
             foreach ($data['Cuentas'] as $item) {
-                $cuenta[] = [
+                $cuentas[] = [
                     'atraso'=> $item['Atraso'],
                     'minimo'=> (int) $item['PagoMinimo'],
                     'deuda' => (int) $item['SaldoAdeu'],
