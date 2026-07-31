@@ -9,6 +9,7 @@ use App\Models\Cliente;
 use App\Models\User;
 use App\Models\Validacion;
 use App\Services\EmailService;
+use App\Services\SupabaseService;
 use App\Services\TigoSmsService;
 use App\Services\WaService;
 use App\Traits\Helpers;
@@ -110,8 +111,8 @@ class RecuperarContrasenaController extends Controller
                 'message' => 'Código enviado correctamente al ' . $forma
             ]);
         } catch (\Throwable $th) {
-            Log::error('Error olvido password: ' . $th->getMessage());
-            //SupabaseService::LOG('olvido_password',$th->getMessage());
+            //Log::error('Error olvido password: ' . $th->getMessage());
+            SupabaseService::LOG('olvido_password',$th->getMessage());
             return response()->json(['success' => false, 'message' => 'Error de servidor. Intente en unos minutos.'], 500);
         }
     }
