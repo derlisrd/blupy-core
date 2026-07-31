@@ -32,7 +32,8 @@ return [
     ],
     'infinita' => [
         'url'      => env('INFINITA_URL'),
-        'token' => env('INFINITA_TOKEN')
+        'token' => env('INFINITA_TOKEN'),
+        'verify_ssl' => env('INFINITA_API_VERIFY_SSL', true),
     ],
     'farma' => [
         'url'      => env('FARMA_URL'),

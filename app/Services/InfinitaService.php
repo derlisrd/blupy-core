@@ -307,7 +307,13 @@ class InfinitaService
 
     private function get(String $endpoint,Array $parametros) {
         try {
-            $response = Http::withHeaders($this->header)->get($this->url . '/' . $endpoint, $parametros);
+            $verifySsl = config('services.infinita.verify_ssl');
+
+            $response = Http::withHeaders($this->header)
+            ->withOptions(['verify' => $verifySsl])
+            ->get($this->url . '/' . $endpoint, $parametros)
+            ->throw();
+            
             $json = $response->json();
             return [
                 'data'=>$json,
@@ -325,8 +331,13 @@ class InfinitaService
 
     private function post(String $endpoint,Object $body) {
         try {
-            $response = Http::withHeaders($this->header)
-            ->post($this->url . '/'.$endpoint, $body);
+            $verifySsl = config('services.infinita.verify_ssl');
+
+            $response = Http::withOptions(['verify' => $verifySsl])
+            ->withHeaders($this->header)
+            ->post($this->url . '/'.$endpoint, $body)
+            ->throw();
+            ;
             $json = $response->json();
 
             return [
