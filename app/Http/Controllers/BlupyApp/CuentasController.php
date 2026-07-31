@@ -303,6 +303,7 @@ class CuentasController extends Controller
             }
             return $tarjetasResults;
         } catch (\Throwable $th) {
+            SupabaseService::LOG('Tarjeta Blupy Digital error', $th->getMessage());
             return [];
         }
     }
