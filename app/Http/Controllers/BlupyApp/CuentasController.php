@@ -49,7 +49,17 @@ class CuentasController extends Controller
                 ],400);
             }
 
-            $cuentas = $data['Cuentas'];
+            $cuentas = [];
+
+            foreach ($data['Cuentas'] as $item) {
+                $cuenta[] = [
+                    'atraso'=> $item['Atraso'],
+                    'minimo'=> (int) $item['PagoMinimo'],
+                    'deuda' => (int) $item['SaldoAdeu'],
+                    'vencimiento' => $item['FechaVto'],
+                    'producto' => 'Blupy Digital'
+                ];
+            }
 
             return response()->json([
                 'success'=>true,
