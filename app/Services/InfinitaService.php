@@ -2,15 +2,16 @@
 
 namespace App\Services;
 
+use App\Models\Cliente;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\RequestException;
 
 class InfinitaService
 {
-    private $url;
-    private $token;
-    private $header;
+    private string $url;
+    private string $token;
+    private array $header;
 
     public function __construct() {
         $this->url = config('services.infinita.url');
@@ -22,7 +23,7 @@ class InfinitaService
         ];
     }
 
-    public function anularSolicitud($codigoSolicitud){
+    public function anularSolicitud(int $codigoSolicitud){
         $datos = (object)[
             'SolId'=>$codigoSolicitud,
             'Proc'=>13
@@ -174,7 +175,7 @@ class InfinitaService
         return $this->post('IngresarAdj',$data);
     }
 
-    public function ConsultaEstadoSolicitud($codigo)
+    public function ConsultaEstadoSolicitud(int $codigo)
     {
         return $this->get('ConsultaEstadoSolicitud',["Solid" => $codigo]);
     }
@@ -203,14 +204,14 @@ class InfinitaService
 
 
 
-    public function solicitudLineaDeCredito($cliente){
+    public function solicitudLineaDeCredito(Cliente $cliente){
         $datosDeCliente = $this->datosCliente($cliente,172,[],null,null);
         return $this->post('IngresarSolicitud',$datosDeCliente);
     }
 
 
 
-    public function registrar(Object $cliente){
+    public function registrar(Cliente $cliente){
         $data = $this->datosCliente($cliente,171,[],null,null);
         return $this->post('IngresarSolicitud',$data);
     }
@@ -218,90 +219,134 @@ class InfinitaService
 
 
 
-    private function datosCliente($cliente,$productoId,$adicionales,$solicitudDeLinea,$cuentaNumero){
-        $adicionalesObject = $adicionales ? $adicionales  : [];
-        $datosClienteInfinita =  (object)[
+    private function datosCliente(Cliente $cliente, int $productoId, array $adicionales, int | null $solicitudDeLinea, string | null $cuentaNumero)
+    {
+        $adicionalesObject = $adicionales ? $adicionales : [];
+
+        $datosClienteInfinita = (object)[
             "wSolicitud" => (object)[
-                "SolProdId"=> $productoId, // 171 registro 172 solicitud de credito 173 adicional 174 ampliacion
-                "SolTcTip"=> $productoId == 173 ? "A" : "P", // A adicional P principal
-                "SolApe1"=> $cliente->apellido_primero,
-                "SolApe2"=> $cliente->apellido_segundo ?? "",
-                "SolCed"=> $cliente->cedula,
-                "SolCel"=> $cliente->celular,
-                "SolFNa"=> $cliente->fecha_nacimiento,
-                "SolDir"=> isset($cliente->calle) ? $cliente->calle : '' ,
+                // ===== DATOS PERSONALES =====
+                "SolProdId" => $productoId, // 171 registro, 172 solicitud, 173 adicional, 174 ampliacion
+                "SolTcTip" => $productoId == 173 ? "A" : "P", // A adicional, P principal
+                "SolApe1" => $cliente->apellido_primero,
+                "SolApe2" => $cliente->apellido_segundo ?? "",
+                "SolCed" => $cliente->cedula,
+                "SolCel" => $cliente->celular,
+                "SolFNa" => $cliente->fecha_nacimiento,
+                "SolNom1" => $cliente->nombre_primero,
+                "SolNom2" => isset($cliente->nombre_segundo) ? $cliente->nombre_segundo : "",
+                "SolSexo" => isset($cliente->sexo) ? $cliente->sexo : "M", // M o F
+                "SolMail" => $cliente->email,
+                "SolRUC" => $cliente->cedula,
+                "SolTel" => isset($cliente->telefono) ? $cliente->telefono : $cliente->celular, // ← AGREGADO
+
+                // ===== DIRECCIÓN =====
+                "SolDir" => isset($cliente->calle) ? $cliente->calle : '',
                 "SolDepId" => isset($cliente->departamento_id) ? (int)$cliente->departamento_id : 0,
                 "SolCiuId" => isset($cliente->ciudad_id) ? (int)$cliente->ciudad_id : 0,
                 "SolBarId" => isset($cliente->barrio_id) ? (int)$cliente->barrio_id : 0,
                 "SolDirLat" => isset($cliente->latitud_direccion) ? $cliente->latitud_direccion : '',
                 "SolDirLon" => isset($cliente->longitud_direccion) ? $cliente->longitud_direccion : '',
+
+                // ===== TRABAJO =====
+                "SolLabEmp" => isset($cliente->empresa) ? $cliente->empresa : '',
+                "SolLabSal" => isset($cliente->salario) ? $cliente->salario : 0,
+                "SolLabDir" => isset($cliente->empresa_direccion) ? $cliente->empresa_direccion : '',
                 "SolLabDirLat" => isset($cliente->latitud_empresa) ? $cliente->latitud_empresa : '',
                 "SolLabDirLon" => isset($cliente->longitud_empresa) ? $cliente->longitud_empresa : '',
-                "SolLabEmp" => isset($cliente->empresa) ? $cliente->empresa : '',
-                "SolLabAntA"=> isset($cliente->antiguedad_laboral) ? (int)$cliente->antiguedad_laboral : 0,
+                "SolLabTel" => isset($cliente->empresa_telefono) ? $cliente->empresa_telefono : '',
+                "SolLabFecIn" => isset($cliente->fecha_ingreso_laboral) ? $cliente->fecha_ingreso_laboral : Carbon::now()->format('Y-m-d'), // ← CORREGIDO
+                "SolLabAntA" => isset($cliente->antiguedad_laboral) ? (int)$cliente->antiguedad_laboral : 0,
                 "SolLabAntM" => isset($cliente->antiguedad_laboral_mes) ? (int)$cliente->antiguedad_laboral_mes : 0,
-                "SolLabDir"=> isset($cliente->empresa_direccion) ? $cliente->empresa_direccion : '',
-                "SolLabSal"=> isset($cliente->salario) ? $cliente->salario : '',
-                "SolLabTel"=> isset($cliente->empresa_telefono) ? $cliente->empresa_telefono : '',
-                "SolLabTipId"=> isset($cliente->tipo_empresa_id) ? $cliente->tipo_empresa_id : 0,
-                "SolLinea"=> $solicitudDeLinea ? $solicitudDeLinea : 300000,
-                "SolMaeCta"=> $cuentaNumero ? $cuentaNumero : 0,
-                "SolMail"=> $cliente->email,
-                "SolNom1"=> $cliente->nombre_primero,
-                "SolNom2"=> isset($cliente->nombre_segundo) ? $cliente->nombre_segundo : "",
-                "SolProfId"=> isset($cliente->profesion_id) ? $cliente->profesion_id : 0,
-                "SolFec"=> Carbon::now()->format('Y-m-d'),
-                "SolRUC"=> $cliente->cedula,
+                "SolProfId" => isset($cliente->profesion_id) ? $cliente->profesion_id : 0,
+                "SolCargo" => isset($cliente->cargo) ? $cliente->cargo : "CARGO",
+                "LugTrabId" => isset($cliente->lugar_trabajo_id) ? $cliente->lugar_trabajo_id : 0,
+                "SolLabTipId" => isset($cliente->tipo_empresa_id) ? $cliente->tipo_empresa_id : 0,
+
+                // ===== REFERENCIAS PERSONALES (NUEVO) =====
+                "RefP" => isset($cliente->referencias_personales) ? $cliente->referencias_personales : [
+                    (object)[
+                        "SolRefPId" => 1,
+                        "SolRefPNom" => "REFERENCIA 1",
+                        "SolRefPRel" => "FAMILIAR",
+                        "SolRefPTel" => "000000000",
+                        "SolRefPCel" => "000000000"
+                    ]
+                ],
+
+                // ===== REFERENCIAS COMERCIALES (NUEVO) =====
+                "RefC" => isset($cliente->referencias_comerciales) ? $cliente->referencias_comerciales : [
+                    (object)[
+                        "SolRefCId" => 1,
+                        "SolRefCCom" => "COMERCIO 1",
+                        "SolRefCDet" => "CONCEPTO",
+                        "SolRefCFec" => Carbon::now()->format('Y-m-d'),
+                        "SolRefCCuo" => "1",
+                        "SolRefCSal" => 0
+                    ]
+                ],
+
+                // ===== DATOS DEL CÓNYUGE (NUEVO) =====
+                "SolCygCed" => isset($cliente->conyuge_cedula) ? $cliente->conyuge_cedula : "0",
+                "SolCygNom1" => isset($cliente->conyuge_nombre) ? $cliente->conyuge_nombre : "",
+                "SolCygApe1" => isset($cliente->conyuge_apellido) ? $cliente->conyuge_apellido : "",
+                "SolCygApe2" => isset($cliente->conyuge_apellido2) ? $cliente->conyuge_apellido2 : "",
+                "SolCygCelu" => isset($cliente->conyuge_celular) ? $cliente->conyuge_celular : "",
+                "SolCygLugTr" => isset($cliente->conyuge_trabajo) ? $cliente->conyuge_trabajo : "",
+
+                // ===== FINANCIERO =====
+                "SolLinea" => $solicitudDeLinea ? $solicitudDeLinea : 300000,
+                "SolMaeCta" => $cuentaNumero ? $cuentaNumero : 0,
+                "SolImpSol" => $solicitudDeLinea ? $solicitudDeLinea : 300000,
+                "SolImpor" => $solicitudDeLinea ? $solicitudDeLinea : 300000,
+                "SolMonId" => 6900, // Guaraníes
+                "SolCanPer" => 1,
+                "SolCuoC" => 1,
+
+                // ===== FECHAS =====
+                "SolFec" => Carbon::now()->format('Y-m-d'),
+                "Sol1Vto" => Carbon::now()->addMonths(1)->format('Y-m-d'), // Vencimiento a 1 mes
+
+                // ===== OTROS CAMPOS =====
                 "Adicional" => $adicionales ? $adicionalesObject : [],
                 "AfinId" => 1,
-                "BancaId"=> 1,
-                "DesCreId"=> 0,
-                "LugTrabId"=> 0,
-                "MarcaId"=> 1,
-                "MedioId"=> 0,
-                "OficialId"=> 0,
-                "Sol1Vto"=> "2023-03-20",
-                "SolEsCiv"=> 1,
-                "SolAsoId"=> 0,
-                "SolAsoOrd"=> "123",
-                "SolAuxId"=> 0,
-                "SolCanPer"=> 1,
-                "SolCargo"=> "CARGO",
-                "SolCond"=> "TAR",
-                "SolConsol"=> 0,
-                "SolCuoC"=> 1,
-                "SolCygSala"=> 0,
-                "SolFijVto"=> false,
-                "SolGarBarId"=> 0,
-                "SolGarCiuId"=> 0,
-                "SolGarCySala"=> 0,
-                "SolGarDepId"=> 0,
-                "SolGarEsCiv"=> 0,
-                "SolGarFNa"=> "0001-01-01",
-                "SolGarLabAntA"=> 0,
-                "SolGarLabAntM"=> 0,
-                "SolGarNacId"=> 0,
-                "SolGarProfId"=> 0,
-                "SolGarSala"=> 0,
-                "SolId"=> 0,
-                "SolImpSol"=> 300000,
-                "SolImpor"=> 300000,
-                "SolLabFecIn"=> "",
-                "SolMonId"=> 6900,
-                "SolNacId"=> 172,
-                "SolObs"=> "",
-                "SolSepBi"=> "N",
-                "SolSexo"=> "M",
-                "SolSucNro"=> 1,
-                "SolTcEmb"=> "D",
-                "SolTel"=> "",
-                "SolTipCal"=> 5,
-                "SolTipViv"=> "P",
-                "SolTipVto"=> 1,
-                "SolVendId"=> 0,
-                "SolicGarId"=> 0
+                "BancaId" => 1,
+                "DesCreId" => 0,
+                "MarcaId" => 1,
+                "MedioId" => 0,
+                "OficialId" => 0,
+                "SolAsoId" => 0,
+                "SolAsoOrd" => "123",
+                "SolAuxId" => 0,
+                "SolCond" => "TAR",
+                "SolConsol" => 0,
+                "SolFijVto" => false,
+                "SolGarBarId" => 0,
+                "SolGarCiuId" => 0,
+                "SolGarCySala" => 0,
+                "SolGarDepId" => 0,
+                "SolGarEsCiv" => 0,
+                "SolGarFNa" => "0001-01-01",
+                "SolGarLabAntA" => 0,
+                "SolGarLabAntM" => 0,
+                "SolGarNacId" => 0,
+                "SolGarProfId" => 0,
+                "SolGarSala" => 0,
+                "SolId" => 0,
+                "SolLabFecIn" => isset($cliente->fecha_ingreso_laboral) ? $cliente->fecha_ingreso_laboral : Carbon::now()->format('Y-m-d'),
+                "SolNacId" => 172,
+                "SolObs" => "",
+                "SolSepBi" => "N",
+                "SolSucNro" => 1,
+                "SolTcEmb" => "D",
+                "SolTipCal" => 5,
+                "SolTipViv" => "P",
+                "SolTipVto" => 1,
+                "SolVendId" => 0,
+                "SolicGarId" => 0,
+                "SolEsCiv" => isset($cliente->estado_civil) ? $cliente->estado_civil : 1,
             ],
-            "Proceso"=> 2
+            "Proceso" => 1 // 1 = solo registro, 2 = registro y proceso
         ];
 
         return $datosClienteInfinita;
