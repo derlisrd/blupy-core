@@ -76,7 +76,7 @@ class AdjuntosController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Error subiendo comprobantes: ' . $th->getMessage(),
+                'message' => 'Error subiendo comprobantes. ',
             ], 500);
         }
     }
