@@ -35,10 +35,14 @@ class DraftController extends Controller
         $cliente = $user->cliente;
 
         $solicitudDraft = SolicitudDraft::updateOrCreate(
-            ['cliente_id' => $cliente->id, 
-            'estado' => 'draft', 
-            'step' => $req->step],
-            ['json_data' => $req->datos]
+            [
+                'cliente_id' => $cliente->id,
+                'estado'     => 'draft',
+            ],
+            [
+                'step'      => $req->step,
+                'json_data' => $req->datos,
+            ]
         );
 
         return response()->json([
@@ -47,7 +51,6 @@ class DraftController extends Controller
             'message' => 'Solicitud draft actualizada.'
         ]);
     }
-
     public function deletingDraftSolicitud(Request $req)
     {
         $user = $req->user();

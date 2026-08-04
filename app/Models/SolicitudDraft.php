@@ -12,9 +12,6 @@ class SolicitudDraft extends Model
 
     protected $table = 'solicitud_drafts';
 
-    /**
-     * Campos permitidos para asignación masiva (ej. SolicitudDraft::create($data))
-     */
     protected $fillable = [
         'cliente_id',
         'estado',
@@ -23,18 +20,12 @@ class SolicitudDraft extends Model
     ];
 
     /**
-     * Mapeo de tipos de datos de Eloquent.
+     * Define los casteos de atributos.
      */
-   /*  protected function casts(): array
-    {
-        return [
-            'json_data' => 'array', // Transforma automáticamente el JSON de MySQL a array PHP
-        ];
-    }
- */
-    /**
-     * Relación con el modelo Cliente
-     */
+    protected $casts = [
+        'json_data' => 'json', 
+    ];
+
     public function cliente(): BelongsTo
     {
         return $this->belongsTo(Cliente::class);
