@@ -70,27 +70,7 @@ class SolicitudesController extends Controller
         ]);
     }
 
-    public function DraftSolicitud(Request $req)
-    {
-        $user = $req->user();
-        $cliente = $user->cliente;
-
-        $solicitudDraft = SolicitudDraft::where('cliente_id', $cliente->id)->where('estado','draft')->latest()->first();
-
-        if ($solicitudDraft) {
-            return response()->json([
-                'success' => true,
-                'results' => $solicitudDraft,
-                'message' => 'Solicitud draft encontrada.'
-            ]);
-        } 
-            return response()->json([
-                'success' => false,
-                'results' => null,
-                'message' => 'No hay solicitud draft.'
-            ]);
-        
-    }
+    
 
     public function verificarDisponibilidad(Request $req)
     {

@@ -12,6 +12,7 @@ use App\Http\Controllers\BlupyApp\ContratoController;
 use App\Http\Controllers\BlupyApp\CuentasController;
 use App\Http\Controllers\BlupyApp\DatosController;
 use App\Http\Controllers\BlupyApp\DeviceController;
+use App\Http\Controllers\BlupyApp\DraftController;
 use App\Http\Controllers\BlupyApp\FarmaController;
 use App\Http\Controllers\BlupyApp\InformacionesController;
 use App\Http\Controllers\BlupyApp\MovimientosController;
@@ -161,7 +162,9 @@ Route::middleware('auth:api')->group(function(){
         Route::post('/solicitar-credito-digital', [SolicitudesController::class, 'solicitarCreditoDigital']);
         Route::get('/verificar-disponibilidad', [SolicitudesController::class, 'verificarDisponibilidad']);
 
-        Route::get('/solicitar-credito-digital/draft', [SolicitudesController::class, 'DraftSolicitud']);
+        Route::get('/solicitar-credito-digital/draft', [DraftController::class, 'gettingDraftSolicitud']);
+        Route::post('/solicitar-credito-digital/draft', [DraftController::class, 'postingDraftSolicitud']);
+        Route::delete('/solicitar-credito-digital/draft', [DraftController::class, ' deletingDraftSolicitud']);
     });
 
     Route::put('/cambiar-contrasena',[UserPrivate::class,'cambiarContrasena'])->name('api_cambiar_contrasena');
