@@ -21,7 +21,7 @@ return new class extends Migration
                 ->default('draft');
             $table->string('step')
                 ->default('inicio');
-            $table->json('datos')->nullable();
+            $table->json('json_data')->nullable();
             $table->timestamps();
         });
     }

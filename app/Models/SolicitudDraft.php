@@ -19,7 +19,7 @@ class SolicitudDraft extends Model
         'cliente_id',
         'estado',
         'step',
-        'datos',
+        'json_data',
     ];
 
     /**
@@ -28,7 +28,7 @@ class SolicitudDraft extends Model
     protected function casts(): array
     {
         return [
-            'datos' => 'array', // Transforma automáticamente el JSON de MySQL a array PHP
+            'json_data' => 'array', // Transforma automáticamente el JSON de MySQL a array PHP
         ];
     }
 
