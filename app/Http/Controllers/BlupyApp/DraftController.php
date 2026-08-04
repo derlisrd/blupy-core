@@ -36,7 +36,7 @@ class DraftController extends Controller
 
         $solicitudDraft = SolicitudDraft::updateOrCreate(
             ['cliente_id' => $cliente->id, 'estado' => 'draft', 'step' => $req->step],
-            ['data' => $req->all()]
+            ['datos' => $req->all()]
         );
 
         return response()->json([
