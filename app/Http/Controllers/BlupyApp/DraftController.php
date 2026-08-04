@@ -56,10 +56,9 @@ class DraftController extends Controller
         $user = $req->user();
         $cliente = $user->cliente;
 
-        $solicitudDraft = SolicitudDraft::where('cliente_id', $cliente->id)->where('estado', 'draft')->latest()->first();
+        $solicitudDraft = SolicitudDraft::where('cliente_id', $cliente->id)->delete();
 
-        if ($solicitudDraft) {
-            $solicitudDraft->delete();
+        if($solicitudDraft){
             return response()->json([
                 'success' => true,
                 'results' => null,
@@ -69,7 +68,7 @@ class DraftController extends Controller
         return response()->json([
             'success' => false,
             'results' => null,
-            'message' => 'No hay solicitud draft.'
-        ], 404);
+            'message' => 'No hay solicitud draft para eliminar.'
+        ],404);
     }
 }
