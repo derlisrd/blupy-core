@@ -25,13 +25,13 @@ class SolicitudDraft extends Model
     /**
      * Mapeo de tipos de datos de Eloquent.
      */
-    protected function casts(): array
+   /*  protected function casts(): array
     {
         return [
             'json_data' => 'array', // Transforma automáticamente el JSON de MySQL a array PHP
         ];
     }
-
+ */
     /**
      * Relación con el modelo Cliente
      */
