@@ -166,7 +166,7 @@ Route::middleware('auth:api')->group(function(){
 
         Route::get('/solicitar-credito-digital/draft', [DraftController::class, 'gettingDraftSolicitud']);
         Route::post('/solicitar-credito-digital/draft', [DraftController::class, 'postingDraftSolicitud']);
-        Route::delete('/solicitar-credito-digital/draft', [DraftController::class, ' deletingDraftSolicitud']);
+        Route::delete('/solicitar-credito-digital/draft', [DraftController::class, 'deletingDraftSolicitud']);
     });
 
     Route::put('/cambiar-contrasena',[UserPrivate::class,'cambiarContrasena'])->name('api_cambiar_contrasena');
