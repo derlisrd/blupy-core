@@ -21,7 +21,7 @@ class AdjuntosController extends Controller
         if ($validator->fails())
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
 
-        $cliente = $req->user->cliente;
+        $cliente = $req->user()->cliente;
 
         $cliente = $req->user()->cliente; // Asegúrate de accederlo como método o propiedad según tu modelo
         $cedula = $cliente->cedula ?? $cliente->numero_documento;
