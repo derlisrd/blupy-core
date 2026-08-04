@@ -5,39 +5,58 @@ namespace App\Http\Controllers\BlupyApp;
 use App\Http\Controllers\Controller;
 use App\Services\SupabaseService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class AdjuntosController extends Controller
 {
     public function subirComprobantes(Request $req)
     {
-        $validated = $req->validate([
-            'comprobantes' => 'required|array|size:6', // ajusta si no siempre son exactamente 6
-            'comprobantes.*.base64' => 'required|string',
-            'comprobantes.*.extension' => 'required|string|in:jpg,jpeg,png',
-        ]);
+        
 
-        $uploadedPaths = [];
+        $validator = Validator::make($req->all(), [
+            'files' => 'required|array|size:6',
+            'files.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:8192', // Máximo 8MB por archivo);
+        ]);
+        if ($validator->fails())
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+
+        $cliente = $req->user->cliente;
+
+        $cliente = $req->user()->cliente; // Asegúrate de accederlo como método o propiedad según tu modelo
+        $cedula = $cliente->cedula ?? $cliente->numero_documento;
+
+        if (!$cedula) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontró la cédula asociada al cliente.',
+            ], 400);
+        }
+
+        $uploadedFileNames = [];
         $uploadedUrls = [];
 
         try {
-            foreach ($validated['comprobantes'] as $key => $comprobante) {
-                $fileContent = base64_decode($comprobante['base64'], true);
+            foreach ($req->file('files') as $file) {
+                $fileContent = file_get_contents($file->getRealPath());
+                $extension = strtolower($file->getClientOriginalExtension());
 
-                if ($fileContent === false) {
-                    throw new \Exception('Uno de los archivos no es base64 válido');
+                // Si la extensión viene vacía por picker del OS, la deducimos del mimeType
+                if (!$extension) {
+                    $mime = $file->getMimeType();
+                    $extension = match ($mime) {
+                        'application/pdf' => 'pdf',
+                        'image/png' => 'png',
+                        default => 'jpg',
+                    };
                 }
 
-                // límite de tamaño real, no confíes solo en post_max_size de php.ini
-                if (strlen($fileContent) > 8 * 1024 * 1024) { // 8MB por imagen
-                    throw new \Exception('Una de las imágenes supera el tamaño permitido (8MB)');
-                }
+                $fileName = Str::uuid() . '.' . $extension;
 
-                $fileName = Str::uuid() . '.' . $comprobante['extension'];
+                // Subir usando la estructura por cédula
+                $url = SupabaseService::uploadComprobante($cedula, $fileName, $fileContent, $extension);
 
-                $url = SupabaseService::uploadImage($fileName, $fileContent, $comprobante['extension']);
-
-                $uploadedPaths[] = $fileName;
+                $uploadedFileNames[] = $fileName;
                 $uploadedUrls[] = $url;
             }
 
@@ -46,12 +65,12 @@ class AdjuntosController extends Controller
                 'urls' => $uploadedUrls,
             ]);
         } catch (\Throwable $th) {
-            // rollback de lo que sí se alcanzó a subir
-            foreach ($uploadedPaths as $path) {
+            // Rollback: eliminar archivos subidos en este intento si falla alguno
+            foreach ($uploadedFileNames as $fileName) {
                 try {
-                    SupabaseService::deleteImage($path);
+                    SupabaseService::deleteComprobante($cedula, $fileName);
                 } catch (\Throwable $inner) {
-                    SupabaseService::LOG("No se pudo eliminar {$path} en rollback: " , $inner->getMessage());
+                    SupabaseService::LOG("Rollback Fallido: " . $fileName, $inner->getMessage());
                 }
             }
 

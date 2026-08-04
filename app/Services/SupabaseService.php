@@ -41,6 +41,58 @@ class SupabaseService
             return false;
         }
     }
+
+
+    public static function deleteComprobante(string $cedula, string $fileName): void
+    {
+        $supabaseUrl = env('SUPABASE_URL');
+        $bucket = "adjuntos";
+        $filePath = "{$cedula}/{$fileName}";
+        $apiUrl = "{$supabaseUrl}/storage/v1/object/{$bucket}/{$filePath}";
+
+        $response = Http::withHeaders([
+            'apikey' => env('SUPABASE_API_KEY'),
+            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+        ])->delete($apiUrl);
+
+        if (!$response->successful()) {
+            throw new \Exception("Error eliminando {$filePath} de Supabase: " . $response->body());
+        }
+    }
+
+    public static function uploadComprobante(string $cedula, string $fileName, string $fileContent, string $extension): string
+    {
+        $supabaseUrl = env('SUPABASE_URL');
+        $bucket = "adjuntos";
+
+        // Estructura de carpeta: adjuntos/{cedula}/{uuid}.{ext}
+        $filePath = "{$cedula}/{$fileName}";
+        $apiUrl = "{$supabaseUrl}/storage/v1/object/{$bucket}/{$filePath}";
+
+        // Mapeo correcto de MIME type (evitamos el error de image/pdf)
+        $ext = strtolower($extension);
+        $contentType = match ($ext) {
+            'pdf' => 'application/pdf',
+            'png' => 'image/png',
+            'jpg', 'jpeg' => 'image/jpeg',
+            default => 'application/octet-stream',
+        };
+
+        $response = Http::withHeaders([
+            'apikey' => env('SUPABASE_API_KEY'),
+            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+            'Content-Type' => $contentType,
+        ])->withBody($fileContent, $contentType)
+            ->post($apiUrl);
+
+        if ($response->successful()) {
+            return "{$supabaseUrl}/storage/v1/object/public/{$bucket}/{$filePath}";
+        }
+
+        throw new \Exception("Error subiendo a Supabase: " . $response->body());
+    }
+
+
     public static function uploadImage($fileName, $fileContent, $imageType)
     {
         $supabaseUrl = env('SUPABASE_URL');
