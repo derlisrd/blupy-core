@@ -62,6 +62,7 @@ class Cliente extends Model
         'aceptado',
         'funcionario',
         'extranjero',
+        'franquicia',
         'solicitud_credito',
         'linea_farma',
         'empresa_autorizado',

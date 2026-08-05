@@ -88,7 +88,7 @@ class CuentasController extends Controller
             $tarjetasFarma = $this->getTarjetasFarmaExtranjero($cliente->codigo_farma, $cliente->codigo_persona);
             $tarjetasResults = array_merge($tarjetasResults, $tarjetasFarma);
         } else {
-            $tarjetasFarma = $this->getTarjetasFarma($cliente->cedula);
+            $tarjetasFarma = $this->getTarjetasFarma($cliente->cedula,$cliente->franquicia);
             $tarjetasResults = array_merge($tarjetasResults, $tarjetasFarma);
         }
         if ($cliente->empresa_autorizado === 1) {
@@ -219,7 +219,7 @@ class CuentasController extends Controller
     }
 
 
-    private function getTarjetasFarma(String $cedula)
+    private function getTarjetasFarma(String $cedula, int $franquicia)
     {
 
         try {
@@ -236,10 +236,10 @@ class CuentasController extends Controller
                 $tarjetasFarma = $farmaCardDataF['result'];
                 if ($tarjetasFarma != null) {
 
-                    $funcionario = $tarjetasFarma['funcionario'];
+                    $isFuncionario = !empty($tarjetasFarma['funcionario']) || $franquicia === 1;
                     $alianza = $tarjetasFarma['alianza'] ?? null;
 
-                    if ($funcionario === false && $alianza === null) {
+                    if (!$isFuncionario && $alianza === null) {
                         return [];
                     }
 
