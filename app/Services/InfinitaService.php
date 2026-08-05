@@ -219,7 +219,7 @@ class InfinitaService
 
 
 
-    private function datosCliente(Cliente $cliente, int $productoId, array $adicionales, int | null $solicitudDeLinea, string | null $cuentaNumero)
+    private function datosCliente($cliente, int $productoId, array $adicionales, int | null $solicitudDeLinea, string | null $cuentaNumero)
     {
         //$adicionalesObject = $adicionales ? $adicionales : [];
         $adicionalesObject = $adicionales ? $adicionales  : [];
