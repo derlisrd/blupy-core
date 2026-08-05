@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Services\FarmaService;
 use App\Services\InfinitaService;
+use App\Services\SupabaseService;
 use Illuminate\Support\Facades\Mail;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -48,6 +49,8 @@ trait RegisterTraits
         $datosDeInfinita = (object) $response['data'];
 
         $response = [ 'cliId'=>0, 'register'=>false, 'solicitudId'=>0 ];
+
+        
         try {
             if(property_exists($datosDeInfinita,'CliId') && $datosDeInfinita->CliId !== '0'){
                 return [ 'cliId'=>$datosDeInfinita->CliId, 'register'=>true, 'solicitudId'=>0 ];
@@ -69,10 +72,11 @@ trait RegisterTraits
             return  $response;
 
         } catch (\Throwable $th) {
+            SupabaseService::LOG('Error registrarInfinita: ' . $cliente->cedula, $th->getMessage());
             return [
                 'register'=>false
             ];
-            //throw $th;
+            
         }
     }
 

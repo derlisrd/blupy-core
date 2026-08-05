@@ -9,9 +9,9 @@ use Illuminate\Http\Client\RequestException;
 
 class InfinitaService
 {
-    private string $url;
-    private string $token;
-    private array $header;
+    private  $url;
+    private  $token;
+    private $header;
 
     public function __construct() {
         $this->url = config('services.infinita.url');
@@ -221,9 +221,103 @@ class InfinitaService
 
     private function datosCliente(Cliente $cliente, int $productoId, array $adicionales, int | null $solicitudDeLinea, string | null $cuentaNumero)
     {
-        $adicionalesObject = $adicionales ? $adicionales : [];
+        //$adicionalesObject = $adicionales ? $adicionales : [];
+        $adicionalesObject = $adicionales ? $adicionales  : [];
+        $datosClienteInfinita =  (object)[
+            "wSolicitud" => (object)[
+                "SolProdId" => $productoId, // 171 registro 172 solicitud de credito 173 adicional 174 ampliacion
+                "SolTcTip" => $productoId == 173 ? "A" : "P", // A adicional P principal
+                "SolApe1" => $cliente->apellido_primero,
+                "SolApe2" => $cliente->apellido_segundo ?? "",
+                "SolCed" => $cliente->cedula,
+                "SolCel" => $cliente->celular,
+                "SolFNa" => $cliente->fecha_nacimiento,
+                "SolDir" => isset($cliente->calle) ? $cliente->calle : '',
 
-        $datosClienteInfinita = (object)[
+                "SolDepId" => isset($cliente->departamento_id) ? (int)$cliente->departamento_id : 0,
+                "SolCiuId" => isset($cliente->ciudad_id) ? (int)$cliente->ciudad_id : 0,
+                "SolBarId" => isset($cliente->barrio_id) ? (int)$cliente->barrio_id : 0,
+                "SolDirLat" => isset($cliente->latitud_direccion) ? $cliente->latitud_direccion : '',
+                "SolDirLon" => isset($cliente->longitud_direccion) ? $cliente->longitud_direccion : '',
+
+
+                "SolLabDirLat" => isset($cliente->latitud_empresa) ? $cliente->latitud_empresa : '',
+                "SolLabDirLon" => isset($cliente->longitud_empresa) ? $cliente->longitud_empresa : '',
+
+                "SolLabTel" => isset($cliente->empresa_telefono) ? $cliente->empresa_telefono : '',
+                "SolLabFecIn" => isset($cliente->fecha_ingreso_laboral) ? $cliente->fecha_ingreso_laboral : Carbon::now()->format('Y-m-d'), // ← CORREGIDO
+                "SolLabAntA" => isset($cliente->antiguedad_laboral) ? (int)$cliente->antiguedad_laboral : 0,
+                "SolLabAntM" => isset($cliente->antiguedad_laboral_mes) ? (int)$cliente->antiguedad_laboral_mes : 0,
+
+
+                "SolLabDir" => isset($cliente->empresa_direccion) ? $cliente->empresa_direccion : '',
+                "SolLabSal" => isset($cliente->salario) ? $cliente->salario : '',
+                "SolLabTel" => isset($cliente->empresa_telefono) ? $cliente->empresa_telefono : '',
+                "SolLabTipId" => isset($cliente->tipo_empresa_id) ? $cliente->tipo_empresa_id : 0,
+                "SolLinea" => $solicitudDeLinea ? $solicitudDeLinea : 300000,
+                "SolMaeCta" => $cuentaNumero ? $cuentaNumero : 0,
+                "SolMail" => $cliente->email,
+                "SolNom1" => $cliente->nombre_primero,
+                "SolNom2" => isset($cliente->nombre_segundo) ? $cliente->nombre_segundo : "",
+                "SolProfId" => isset($cliente->profesion_id) ? $cliente->profesion_id : 0,
+                "SolFec" => Carbon::now()->format('Y-m-d'),
+                "SolRUC" => $cliente->cedula,
+
+
+                "Adicional" => $adicionales ? $adicionalesObject : [],
+                "AfinId" => 1,
+                "BancaId" => 1,
+                "DesCreId" => 0,
+                "LugTrabId" => 0,
+                "MarcaId" => 1,
+                "MedioId" => 0,
+                "OficialId" => 0,
+                "Sol1Vto" => "2023-03-20",
+                "SolEsCiv" => 1,
+                "SolAsoId" => 0,
+                "SolAsoOrd" => "123",
+                "SolAuxId" => 0,
+                "SolCanPer" => 1,
+                "SolCargo" => "CARGO",
+                "SolCond" => "TAR",
+                "SolConsol" => 0,
+                "SolCuoC" => 1,
+                "SolCygSala" => 0,
+                "SolFijVto" => false,
+                "SolGarBarId" => 0,
+                "SolGarCiuId" => 0,
+                "SolGarCySala" => 0,
+                "SolGarDepId" => 0,
+                "SolGarEsCiv" => 0,
+                "SolGarFNa" => "0001-01-01",
+                "SolGarLabAntA" => 0,
+                "SolGarLabAntM" => 0,
+                "SolGarNacId" => 0,
+                "SolGarProfId" => 0,
+                "SolGarSala" => 0,
+                "SolId" => 0,
+                "SolImpSol" => 300000,
+                "SolImpor" => 300000,
+                "SolLabFecIn" => "",
+                "SolMonId" => 6900,
+                "SolNacId" => 172,
+                "SolObs" => "",
+                "SolSepBi" => "N",
+                "SolSexo" => "M",
+                "SolSucNro" => 1,
+                "SolTcEmb" => "D",
+                "SolTel" => "",
+                "SolTipCal" => 5,
+                "SolTipViv" => "P",
+                "SolTipVto" => 1,
+                "SolVendId" => 0,
+                "SolicGarId" => 0
+            ],
+            "Proceso" => 2 // 1 = solo registro, 2 = registro y proceso
+            ]
+
+
+       /*  $datosClienteInfinita = (object)[
             "wSolicitud" => (object)[
                 // ===== DATOS PERSONALES =====
                 "SolProdId" => $productoId, // 171 registro, 172 solicitud, 173 adicional, 174 ampliacion
@@ -333,7 +427,6 @@ class InfinitaService
                 "SolGarProfId" => 0,
                 "SolGarSala" => 0,
                 "SolId" => 0,
-                "SolLabFecIn" => isset($cliente->fecha_ingreso_laboral) ? $cliente->fecha_ingreso_laboral : Carbon::now()->format('Y-m-d'),
                 "SolNacId" => 172,
                 "SolObs" => "",
                 "SolSepBi" => "N",
@@ -348,7 +441,7 @@ class InfinitaService
             ],
             "Proceso" => 1 // 1 = solo registro, 2 = registro y proceso
         ];
-
+ */
         return $datosClienteInfinita;
     }
 
