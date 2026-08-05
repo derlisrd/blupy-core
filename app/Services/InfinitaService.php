@@ -314,8 +314,9 @@ class InfinitaService
                 "SolicGarId" => 0
             ],
             "Proceso" => 2 // 1 = solo registro, 2 = registro y proceso
-            ]
-
+        ];
+        return $datosClienteInfinita;
+        }
 
        /*  $datosClienteInfinita = (object)[
             "wSolicitud" => (object)[
@@ -442,8 +443,7 @@ class InfinitaService
             "Proceso" => 1 // 1 = solo registro, 2 = registro y proceso
         ];
  */
-        return $datosClienteInfinita;
-    }
+
 
 
 
