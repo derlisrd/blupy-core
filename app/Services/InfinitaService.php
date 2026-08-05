@@ -252,7 +252,6 @@ class InfinitaService
 
                 "SolLabDir" => isset($cliente->empresa_direccion) ? $cliente->empresa_direccion : '',
                 "SolLabSal" => isset($cliente->salario) ? $cliente->salario : '',
-                "SolLabTel" => isset($cliente->empresa_telefono) ? $cliente->empresa_telefono : '',
                 "SolLabTipId" => isset($cliente->tipo_empresa_id) ? $cliente->tipo_empresa_id : 0,
                 "SolLinea" => $solicitudDeLinea ? $solicitudDeLinea : 300000,
                 "SolMaeCta" => $cuentaNumero ? $cuentaNumero : 0,
