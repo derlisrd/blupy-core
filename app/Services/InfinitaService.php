@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Cliente;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\RequestException;
@@ -204,7 +204,7 @@ class InfinitaService
 
 
 
-    public function solicitudLineaDeCredito(Cliente $cliente){
+    public function solicitudLineaDeCredito($cliente){
         $datosDeCliente = $this->datosCliente($cliente,172,[],null,null);
         return $this->post('IngresarSolicitud',$datosDeCliente);
     }
