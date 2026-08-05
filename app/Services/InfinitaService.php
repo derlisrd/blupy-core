@@ -298,7 +298,6 @@ class InfinitaService
                 "SolId" => 0,
                 "SolImpSol" => 300000,
                 "SolImpor" => 300000,
-                "SolLabFecIn" => "",
                 "SolMonId" => 6900,
                 "SolNacId" => 172,
                 "SolObs" => "",
