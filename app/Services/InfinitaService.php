@@ -211,7 +211,7 @@ class InfinitaService
 
 
 
-    public function registrar(Cliente $cliente){
+    public function registrar($cliente){
         $data = $this->datosCliente($cliente,171,[],null,null);
         return $this->post('IngresarSolicitud',$data);
     }
