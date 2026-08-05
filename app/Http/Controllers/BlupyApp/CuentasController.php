@@ -236,10 +236,10 @@ class CuentasController extends Controller
                 $tarjetasFarma = $farmaCardDataF['result'];
                 if ($tarjetasFarma != null) {
 
-                    $funcionario =  $tarjetasFarma['funcionario'];  //!empty($tarjetasFarma['funcionario']) || $franquicia === 1;
+                    $funcionario =  $tarjetasFarma['funcionario']; 
                     $alianza = $tarjetasFarma['alianza'] ?? null;
 
-                    if (!$funcionario && $alianza === null) {
+                    if (!$funcionario && $alianza === null && $franquicia === 0) {
                         return [];
                     }
 
