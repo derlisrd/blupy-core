@@ -196,6 +196,11 @@ class SolicitudesController extends Controller
                 'empresa_ciudad_id' => $req->empresa_ciudad_codigo,
                 'empresa_ciudad' => $req->empresa_ciudad,
 
+                'comprobantes' => $req->comprobantes,
+                'referencia_comercial' => $req->referencia_comercial,
+                'referencia_personal' => $req->referencia_personal,
+
+
             ];
             
             
@@ -203,7 +208,7 @@ class SolicitudesController extends Controller
                 'success' => true,
                 'results' => $datosAenviar,
                 'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpenos las molestias.'
-            ],400);
+            ],200);
 
             $solicitud = $this->ingresarSolicitudInfinita((object)$datosAenviar);
             if (!$solicitud->success)
