@@ -219,6 +219,8 @@ class InfinitaService
 
 
 
+
+
     private function datosCliente($cliente, int $productoId, array $adicionales, int | null $solicitudDeLinea, string | null $cuentaNumero)
     {
         //$adicionalesObject = $adicionales ? $adicionales : [];
@@ -316,11 +318,16 @@ class InfinitaService
         return $datosClienteInfinita;
         }
 
-       /*  $datosClienteInfinita = (object)[
+
+
+
+        public function datosClientesParaSolicitudLinea($cliente){
+           return (object)
+        [
             "wSolicitud" => (object)[
                 // ===== DATOS PERSONALES =====
-                "SolProdId" => $productoId, // 171 registro, 172 solicitud, 173 adicional, 174 ampliacion
-                "SolTcTip" => $productoId == 173 ? "A" : "P", // A adicional, P principal
+                "SolProdId" => 172, // 171 registro, 172 solicitud, 173 adicional, 174 ampliacion
+                "SolTcTip" => "P", // P PRINCIPAL, A Adicional
                 "SolApe1" => $cliente->apellido_primero,
                 "SolApe2" => $cliente->apellido_segundo ?? "",
                 "SolCed" => $cliente->cedula,
@@ -331,7 +338,7 @@ class InfinitaService
                 "SolSexo" => isset($cliente->sexo) ? $cliente->sexo : "M", // M o F
                 "SolMail" => $cliente->email,
                 "SolRUC" => $cliente->cedula,
-                "SolTel" => isset($cliente->telefono) ? $cliente->telefono : $cliente->celular, // ← AGREGADO
+                "SolTel" => isset($cliente->telefono) ? $cliente->telefono : $cliente->celular,
 
                 // ===== DIRECCIÓN =====
                 "SolDir" => isset($cliente->calle) ? $cliente->calle : '',
@@ -348,7 +355,7 @@ class InfinitaService
                 "SolLabDirLat" => isset($cliente->latitud_empresa) ? $cliente->latitud_empresa : '',
                 "SolLabDirLon" => isset($cliente->longitud_empresa) ? $cliente->longitud_empresa : '',
                 "SolLabTel" => isset($cliente->empresa_telefono) ? $cliente->empresa_telefono : '',
-                "SolLabFecIn" => isset($cliente->fecha_ingreso_laboral) ? $cliente->fecha_ingreso_laboral : Carbon::now()->format('Y-m-d'), // ← CORREGIDO
+                "SolLabFecIn" => isset($cliente->fecha_ingreso_laboral) ? $cliente->fecha_ingreso_laboral : Carbon::now()->format('Y-m-d'),
                 "SolLabAntA" => isset($cliente->antiguedad_laboral) ? (int)$cliente->antiguedad_laboral : 0,
                 "SolLabAntM" => isset($cliente->antiguedad_laboral_mes) ? (int)$cliente->antiguedad_laboral_mes : 0,
                 "SolProfId" => isset($cliente->profesion_id) ? $cliente->profesion_id : 0,
@@ -356,7 +363,7 @@ class InfinitaService
                 "LugTrabId" => isset($cliente->lugar_trabajo_id) ? $cliente->lugar_trabajo_id : 0,
                 "SolLabTipId" => isset($cliente->tipo_empresa_id) ? $cliente->tipo_empresa_id : 0,
 
-                // ===== REFERENCIAS PERSONALES (NUEVO) =====
+                // ===== REFERENCIAS PERSONALES =====
                 "RefP" => isset($cliente->referencias_personales) ? $cliente->referencias_personales : [
                     (object)[
                         "SolRefPId" => 1,
@@ -367,7 +374,7 @@ class InfinitaService
                     ]
                 ],
 
-                // ===== REFERENCIAS COMERCIALES (NUEVO) =====
+                // ===== REFERENCIAS COMERCIALES =====
                 "RefC" => isset($cliente->referencias_comerciales) ? $cliente->referencias_comerciales : [
                     (object)[
                         "SolRefCId" => 1,
@@ -379,29 +386,29 @@ class InfinitaService
                     ]
                 ],
 
-                // ===== DATOS DEL CÓNYUGE (NUEVO) =====
-                "SolCygCed" => isset($cliente->conyuge_cedula) ? $cliente->conyuge_cedula : "0",
-                "SolCygNom1" => isset($cliente->conyuge_nombre) ? $cliente->conyuge_nombre : "",
-                "SolCygApe1" => isset($cliente->conyuge_apellido) ? $cliente->conyuge_apellido : "",
-                "SolCygApe2" => isset($cliente->conyuge_apellido2) ? $cliente->conyuge_apellido2 : "",
-                "SolCygCelu" => isset($cliente->conyuge_celular) ? $cliente->conyuge_celular : "",
-                "SolCygLugTr" => isset($cliente->conyuge_trabajo) ? $cliente->conyuge_trabajo : "",
+                // ===== DATOS DEL CÓNYUGE =====
+                "SolCygCed" =>  "0",
+                "SolCygNom1" =>  "",
+                "SolCygApe1" =>  "",
+                "SolCygApe2" => "",
+                "SolCygCelu" =>  "",
+                "SolCygLugTr" =>  "",
 
                 // ===== FINANCIERO =====
-                "SolLinea" => $solicitudDeLinea ? $solicitudDeLinea : 300000,
-                "SolMaeCta" => $cuentaNumero ? $cuentaNumero : 0,
-                "SolImpSol" => $solicitudDeLinea ? $solicitudDeLinea : 300000,
-                "SolImpor" => $solicitudDeLinea ? $solicitudDeLinea : 300000,
+                "SolLinea" => 500000,
+                "SolMaeCta" => 0,
+                "SolImpSol" => 320000,
+                "SolImpor" => 320000,
                 "SolMonId" => 6900, // Guaraníes
                 "SolCanPer" => 1,
                 "SolCuoC" => 1,
 
                 // ===== FECHAS =====
                 "SolFec" => Carbon::now()->format('Y-m-d'),
-                "Sol1Vto" => Carbon::now()->addMonths(1)->format('Y-m-d'), // Vencimiento a 1 mes
+                "Sol1Vto" => Carbon::now()->addMonths(1)->format('Y-m-d'),
 
                 // ===== OTROS CAMPOS =====
-                "Adicional" => $adicionales ? $adicionalesObject : [],
+                "Adicional" => [], // solo para solicitud de adicional
                 "AfinId" => 1,
                 "BancaId" => 1,
                 "DesCreId" => 0,
@@ -440,8 +447,8 @@ class InfinitaService
             ],
             "Proceso" => 1 // 1 = solo registro, 2 = registro y proceso
         ];
- */
-
+        
+        }
 
 
 
