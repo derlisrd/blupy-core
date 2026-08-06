@@ -53,7 +53,7 @@ class QRController extends Controller
                  if($disponible < (int) $req->monto){
                      return response()->json([
                          'success' => false,
-                         'message' => 'Saldo insuficiente',
+                         'message' => 'Saldo insuficiente en BLUPY DIGITAL',
                             'results' => null
                      ], 400);
                  }
