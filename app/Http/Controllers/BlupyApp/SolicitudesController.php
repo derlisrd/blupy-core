@@ -78,7 +78,11 @@ class SolicitudesController extends Controller
         $user = $req->user();
         $fechaLimite = Carbon::now()->subDays(2);
 
-        
+        return response()->json([
+            'success' => true,
+            'results' => null,
+            'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpenos las molestias.'
+        ], 400);
 
         $solicitudConflictiva = SolicitudCredito::where('cliente_id',$user->cliente->id)
         ->where('tipo',1)
