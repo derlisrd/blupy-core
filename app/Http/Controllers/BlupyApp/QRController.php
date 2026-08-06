@@ -42,7 +42,7 @@ class QRController extends Controller
                 'condicion' => $req->condicion,
                 'token'=> $req->token
             ];
-
+            SupabaseService::LOG('Qr Autorizar '.$documento, json_encode($parametrosPorArray));
             //Verificar si tiene saldo
             if($req->numeroCuenta !== '0'){
                 $resInfinita = app(InfinitaService::class)->ListarTarjetasPorDoc($cliente->cedula);
