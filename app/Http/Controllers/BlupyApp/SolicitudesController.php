@@ -78,7 +78,7 @@ class SolicitudesController extends Controller
         $user = $req->user();
         $fechaLimite = Carbon::now()->subDays(2);
 
-        /* return response()->json([
+        /*return response()->json([
             'success' => true,
             'results' => null,
             'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpenos las molestias.'
