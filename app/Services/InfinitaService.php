@@ -204,10 +204,7 @@ class InfinitaService
 
 
 
-    public function solicitudLineaDeCredito($cliente){
-        $datosDeCliente = $this->datosCliente($cliente,172,[],null,null);
-        return $this->post('IngresarSolicitud',$datosDeCliente);
-    }
+
 
 
 
@@ -320,135 +317,155 @@ class InfinitaService
 
 
 
+        public function solicitudLineaDeCredito($cliente)
+        {
+            $datosDeCliente = $this->datosClientesParaSolicitudLinea($cliente);
+            return $this->post('IngresarSolicitud', $datosDeCliente);
+        }
 
-        public function datosClientesParaSolicitudLinea($cliente){
-           return (object)
-        [
+
+    public function datosClientesParaSolicitudLinea($cliente)
+    {
+        // Normalizar a array o vacio por si viene nulo
+        $rawComerciales = $cliente->referencia_comercial ?? $cliente->referencias_comerciales ?? [];
+        $rawPersonales = $cliente->referencia_personal ?? $cliente->referencias_personales ?? [];
+
+        $refComerciales = [];
+        foreach ($rawComerciales as $ref) {
+            // Soporta array o stdClass
+            $empresa = is_array($ref) ? ($ref['empresa'] ?? '') : ($ref->empresa ?? '');
+            $telefono = is_array($ref) ? ($ref['telefono'] ?? '') : ($ref->telefono ?? '');
+
+            $refComerciales[] = (object) [
+                "SolRefCId"  => 1,
+                "SolRefCCom" => $empresa,
+                "SolRefCDet" => "Tel: " . $telefono, 
+                "SolRefCFec" => Carbon::now()->format('Y-m-d'),
+                "SolRefCCuo" => "1",
+                "SolRefCSal" => 0
+            ];
+        }
+
+        $refPersonales = [];
+        foreach ($rawPersonales as $ref) {
+            $nombre = is_array($ref) ? ($ref['nombre'] ?? '') : ($ref->nombre ?? '');
+            $telefono = is_array($ref) ? ($ref['telefono'] ?? '') : ($ref->telefono ?? '');
+
+            $refPersonales[] = (object) [
+                "SolRefPId"  => 1,
+                "SolRefPNom" => $nombre,
+                "SolRefPRel" => "FAMILIAR",
+                "SolRefPTel" => $telefono,
+                "SolRefPCel" => $telefono
+            ];
+        }
+
+        return (object) [
             "wSolicitud" => (object)[
                 // ===== DATOS PERSONALES =====
-                "SolProdId" => 172, // 171 registro, 172 solicitud, 173 adicional, 174 ampliacion
-                "SolTcTip" => "P", // P PRINCIPAL, A Adicional
-                "SolApe1" => $cliente->apellido_primero,
-                "SolApe2" => $cliente->apellido_segundo ?? "",
-                "SolCed" => $cliente->cedula,
-                "SolCel" => $cliente->celular,
-                "SolFNa" => $cliente->fecha_nacimiento,
-                "SolNom1" => $cliente->nombre_primero,
-                "SolNom2" => isset($cliente->nombre_segundo) ? $cliente->nombre_segundo : "",
-                "SolSexo" => isset($cliente->sexo) ? $cliente->sexo : "M", // M o F
-                "SolMail" => $cliente->email,
-                "SolRUC" => $cliente->cedula,
-                "SolTel" => isset($cliente->telefono) ? $cliente->telefono : $cliente->celular,
+                "SolProdId" => 172,
+                "SolTcTip"  => "P",
+                "SolApe1"   => $cliente->apellido_primero ?? '',
+                "SolApe2"   => $cliente->apellido_segundo ?? '',
+                "SolCed"    => $cliente->cedula ?? '',
+                "SolCel"    => $cliente->celular ?? '',
+                "SolFNa"    => $cliente->fecha_nacimiento ?? '',
+                "SolNom1"   => $cliente->nombre_primero ?? '',
+                "SolNom2"   => $cliente->nombre_segundo ?? '',
+                "SolSexo"   => $cliente->sexo ?? "M",
+                "SolMail"   => $cliente->email ?? '',
+                "SolRUC"    => $cliente->cedula ?? '',
+                "SolTel"    => $cliente->telefono ?? $cliente->celular ?? '',
 
                 // ===== DIRECCIÓN =====
-                "SolDir" => isset($cliente->calle) ? $cliente->calle : '',
-                "SolDepId" => isset($cliente->departamento_id) ? (int)$cliente->departamento_id : 0,
-                "SolCiuId" => isset($cliente->ciudad_id) ? (int)$cliente->ciudad_id : 0,
-                "SolBarId" => isset($cliente->barrio_id) ? (int)$cliente->barrio_id : 0,
-                "SolDirLat" => isset($cliente->latitud_direccion) ? $cliente->latitud_direccion : '',
-                "SolDirLon" => isset($cliente->longitud_direccion) ? $cliente->longitud_direccion : '',
+                "SolDir"    => $cliente->calle ?? '',
+                "SolDepId"  => (int)($cliente->departamento_id ?? 0),
+                "SolCiuId"  => (int)($cliente->ciudad_id ?? 0),
+                "SolBarId"  => (int)($cliente->barrio_id ?? 0),
+                "SolDirLat" => $cliente->latitud_direccion ?? '',
+                "SolDirLon" => $cliente->longitud_direccion ?? '',
 
                 // ===== TRABAJO =====
-                "SolLabEmp" => isset($cliente->empresa) ? $cliente->empresa : '',
-                "SolLabSal" => isset($cliente->salario) ? $cliente->salario : 0,
-                "SolLabDir" => isset($cliente->empresa_direccion) ? $cliente->empresa_direccion : '',
-                "SolLabDirLat" => isset($cliente->latitud_empresa) ? $cliente->latitud_empresa : '',
-                "SolLabDirLon" => isset($cliente->longitud_empresa) ? $cliente->longitud_empresa : '',
-                "SolLabTel" => isset($cliente->empresa_telefono) ? $cliente->empresa_telefono : '',
-                "SolLabFecIn" => isset($cliente->fecha_ingreso_laboral) ? $cliente->fecha_ingreso_laboral : Carbon::now()->format('Y-m-d'),
-                "SolLabAntA" => isset($cliente->antiguedad_laboral) ? (int)$cliente->antiguedad_laboral : 0,
-                "SolLabAntM" => isset($cliente->antiguedad_laboral_mes) ? (int)$cliente->antiguedad_laboral_mes : 0,
-                "SolProfId" => isset($cliente->profesion_id) ? $cliente->profesion_id : 0,
-                "SolCargo" => isset($cliente->cargo) ? $cliente->cargo : "CARGO",
-                "LugTrabId" => isset($cliente->lugar_trabajo_id) ? $cliente->lugar_trabajo_id : 0,
-                "SolLabTipId" => isset($cliente->tipo_empresa_id) ? $cliente->tipo_empresa_id : 0,
+                "SolLabEmp"   => $cliente->empresa ?? '',
+                "SolLabSal"   => $cliente->salario ?? 0,
+                "SolLabDir"   => $cliente->empresa_direccion ?? '',
+                "SolLabDirLat" => $cliente->latitud_empresa ?? '',
+                "SolLabDirLon" => $cliente->longitud_empresa ?? '',
+                "SolLabTel"   => $cliente->empresa_telefono ?? '',
+                "SolLabFecIn" => $cliente->fecha_ingreso_laboral ?? Carbon::now()->format('Y-m-d'),
+                "SolLabAntA"  => (int)($cliente->antiguedad_laboral ?? 0),
+                "SolLabAntM"  => (int)($cliente->antiguedad_laboral_mes ?? 0),
+                "SolProfId"   => $cliente->profesion_id ?? 0,
+                "SolCargo"    => $cliente->cargo ?? "CARGO",
+                "LugTrabId"   => $cliente->lugar_trabajo_id ?? 0,
+                "SolLabTipId" => $cliente->tipo_empresa_id ?? 0,
 
-                // ===== REFERENCIAS PERSONALES =====
-                "RefP" => isset($cliente->referencias_personales) ? $cliente->referencias_personales : [
-                    (object)[
-                        "SolRefPId" => 1,
-                        "SolRefPNom" => "REFERENCIA 1",
-                        "SolRefPRel" => "FAMILIAR",
-                        "SolRefPTel" => "000000000",
-                        "SolRefPCel" => "000000000"
-                    ]
-                ],
-
-                // ===== REFERENCIAS COMERCIALES =====
-                "RefC" => isset($cliente->referencias_comerciales) ? $cliente->referencias_comerciales : [
-                    (object)[
-                        "SolRefCId" => 1,
-                        "SolRefCCom" => "COMERCIO 1",
-                        "SolRefCDet" => "CONCEPTO",
-                        "SolRefCFec" => Carbon::now()->format('Y-m-d'),
-                        "SolRefCCuo" => "1",
-                        "SolRefCSal" => 0
-                    ]
-                ],
+                // ===== REFERENCIAS (ASIGNACIÓN CORREGIDA) =====
+                "RefP" => $refPersonales,
+                "RefC" => $refComerciales,
 
                 // ===== DATOS DEL CÓNYUGE =====
-                "SolCygCed" =>  "0",
-                "SolCygNom1" =>  "",
-                "SolCygApe1" =>  "",
-                "SolCygApe2" => "",
-                "SolCygCelu" =>  "",
-                "SolCygLugTr" =>  "",
+                "SolCygCed"   => "0",
+                "SolCygNom1"  => "",
+                "SolCygApe1"  => "",
+                "SolCygApe2"  => "",
+                "SolCygCelu"  => "",
+                "SolCygLugTr" => "",
 
                 // ===== FINANCIERO =====
-                "SolLinea" => 500000,
+                "SolLinea"  => 500000,
                 "SolMaeCta" => 0,
                 "SolImpSol" => 320000,
-                "SolImpor" => 320000,
-                "SolMonId" => 6900, // Guaraníes
+                "SolImpor"  => 320000,
+                "SolMonId"  => 6900,
                 "SolCanPer" => 1,
-                "SolCuoC" => 1,
+                "SolCuoC"   => 1,
 
                 // ===== FECHAS =====
-                "SolFec" => Carbon::now()->format('Y-m-d'),
+                "SolFec"  => Carbon::now()->format('Y-m-d'),
                 "Sol1Vto" => Carbon::now()->addMonths(1)->format('Y-m-d'),
 
                 // ===== OTROS CAMPOS =====
-                "Adicional" => [], // solo para solicitud de adicional
-                "AfinId" => 1,
-                "BancaId" => 1,
-                "DesCreId" => 0,
-                "MarcaId" => 1,
-                "MedioId" => 0,
-                "OficialId" => 0,
-                "SolAsoId" => 0,
-                "SolAsoOrd" => "123",
-                "SolAuxId" => 0,
-                "SolCond" => "TAR",
-                "SolConsol" => 0,
-                "SolFijVto" => false,
-                "SolGarBarId" => 0,
-                "SolGarCiuId" => 0,
-                "SolGarCySala" => 0,
-                "SolGarDepId" => 0,
-                "SolGarEsCiv" => 0,
-                "SolGarFNa" => "0001-01-01",
+                "Adicional"     => [],
+                "AfinId"        => 1,
+                "BancaId"       => 1,
+                "DesCreId"      => 0,
+                "MarcaId"       => 1,
+                "MedioId"       => 0,
+                "OficialId"     => 0,
+                "SolAsoId"      => 0,
+                "SolAsoOrd"     => "123",
+                "SolAuxId"      => 0,
+                "SolCond"       => "TAR",
+                "SolConsol"     => 0,
+                "SolFijVto"     => false,
+                "SolGarBarId"   => 0,
+                "SolGarCiuId"   => 0,
+                "SolGarCySala"  => 0,
+                "SolGarDepId"   => 0,
+                "SolGarEsCiv"   => 0,
+                "SolGarFNa"     => "0001-01-01",
                 "SolGarLabAntA" => 0,
                 "SolGarLabAntM" => 0,
-                "SolGarNacId" => 0,
-                "SolGarProfId" => 0,
-                "SolGarSala" => 0,
-                "SolId" => 0,
-                "SolNacId" => 172,
-                "SolObs" => "",
-                "SolSepBi" => "N",
-                "SolSucNro" => 1,
-                "SolTcEmb" => "D",
-                "SolTipCal" => 5,
-                "SolTipViv" => "P",
-                "SolTipVto" => 1,
-                "SolVendId" => 0,
-                "SolicGarId" => 0,
-                "SolEsCiv" => isset($cliente->estado_civil) ? $cliente->estado_civil : 1,
+                "SolGarNacId"   => 0,
+                "SolGarProfId"  => 0,
+                "SolGarSala"    => 0,
+                "SolId"         => 0,
+                "SolNacId"      => 172,
+                "SolObs"        => "",
+                "SolSepBi"      => "N",
+                "SolSucNro"     => 1,
+                "SolTcEmb"      => "D",
+                "SolTipCal"     => 5,
+                "SolTipViv"     => "P",
+                "SolTipVto"     => 1,
+                "SolVendId"     => 0,
+                "SolicGarId"    => 0,
+                "SolEsCiv"      => 1,
             ],
-            "Proceso" => 1 // 1 = solo registro, 2 = registro y proceso
+            "Proceso" => 1
         ];
-        
-        }
+    }
 
 
 

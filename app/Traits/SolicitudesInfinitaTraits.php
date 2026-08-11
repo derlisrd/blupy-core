@@ -79,6 +79,8 @@ trait SolicitudesInfinitaTraits
 
     public function ingresarSolicitudInfinita($cliente){
 
+        
+
         $res = app(InfinitaService::class)->solicitudLineaDeCredito($cliente);
         $resultadoInfinitaObject = (object) $res['data'];
         $resultado = ['success'=>false, 'message'=>'Error en la solicitud','estado'=>null,'codigo'=>null,'id'=>null];
@@ -89,24 +91,16 @@ trait SolicitudesInfinitaTraits
             }
             if($resultadoInfinitaObject->CliId !== '0'){
                 $codigoSolicitud = $resultadoInfinitaObject->SolId;
-                $estadoId = 11;
-                $estado = trim($resultadoInfinitaObject->SolEstado);
-                if($estado == 'Contrato Pendiente'){
-                    $estadoId = 5;
-                }
-                if($estado == 'Pend. Aprobación'){
-                    $estadoId= 3;
-                }
-
+                
                 $resultado = [
                     'success'=>true,
-                    'estado'=>$estado,
+                    'estado'=>"Ingresado",
                     'codigo'=>$codigoSolicitud,
-                    'id'=> $estadoId
+                    'id'=> 1
                 ];
             }
         }
-        return (object) $resultado;
+        return $resultado;
     }
 
     public function ampliacionEnInfinita($datosDeCliente,$lineaSolicitada,$numeroCuenta){

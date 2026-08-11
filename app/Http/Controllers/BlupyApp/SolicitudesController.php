@@ -202,21 +202,20 @@ class SolicitudesController extends Controller
 
                 'comprobantes' => $req->comprobantes,
                 'referencia_comercial' => $req->referencia_comercial,
-                'referencia_personal' => $req->referencia_personal,
-
+                'referencia_personal' => $req->referencia_personal
 
             ];
             
             
-            return response()->json([
+            /* return response()->json([
                 'success' => true,
                 'results' => $datosAenviar,
                 'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpenos las molestias.'
-            ],200);
+            ],200);  */
 
             $solicitud = $this->ingresarSolicitudInfinita((object)$datosAenviar);
-            if (!$solicitud->success)
-                return response()->json(['success' => false, 'message' => $solicitud->message], 400); 
+            if (!$solicitud['success'])
+                return response()->json(['success' => false, 'message' => $solicitud['estado']], 400); 
 
 
             $cliente->update([
@@ -241,55 +240,29 @@ class SolicitudesController extends Controller
                 'empresa_ciudad' => $req->empresa_ciudad,
                 'tipo_empresa_id' => $req->tipo_empresa_id,
                 'solicitud_credito' => 1,
-                'direccion_completado' => 1,
+                'direccion_completado' => 1
             ]);
 
 
             SolicitudCredito::create([
                 'cliente_id' => $cliente->id,
-                'estado_id' => $solicitud->id,
-                'estado' => $solicitud->estado,
-                'codigo' => $solicitud->codigo,
+                'estado_id' => $solicitud['id'],
+                'estado' => $solicitud['estado'],
+                'codigo' => $solicitud['codigo'],
                 'tipo' => 1,
-                'importe' => 0
+                'importe' => 300000
             ]);
-            $titulo = '¡CRÉDITO APROBADO!';
-            $message = 'Tu solicitud ha sido ingresada correctamente.';
-            if ($solicitud->id == 5) {
-                $message = '¡Felicitaciones! Solicitud aprobada. Tiene 30 dias para activar. Para más info ir a sección de AYUDA.';
-                SolicitudAprobadaJob::dispatch($user->email, $cliente->celular)->onConnection('database');
-                Informacion::create([
-                    'user_id' => $user->id,
-                    'codigo_info' => 1,
-                    'title' => $titulo,
-                    'description' => $message,
-                    'text' => $message,
-                    'active' => 1,
-                    'leido' => 0,
-                    'general' => 0,
-                ]);
-                TerminosAceptados::create([
-                    'cliente_id' => $cliente->id,
-                    'cedula' => $cliente->cedula,
-                    'telefono' => $req->telefono ?? null,
-                    'termino_tipo' => 'Datos personales crediticios',
-                    'version' => 'v1.0',
-                    'enlace' => 'https://core.blupy.com.py/datos-crediticios',
-                    'aceptado' => 1,
-                    'aceptado_fecha' => now()
-                ]);
-                PushNativeJobs::dispatch($titulo, $message, [$req->devicetoken], $req->os)->onConnection('database');
-            }
+            
 
             $results = [
-                'estado_id' => $solicitud->id,
-                'estado' => $solicitud->estado,
-                'codigo' => $solicitud->codigo
+                'estado_id' => $solicitud['id'],
+                'estado' => $solicitud['estado'],
+                'codigo' => $solicitud['codigo']
             ]; 
             return response()->json([
                 'success' => true,
                 'results' => $results,
-                'message' => $message
+                'message' => "Ingresado correctamente"
             ]);
         } catch (\Throwable $th) {
             SupabaseService::LOG($th->getMessage(), $th);
