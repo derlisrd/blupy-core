@@ -4,7 +4,7 @@ namespace App\Traits;
 
 use App\Services\InfinitaService;
 use App\Services\SupabaseService;
-
+use Illuminate\Support\Facades\Log;
 
 trait SolicitudesInfinitaTraits
 {
@@ -79,11 +79,13 @@ trait SolicitudesInfinitaTraits
 
     public function ingresarSolicitudInfinita($cliente){
 
-        
+
 
         $res = app(InfinitaService::class)->solicitudLineaDeCredito($cliente);
         $resultadoInfinitaObject = (object) $res['data'];
         $resultado = ['success'=>false, 'message'=>'Error en la solicitud','estado'=>null,'codigo'=>null,'id'=>null];
+
+        Log::info('solicitud', $res['data']);
 
         if(property_exists($resultadoInfinitaObject,'CliId')){
             if($resultadoInfinitaObject->CliId == '0'){
