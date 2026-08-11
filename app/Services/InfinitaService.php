@@ -354,7 +354,7 @@ class InfinitaService
             $refPersonales[] = (object) [
                 "SolRefPId"  => $key + 1,
                 "SolRefPNom" => $nombre,
-                "SolRefPRel" => "FAMILIAR",
+                "SolRefPRel" => "_",
                 "SolRefPTel" => $telefono,
                 "SolRefPCel" => $telefono
             ];

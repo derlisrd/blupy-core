@@ -85,20 +85,16 @@ trait SolicitudesInfinitaTraits
         $resultadoInfinitaObject = (object) $res['data'];
         $resultado = ['success'=>false, 'message'=>'Error en la solicitud','estado'=>null,'codigo'=>null,'id'=>null];
 
-        Log::info('solicitud', $res['data']);
+        //Log::info('solicitud', $res['data']);
 
         if(property_exists($resultadoInfinitaObject,'CliId')){
             if($resultadoInfinitaObject->CliId == '0'){
-                $resultado = ['success'=>false, 'message'=> $resultadoInfinitaObject->Messages[0]['Description'] ,'estado'=>null,'codigo'=>null,'id'=>null];
-            }
-            if($resultadoInfinitaObject->CliId !== '0'){
-                $codigoSolicitud = $resultadoInfinitaObject->SolId;
-                
                 $resultado = [
-                    'success'=>true,
-                    'estado'=>"Ingresado",
-                    'codigo'=>$codigoSolicitud,
-                    'id'=> 1
+                    'success'=>true, 
+                    'message'=> $resultadoInfinitaObject->Messages[0]['Description'] ,
+                    'estado'=>'Ingresado',
+                    'codigo'=>$resultadoInfinitaObject->SolId,
+                    'id'=>1
                 ];
             }
         }
