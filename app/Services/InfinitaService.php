@@ -331,13 +331,13 @@ class InfinitaService
         $rawPersonales = $cliente->referencia_personal ?? $cliente->referencias_personales ?? [];
 
         $refComerciales = [];
-        foreach ($rawComerciales as $ref) {
+        foreach ($rawComerciales as $key => $ref) {
             // Soporta array o stdClass
             $empresa = is_array($ref) ? ($ref['empresa'] ?? '') : ($ref->empresa ?? '');
             $telefono = is_array($ref) ? ($ref['telefono'] ?? '') : ($ref->telefono ?? '');
 
             $refComerciales[] = (object) [
-                "SolRefCId"  => 1,
+                "SolRefCId"  => $key + 1,
                 "SolRefCCom" => $empresa,
                 "SolRefCDet" => "Tel: " . $telefono, 
                 "SolRefCFec" => Carbon::now()->format('Y-m-d'),
@@ -347,12 +347,12 @@ class InfinitaService
         }
 
         $refPersonales = [];
-        foreach ($rawPersonales as $ref) {
+        foreach ($rawPersonales as $key => $ref) {
             $nombre = is_array($ref) ? ($ref['nombre'] ?? '') : ($ref->nombre ?? '');
             $telefono = is_array($ref) ? ($ref['telefono'] ?? '') : ($ref->telefono ?? '');
 
             $refPersonales[] = (object) [
-                "SolRefPId"  => 1,
+                "SolRefPId"  => $key + 1,
                 "SolRefPNom" => $nombre,
                 "SolRefPRel" => "FAMILIAR",
                 "SolRefPTel" => $telefono,
@@ -413,10 +413,10 @@ class InfinitaService
                 "SolCygLugTr" => "",
 
                 // ===== FINANCIERO =====
-                "SolLinea"  => 500000,
+                "SolLinea"  => 300000,
                 "SolMaeCta" => 0,
-                "SolImpSol" => 320000,
-                "SolImpor"  => 320000,
+                "SolImpSol" => 300000,
+                "SolImpor"  => 300000,
                 "SolMonId"  => 6900,
                 "SolCanPer" => 1,
                 "SolCuoC"   => 1,
