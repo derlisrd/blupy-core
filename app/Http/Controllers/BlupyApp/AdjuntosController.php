@@ -15,7 +15,7 @@ class AdjuntosController extends Controller
         
 
         $validator = Validator::make($req->all(), [
-            'files' => 'required|array|size:6',
+            'files' => 'required|array|size:3',
             'files.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:8192', // Máximo 8MB por archivo);
         ]);
         if ($validator->fails())
