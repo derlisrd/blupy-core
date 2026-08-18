@@ -156,6 +156,7 @@ Route::middleware('auth:api')->group(function(){
         Route::get('/', [SolicitudesController::class, 'solicitudes'])->name('api_solicitudes');
         
         Route::post('/subir-comprobantes',[AdjuntosController::class,'subirComprobantes']);
+        Route::post('/subir-comprobantes-ande',[AdjuntosController::class, 'subirComprobantesAnde']);
 
         Route::post('/solicitar-ampliacion', [SolicitudesController::class, 'solicitarAmpliacion'])->name('api_solicitar_ampliacion');
         Route::post('/agregar-adicional', [SolicitudesController::class, 'agregarAdicional'])->name('api_agregar_adicional');
