@@ -201,17 +201,18 @@ class SolicitudesController extends Controller
                 'empresa_ciudad' => $req->empresa_ciudad,
 
                 'comprobantes' => $req->comprobantes,
+                'ande'=> $req->ande,
                 'referencia_comercial' => $req->referencia_comercial,
                 'referencia_personal' => $req->referencia_personal
 
             ];
             
             
-            /* return response()->json([
+            return response()->json([
                 'success' => true,
                 'results' => $datosAenviar,
                 'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpenos las molestias.'
-            ],200);  */
+            ],200); 
 
             $solicitud = $this->ingresarSolicitudInfinita((object)$datosAenviar);
             if (!$solicitud['success'])

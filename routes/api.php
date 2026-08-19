@@ -162,6 +162,7 @@ Route::middleware('auth:api')->group(function(){
         Route::post('/agregar-adicional', [SolicitudesController::class, 'agregarAdicional'])->name('api_agregar_adicional');
         Route::get('/verificar-estado-solicitud', [SolicitudesController::class, 'verificarEstadoSolicitud'])->name('api_verificar_estado_solicitud');
         Route::get('/cancelar-solicitud', [SolicitudesController::class, 'cancelarSolicitud']);
+        
         Route::post('/solicitar-credito-digital', [SolicitudesController::class, 'solicitarCreditoDigital']);
         Route::get('/verificar-disponibilidad', [SolicitudesController::class, 'verificarDisponibilidad']);
 
