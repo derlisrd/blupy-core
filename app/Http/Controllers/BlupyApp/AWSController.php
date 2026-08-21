@@ -219,9 +219,9 @@ class AWSController extends Controller
         $rateKey = "scanCedula:$ip";
 
         if (RateLimiter::tooManyAttempts($rateKey, 5)) {
-            return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 2 minutos.'], 429);
+            return response()->json(['success' => false, 'message' => 'Demasiadas peticiones. Espere 1 minuto.'], 429);
         }
-        RateLimiter::hit($rateKey, 120);
+        RateLimiter::hit($rateKey, 60);
 
         try {
 

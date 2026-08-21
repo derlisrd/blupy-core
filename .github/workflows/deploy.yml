@@ -25,9 +25,7 @@ jobs:
         script: |
           cd /var/www/html/dev-blupy-core/
           git pull origin dev
-          php artisan config:clear
-          php artisan cache:clear
-          php artisan route:clear
+          php artisan optimize:clear
           pm2 restart blupy-core-queue-worker
 
   # Deploy to PRODUCTION environment
