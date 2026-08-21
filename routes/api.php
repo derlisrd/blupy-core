@@ -26,6 +26,7 @@ use App\Http\Controllers\BlupyApp\UserController as UserPrivate;
 use App\Http\Controllers\Public\UserController as UserPublic;
 use App\Http\Controllers\BlupyApp\ValidacionesController;
 use App\Http\Controllers\BlupyApp\VendedorController;
+use App\Http\Controllers\BlupyApp\VerificarIdentidadController;
 use App\Http\Controllers\BlupyApp\WaController;
 use App\Http\Controllers\Public\VersionController;
 
@@ -64,7 +65,7 @@ Route::prefix('/auth')->group(function(){
 });
 
 Route::prefix('/scan')->group(function(){
-    Route::post('/cedula',[AWSController::class,'escanearCedula']);
+    Route::post('/cedula',[VerificarIdentidadController::class,'cedula']);
     Route::post('/selfie-cedula',[AWSController::class,'escanearSelfieConCedula']);
 });
 
