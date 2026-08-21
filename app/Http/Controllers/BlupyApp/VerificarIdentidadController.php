@@ -7,18 +7,20 @@ use App\Services\GeminiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\RateLimiter;
+use Carbon\Carbon; // Importante para manejar la fecha
+use Exception;
 
 class VerificarIdentidadController extends Controller
 {
-    public function cedula(Request $request, GeminiService$documentService)
+    public function cedula(Request $request, GeminiService $documentService)
     {
-        // 1. Validar request
+        // 1. Validar request (especificamos que el formato de fecha esperado es d/m/Y)
         $validator = Validator::make($request->all(), [
             'fotofrontal64' => 'required|string',
             'cedula'        => 'required',
             'nombres'       => 'required|string',
             'apellidos'     => 'required|string',
-            'nacimiento'    => 'required', // Mantenemos la clave del validator
+            'nacimiento'    => 'required|date_format:d/m/Y', // Valida que envíen "14/03/1996"
         ]);
 
         if ($validator->fails()) {
@@ -28,12 +30,12 @@ class VerificarIdentidadController extends Controller
             ], 400);
         }
 
-        $ip =$request->ip();
+        $ip = $request->ip();
         $rateKey = "scanCedula:$ip";
 
         if (RateLimiter::tooManyAttempts($rateKey, 5)) {
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Demasiadas peticiones. Espere 1 minuto.'
             ], 429);
         }
@@ -56,39 +58,51 @@ class VerificarIdentidadController extends Controller
         }
 
         // 3. Normalizar datos para comparación
-        $userInputCi = preg_replace('/[^0-9]/', '',$request->input('cedula'));
-        $extractedCi = preg_replace('/[^0-9]/', '',$extractedData['numero_cedula'] ?? '');
+        $userInputCi = preg_replace('/[^0-9]/', '', $request->input('cedula'));
+        $extractedCi = preg_replace('/[^0-9]/', '', $extractedData['numero_cedula'] ?? '');
 
-        // Corrección de clave: 'nacimiento' en lugar de 'fecha_nacimiento'
-        $userBirth = trim($request->input('nacimiento')); 
-        $extractedBirth = trim($extractedData['fecha_nacimiento'] ?? '');
+        // --- CONVERSIÓN DE FECHA DE "14/03/1996" A "1996-03-14" ---
+        try {
+            $userBirthIso = Carbon::createFromFormat('d/m/Y', trim($request->input('nacimiento')))->format('Y-m-d');
+        } catch (Exception $e) {
+            $userBirthIso = null;
+        }
+        $extractedBirthIso = trim($extractedData['fecha_nacimiento'] ?? '');
 
-        $userName =$this->normalizeText($request->input('nombres'));$extractedName = $this->normalizeText($extractedData['nombre'] ?? '');
+        $userName = $this->normalizeText($request->input('nombres'));
+        $extractedName = $this->normalizeText($extractedData['nombre'] ?? '');
 
-        $userLastName =$this->normalizeText($request->input('apellidos'));$extractedLastName = $this->normalizeText($extractedData['apellido'] ?? '');
+        $userLastName = $this->normalizeText($request->input('apellidos'));
+        $extractedLastName = $this->normalizeText($extractedData['apellido'] ?? '');
 
         // 4. Comparaciones
-        $isCedulaValid = (!empty($extractedCi) && $userInputCi ===$extractedCi);
-        $isBirthValid = (!empty($extractedBirth) && $userBirth ===$extractedBirth);
+        $isCedulaValid = (!empty($extractedCi) && $userInputCi === $extractedCi);
 
-        $isNameValid = (!empty($extractedName) && (str_contains($extractedName,$userName) || str_contains($userName,$extractedName)));
-        $isLastNameValid = (!empty($extractedLastName) && (str_contains($extractedLastName,$userLastName) || str_contains($userLastName,$extractedLastName)));
+        // Compara las dos fechas formateadas como "YYYY-MM-DD"
+        $isBirthValid = (!empty($userBirthIso) && !empty($extractedBirthIso) && $userBirthIso === $extractedBirthIso);
 
-        // 5. Acumular mensajes
+        $isNameValid = (!empty($extractedName) && (str_contains($extractedName, $userName) || str_contains($userName, $extractedName)));
+        $isLastNameValid = (!empty($extractedLastName) && (str_contains($extractedLastName, $userLastName) || str_contains($userLastName, $extractedLastName)));
+
+        // 5. Acumular mensajes de error
         $errors = [];
-        if (!$isCedulaValid) {$errors[] = 'El número de cédula no coincide con la foto o no es legible.';
+        if (!$isCedulaValid) {
+            $errors[] = 'El número de cédula no coincide con la foto o no es legible.';
         }
-        if (!$isBirthValid) {$errors[] = 'La fecha de nacimiento no coincide o no es legible.';
+        if (!$isBirthValid) {
+            $errors[] = 'La fecha de nacimiento no coincide o no es legible.';
         }
-        if (!$isNameValid) {$errors[] = 'El nombre ingresado no coincide con el documento.';
+        if (!$isNameValid) {
+            $errors[] = 'El nombre ingresado no coincide con el documento.';
         }
-        if (!$isLastNameValid) {$errors[] = 'El apellido ingresado no coincide con el documento.';
+        if (!$isLastNameValid) {
+            $errors[] = 'El apellido ingresado no coincide con el documento.';
         }
 
         $success = empty($errors);
-        $status =$success ? 200 : 400;
+        $status = $success ? 200 : 400;
 
-        $finalMessage =$success
+        $finalMessage = $success
             ? 'Documento verificado con éxito.'
             : implode(' ', $errors);
 
@@ -107,10 +121,19 @@ class VerificarIdentidadController extends Controller
 
     private function normalizeText(string $text): string
     {
-        $text = mb_strtoupper(trim($text));$unwantedArray = [
-            'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U',
-            'Ä' => 'A', 'Ë' => 'E', 'Ï' => 'I', 'Ö' => 'O', 'Ü' => 'U'
+        $text = mb_strtoupper(trim($text));
+        $unwantedArray = [
+            'Á' => 'A',
+            'É' => 'E',
+            'Í' => 'I',
+            'Ó' => 'O',
+            'Ú' => 'U',
+            'Ä' => 'A',
+            'Ë' => 'E',
+            'Ï' => 'I',
+            'Ö' => 'O',
+            'Ü' => 'U'
         ];
-        return strtr($text,$unwantedArray);
+        return strtr($text, $unwantedArray);
     }
 }
