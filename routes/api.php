@@ -65,7 +65,7 @@ Route::prefix('/auth')->group(function(){
 });
 
 Route::prefix('/scan')->group(function(){
-    Route::post('/cedula',[VerificarIdentidadController::class,'cedula']);
+    Route::post('/cedula',[AWSController::class, 'escanearCedula']);
     Route::post('/selfie-cedula',[AWSController::class,'escanearSelfieConCedula']);
 });
 
