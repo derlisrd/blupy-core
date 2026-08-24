@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BlupyApp;
 
 use App\Http\Controllers\Controller;
 use App\Services\GeminiService;
+use App\Services\SupabaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\RateLimiter;
@@ -43,7 +44,7 @@ class VerificarIdentidadController extends Controller
 
         // 2. Procesar imagen con Gemini
         $extractedData = $documentService->analyzeDocument($request->fotofrontal64);
-
+        SupabaseService::LOG('Gemini api: linea 47','Procesado la imagen');
         if (!$extractedData || !($extractedData['es_cedula_paraguaya'] ?? false)) {
             return response()->json([
                 'success' => false,
@@ -105,7 +106,7 @@ class VerificarIdentidadController extends Controller
         $finalMessage = $success
             ? 'Documento verificado con éxito.'
             : implode(' ', $errors);
-
+        SupabaseService::LOG('final mensaje de gemini', $finalMessage);
         // 6. Respuesta JSON para React Native
         return response()->json([
             'success' => $success,
