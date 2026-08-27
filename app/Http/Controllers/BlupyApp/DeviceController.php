@@ -217,12 +217,16 @@ class DeviceController extends Controller
         }
 
         try {
-            $encontrado = DeviceNewRequest::where('device_id_app', $req->deviceIdApp)->first();
+            $existePendiente = DeviceNewRequest::where('user_id', $user->id)
+                ->where('aprovado', 0)
+                ->exists();
 
-            if ($encontrado) {
-                return response()->json(['success' => false, 'message' => 'Dispositivo ya registrado. Se verificará en breve'], 400);
+            if ($existePendiente) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error. Contacte con atención al cliente.'
+                ], 400);
             }
-
             $validacion = Validacion::find($req->cliente_validacion_id);
             if (!$validacion) {
                 return response()->json(['success' => false, 'message' => 'No existe validacion'], 404);
