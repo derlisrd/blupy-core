@@ -217,7 +217,7 @@ class DeviceController extends Controller
         }
 
         try {
-            $user = User::where('cliente_id', $validacion->cliente_id)->first();
+            /* $user = User::where('cliente_id', $validacion->cliente_id)->first();
             $existePendiente = DeviceNewRequest::where('user_id', $user->id)
                 ->where('aprovado', 0)
                 ->exists();
@@ -228,12 +228,12 @@ class DeviceController extends Controller
                     'success' => false,
                     'message' => 'Error. Contacte con atención al cliente.'
                 ], 400);
-            }
+            } */
             $validacion = Validacion::find($req->cliente_validacion_id);
             if (!$validacion) {
                 return response()->json(['success' => false, 'message' => 'No existe validacion'], 404);
             }
-            //$user = User::where('cliente_id', $validacion->cliente_id)->first();
+            $user = User::where('cliente_id', $validacion->cliente_id)->first();
             if (!$user) {
                 return response()->json(['success' => false, 'message' => 'No existe usuario'], 404);
             }
