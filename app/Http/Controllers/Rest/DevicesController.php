@@ -46,15 +46,12 @@ class DevicesController extends Controller
 
         $devices = Device::where('user_id',$newDevice->user_id)->get();
 
-        if ($newDevice->os == 'android') {
-            PushNativeJobs::dispatch("Dispositivo aprobado", 'Ya puedes ingresar con este dispositivo.', [$newDevice->devicetoken], 'android')
-                ->onConnection('database');
-        }
-
-        if ($newDevice->os == 'ios') {
-            PushNativeJobs::dispatch("Dispositivo aprobado", 'Ya puedes ingresar con este dispositivo.', [$newDevice->devicetoken], 'ios')
-                ->onConnection('database');
-        }
+        $tokens = [
+            $newDevice->devicetoken
+        ];
+        $title = "Dispositivo aprobado";
+        $text = 'Ya puedes ingresar con este dispositivo.';
+        app(\App\Services\PushService::class)->sendPushMulti($tokens, $title, $text);
 
 
         $user = User::find($newDevice->user_id);
