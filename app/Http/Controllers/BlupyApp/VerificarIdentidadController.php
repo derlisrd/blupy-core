@@ -13,7 +13,7 @@ use Exception;
 
 class VerificarIdentidadController extends Controller
 {
-    public function cedula(Request $request, GeminiService $documentService)
+    public function escanearCedula(Request $request, GeminiService $documentService)
     {
         // 1. Validar request (especificamos que el formato de fecha esperado es d/m/Y)
         $validator = Validator::make($request->all(), [
