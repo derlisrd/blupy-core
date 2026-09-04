@@ -141,7 +141,7 @@ class RegisterController extends Controller
                     $funcionario = 1;
                 }
             }
-            $direccionCompletado = ($funcionario == 1 || $esAdicional || $asofarma == 1) ? 1 : 0;
+            $direccionCompletado = ($funcionario == 1 || $esAdicional || $asofarma == 1 || $empresaAutorizado == 1) ? 1 : 0;
 
             return [
                 'esAdicional' => $esAdicional,
