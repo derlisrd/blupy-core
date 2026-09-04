@@ -116,9 +116,20 @@ class RegisterController extends Controller
         $direccionCompletado = 0;
         $asofarma = 0;
         $funcionario = 0;
-
+        $empresaAutorizado = 0;
+        $farmaService = new FarmaService();
         //if(!$funcionarioParam){
-            $farmaResponse = (new FarmaService())->esAlianzaOFuncionario($cedula);
+            $farmaEmpresaResponse = $farmaService->empresaAutorizados($cedula);
+            $farmaEmpresaData = $farmaEmpresaResponse['data'];
+
+            if ($farmaEmpresaData && isset($farmaEmpresaData['result'])) {
+                if(!$farmaEmpresaData['result'] == null)
+                {
+                    $empresaAutorizado = 1;
+                }
+            }
+
+            $farmaResponse = $farmaService->esAlianzaOFuncionario($cedula);
             $farmaData = $farmaResponse['data'];
             
             if ($farmaData && isset($farmaData['result'])) {
@@ -136,7 +147,8 @@ class RegisterController extends Controller
                 'esAdicional' => $esAdicional,
                 'asofarma' => $asofarma,
                 'funcionario' => $funcionario,
-                'direccionCompletado' => $direccionCompletado
+                'direccionCompletado' => $direccionCompletado,
+                'empresa_autorizado'=> $empresaAutorizado
             ];
         //}
 
@@ -170,6 +182,7 @@ class RegisterController extends Controller
                 'funcionario' => $additionalData['funcionario'],
                 'linea_farma' => null,
                 'asofarma' => $additionalData['asofarma'],
+                'empresa_autorizado' => $additionalData['empresa_autorizado'] ?? 0,
                 'importe_credito_farma' => 0,
                 'direccion_completado' => $additionalData['direccionCompletado'],
                 'cliid' => 0,
