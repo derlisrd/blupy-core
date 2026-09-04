@@ -123,8 +123,7 @@ class RegisterController extends Controller
             $farmaEmpresaData = $farmaEmpresaResponse['data'];
 
             if ($farmaEmpresaData && isset($farmaEmpresaData['result'])) {
-                if(!$farmaEmpresaData['result'] == null)
-                {
+                if ($farmaEmpresaData['result'] !== null) {
                     $empresaAutorizado = 1;
                 }
             }
