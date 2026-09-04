@@ -75,13 +75,12 @@ Route::group(['middleware' => ['auth:admin']], function() {
         Route::post('/individual',[NotificacionesController::class,'individual'])->name('rest_enviar_notificacion_individual');
         Route::post('/wa',[NotificacionesController::class,'wa'])->name('rest_enviar_wa');
         Route::post('/difusion',[NotificacionesController::class,'difusion'])->middleware('permiso.admin:notificaciones,enviar_difusion_masiva')->name('rest_difusion');
-        
         Route::post('/difusion-selectiva',[NotificacionesController::class,'difusionSelectiva'])->middleware('permiso.admin:notificaciones,enviar_difusion_selectiva')->name('rest_selectiva');
         Route::post('/sms-to-morosos',[NotificacionesController::class,'smsToMorosos'])->name('rest_sms_to_morosos');
-        
         Route::get('/ficha',[NotificacionesController::class,'ficha'])->name('rest_notificacion_ficha');
-        
         Route::post('/enviar-sms',[NotificacionesController::class,'enviarSms'])->name('rest_enviar_sms');
+
+        
     });
 
     // NOTIFICACIONES
@@ -104,6 +103,8 @@ Route::group(['middleware' => ['auth:admin']], function() {
         Route::post('/update-ventas-farma',[JobsManualesController::class,'updateVentasFarma'])->name('rest_jobs_ventas'); // << CORREGIDO
         Route::post('/update-cliente-digital',[JobsManualesController::class,'updateClienteDigital'])->name('rest_jobs_digital'); // << CORREGIDO
         Route::post('/update-solicitudes-pendientes',[JobsManualesController::class,'updateSolicitudesPendientes'])->name('rest_jobs_solicitudes_pendientes'); // << CORREGIDO
+
+        Route::post('/mail-extracto-disponible', [JobsManualesController::class, 'mailExtractoDisponible'])->name('rest_mail_extracto_disponible');
     });
 
 

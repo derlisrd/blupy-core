@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Rest;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ActualizarSucursalesFarmaJobs;
+use App\Jobs\EnviarExtractosDigitalesJob;
 use App\Jobs\ProcesarVentasDelDiaFarmaJobs;
 use App\Jobs\UpdateClienteDigitalJob;
 use App\Jobs\UpdatePerfilJobs;
@@ -48,5 +49,22 @@ class JobsManualesController extends Controller
     public function updateSolicitudesPendientes(){
         UpdateSolicitudesJobs::dispatch()->onConnection('database');
         return response()->json(['success'=>true,'message' => 'Proceso en 2do. para actualizar solicitudes pendientes de digital']);
+    }
+
+
+    public function mailExtractoDisponible(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'periodo' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+        }
+
+        $periodo = $request->input('periodo', null);
+        EnviarExtractosDigitalesJob::dispatch($periodo)->onConnection('database');
+
+        return response()->json(['success' => true, 'message' => 'Proceso en 2do. para enviar extractos digitales']);
     }
 }
