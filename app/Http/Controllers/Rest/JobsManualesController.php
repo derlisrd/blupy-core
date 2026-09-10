@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ActualizarSucursalesFarmaJobs;
 use App\Jobs\EnviarExtractosDigitalesJob;
 use App\Jobs\ProcesarVentasDelDiaFarmaJobs;
+use App\Jobs\ProcessCsvEmailBatchJob;
 use App\Jobs\UpdateClienteDigitalJob;
 use App\Jobs\UpdatePerfilJobs;
 use App\Jobs\UpdateSolicitudesJobs;
@@ -67,4 +68,36 @@ class JobsManualesController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Proceso en 2do. para enviar extractos digitales']);
     }
+
+
+    public function mailReclamoPeriodo(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|file|mimes:csv,txt|max:10240', // máx 10MB
+            'periodo' => 'required|string|max:50'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Guardar archivo temporalmente
+        $path = $request->file('file')->store('csv_queues');
+        $periodo = $request->input('periodo');
+
+
+        // Despachar el Job principal que procesará el archivo
+        ProcessCsvEmailBatchJob::dispatch($path,$periodo)->onConnection('database');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'El archivo ha sido recibido. El envío masivo se está procesando en segundo plano.'
+        ], 202);
+    }
+
+
+    
 }

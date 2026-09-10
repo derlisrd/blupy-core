@@ -105,6 +105,8 @@ Route::group(['middleware' => ['auth:admin']], function() {
         Route::post('/update-solicitudes-pendientes',[JobsManualesController::class,'updateSolicitudesPendientes'])->name('rest_jobs_solicitudes_pendientes'); // << CORREGIDO
 
         Route::post('/mail-extracto-disponible', [JobsManualesController::class, 'mailExtractoDisponible'])->name('rest_mail_extracto_disponible');
+
+        Route::post('/mail-reclamo-periodo', [JobsManualesController::class, 'mailReclamoPeriodo'])->name('rest_mail_reclamo_periodo');
     });
 
 
@@ -181,9 +183,9 @@ Route::group(['middleware' => ['auth:admin']], function() {
 });
 
 //Route::get('/contacto/cliente',[ContactoBlupyController::class, 'getNroTelefono']);
-Route::post('/send-sms-morosos',[ContactoBlupyController::class, 'sendSmsMorosos']);
+//Route::post('/send-sms-morosos',[ContactoBlupyController::class, 'sendSmsMorosos']);
 //Route::post('/individual', [NotificacionesController::class, 'individual'])->name('rest_enviar_notificacion_individual');
-
+//Route::post('/mail-reclamo-periodo', [JobsManualesController::class, 'mailReclamoPeriodo'])->name('rest_mail_reclamo_periodo');
 //Route::get('/morosos',[MorososController::class, 'morosos']);
 Route::get('/salud',function(){
     return response()->json(['success'=>true]);

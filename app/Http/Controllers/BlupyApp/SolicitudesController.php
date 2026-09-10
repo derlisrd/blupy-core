@@ -81,7 +81,7 @@ class SolicitudesController extends Controller
         return response()->json([
             'success' => true,
             'results' => null,
-            'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpenos las molestias.'
+            'message' => 'Las solicitudes están deshabilitadas temporalmente. Disculpe las molestia.'
         ], 400);
 
         $solicitudConflictiva = SolicitudCredito::where('cliente_id',$user->cliente->id)
