@@ -175,8 +175,7 @@ Route::middleware('auth:api')->group(function(){
 
     
 
-    Route::get('/consultar-qr/{id}',[QRController::class,'consultar'])->name('api_consultar_qr');
-    Route::post('/autorizar-qr',[QRController::class,'autorizar'])->name('api_autorizar_qr');
+
 
     Route::prefix('/datos')->group(function () {
         Route::put('/solicitar-cambiar-celular', [DatosController::class, 'solicitarCambiarCelular'])->name('api_solicitar_cambiar_celular');
@@ -191,7 +190,7 @@ Route::middleware('auth:api')->group(function(){
         Route::get('/solicitar-autorizacion-compra', [AutorizacionesQRController::class, 'solicitarAutorizacion'])->name('api_solicitar_compra');
         Route::post('/autorizar-compra', [AutorizacionesQRController::class, 'autorizar'])->name('api_autorizar_compra');
     });
-
+    Route::get('/call-center-codigo', [AutorizacionesQRController::class, 'callCenterCodigo'])->name('call_center_codigo');
     
 
     

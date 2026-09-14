@@ -204,4 +204,12 @@ class AutorizacionesQRController extends Controller
         // Si llegamos aquí, todos los intentos fallaron
         throw $lastException ?? new \RuntimeException('Todos los intentos fallaron sin excepción específica');
     }
+
+
+    public function callCenterCodigo(Request $req){
+        return response()->json([
+            'success'=>true,
+            'results' => null
+        ]);
+    }
 }

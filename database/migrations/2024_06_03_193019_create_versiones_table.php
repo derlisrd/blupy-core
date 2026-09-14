@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('versiones', function (Blueprint $table) {
             $table->id();
+            $table->tinyInteger('obligatorio')->default(0);
             $table->integer('numero')->default(0);
             $table->string('version');
             $table->tinyInteger('dispositivo')->comment('1 andr 2 ios');
