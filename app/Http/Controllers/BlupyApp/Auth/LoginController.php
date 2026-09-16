@@ -205,9 +205,9 @@ class LoginController extends Controller
         $mensaje = "Utiliza el código ". $codigo." para confirmar tu dispositivo en Blupy.";
         $numeroTelefonoWa = '595' . substr($celular, 1);
 
-        //DispositivoInusualJob::dispatch($celular, $mensaje, $email, $codigo, $datosEmail, $numeroTelefonoWa)->onConnection('database');
+        DispositivoInusualJob::dispatch($celular, $mensaje, $email, $codigo, $datosEmail, $numeroTelefonoWa)->onConnection('database');
 
-        (new TigoSmsService())->enviarSms($celular, $mensaje);
+        //(new TigoSmsService())->enviarSms($celular, $mensaje);
         //(new WaService())->send($this->numeroTelefonoWa, $this->mensaje);
         // Enviar Email
         /* (new EmailService())->enviarEmail(
