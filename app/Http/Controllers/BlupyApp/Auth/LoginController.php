@@ -210,12 +210,12 @@ class LoginController extends Controller
         (new TigoSmsService())->enviarSms($celular, $mensaje);
         //(new WaService())->send($this->numeroTelefonoWa, $this->mensaje);
         // Enviar Email
-        (new EmailService())->enviarEmail(
+        /* (new EmailService())->enviarEmail(
             $email,
             "[$codigo] Blupy confirmar dispositivo",
             'email.validarDispositivo',
             $datosEmail
-        );
+        ); */
  
 
         // Guardar validación
