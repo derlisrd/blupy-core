@@ -44,7 +44,7 @@ return [
             'encryption' => env('GMAIL_ENCRYPTION', 'tls'),
             'username' => env('GMAIL_USERNAME'),
             'password' => env('GMAIL_PASSWORD'),
-            'timeout' => null,
+            'timeout' => 6,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
 
@@ -56,7 +56,7 @@ return [
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
-            'timeout' => null,
+            'timeout' => 6,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
 
