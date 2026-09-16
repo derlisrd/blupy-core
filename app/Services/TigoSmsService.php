@@ -9,7 +9,7 @@ class TigoSmsService
 {
     private $url;
     private $key;
-    private $timeout = 10;
+    private $timeout = 60;
     private $retries = 2;
 
     public function __construct()
