@@ -9,8 +9,10 @@ use App\Models\Cliente;
 use App\Models\Device;
 use App\Models\User;
 use App\Models\Validacion;
+use App\Services\EmailService;
 //use App\Services\EmailService;
 use App\Services\SupabaseService;
+use App\Services\TigoSmsService;
 //use App\Services\TigoSmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -203,18 +205,18 @@ class LoginController extends Controller
         $mensaje = "Utiliza el código ". $codigo." para confirmar tu dispositivo en Blupy.";
         $numeroTelefonoWa = '595' . substr($celular, 1);
 
-        DispositivoInusualJob::dispatch($celular, $mensaje, $email, $codigo, $datosEmail, $numeroTelefonoWa)->onConnection('database');
+        //DispositivoInusualJob::dispatch($celular, $mensaje, $email, $codigo, $datosEmail, $numeroTelefonoWa)->onConnection('database');
 
-        //(new TigoSmsService())->enviarSms($celular, $mensaje);
+        (new TigoSmsService())->enviarSms($celular, $mensaje);
         //(new WaService())->send($this->numeroTelefonoWa, $this->mensaje);
         // Enviar Email
-        /* (new EmailService())->enviarEmail(
+        (new EmailService())->enviarEmail(
             $email,
             "[$codigo] Blupy confirmar dispositivo",
             'email.validarDispositivo',
             $datosEmail
         );
- */
+ 
 
         // Guardar validación
         $validacion = Validacion::create([
