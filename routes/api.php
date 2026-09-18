@@ -116,6 +116,10 @@ Route::get('/consultar-vendedor', [VendedorController::class, 'consultar']);
 /*
  =========RUTAS PROTEGIDAS ==================
  */
+
+
+Route::get('/info/general', [InformacionesController::class, 'infoGeneralInicial'])->name('api_info');
+
 Route::middleware('auth:api')->group(function(){
 
     

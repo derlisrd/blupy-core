@@ -8,6 +8,25 @@ use Illuminate\Http\Request;
 
 class InformacionesController extends Controller
 {
+
+    public function infoGeneralInicial(){
+
+        $general = Informacion::where('active', 1)
+            ->whereNull('user_id')
+            ->where('general', 1)
+            ->where('digital', 0)
+            ->where('aso', 0)
+            ->get();
+            
+         return response()->json([
+            'success' => true,
+            'message' => '',
+            'results' => [
+                'general' => $general,
+            ]
+        ]);
+    }
+
     public function infoPopUpInicial(Request $req){
         $user = $req->user();
         $cliente = $user->cliente;
