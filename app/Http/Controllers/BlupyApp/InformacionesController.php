@@ -17,12 +17,16 @@ class InformacionesController extends Controller
             ->where('digital', 0)
             ->where('aso', 0)
             ->get();
-            
+
          return response()->json([
             'success' => true,
             'message' => '',
             'results' => [
                 'general' => $general,
+                'user' => null,
+                'digital' => null,
+                'aso' => null,
+                'aceptado' => null
             ]
         ]);
     }
