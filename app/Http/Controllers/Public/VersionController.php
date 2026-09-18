@@ -33,7 +33,8 @@ class VersionController extends Controller
                 'number'=> $version->numero,
                 'version'=> $version->version,
                 'link' => $version->link,
-                'device' => $version->dispositivo
+                'device' => $version->dispositivo,
+                'obligatorio'=>$version->obligatorio
             ]
         ]);
     }
