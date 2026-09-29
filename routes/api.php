@@ -23,7 +23,7 @@ use App\Http\Controllers\BlupyApp\QRController;
 use App\Http\Controllers\BlupyApp\RecuperarContrasenaController;
 use App\Http\Controllers\BlupyApp\SolicitudesController;
 use App\Http\Controllers\BlupyApp\UserController as UserPrivate;
-use App\Http\Controllers\Public\UserController as UserPublic;
+
 use App\Http\Controllers\BlupyApp\ValidacionesController;
 use App\Http\Controllers\BlupyApp\VendedorController;
 //use App\Http\Controllers\BlupyApp\VerificarIdentidadController;
@@ -50,10 +50,8 @@ Route::prefix('/recuperar-contrasena')->group(function(){
     Route::put('/establecer-contrasena-nueva', [RecuperarContrasenaController::class, 'establecerContrasenaNueva'])->name('api_establecer_contrasena_nueva');
 });
 
-Route::post('/olvide-contrasena',[UserPublic::class,'olvideContrasena'])->name('api_olvide_contrasena');
-Route::post('/reenviar-codigo-recuperacion-wa',[UserPublic::class,'reenviarCodigoRecuperacionWa'])->name('api_reenviar_codigo_recuperacion_wa');
-Route::post('/validar-codigo-recuperacion',[UserPublic::class,'validarCodigoRecuperacion'])->name('api_validar_codigo_recuperacion');
-Route::post('/restablecer-contrasena',[UserPublic::class,'restablecerContrasena'])->name('api_restablecer_contrasena');
+
+
 
 Route::get('/verificar-documento',[ConsultasController::class,'verificarExisteDocumento'])->name('api_verificar_documento');
 
