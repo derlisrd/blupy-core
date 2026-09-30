@@ -81,6 +81,51 @@ class ClientesController extends Controller
         }
     }
 
+    public function buscarPorTelefono(Request $req){
+
+        $validator = Validator::make($req->all(), [
+            'celular' => 'required|string|max:12',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 400);
+        }
+        $buscar = trim($req->celular ?? '');
+
+
+        if (empty($buscar)) {
+            return response()->json([
+                'success' => true,
+                'total' => 0,
+                'results' => []
+            ]);
+        }
+        $clientes = Cliente::join('users as u', 'u.cliente_id', '=', 'clientes.id')
+            ->select($this->campos);
+
+        // Aplicar filtros de búsqueda dentro de un grupo para evitar comportamientos inesperados
+        $clientes->where(function ($query) use ($buscar) {
+            $query->where('clientes.celular', 'like', '%' . $buscar . '%');
+        });
+
+        $clientes->orderBy('clientes.created_at', 'DESC');
+
+        // Obtener resultados una sola vez para mejorar rendimiento
+        $resultados = $clientes->get();
+        $total = count($resultados);
+
+
+        return response()->json([
+            'success' => true,
+            'total' => $total,
+            'results' => $resultados
+        ]);
+
+    }
+
+
     /*
     ==============================================================================================================
     FILTROS

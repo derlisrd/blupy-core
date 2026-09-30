@@ -44,6 +44,7 @@ Route::group(['middleware' => ['auth:admin']], function() {
         Route::get('/ficha/{id}',[ClientesController::class,'ficha'])->name('rest_cliente_ficha');
         Route::put('/restablecer-contrasena',[ClientesController::class,'restablecerContrasena'])->middleware('permiso.admin:clientes,restablecer_contrasena')->name('rest_clientes_restablecer_contrasena');
         Route::put('/estado',[ClientesController::class,'cambiarEstado'])->middleware('permiso.admin:clientes,cambiar_estado')->name('rest_clientes_cambiar_estado');
+        Route::get('/buscar-por-tel', [ClientesController::class, 'buscarPorTelefono'])->name('rest_clientes_buscar_tel');
     });
 
     // MICREDITO
