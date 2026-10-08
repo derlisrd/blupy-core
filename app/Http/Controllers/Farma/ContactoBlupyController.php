@@ -48,7 +48,7 @@ class ContactoBlupyController extends Controller
             ], 422);
         }
 
-        //$texto = $request->texto;
+        $textoInicial = $request->texto;
 
         // Leer CSV
         $cedulas = [];
@@ -81,7 +81,7 @@ class ContactoBlupyController extends Controller
         $delay = 0;
 
         foreach ($clientes as $cliente) {
-            $texto = 'Estimado/a ' . $cliente->nombre_primero . '. Blupy le recuerda su deuda pendiente a regularizar. Favor comunicarse al 0985713544';
+            $texto = 'Estimado/a ' . $cliente->nombre_primero . '. ' . $textoInicial;
             
             LocalEnviarSmsMorosoJob::dispatch(
                 $cliente->celular,

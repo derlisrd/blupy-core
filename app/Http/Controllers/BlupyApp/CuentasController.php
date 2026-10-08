@@ -243,6 +243,10 @@ class CuentasController extends Controller
                         return [];
                     }
 
+                    if($alianza && $alianza['fechaVencimiento'] && Carbon::parse($alianza['fechaVencimiento'])->isPast()){
+                        return [];
+                    }
+
                     $linea = $tarjetasFarma['clerLimiteCredito'];
 
                     $hoy = Carbon::now()->startOfDay();
